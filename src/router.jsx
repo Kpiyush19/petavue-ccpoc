@@ -10,6 +10,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import LoginAs from "./pages/auth/LoginAs";
 import PetavueGuard from "./components/PetavueGuard";
 import HomeGuard from "./components/HomeGuard";
+import { MOCK_ENABLED } from "./mocks";
 import IndexRedirect from "./components/IndexRedirect";
 import { SessionProvider } from "./contexts/SessionContext";
 import LegacyRedirect from "./pages/LegacyRedirect";
@@ -264,40 +265,51 @@ export const router = createBrowserRouter([
               }
             ]
           },
-          {
-            element: <HomeGuard />,
-            children: [
-              {
+          // Frontend-only mode: /home is the dashboard workspace (clean URL, no
+          // session id). Otherwise it's the flag-gated skill-library home.
+          MOCK_ENABLED
+            ? {
                 path: "home",
                 element: (
                   <SuspenseWrapper>
-                    <HomeLayout />
+                    <WorkspacePage />
                   </SuspenseWrapper>
-                ),
+                )
+              }
+            : {
+                element: <HomeGuard />,
                 children: [
                   {
-                    index: true,
+                    path: "home",
                     element: (
                       <SuspenseWrapper>
-                        <HomePage />
+                        <HomeLayout />
                       </SuspenseWrapper>
-                    )
-                  },
-                  { path: "workstreams", element: <Navigate to="/home" replace /> },
-                  { path: "workstreams/:workstreamId", element: <Navigate to="/home" replace /> },
-                  { path: "skill", element: <Navigate to="/home" replace /> },
-                  {
-                    path: "skill/:id",
-                    element: (
-                      <SuspenseWrapper>
-                        <SkillDetailPage />
-                      </SuspenseWrapper>
-                    )
+                    ),
+                    children: [
+                      {
+                        index: true,
+                        element: (
+                          <SuspenseWrapper>
+                            <HomePage />
+                          </SuspenseWrapper>
+                        )
+                      },
+                      { path: "workstreams", element: <Navigate to="/home" replace /> },
+                      { path: "workstreams/:workstreamId", element: <Navigate to="/home" replace /> },
+                      { path: "skill", element: <Navigate to="/home" replace /> },
+                      {
+                        path: "skill/:id",
+                        element: (
+                          <SuspenseWrapper>
+                            <SkillDetailPage />
+                          </SuspenseWrapper>
+                        )
+                      }
+                    ]
                   }
                 ]
-              }
-            ]
-          },
+              },
           {
             element: <PetavueGuard />,
             children: [

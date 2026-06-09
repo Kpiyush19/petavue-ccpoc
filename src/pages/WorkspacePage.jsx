@@ -11,6 +11,10 @@ import "../components/sessions/styles.css";
 import WorkflowCreateModal from "../components/WorkflowCreateModal";
 import ScheduleFormModal from "../components/ScheduleFormModal";
 import useSessionPanelStore from "../stores/useSessionPanelStore";
+import { MOCK_ENABLED, LANDING_SESSION_ID } from "../mocks";
+
+// Descriptor for the dashboard auto-opened on the /home landing (mock mode).
+const LANDING_ARTIFACT = { path: "output/dashboard/revenue_dashboard.html", title: "Q2 Revenue Dashboard", contentType: "html" };
 
 const FILES_MIN = 200;
 const FILES_MAX = 320;
@@ -19,7 +23,11 @@ const PANEL_MAX_PERCENT_TRAY_CLOSED = 0.8;
 const PANEL_MAX_PERCENT_TRAY_OPEN = 0.85;
 
 export default function WorkspacePage() {
-  const { id } = useParams();
+  // On /home there's no :id — fall back to the fixed landing session so the URL
+  // stays clean (no session id) while still showing the dashboard workspace.
+  const { id: paramId } = useParams();
+  const isLanding = MOCK_ENABLED && !paramId;
+  const id = paramId || (MOCK_ENABLED ? LANDING_SESSION_ID : undefined);
   const navigate = useNavigate();
   const location = useLocation();
   const containerRef = useRef(null);
@@ -73,8 +81,8 @@ export default function WorkspacePage() {
   // If `openVerifyPublish: true` is also set in state (V&P button on the
   // skill-run page), we ALSO request the V&P modal to auto-open once the
   // dashboard tab is active — ArtifactPanel handles the runtime check.
-  const pendingArtifact = useRef(location.state?.openArtifact || null);
-  const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish);
+  const pendingArtifact = useRef(location.state?.openArtifact || (isLanding ? LANDING_ARTIFACT : null));
+  const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish || isLanding);
   useEffect(() => {
     if (!pendingArtifact.current && !pendingVerifyPublish.current) return;
     if (session.sessionId !== id) return;

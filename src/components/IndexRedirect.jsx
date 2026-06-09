@@ -2,24 +2,15 @@ import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import { useFeatureFlagEnabled } from "../providers/posthog";
 import PetavueSplash from "./PetavueSplash";
-import { MOCK_ENABLED, LANDING_SESSION_ID } from "../mocks";
+import { MOCK_ENABLED } from "../mocks";
 
 const ExplorePage = lazy(() => import("../pages/ExplorePage"));
 
 export default function IndexRedirect() {
-  // Frontend-only mode: jump straight into the dashboard session with the
-  // dashboard already open in the artifact panel, ready for Verify & Publish.
+  // Frontend-only mode: land on a clean /home URL (the dashboard workspace +
+  // Verify & Publish open there — no session id in the URL).
   if (MOCK_ENABLED) {
-    return (
-      <Navigate
-        to={`/session/${LANDING_SESSION_ID}`}
-        replace
-        state={{
-          openArtifact: { path: "output/dashboard/revenue_dashboard.html", title: "Q2 Revenue Dashboard", contentType: "html" },
-          openVerifyPublish: true,
-        }}
-      />
-    );
+    return <Navigate to="/home" replace />;
   }
 
   const homeEnabled = useFeatureFlagEnabled("ccpoc-home");
