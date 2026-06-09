@@ -1,6 +1,7 @@
 // Single entry point for the frontend-only mock backend.
 //
-// Toggle: set VITE_MOCK=true (default in .env.development for this repo). When
+// This app is mock-only, so mock mode is ON by default in every build (dev,
+// production, Vercel). Set VITE_MOCK=false only to wire a real backend. When
 // on, both axios instances use the mock adapter and `pusher-js` is aliased to a
 // no-op client (see vite.config.js), so the app runs with zero backend.
 
@@ -9,7 +10,7 @@ import { makeFakeJwt } from "./jwt";
 import { currentUser, TENANT_ID, USER_ID, DASH_SESSION_ID } from "./db";
 import { installFetchPatch } from "./fetchPatch";
 
-export const MOCK_ENABLED = import.meta.env.VITE_MOCK === "true";
+export const MOCK_ENABLED = import.meta.env.VITE_MOCK !== "false";
 
 // The session the app lands on directly (login is skipped in mock mode).
 export const LANDING_SESSION_ID = DASH_SESSION_ID;

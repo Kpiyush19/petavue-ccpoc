@@ -23,7 +23,8 @@ export default defineConfig(({ mode }) => {
     )
   }
 
-  const mockEnabled = env.VITE_MOCK === 'true'
+  // Mock-only app: default ON in every build (set VITE_MOCK=false to opt out).
+  const mockEnabled = env.VITE_MOCK !== 'false'
 
   return {
     plugins,
