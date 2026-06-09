@@ -54,7 +54,7 @@ export const Button = ({
   "aria-label": ariaLabel
 }) => {
   return (
-    <div className={`${className} ${disabled ? `cursor-not-allowed` : `cursor-pointer`}`}>
+    <div className={className}>
       <PrButton
         onClick={(e) => {
           onClick?.(e);
@@ -71,6 +71,7 @@ export const Button = ({
             return {
               className: twMerge(
                 "h-min gap-2 w-full flex items-center justify-center whitespace-nowrap focus-within:outline-none focus-within:ring-0",
+                disabled ? "cursor-not-allowed" : "cursor-pointer",
                 btnSizeClass[btnSize],
                 disabled ? btnDisabledColorClass[btnColor] : btnColorClass[btnColor],
                 mainBtnClassName
