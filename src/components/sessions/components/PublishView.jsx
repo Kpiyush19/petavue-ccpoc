@@ -352,6 +352,7 @@ export default function PublishView({
   // AI Preview state (agent_memo)
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiFilename, setAiFilename] = useState('memo')
+  const [saveMemo, setSaveMemo] = useState(true) // keep the analysis as a memo file
   const [aiPreviewRunning, setAiPreviewRunning] = useState(false)
   const [aiPreviewContent, setAiPreviewContent] = useState(null)
   const [aiPreviewError, setAiPreviewError] = useState('')
@@ -677,6 +678,7 @@ export default function PublishView({
         const blockConfig = {
           prompt: aiPrompt,
           output_file: `agent_memo/${safeName}.md`,
+          save_memo: saveMemo,
         }
         // Extract format guide from preview output (headings + structure only, no data)
         const guide = extractFormatGuide(aiPreviewContent)
@@ -811,7 +813,7 @@ export default function PublishView({
       toast.error(`Failed: ${e.message}`)
     }
   }, [sessionId, dashboardTitle, updateMode, autoRefresh,
-      aiBlockEnabled, aiPrompt, aiFilename, aiPreviewContent,
+      aiBlockEnabled, aiPrompt, aiFilename, saveMemo, aiPreviewContent,
       slackEnabled, slackChannels, slackDmUsers,
       publishDashboardEnabled,
       scheduleType, scheduleFrequency, scheduleDay, scheduleTime, scheduleTimezone])
@@ -1615,70 +1617,91 @@ export default function PublishView({
     </div>
   )
 
-  // ── AI analysis + Slack blocks (Step 4) ──
+  // ── Reusable iOS-style toggle switch ──
+  const ToggleSwitch = ({ on, color = 'var(--accent)' }) => (
+    <div className="shrink-0 w-9 h-5 rounded-full transition-colors relative" style={{ backgroundColor: on ? color : 'var(--border-primary)' }}>
+      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`} />
+    </div>
+  )
+
+  // ── AI analysis block (Step 4) ──
   const renderAiBlock = () => (
-    <div className={`border border-[var(--border-primary)] rounded-xl overflow-hidden transition-colors ${aiBlockEnabled ? 'bg-[var(--accent)]/5' : 'bg-[var(--bg-primary)]'}`}>
-      <button type="button" onClick={() => setAiBlockEnabled(!aiBlockEnabled)} className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none cursor-pointer text-left">
-        <div className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${aiBlockEnabled ? 'bg-[var(--accent)]/15' : 'bg-[var(--bg-hover)]'}`}>
-          <Sparkle size={14} weight="fill" className={aiBlockEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />
+    <div className={`border rounded-xl overflow-hidden transition-colors ${aiBlockEnabled ? 'border-[var(--accent)]/40 bg-[var(--accent)]/[0.04]' : 'border-[var(--border-primary)] bg-[var(--bg-primary)]'}`}>
+      <button type="button" onClick={() => setAiBlockEnabled(!aiBlockEnabled)} className="w-full flex items-center gap-3 px-4 py-3.5 bg-transparent border-none cursor-pointer text-left">
+        <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${aiBlockEnabled ? 'bg-[var(--accent)]/15' : 'bg-[var(--bg-hover)]'}`}>
+          <Sparkle size={16} weight="fill" className={aiBlockEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />
         </div>
         <div className="flex-1 min-w-0">
-          <span className={`text-[12px] font-semibold block ${aiBlockEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>AI analysis</span>
-          <span className="text-[10px] text-[var(--text-muted)] block">Write a summary or recommendations, saved as a memo</span>
+          <span className={`text-[13px] font-semibold block ${aiBlockEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>AI analysis</span>
+          <span className="text-[11px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'A written summary, generated after each refresh' : 'Generate a written summary of your dashboard'}</span>
         </div>
-        <div className={`shrink-0 w-9 h-5 rounded-full transition-colors relative ${aiBlockEnabled ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'}`}>
-          <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${aiBlockEnabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
-        </div>
+        <ToggleSwitch on={aiBlockEnabled} />
       </button>
       {aiBlockEnabled && (
-        <div className="px-4 pb-4 space-y-2.5">
-          <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="e.g., Summarize the key revenue trends and flag at-risk accounts…" rows={3} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-secondary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-[var(--text-muted)] shrink-0">Saved to agent_memo /</span>
-            <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="memo" disabled={aiPreviewRunning} className="flex-1 min-w-0 text-[10px] border border-[var(--border-primary)] rounded px-2 py-1 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-secondary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
-            <span className="text-[10px] text-[var(--text-muted)] shrink-0">.md</span>
+        <div className="px-4 pb-4 space-y-3">
+          <div>
+            <label className="text-[11px] font-medium text-[var(--text-secondary)] block mb-1.5">What should it cover?</label>
+            <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="e.g. Summarize revenue trends and flag at-risk accounts" rows={3} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-secondary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
           </div>
+
           <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
-            {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating preview…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate preview</span></>) : (<><Play size={14} weight="fill" /><span>Preview analysis</span></>)}
+            {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate</span></>) : (<><Play size={14} weight="fill" /><span>Preview</span></>)}
           </button>
-          {aiPreviewError && <p className="text-[11px] text-red-500">{aiPreviewError}</p>}
+          {aiPreviewError && <p className="text-[11px] text-red-500 m-0">{aiPreviewError}</p>}
+
           {aiPreviewContent && !aiPreviewRunning && (
-            <div className="pt-2.5 border-t border-[var(--border-primary)]">
+            <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <CheckCircle size={13} weight="fill" className="text-green-500" />
-                <span className="text-[11px] font-medium text-green-600">Preview ready</span>
-                {aiPreviewMemoPath && <span className="text-[10px] font-mono text-[var(--text-muted)] ml-auto">{aiPreviewMemoPath}</span>}
+                <span className="text-[11px] font-medium text-green-600">Preview</span>
               </div>
               <div className="max-h-[220px] overflow-y-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-3">
                 <MarkdownRenderer content={aiPreviewContent} />
               </div>
             </div>
           )}
+
+          {/* Save-as-memo option */}
+          <div className="pt-3 border-t border-[var(--border-primary)]">
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" checked={saveMemo} onChange={(e) => setSaveMemo(e.target.checked)} className="shrink-0 w-4 h-4 rounded border-[var(--border-primary)] accent-[var(--accent)] cursor-pointer" />
+              <div className="flex-1 min-w-0">
+                <span className="text-[12px] font-medium text-[var(--text-primary)] block">Save it as a memo</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">Keep a copy in your workspace</span>
+              </div>
+            </label>
+            {saveMemo && (
+              <div className="flex items-center gap-1.5 mt-2 ml-6">
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0 font-mono">agent_memo/</span>
+                <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="memo" disabled={aiPreviewRunning} className="flex-1 min-w-0 text-[11px] border border-[var(--border-primary)] rounded-md px-2 py-1 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0 font-mono">.md</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   )
 
+  // ── Slack alert block (Step 4) ──
   const renderSlackBlock = () => (
-    <div className={`border border-[var(--border-primary)] rounded-xl overflow-hidden transition-colors ${slackEnabled ? 'bg-[#4A154B]/3' : 'bg-[var(--bg-primary)]'}`}>
-      <button type="button" onClick={() => setSlackEnabled(!slackEnabled)} className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none cursor-pointer text-left">
-        <div className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${slackEnabled ? 'bg-[#4A154B]/10' : 'bg-[var(--bg-hover)]'}`}>
-          <svg width="14" height="14" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'}/></svg>
+    <div className={`border rounded-xl overflow-hidden transition-colors ${slackEnabled ? 'border-[#4A154B]/30 bg-[#4A154B]/[0.03]' : 'border-[var(--border-primary)] bg-[var(--bg-primary)]'}`}>
+      <button type="button" onClick={() => setSlackEnabled(!slackEnabled)} className="w-full flex items-center gap-3 px-4 py-3.5 bg-transparent border-none cursor-pointer text-left">
+        <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${slackEnabled ? 'bg-[#4A154B]/10' : 'bg-[var(--bg-hover)]'}`}>
+          <svg width="16" height="16" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'}/></svg>
         </div>
         <div className="flex-1 min-w-0">
-          <span className={`text-[12px] font-semibold block ${slackEnabled ? 'text-[#4A154B]' : 'text-[var(--text-primary)]'}`}>Slack alert</span>
-          <span className="text-[10px] text-[var(--text-muted)] block">{autoRefresh ? 'Notify channels or people on each refresh' : 'Notify channels or people when published'}</span>
+          <span className={`text-[13px] font-semibold block ${slackEnabled ? 'text-[#4A154B]' : 'text-[var(--text-primary)]'}`}>Slack alert</span>
+          <span className="text-[11px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'Notify a channel or people on each refresh' : 'Notify a channel or people when published'}</span>
         </div>
-        <div className={`shrink-0 w-9 h-5 rounded-full transition-colors relative ${slackEnabled ? 'bg-[#4A154B]' : 'bg-[var(--border-primary)]'}`}>
-          <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${slackEnabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
-        </div>
+        <ToggleSwitch on={slackEnabled} color="#4A154B" />
       </button>
       {slackEnabled && (
         <div className="px-4 pb-4">
           <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
           {(slackChannels.length > 0 || slackDmUsers.length > 0) && (
             <button onClick={async () => { setSlackTestSending(true); try { await apiPost(`/api/sessions/${sessionId}/slack-test`, { exec_session_id: execSessionIdRef.current, channels: slackChannels, dm_users: slackDmUsers, content: aiPreviewContent || null }); toast.success('Test notification sent!') } catch (e) { toast.error(e.message || 'Failed to send test notification') } finally { setSlackTestSending(false) } }} disabled={slackTestSending} className="mt-2.5 w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              {slackTestSending ? (<><CircleNotch size={12} className="animate-spin" /><span>Sending…</span></>) : (<><Play size={12} weight="fill" /><span>Test notification</span></>)}
+              {slackTestSending ? (<><CircleNotch size={12} className="animate-spin" /><span>Sending…</span></>) : (<><Play size={12} weight="fill" /><span>Send test</span></>)}
             </button>
           )}
         </div>
@@ -1727,6 +1750,7 @@ export default function PublishView({
     </button>
   )
 
+  // ── STEP 1 — Outputs ──
   const renderOutputsStep = () => (
     <div className="px-6 py-6 max-w-[560px] mx-auto">
       <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">What do you want to publish?</h2>
@@ -1784,9 +1808,6 @@ export default function PublishView({
             </div>
             <p className="text-[12px] text-red-700/90 mt-2 mb-1 leading-relaxed">{errorMessage}</p>
             <p className="text-[11px] text-red-700/70 m-0">Fix this in your session, then run the review again.</p>
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="mt-4" onClick={handleStartVerification}>
-              <Play size={14} weight="fill" /><span className="text-[12px]">Run review again</span>
-            </Button>
           </div>
         ) : reviewPassed ? (
           <div className="rounded-xl border border-green-200 bg-green-50 p-5">
@@ -1838,29 +1859,21 @@ export default function PublishView({
           <div className="rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 p-5">
             <p className="text-[13px] font-medium text-[var(--text-primary)] m-0">We found a previous review</p>
             {draftInfo.stale && <p className="text-[11px] text-amber-600 m-0 mt-1.5 leading-relaxed">You've changed things since this check — resuming won't include your latest edits.</p>}
-            <div className="flex items-center gap-3 mt-4">
-              <Button btnColor="primary" btnSize="sm" onClick={handleResumeDraft}><Play size={14} weight="fill" /><span className="text-[12px]">Resume review</span></Button>
-              <button onClick={() => { handleDiscardDraft(); handleStartVerification() }} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer underline">Start fresh</button>
-            </div>
+            <button onClick={() => { handleDiscardDraft(); handleStartVerification() }} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer underline p-0 mt-3">Start fresh instead</button>
           </div>
         ) : (
-          <>
-            <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5 mb-5">
-              <p className="text-[12px] text-[var(--text-secondary)] m-0 mb-3 leading-relaxed">
-                {autoRefresh
-                  ? 'Before publishing, an AI agent will run through your dashboard to check that everything works correctly on every scheduled refresh:'
-                  : 'Before publishing, an AI agent will run through your dashboard to confirm everything is ready to go live:'}
-              </p>
-              <ul className="m-0 pl-0 space-y-2.5 list-none">
-                {['Run all data queries against the latest data', 'Check all calculations and data processing steps', 'Confirm all widgets display correctly', autoRefresh ? 'Prepare your dashboard for reliable scheduled refresh' : 'Flag any potential issues in data queries or calculations'].map((t, i) => (
-                  <li key={i} className="flex items-center gap-2.5 text-[12px] text-[var(--text-primary)]"><span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--accent)]" />{t}</li>
-                ))}
-              </ul>
-            </div>
-            <Button btnColor="primary" btnSize="md" mainBtnClassName="w-full justify-center py-3" onClick={handleStartVerification}>
-              <Play size={15} weight="fill" /><span className="text-[13px] font-semibold">Start Review</span>
-            </Button>
-          </>
+          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
+            <p className="text-[12px] text-[var(--text-secondary)] m-0 mb-3 leading-relaxed">
+              {autoRefresh
+                ? 'Before publishing, an AI agent will run through your dashboard to check that everything works correctly on every scheduled refresh:'
+                : 'Before publishing, an AI agent will run through your dashboard to confirm everything is ready to go live:'}
+            </p>
+            <ul className="m-0 pl-0 space-y-2.5 list-none">
+              {['Run all data queries against the latest data', 'Check all calculations and data processing steps', 'Confirm all widgets display correctly', autoRefresh ? 'Prepare your dashboard for reliable scheduled refresh' : 'Flag any potential issues in data queries or calculations'].map((t, i) => (
+                <li key={i} className="flex items-center gap-2.5 text-[12px] text-[var(--text-primary)]"><span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--accent)]" />{t}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     )
@@ -1930,34 +1943,40 @@ export default function PublishView({
     )
   }
 
-  // ── Progress indicator ──
+  // ── Progress indicator (vertical left-panel stepper) ──
   const stepIdx = STEP_ORDER.indexOf(step)
   const renderStepper = () => (
-    <div className="shrink-0 flex items-center gap-1.5 px-6 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/40">
+    <aside className="shrink-0 w-[212px] border-r border-[var(--border-primary)] bg-[var(--bg-primary)] flex flex-col py-5 px-3 overflow-y-auto">
       {STEP_ORDER.map((s, i) => {
         const isCurrent = s === step
         const isDone = i < stepIdx || (s === STEP.REVIEW && reviewPassed && step !== STEP.REVIEW)
         const reachable = i <= stepIdx || (i === stepIdx + 1 && (s !== STEP.CONFIRM || reviewPassed)) || (s === STEP.CONFIRM && reviewPassed) || i < stepIdx
         const locked = s === STEP.CONFIRM && !reviewPassed
+        const clickable = !isAgentBusy && reachable && !locked
+        const isLast = i === STEP_ORDER.length - 1
         return (
-          <div key={s} className="flex items-center gap-1.5">
+          <div key={s}>
             <button
               type="button"
-              disabled={isAgentBusy || locked || !reachable}
-              onClick={() => { if (!isAgentBusy && reachable && !locked) setStep(s) }}
-              className={`flex items-center gap-2 px-2.5 py-1 rounded-full border-none bg-transparent ${(!isAgentBusy && reachable && !locked) ? 'cursor-pointer' : 'cursor-default'}`}
+              disabled={!clickable}
+              onClick={() => { if (clickable) setStep(s) }}
+              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg border-none text-left transition-colors ${isCurrent ? 'bg-[var(--accent)]/[0.07]' : 'bg-transparent'} ${clickable && !isCurrent ? 'cursor-pointer hover:bg-[var(--bg-hover)]' : clickable ? 'cursor-pointer' : 'cursor-default'}`}
             >
-              <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold ${isCurrent ? 'bg-[var(--accent)] text-white' : isDone ? 'bg-green-500 text-white' : 'bg-[var(--bg-hover)] text-[var(--text-muted)]'}`}>
-                {isDone ? <CheckCircle size={12} weight="fill" /> : i + 1}
+              {isDone ? (
+                <CheckCircle size={18} weight="fill" className="text-[var(--accent)] shrink-0" />
+              ) : (
+                <span className={`shrink-0 w-[18px] h-[18px] rounded-full border-2 bg-[var(--bg-primary)] ${isCurrent ? 'border-[var(--accent)]' : 'border-[var(--border-primary)]'}`} />
+              )}
+              <span className={`text-[13px] ${isCurrent ? 'font-semibold text-[var(--accent)]' : isDone ? 'font-medium text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
+                {STEP_LABELS[s]}{s === STEP.REVIEW ? ' *' : ''}
               </span>
-              <span className={`text-[12px] ${isCurrent ? 'font-semibold text-[var(--text-primary)]' : isDone ? 'font-medium text-green-600' : 'text-[var(--text-muted)]'}`}>{STEP_LABELS[s]}{s === STEP.REVIEW ? ' *' : ''}</span>
             </button>
-            {i < STEP_ORDER.length - 1 && <CaretRight size={11} weight="bold" className="text-[var(--text-muted)] shrink-0" />}
+            {!isLast && <div className="ml-[19px] w-px h-4 bg-[var(--border-primary)]" />}
           </div>
         )
       })}
-      <span className="ml-auto text-[10px] text-[var(--text-muted)]">* required</span>
-    </div>
+      <span className="mt-auto px-2.5 pt-4 text-[10px] text-[var(--text-muted)]">* required</span>
+    </aside>
   )
 
   // ── Footer (context-aware nav) ──
@@ -1996,7 +2015,19 @@ export default function PublishView({
               </Button>
             ) : isReviewRunning ? (
               <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled><Spinner size={13} className="animate-spin" /><span className="text-[12px]">Reviewing…</span></Button>
-            ) : null
+            ) : phase === PHASE.ERROR ? (
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={handleStartVerification}>
+                <Play size={13} weight="fill" /><span className="text-[12px]">Run review again</span>
+              </Button>
+            ) : draftInfo ? (
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={handleResumeDraft}>
+                <Play size={13} weight="fill" /><span className="text-[12px]">Resume review</span>
+              </Button>
+            ) : (
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={draftLoading} onClick={handleStartVerification}>
+                <Play size={13} weight="fill" /><span className="text-[12px]">Start Review</span>
+              </Button>
+            )
           )}
           {step === STEP.CONFIRM && (
             phase === PHASE.DONE ? (
@@ -2091,21 +2122,23 @@ export default function PublishView({
   // The Verify step renders the widget views, which bring their own footer; all
   // other steps use the shared wizard footer.
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex h-full overflow-hidden">
       {renderStepper()}
-      {step === STEP.VERIFY ? (
-        <div className="flex-1 min-h-0">{renderVerifyStep()}</div>
-      ) : (
-        <>
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            {step === STEP.OUTPUTS && renderOutputsStep()}
-            {step === STEP.FREQUENCY && renderFrequencyStep()}
-            {step === STEP.REVIEW && renderReviewStep()}
-            {step === STEP.CONFIRM && renderConfirmStep()}
-          </div>
-          {renderFooter()}
-        </>
-      )}
+      <div className="flex-1 flex flex-col min-w-0">
+        {step === STEP.VERIFY ? (
+          <div className="flex-1 min-h-0">{renderVerifyStep()}</div>
+        ) : (
+          <>
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              {step === STEP.OUTPUTS && renderOutputsStep()}
+              {step === STEP.FREQUENCY && renderFrequencyStep()}
+              {step === STEP.REVIEW && renderReviewStep()}
+              {step === STEP.CONFIRM && renderConfirmStep()}
+            </div>
+            {renderFooter()}
+          </>
+        )}
+      </div>
     </div>
   )
 }
