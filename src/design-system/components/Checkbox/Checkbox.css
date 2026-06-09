@@ -1,0 +1,149 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Checkbox Component
+   From Figma: 16×16
+   States: unchecked, checked, indeterminate × rest/hover/disabled
+   ========================================================================== */
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox--disabled {
+  cursor: not-allowed;
+}
+
+/* Hide native input */
+.checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Custom checkbox box — 16×16
+   -------------------------------------------------------------------------- */
+
+.checkbox__box {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: var(--border-default) solid var(--color-neutral-900);
+  border-radius: var(--spacing-2);
+  background-color: var(--color-white);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   Checkmark icon (hidden by default)
+   -------------------------------------------------------------------------- */
+
+.checkbox__icon {
+  display: none;
+  color: var(--color-white);
+  line-height: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Checked state
+   -------------------------------------------------------------------------- */
+
+.checkbox__input:checked + .checkbox__box {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+.checkbox__input:checked + .checkbox__box .checkbox__icon--check {
+  display: flex;
+}
+
+/* --------------------------------------------------------------------------
+   Indeterminate state
+   -------------------------------------------------------------------------- */
+
+.checkbox__input:indeterminate + .checkbox__box {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+.checkbox__input:indeterminate + .checkbox__box .checkbox__icon--indeterminate {
+  display: flex;
+}
+
+.checkbox__input:indeterminate + .checkbox__box .checkbox__icon--check {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Hover states
+   -------------------------------------------------------------------------- */
+
+/* Unchecked hover */
+.checkbox:hover:not(.checkbox--disabled) .checkbox__input:not(:checked):not(:indeterminate) + .checkbox__box {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
+}
+
+/* Checked/indeterminate hover */
+.checkbox:hover:not(.checkbox--disabled) .checkbox__input:checked + .checkbox__box,
+.checkbox:hover:not(.checkbox--disabled) .checkbox__input:indeterminate + .checkbox__box {
+  background-color: var(--color-primary-800);
+  border-color: var(--color-primary-800);
+}
+
+/* --------------------------------------------------------------------------
+   Disabled states
+   -------------------------------------------------------------------------- */
+
+/* Unchecked disabled */
+.checkbox--disabled .checkbox__input:not(:checked):not(:indeterminate) + .checkbox__box {
+  border-color: var(--color-neutral-300);
+  background-color: var(--color-white);
+}
+
+/* Checked/indeterminate disabled */
+.checkbox--disabled .checkbox__input:checked + .checkbox__box,
+.checkbox--disabled .checkbox__input:indeterminate + .checkbox__box {
+  background-color: var(--color-primary-300);
+  border-color: var(--color-primary-300);
+}
+
+/* --------------------------------------------------------------------------
+   Focus ring
+   -------------------------------------------------------------------------- */
+
+.checkbox__input:focus-visible + .checkbox__box {
+  box-shadow: var(--shadow-focus);
+}
+
+/* --------------------------------------------------------------------------
+   Label text
+   -------------------------------------------------------------------------- */
+
+.checkbox__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.checkbox--disabled .checkbox__label {
+  color: var(--color-text-disabled);
+}

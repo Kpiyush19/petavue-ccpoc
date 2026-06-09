@@ -1,0 +1,166 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Dropdown Component
+   States: default, focus/open, error, disabled
+   ========================================================================== */
+
+.dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Label
+   -------------------------------------------------------------------------- */
+
+.dropdown__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.dropdown--disabled .dropdown__label {
+  color: var(--color-text-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Trigger (the button that opens the dropdown)
+   -------------------------------------------------------------------------- */
+
+.dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-10) var(--spacing-16);
+  background-color: var(--color-white);
+  border: var(--border-thin) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dropdown__trigger-text {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown__trigger-text--placeholder {
+  color: var(--color-text-disabled);
+}
+
+.dropdown__trigger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-default);
+  transition: transform 0.2s ease;
+}
+
+.dropdown--open .dropdown__trigger-icon {
+  transform: rotate(180deg);
+}
+
+/* Focus / open state */
+.dropdown__trigger:focus,
+.dropdown--open .dropdown__trigger {
+  border: var(--border-default) solid var(--color-primary-500);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Error state */
+.dropdown--error .dropdown__trigger {
+  border: var(--border-default) solid var(--color-error);
+}
+
+.dropdown--error .dropdown__trigger:focus {
+  box-shadow: var(--shadow-error-focus);
+}
+
+/* Disabled state */
+.dropdown__trigger:disabled {
+  background-color: var(--color-neutral-50);
+  border-color: transparent;
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.dropdown__trigger:disabled .dropdown__trigger-icon {
+  color: var(--color-icon-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Option list (open state)
+   -------------------------------------------------------------------------- */
+
+.dropdown__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-4) 0;
+  background-color: var(--color-white);
+  border: var(--border-default) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown__option {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-8) var(--spacing-16);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.dropdown__option:hover {
+  background-color: var(--color-primary-50);
+}
+
+.dropdown__option--selected {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-500);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   Error message
+   -------------------------------------------------------------------------- */
+
+.dropdown__error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-error);
+}

@@ -1,0 +1,59 @@
+{
+  "id": "sdr-conversion-performance",
+  "name": "SDR Conversion Performance",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "Per-SDR conversion rates, with lead-quality adjustment so the comparison is fair. Surfaces who needs coaching and what kind — execution, lead-quality, or capacity.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which SDRs are converting above and below team baseline?",
+    "Whose underperformance is execution vs. lead-quality vs. capacity?",
+    "How is each SDR's rate trending cohort over cohort?",
+    "Which teams are outperforming on the same lead-quality mix?"
+  ],
+  "beforeWeRun": [
+    "Time period coverage — trailing 60, 90, or 180 days?",
+    "Conversion metric — MQL→SQL only, or include MQL→Opportunity?",
+    "Lead-quality adjustment — yes (recommended) or raw rates?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Team average rate, outperformer / underperformer / capacity-limited counts."
+    },
+    {
+      "name": "SDR leaderboard",
+      "desc": "Sortable table with all SDR metrics; performance category color-coded."
+    },
+    {
+      "name": "Performance scatter",
+      "desc": "Actual rate vs. expected rate (lead-quality-adjusted), with parity reference diagonal."
+    },
+    {
+      "name": "Engagement distribution",
+      "desc": "Box plot of activities-per-lead distribution per SDR."
+    },
+    {
+      "name": "Underperformers with diagnosis",
+      "desc": "Card list naming each underperformer's situation — execution, quality, or capacity."
+    },
+    {
+      "name": "Per-SDR trend",
+      "desc": "Multi-line chart with each SDR as a line over weekly cohorts."
+    },
+    {
+      "name": "By team",
+      "desc": "Aggregated table at team level."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your SDR performance dashboard in ~9 min."
+}

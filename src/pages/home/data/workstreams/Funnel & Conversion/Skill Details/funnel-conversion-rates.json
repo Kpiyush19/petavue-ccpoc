@@ -1,0 +1,59 @@
+{
+  "id": "funnel-conversion-rates",
+  "name": "Funnel Conversion Rates",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "Track conversion rates across the full funnel — Lead through Closed Won — under cohort-consistent definitions. Replaces snapshot math that wobbles week-to-week with stable rates derived from completed cohort journeys.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What's our full-funnel conversion rate from lead to closed-won?",
+    "Where in the funnel is the worst drop-off?",
+    "How are stage-pair rates trending over the last 12 months?",
+    "Which segments convert at above-average rates?"
+  ],
+  "beforeWeRun": [
+    "Time period coverage — trailing 6 months, 12 months, or custom?",
+    "Stage transitions to display — all seven, or focus on specific pairs?",
+    "Lifecycle window per stage pair — tenant defaults or override?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Lead-to-won conversion rate, median time-to-close, worst drop-off stage."
+    },
+    {
+      "name": "Funnel visualization",
+      "desc": "Classic funnel chart showing each stage's volume and drop-off rate."
+    },
+    {
+      "name": "Stage-pair rates table",
+      "desc": "Sortable — completed-cohort rate, in-flight rate, time-to-conversion, drop-off rate per pair."
+    },
+    {
+      "name": "Conversion trend",
+      "desc": "Multi-line chart showing each stage-pair conversion rate over time."
+    },
+    {
+      "name": "By segment",
+      "desc": "Sortable table of stage-pair rates per segment with full-funnel rate."
+    },
+    {
+      "name": "Drop-off severity",
+      "desc": "Bar chart ranking stages by drop-off magnitude with health-band coloring."
+    },
+    {
+      "name": "In-flight cohort tracker",
+      "desc": "Card list of cohorts still progressing through the funnel."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your conversion-rates dashboard in ~9 min."
+}

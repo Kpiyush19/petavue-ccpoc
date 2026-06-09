@@ -1,0 +1,12 @@
+{
+  "id": "funnel-drop-diagnostic",
+  "name": "Funnel Drop Diagnostic",
+  "description": "Investigate why a funnel stage-pair conversion rate dropped. Runs a structured hypothesis tree against cohort composition, stage-entry quality, time-in-stage, and process changes; narrows to the most likely cause with confidence rating.",
+  "renderType": "memo",
+  "workstream": "Funnel & Conversion",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~13 min"
+}

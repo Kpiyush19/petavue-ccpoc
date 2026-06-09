@@ -1,0 +1,14 @@
+{
+  "id": "quarterly-ad-performance-review",
+  "name": "Quarterly Ad Performance Review",
+  "description": "Comprehensive quarterly review of paid performance for marketing-leadership audiences. Replaces 1–2 days of compilation per cycle with a defensible memo grounded in governed definitions.",
+  "renderType": "memo",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~16 min"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "deal-source-brief",
+  "name": "Deal Source Brief",
+  "description": "Single-deal autopsy. Where the opp came from, what touches and activities shaped it, and how credit allocates under the canonical model. Saves 60–90 minutes of reconstruction every time the CRO asks.",
+  "renderType": "memo",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~12 min"
+}

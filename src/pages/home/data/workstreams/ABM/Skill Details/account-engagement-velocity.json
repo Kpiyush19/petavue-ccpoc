@@ -1,0 +1,63 @@
+{
+  "id": "account-engagement-velocity",
+  "name": "Account Engagement Velocity",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Surface accounts that are warming up vs. cooling down vs. stalled — the trajectory question that decides where ABM should focus this week. Replaces weekly manual account reviews that can't reach every account.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 8
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which target accounts are accelerating right now?",
+    "Which accounts cooled despite earlier engagement?",
+    "Which accounts have never engaged and should be re-evaluated?",
+    "How does velocity differ across tiers and segments?"
+  ],
+  "beforeWeRun": [
+    "Account list — target accounts only, or include named-account list?",
+    "Velocity window — trailing 4 weeks (8-week baseline) or custom?",
+    "Signal types — all connected, or filter to specific channels?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Target account count + accelerating / decelerating / stalled / cooled-out counts."
+    },
+    {
+      "name": "Accelerating accounts",
+      "desc": "Card list with current score, velocity, signal composition, and recommended action."
+    },
+    {
+      "name": "Decelerating accounts",
+      "desc": "Card list of accounts cooling down, with last-touch context."
+    },
+    {
+      "name": "Stalled accounts",
+      "desc": "Card list of accounts with no engagement in the window."
+    },
+    {
+      "name": "Cooled-out accounts",
+      "desc": "Previously-engaged accounts that lost momentum — rescue candidates."
+    },
+    {
+      "name": "All accounts table",
+      "desc": "Sortable — score, velocity, classification, signal composition per account."
+    },
+    {
+      "name": "Velocity distribution",
+      "desc": "Histogram of velocities across all accounts."
+    },
+    {
+      "name": "By tier",
+      "desc": "Stacked bar showing classification breakdown per tier."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your engagement-velocity dashboard in ~9 min."
+}

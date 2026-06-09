@@ -1,0 +1,12 @@
+{
+  "id": "pipeline-coverage-gap-analysis",
+  "name": "Pipeline Coverage Gap Analysis",
+  "description": "Investigate why coverage is below target. Runs a structured hypothesis tree against pipeline, sourcing, and velocity data, narrows to the primary cause, and recommends remediation paths with confidence ratings.",
+  "renderType": "memo",
+  "workstream": "Pipeline Analysis",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~13 min"
+}

@@ -1,0 +1,53 @@
+{
+  "id": "channel-roas",
+  "name": "Channel ROAS",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & ad performance",
+  "renderType": "dashboard",
+  "description": "Track ROAS by channel against configured targets, refreshed daily. One governed definition replaces the three different ROAS numbers leadership keeps citing from three different places.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "What is our blended and per-channel ROAS right now?",
+    "Which channels are below target, and by how much?",
+    "How is ROAS trending over the last 30 days?",
+    "Where is most of our spend concentrated relative to ROAS?"
+  ],
+  "beforeWeRun": [
+    "ROAS variant — pipeline ROAS, revenue ROAS, or both?",
+    "Time window — trailing 30, 60, or 90 days?",
+    "ROAS target — tenant config per channel, or 3.0x blended fallback?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline ROAS",
+      "desc": "Blended ROAS as a big number with target indicator and health-band coloring."
+    },
+    {
+      "name": "Per-channel ROAS",
+      "desc": "Bar chart with health bands and a target-line overlay per channel."
+    },
+    {
+      "name": "Spend share",
+      "desc": "Donut chart of spend allocation by channel."
+    },
+    {
+      "name": "Underperforming channels",
+      "desc": "Card list of channels in the red band with magnitude and recommended action."
+    },
+    {
+      "name": "Channel detail table",
+      "desc": "Sortable table — spend, attributed pipeline/revenue, ROAS, target, health, deltas."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your channel-ROAS dashboard in ~8 min."
+}

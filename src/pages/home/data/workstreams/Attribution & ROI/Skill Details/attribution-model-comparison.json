@@ -1,0 +1,53 @@
+{
+  "id": "attribution-model-comparison",
+  "name": "Attribution Model Comparison",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "memo",
+  "description": "Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~12 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "alsoSurfaces": [
+    "Where do our attribution models disagree, and by how much, on which channels?",
+    "Which model should be canonical for board reporting, and why?",
+    "How much credit shifts between last-touch and multi-touch on the same deals?",
+    "How confident can we be in the canonical recommendation given our data completeness?"
+  ],
+  "beforeWeRun": [
+    "Which models — last-touch, first-touch, linear, U/W-shaped, time-decay, custom?",
+    "Time window — last 90 days, last quarter, or custom?",
+    "Anchor metric — SQL opportunity count or pipeline value?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Situation",
+      "desc": "Total qualified pipeline, opportunity count, and the top channel under each selected model."
+    },
+    {
+      "name": "Where models disagree",
+      "desc": "Channels-by-models matrix showing attributed pipeline under each model, with disagreement-flagged channels."
+    },
+    {
+      "name": "The big disagreements",
+      "desc": "Top 3 channels by maximum pairwise disagreement, each with a narrative explaining why."
+    },
+    {
+      "name": "Recommendation",
+      "desc": "A single canonical model named explicitly, with usage / completeness / defensibility rationale and a confidence rating."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Every formula, source, row count, channel mapping, and Stage 0 resolution traced."
+    }
+  ],
+  "callout": "6 quick inputs, then Sage drafts your model-comparison memo in ~12 min."
+}

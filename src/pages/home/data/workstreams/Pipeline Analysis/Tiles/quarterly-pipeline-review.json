@@ -1,0 +1,11 @@
+{
+  "id": "quarterly-pipeline-review",
+  "name": "Quarterly Pipeline Review",
+  "description": "Quarterly review of pipeline state, written for board and executive audiences. Bottom line first, supporting detail second. Replaces 1–2 days of RevOps board-prep per cycle.",
+  "renderType": "memo",
+  "workstream": "Pipeline Analysis",
+  "dataSources": [
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~16 min"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "spend-reallocation-plan",
+  "name": "Spend Reallocation Plan",
+  "description": "Recommend where to shift advertising spend to improve overall efficiency, with each recommendation backed by data and modeled impact. Replaces the gut-feel reallocation conversation every quarter.",
+  "renderType": "memo",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~13 min"
+}

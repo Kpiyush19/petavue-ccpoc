@@ -1,0 +1,14 @@
+{
+  "id": "creative-performance",
+  "name": "Creative Performance",
+  "description": "Rank ad creatives by performance with statistical-significance flags so marketers can distinguish meaningful signal from sample-size noise. Fatigue warnings and rotation recommendations included.",
+  "renderType": "dashboard",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads",
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~9 min"
+}

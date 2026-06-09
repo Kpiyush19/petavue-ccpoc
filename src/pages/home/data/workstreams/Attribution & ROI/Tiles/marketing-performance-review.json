@@ -1,0 +1,15 @@
+{
+  "id": "marketing-performance-review",
+  "name": "Marketing Performance Review",
+  "description": "Quarterly review of marketing's contribution to pipeline and revenue, written defensibly for CFO and CEO audiences. Replaces 2–3 days of manual board-prep work per cycle.",
+  "renderType": "memo",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~15 min"
+}

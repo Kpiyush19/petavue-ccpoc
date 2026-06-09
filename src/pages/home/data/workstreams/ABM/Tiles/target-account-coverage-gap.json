@@ -1,0 +1,12 @@
+{
+  "id": "target-account-coverage-gap",
+  "name": "Target Account Coverage Gap",
+  "description": "Identifies target accounts that aren't being adequately covered — no engagement, no opportunities — and recommends reactivation actions categorized by root cause. Replaces the year-end discovery that a third of named accounts received zero touches.",
+  "renderType": "memo",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~13 min"
+}

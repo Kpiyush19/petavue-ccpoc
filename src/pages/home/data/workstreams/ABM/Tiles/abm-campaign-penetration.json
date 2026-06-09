@@ -1,0 +1,13 @@
+{
+  "id": "abm-campaign-penetration",
+  "name": "ABM Campaign Penetration",
+  "description": "Know whether your campaigns are reaching the target accounts that matter — or burning spend on everyone else.",
+  "renderType": "dashboard",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "LinkedIn Ads",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~10 min"
+}

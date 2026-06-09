@@ -1,0 +1,56 @@
+{
+  "id": "budget-pacing",
+  "name": "Budget Pacing",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & ad performance",
+  "renderType": "dashboard",
+  "description": "Track actual ad spend against the configured budget, with end-of-period projections and pacing health indicators. Replaces the spreadsheet pacing math every Friday afternoon.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "Are we on pace to hit budget this period?",
+    "Which channels are accelerating or decelerating relative to plan?",
+    "What's the projected end-of-period overspend or underspend?",
+    "Which pacing alerts are critical vs. just worth watching?"
+  ],
+  "beforeWeRun": [
+    "Budget period — current calendar month, fiscal month, or quarter?",
+    "Per-channel breakdown — yes (require channel-level budgets) or blended only?",
+    "Pacing health threshold — ±5%, ±10%, or custom?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline pacing",
+      "desc": "Spend-to-date / budget, pacing health indicator, EOP projection, projected variance."
+    },
+    {
+      "name": "Spend curve",
+      "desc": "Cumulative daily spend with ideal pacing line and projection band overlay."
+    },
+    {
+      "name": "Per-channel pacing",
+      "desc": "Bar chart with pacing percentage per channel, health-band colored."
+    },
+    {
+      "name": "Pacing alerts",
+      "desc": "Card list of critical / warning / watch alerts with magnitudes."
+    },
+    {
+      "name": "Channel detail table",
+      "desc": "Sortable — budget, spend, pacing, projection, health per channel."
+    },
+    {
+      "name": "Accelerating / decelerating channels",
+      "desc": "Two side-by-side card lists."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your pacing dashboard in ~8 min."
+}

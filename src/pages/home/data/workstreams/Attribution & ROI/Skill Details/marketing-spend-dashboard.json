@@ -1,0 +1,54 @@
+{
+  "id": "marketing-spend-dashboard",
+  "name": "Marketing Spend Dashboard",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Walk into the board meeting knowing exactly what you spent, what came back, what it cost to acquire, and whether efficiency is improving.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "What did we spend on marketing this quarter — and where did it go?",
+    "How is CAC trending vs. payback period?",
+    "Are paid efficiency curves bending the right way?",
+    "Which spend categories should I cut first if we have to?"
+  ],
+  "beforeWeRun": [
+    "Which spend categories — paid media only, or include people/events/tools?",
+    "Define \"return\" — pipeline, closed-won, or both side-by-side?",
+    "Comparison window — QoQ, YoY, or rolling 4-quarter?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Spend KPIs",
+      "desc": "Total marketing spend, cost-per-pipeline-dollar, CAC, payback period — with QoQ deltas."
+    },
+    {
+      "name": "Category breakdown",
+      "desc": "Spend allocation across paid, events, tools, and people; trended."
+    },
+    {
+      "name": "Efficiency curves",
+      "desc": "CAC and payback period over the last 8 quarters with a target line."
+    },
+    {
+      "name": "Top categories by return",
+      "desc": "Ranked list of categories by ROAS and pipeline-dollar return."
+    },
+    {
+      "name": "Drill-down detail",
+      "desc": "Click any category to see the campaigns and channels inside."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your spend dashboard in ~9 min."
+}

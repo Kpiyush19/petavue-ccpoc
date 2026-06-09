@@ -1,0 +1,132 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Dialog — modal with colored top border, body content, and footer actions
+   ========================================================================== */
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(144, 144, 144, 0.1);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Size variants
+   -------------------------------------------------------------------------- */
+
+.dialog--sm {
+  width: 460px;
+}
+
+.dialog--md {
+  width: 650px;
+}
+
+.dialog--lg {
+  width: 800px;
+}
+
+/* --------------------------------------------------------------------------
+   Header — colored top border via border-top
+   -------------------------------------------------------------------------- */
+
+.dialog__header {
+  border-top: 4px solid var(--color-primary-500);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.dialog--warning .dialog__header {
+  border-top-color: var(--color-warning);
+}
+
+.dialog--error .dialog__header {
+  border-top-color: var(--color-error);
+}
+
+.dialog__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-16) var(--spacing-12);
+}
+
+.dialog__title-area {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.dialog__title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dialog__title {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h2);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.dialog__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.dialog__close:hover {
+  color: var(--color-neutral-600);
+}
+
+/* --------------------------------------------------------------------------
+   Body
+   -------------------------------------------------------------------------- */
+
+.dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  padding: var(--spacing-16) var(--spacing-12);
+}
+
+/* Small dialog centers content vertically */
+.dialog--sm .dialog__body {
+  min-height: 70px;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog--md .dialog__body,
+.dialog--lg .dialog__body {
+  align-items: flex-start;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.dialog__footer {
+  border-top: var(--border-default) solid var(--color-neutral-100);
+  padding: var(--spacing-16) var(--spacing-12);
+}
+
+.dialog__footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

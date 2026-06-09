@@ -1,0 +1,59 @@
+{
+  "id": "quarterly-activity-review",
+  "name": "Quarterly Activity Review",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "memo",
+  "description": "Quarterly review of sales team activity for sales-leadership audiences. Activity volume, mix, capacity utilization, top-performer patterns, structural learnings. Replaces the vague 'team is working hard' line in the QBR with a defensible narrative.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~16 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce"
+  ],
+  "alsoSurfaces": [
+    "What did sales actually do this quarter — volume, mix, capacity?",
+    "Where is the team over- or under-utilized?",
+    "What patterns distinguish the top quartile of reps?",
+    "Which playbook or capacity changes should we make next quarter?"
+  ],
+  "beforeWeRun": [
+    "Quarter to review — last completed, or custom?",
+    "Comparison quarter — prior, or year-over-year?",
+    "Audience tone — sales leadership (analytical) or board-ready (concise)?",
+    "Include sequence-level analysis (if connected)?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Executive summary",
+      "desc": "3–5 sentences: total activity volume, headcount, capacity utilization at team level, the single most important takeaway about execution."
+    },
+    {
+      "name": "Activity volume and mix",
+      "desc": "Markdown table — activity types × review-quarter total, comparison-quarter total, delta, per-rep average. Plus narrative."
+    },
+    {
+      "name": "Capacity utilization",
+      "desc": "Two paragraphs on team and segment-level capacity, headcount-vs-volume implications."
+    },
+    {
+      "name": "What changed",
+      "desc": "3–5 paragraphs on structural changes — playbook, process, team, sequences — with observed impact."
+    },
+    {
+      "name": "Top performer patterns",
+      "desc": "Two paragraphs identifying patterns in the top quartile and whether those patterns are scalable."
+    },
+    {
+      "name": "Next quarter recommendations",
+      "desc": "Playbook adjustments, capacity adjustments, experiments — each tied to specific data."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Activity-type taxonomy, capacity assumptions, period boundaries, sources read with row counts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your activity review in ~16 min."
+}

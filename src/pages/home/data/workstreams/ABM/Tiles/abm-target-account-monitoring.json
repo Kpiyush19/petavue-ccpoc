@@ -1,0 +1,12 @@
+{
+  "id": "abm-target-account-monitoring",
+  "name": "ABM Target Account Monitoring",
+  "description": "Know which of your named accounts are warming up, which just went cold, and which quietly converted to pipeline this week.",
+  "renderType": "dashboard",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

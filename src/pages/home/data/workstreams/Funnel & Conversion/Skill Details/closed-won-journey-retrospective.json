@@ -1,0 +1,51 @@
+{
+  "id": "closed-won-journey-retrospective",
+  "name": "Closed-Won Journey Retrospective",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "memo",
+  "description": "See what a winning deal actually looks like — the touches, the sequence, the timing, and the content that closes revenue in your business.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~14 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What does the median winning journey look like, end to end?",
+    "Which touches and content assets reliably appear in won deals?",
+    "How does winning sequence differ by segment?",
+    "What's the typical time-to-close and where does it stretch?"
+  ],
+  "beforeWeRun": [
+    "Cohort — closed-won in the last 90 days, last 4 quarters, or custom?",
+    "Segment — by deal size, region, or persona?",
+    "Touches to include — marketing only, or marketing + sales sequencing?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Situation summary",
+      "desc": "One-paragraph framing of the cohort and key takeaways."
+    },
+    {
+      "name": "Median journey",
+      "desc": "The typical winning sequence with timing markers."
+    },
+    {
+      "name": "Top reliable touches",
+      "desc": "Touches that appear in N% or more of winning deals."
+    },
+    {
+      "name": "Segment differences",
+      "desc": "How winning patterns vary by deal size or vertical."
+    },
+    {
+      "name": "Sources & methodology",
+      "desc": "How journeys were stitched and what was excluded."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage drafts your retrospective memo in ~14 min."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "pipeline-snapshot",
+  "name": "Pipeline Snapshot",
+  "description": "See whether this quarter's number is going to land, and exactly which deals carry the weight.",
+  "renderType": "dashboard",
+  "workstream": "Pipeline Analysis",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~8 min"
+}

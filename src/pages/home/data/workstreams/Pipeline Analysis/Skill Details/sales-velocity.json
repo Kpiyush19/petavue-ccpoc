@@ -1,0 +1,54 @@
+{
+  "id": "sales-velocity",
+  "name": "Sales Velocity",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "dashboard",
+  "description": "Track how fast opportunities move through stages — across the org, segments, and individual reps. Bottlenecks get surfaced structurally, not by gut feel in quarterly post-mortems.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Salesforce"
+  ],
+  "alsoSurfaces": [
+    "Where in the funnel are opportunities slowing down?",
+    "How does this quarter's velocity compare to last quarter's?",
+    "Which reps and segments are slowest at which stages?",
+    "Is the bottleneck consistent or shifting period over period?"
+  ],
+  "beforeWeRun": [
+    "Time window — last 90 days, last 180 days, or rolling 12 months?",
+    "Velocity view — simple time-in-stage, or weighted-by-value?",
+    "Stage scope — all qualified stages, or only post-MQL?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline velocity",
+      "desc": "Average cycle length with WoW delta and target indicator."
+    },
+    {
+      "name": "Time per stage",
+      "desc": "Bar chart of average days in each stage, with median line overlay."
+    },
+    {
+      "name": "Velocity trend",
+      "desc": "Multi-line chart showing time-in-stage trended over the last 12 weeks."
+    },
+    {
+      "name": "Bottleneck stages",
+      "desc": "Card list of flagged bottleneck stages with magnitude and segment-level detail."
+    },
+    {
+      "name": "Stage contribution",
+      "desc": "Stacked horizontal bar showing what share of total cycle each stage consumes."
+    },
+    {
+      "name": "By segment / by owner",
+      "desc": "Sortable tables with segment- or owner-level breakdowns and toggle."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your velocity dashboard in ~10 min."
+}

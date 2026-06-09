@@ -1,0 +1,14 @@
+{
+  "id": "sourced-pipeline-diagnostic",
+  "name": "Sourced Pipeline Diagnostic",
+  "description": "Investigate why marketing-sourced pipeline dropped. Runs a structured hypothesis tree, narrows to the most likely cause with a confidence rating, and recommends specific actions.",
+  "renderType": "memo",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "estimatedRunTime": "~13 min"
+}

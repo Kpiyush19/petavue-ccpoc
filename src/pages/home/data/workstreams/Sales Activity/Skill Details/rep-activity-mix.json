@@ -1,0 +1,58 @@
+{
+  "id": "rep-activity-mix",
+  "name": "Rep Activity Mix",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Per-rep activity volume and composition — calls, emails, meetings, sequence steps, social touches. Replaces Monday-morning squinting at Salesforce activity reports with structured rollups + outlier surfacing.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce"
+  ],
+  "alsoSurfaces": [
+    "Which reps changed their activity volume materially in the last 4 weeks?",
+    "How is each rep splitting time across calls, emails, meetings, sequence steps?",
+    "Which reps are heavy on email vs heavy on calls?",
+    "Where are activity outliers concentrated by team?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 4 or 8 weeks?",
+    "Rep roles — AEs, SDRs, or both?",
+    "Activity types — full taxonomy or focused subset?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Rep count, total volume, outlier count, low-utilization count."
+    },
+    {
+      "name": "Rep table",
+      "desc": "Sortable — total volume, type breakdown, utilization, trend, outlier flags per rep."
+    },
+    {
+      "name": "Activity trend",
+      "desc": "Multi-line chart with reps as lines and weekly volume on y-axis."
+    },
+    {
+      "name": "Mix distribution",
+      "desc": "Stacked horizontal bar per rep showing activity-type composition."
+    },
+    {
+      "name": "Outlier callouts",
+      "desc": "Card list of flagged reps with specific outlier signals."
+    },
+    {
+      "name": "Capacity distribution",
+      "desc": "Histogram of utilization across reps."
+    },
+    {
+      "name": "Team comparison",
+      "desc": "Grouped bar chart comparing teams' average activity profiles."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your activity-mix dashboard in ~8 min."
+}

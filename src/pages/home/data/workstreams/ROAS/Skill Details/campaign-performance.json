@@ -1,0 +1,57 @@
+{
+  "id": "campaign-performance",
+  "name": "Campaign Performance",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & ad performance",
+  "renderType": "dashboard",
+  "description": "Rank campaigns by ROAS within and across channels, with the context needed to act. Top performers, bottom performers, scaling candidates, and ramp-up campaigns surfaced explicitly.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "Which campaigns should we scale, pause, or refresh?",
+    "Where are the top performers concentrated by channel?",
+    "Which underperformers are likely creative-fatigue vs. audience-saturation?",
+    "Which campaigns are still in ramp and shouldn't be judged yet?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 30, 60, or 90 days?",
+    "Canonical attribution model — tenant default or override?",
+    "ROAS variant — pipeline or revenue?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Campaign count, total spend, blended ROAS, and single top/bottom callouts."
+    },
+    {
+      "name": "All campaigns table",
+      "desc": "Sortable table with spend, attributed pipeline, ROAS, trend sparkline, audience, creatives."
+    },
+    {
+      "name": "Top performers",
+      "desc": "Card list of top 10 with key context per card (audience, creative count, ramp date, recent trend)."
+    },
+    {
+      "name": "Bottom performers",
+      "desc": "Card list of bottom 10 with diagnostic indicators (creative fatigue, audience saturation, ramp issue)."
+    },
+    {
+      "name": "Ramp-up campaigns",
+      "desc": "Card list with launch date and current spend, no ROAS rating yet."
+    },
+    {
+      "name": "Scaling candidates",
+      "desc": "Underspent high-ROAS campaigns flagged for budget increases."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your campaign dashboard in ~9 min."
+}

@@ -1,0 +1,51 @@
+{
+  "id": "account-intent-shift-brief",
+  "name": "Account Intent Shift Brief",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "memo",
+  "description": "Single-account narrative explaining a meaningful shift in engagement — what changed, who's engaging, what signals surfaced, what action makes sense. Replaces the cross-functional reconstruction meeting where AE / SDR / marketing each share part of the picture.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~11 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What's happening at this account right now?",
+    "Who in the buying group is engaging, and on what topics?",
+    "How material is this trajectory shift, with what confidence?",
+    "Which contacts should the AE / SDR reach out to next, and how?"
+  ],
+  "beforeWeRun": [
+    "Which account — by name or Salesforce ID (required)?",
+    "Lookback window — trailing 8 or 12 weeks?",
+    "Include third-party intent overlay (if connected)?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Account summary",
+      "desc": "Account name, industry, size, tier, owner, current opportunity status — the framing snapshot."
+    },
+    {
+      "name": "Trajectory shift",
+      "desc": "Names the shift with magnitude, cites the specific weeks where engagement changed, with confidence rating."
+    },
+    {
+      "name": "Signal breakdown",
+      "desc": "Two paragraphs on who's engaging, signal mix, topics (if intent data present), and chronological highlights of recent material signals."
+    },
+    {
+      "name": "Buying-group composition",
+      "desc": "Markdown table of contacts who engaged in the window — name, title, seniority, signal count, last engagement."
+    },
+    {
+      "name": "Recommended outreach",
+      "desc": "2–4 specific recommendations: which contacts to reach out to, what topics to lead with, what angle to take."
+    }
+  ],
+  "callout": "3 quick inputs (one is the account itself), then Sage drafts your intent-shift brief in ~11 min."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "buyer-journey-analysis",
+  "name": "Buyer Journey Analysis",
+  "description": "See every touch that happened on a single account — and get a prioritized next-best-action grounded in how your won deals actually played out.",
+  "renderType": "memo",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~12 min"
+}

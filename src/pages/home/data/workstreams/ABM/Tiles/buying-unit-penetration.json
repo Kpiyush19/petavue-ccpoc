@@ -1,0 +1,12 @@
+{
+  "id": "buying-unit-penetration",
+  "name": "Buying-Unit Penetration",
+  "description": "Know whether your team is covering the full buying committee at each target account, or single-threaded and quietly at risk.",
+  "renderType": "dashboard",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

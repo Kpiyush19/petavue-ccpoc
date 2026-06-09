@@ -1,0 +1,14 @@
+{
+  "id": "campaign-performance",
+  "name": "Campaign Performance",
+  "description": "Rank campaigns by ROAS within and across channels, with the context needed to act. Top performers, bottom performers, scaling candidates, and ramp-up campaigns surfaced explicitly.",
+  "renderType": "dashboard",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~9 min"
+}

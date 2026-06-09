@@ -1,0 +1,52 @@
+{
+  "id": "abm-and-account-intelligence",
+  "name": "ABM & Account Intelligence",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Know whether you're engaging the right target accounts with enough depth across the right roles — and exactly where you're at risk.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~11 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "LinkedIn Ads"
+  ],
+  "alsoSurfaces": [
+    "How does our target-account engagement break down by role and signal?",
+    "Which target accounts are at risk because we've only engaged the wrong personas?",
+    "Where do the hottest signals concentrate?",
+    "Which accounts are hidden in plain sight — engaged but not yet in pipeline?"
+  ],
+  "beforeWeRun": [
+    "Target list scope — Tier 1 only or full named-account list?",
+    "Risk thresholds — depth, breadth, or recency?",
+    "Hidden-accounts threshold — minimum engagement, no opp open?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Engagement intelligence KPIs",
+      "desc": "Depth-by-account, signal mix, hidden-account count."
+    },
+    {
+      "name": "Risk matrix",
+      "desc": "Accounts at risk visualized by reason (single-thread, wrong persona, no recent touch)."
+    },
+    {
+      "name": "Hot signal distribution",
+      "desc": "Where the strongest intent signals concentrate."
+    },
+    {
+      "name": "Hidden accounts list",
+      "desc": "Engaged target accounts that have not yet become opps."
+    },
+    {
+      "name": "Sales handoff list",
+      "desc": "Top 25 accounts to act on this week, with reasons."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your account intelligence dashboard in ~11 min."
+}

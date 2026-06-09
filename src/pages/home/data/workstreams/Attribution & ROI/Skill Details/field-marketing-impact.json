@@ -1,0 +1,47 @@
+{
+  "id": "field-marketing-impact",
+  "name": "Field Marketing Impact",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Know whether the events you funded generated real pipeline and revenue, or just vanity leads that never converted.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 4
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which events drove qualified pipeline this quarter?",
+    "What was the cost-per-pipeline-dollar by event tier?",
+    "Did pipeline from events convert at the same rate as inbound?",
+    "Which event types are repeat performers vs one-hit wonders?"
+  ],
+  "beforeWeRun": [
+    "Which event source — Splash, Bizzabo, manual list, all of them?",
+    "Define an \"event-attributed\" opp — first-touch only, or any-touch?",
+    "Time window — last quarter, year-to-date, or custom?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Event-sourced pipeline KPIs",
+      "desc": "Events run, attendees, MQLs, SQLs, pipeline created, closed-won — with cost overlay."
+    },
+    {
+      "name": "Per-event ranking",
+      "desc": "Table of events ranked by pipeline-per-dollar, with conversion rates."
+    },
+    {
+      "name": "Event tier comparison",
+      "desc": "How Tier-1 trade shows compare to dinners, webinars, and meetups."
+    },
+    {
+      "name": "Vanity vs. converted",
+      "desc": "Leads captured at events that never converted, with reasons surfaced."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your field-marketing dashboard in ~8 min."
+}

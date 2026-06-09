@@ -1,0 +1,11 @@
+{
+  "id": "quarterly-activity-review",
+  "name": "Quarterly Activity Review",
+  "description": "Quarterly review of sales team activity for sales-leadership audiences. Activity volume, mix, capacity utilization, top-performer patterns, structural learnings. Replaces the vague 'team is working hard' line in the QBR with a defensible narrative.",
+  "renderType": "memo",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~16 min"
+}

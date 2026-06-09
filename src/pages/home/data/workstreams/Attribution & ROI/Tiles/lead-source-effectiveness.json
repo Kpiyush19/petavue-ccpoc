@@ -1,0 +1,12 @@
+{
+  "id": "lead-source-effectiveness",
+  "name": "Lead Source Effectiveness",
+  "description": "Know which lead source produces qualified pipeline, not just lead volume — and which channels are expensive noise.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

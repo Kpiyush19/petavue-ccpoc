@@ -1,0 +1,76 @@
+/**
+ * Workspace Tray Widget - Required CSS
+ * Light Theme Only
+ *
+ * Add this to your project's global styles or import directly.
+ *
+ * Usage:
+ *   @import './workspace-tray-widget/styles.css';
+ */
+
+/* ─── Light Theme (Only) ───────────────────────────────────── */
+
+.workspace-tray-widget {
+  /* Backgrounds */
+  --bg-primary: var(--pv-white, #ffffff);
+  --bg-secondary: var(--pv-neutral-grey-50, #f8f9fc);
+  --bg-hover: var(--pv-neutral-grey-100, #eef0f7);
+
+  /* Borders */
+  --border-primary: var(--pv-neutral-grey-200, #d4d9ea);
+  --border-muted: var(--pv-neutral-grey-200, #d4d9ea);
+
+  /* Text */
+  --text-primary: var(--pv-text-primary-text, #232532);
+  --text-secondary: var(--pv-text-secondary-text, #757a97);
+  --text-muted: var(--pv-neutral-grey-400, #8e93af);
+  --text-accent: var(--pv-primary-500, #3661ed);
+
+  /* Accent */
+  --accent: var(--pv-primary-500, #3661ed);
+  --accent-subtle: var(--pv-primary-50, #f5f8ff);
+
+  /* Status colors */
+  --status-success: var(--pv-success-text, #08bd50);
+  --status-warning: var(--pv-warning-text, #fbbf24);
+  --status-error: var(--pv-error-text, #f93d3d);
+
+  /* Tool accent */
+  --tool-accent: var(--pv-accent-text, #643bcf);
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+
+@keyframes tray-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-tray-in {
+  animation: tray-in 0.2s ease-out;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+
+.workspace-tray-widget ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workspace-tray-widget ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-tray-widget ::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 3px;
+}
+
+.workspace-tray-widget ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

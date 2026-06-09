@@ -1,0 +1,14 @@
+{
+  "id": "lead-source-hygiene-report",
+  "name": "Lead Source Hygiene Report",
+  "description": "Audit the data quality underlying every attribution number. Trust score, issue counts, top offenders, concrete examples — so you know exactly where the attribution layer is solid and where to invest in fixing.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "estimatedRunTime": "~8 min"
+}

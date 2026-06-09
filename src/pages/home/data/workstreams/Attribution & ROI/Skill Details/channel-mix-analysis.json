@@ -1,0 +1,54 @@
+{
+  "id": "channel-mix-analysis",
+  "name": "Channel Mix Analysis",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Track how marketing channel mix has shifted over time, with consistent attribution definitions across periods. Period-over-period comparison is real because the underlying definitions are governed.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "How has our channel mix shifted over the last 4 quarters?",
+    "Is LinkedIn genuinely growing, or did it just have a strong month?",
+    "Which channels lost share fastest period-over-period?",
+    "Where does the channel taxonomy diverge across our connected sources?"
+  ],
+  "beforeWeRun": [
+    "Time period coverage — last 4 quarters, 8 quarters, or custom?",
+    "Canonical attribution model — tenant default, or override for this view?",
+    "Refresh schedule — daily, weekly, or on-demand only?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Total spend, attributed pipeline, attributed revenue, blended ROAS, CAC — for current period with QoQ deltas."
+    },
+    {
+      "name": "Channel mix over time",
+      "desc": "Stacked area chart of channel share across all periods in the coverage."
+    },
+    {
+      "name": "Per-channel trend lines",
+      "desc": "Small-multiple trend lines, one per channel, on shared axes for cross-comparison."
+    },
+    {
+      "name": "Channel performance table",
+      "desc": "Sortable table with all metrics per channel, with PoP delta columns."
+    },
+    {
+      "name": "Channel-level drill-down",
+      "desc": "Click any channel for campaign- and creative-level breakouts."
+    }
+  ],
+  "callout": "5 quick inputs, then Sage builds your channel mix dashboard in ~10 min."
+}

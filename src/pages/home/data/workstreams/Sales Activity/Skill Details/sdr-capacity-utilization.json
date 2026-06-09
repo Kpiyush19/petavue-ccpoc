@@ -1,0 +1,58 @@
+{
+  "id": "sdr-capacity-utilization",
+  "name": "SDR Capacity Utilization",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Track how much of each SDR's working hours are accounted for by logged activity. Surfaces under-utilized SDRs (coverage capacity), over-utilized SDRs (burnout/quality risk), and pairs utilization with output to distinguish execution issues from healthy hustle.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce"
+  ],
+  "alsoSurfaces": [
+    "Do we have enough SDR capacity for current lead volume?",
+    "Which SDRs are at burnout-risk vs under-utilized?",
+    "Which SDRs are highly utilized but low-output (execution issue)?",
+    "How does utilization compare across teams?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 4 or 8 weeks?",
+    "Working hours per SDR per week — 40, 35, or tenant-configured?",
+    "Healthy utilization range — 40–80%, or override?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "SDR count, team median utilization, band counts, headcount signal."
+    },
+    {
+      "name": "SDR table",
+      "desc": "Sortable — utilization, band, time-by-type, leads handled, output ratio per SDR."
+    },
+    {
+      "name": "Utilization distribution",
+      "desc": "Histogram with band coloring (under-active / healthy / high / over)."
+    },
+    {
+      "name": "Capacity vs output",
+      "desc": "Scatter — utilization (x) vs opportunities created (y), reference line for output expectations."
+    },
+    {
+      "name": "Time breakdown",
+      "desc": "Stacked horizontal bar per SDR showing time-by-activity-type."
+    },
+    {
+      "name": "Team comparison",
+      "desc": "Grouped bar chart comparing teams' utilization profiles."
+    },
+    {
+      "name": "Headcount signal callout",
+      "desc": "Banner indicating team-level capacity strain if detected."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your capacity dashboard in ~10 min."
+}

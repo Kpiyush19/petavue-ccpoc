@@ -1,0 +1,14 @@
+{
+  "id": "audience-performance",
+  "name": "Audience Performance",
+  "description": "Rank audience cohorts by ROAS within and across ad platforms. Saturation indicators, overlap analysis, and expansion candidate flags so audiences get scaled or replaced on data, not gut.",
+  "renderType": "dashboard",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads",
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~10 min"
+}

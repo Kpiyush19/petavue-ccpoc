@@ -1,0 +1,12 @@
+{
+  "id": "quarterly-funnel-review",
+  "name": "Quarterly Funnel Review",
+  "description": "Quarterly review of funnel performance for marketing and revenue leadership. Replaces 1–2 days of manual assembly with a structured, defensible memo grounded in governed cohort definitions.",
+  "renderType": "memo",
+  "workstream": "Funnel & Conversion",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~16 min"
+}

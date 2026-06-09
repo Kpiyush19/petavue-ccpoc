@@ -1,0 +1,77 @@
+/* Design tokens required by the MenuBar component (copied from src-new
+   colorography/tokens.css + typography.css :root blocks). Scoped to :root,
+   variable-only — no global element styles, so it won't restyle the app. */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+  /* Primary (Blue) */
+  --color-primary-50: #F5F8FF;
+  --color-primary-100: #E0EBFE;
+  --color-primary-300: #90A6EE;
+  --color-primary-500: #3661ED;
+  --color-primary-800: #052DAB;
+  --color-primary: var(--color-primary-500);
+
+  /* Neutral (Grey) */
+  --color-neutral-50: #F8F9FC;
+  --color-neutral-100: #EEF0F7;
+  --color-neutral-200: #D4D9EA;
+  --color-neutral-300: #ADB2CE;
+  --color-neutral-400: #8E93AF;
+  --color-neutral-500: #757A97;
+  --color-neutral-600: #52577A;
+  --color-neutral-700: #424766;
+  --color-neutral-800: #2D3044;
+  --color-neutral-900: #1F212E;
+
+  /* Shades */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Text */
+  --color-text-disabled: #ADB2CE;
+  --color-text-secondary: #757A97;
+  --color-text-primary: #232532;
+  --color-text-link: #3661ED;
+
+  /* Spacing */
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-10: 10px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Border width */
+  --border-thin: 0.5px;
+  --border-default: 1px;
+  --border-thick: 3px;
+
+  /* Shadows */
+  --shadow-sm: 0px 1px 2px rgba(31, 33, 46, 0.06);
+  --shadow-md: 0px 2px 4px rgba(31, 33, 46, 0.08);
+  --shadow-lg: 0px 4px 12px rgba(31, 33, 46, 0.1);
+
+  /* Typography */
+  --font-family-primary: 'Poppins', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-size-display-2: 20px;
+  --font-size-body-1: 14px;
+  --font-size-body-2: 12px;
+  --line-height-display-2: 32px;
+  --line-height-body-1: 22px;
+  --line-height-body-2: 19px;
+}

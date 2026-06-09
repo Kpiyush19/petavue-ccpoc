@@ -1,0 +1,52 @@
+{
+  "id": "abm-campaign-penetration",
+  "name": "ABM Campaign Penetration",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Know whether your campaigns are reaching the target accounts that matter — or burning spend on everyone else.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "LinkedIn Ads",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What share of campaign spend reached our target list?",
+    "Which campaigns are wasting impressions on non-targets?",
+    "Where are we under-saturating our target accounts?",
+    "How do channels compare on target-list reach?"
+  ],
+  "beforeWeRun": [
+    "Target list — single ABM list or all named-account lists?",
+    "Campaigns to include — paid only, or all touch types?",
+    "Window — last 30, 60, or 90 days?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Penetration KPIs",
+      "desc": "Target reached %, non-target spend %, frequency vs. target accounts."
+    },
+    {
+      "name": "Per-campaign penetration",
+      "desc": "Campaigns ranked by share of spend hitting targets."
+    },
+    {
+      "name": "Channel comparison",
+      "desc": "How LinkedIn ABM compares to paid search, content syndication."
+    },
+    {
+      "name": "Under-saturated targets",
+      "desc": "Target accounts not reached by any campaign in the window."
+    },
+    {
+      "name": "Waste detection",
+      "desc": "Campaigns reaching mostly non-target audiences."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your penetration dashboard in ~10 min."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "mql-sql-conversion-trend",
+  "name": "MQL→SQL Conversion Trend",
+  "description": "Cohort-consistent tracking of the marketing→sales handoff. Replaces fragile snapshot math (count MQLs / count SQLs in the same month) with stable, lag-aware cohort rates so the marketing-sales conversation stops devolving into \"whose number is right\".",
+  "renderType": "dashboard",
+  "workstream": "Funnel & Conversion",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~8 min"
+}

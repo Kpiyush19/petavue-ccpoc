@@ -1,0 +1,11 @@
+{
+  "id": "pipeline-aging-report",
+  "name": "Pipeline Aging Report",
+  "description": "Surface stalled opportunities — open deals with no recent activity — sorted by value and prioritized for action. Removes the dead weight inflating coverage and skewing forecasts.",
+  "renderType": "dashboard",
+  "workstream": "Pipeline Analysis",
+  "dataSources": [
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~11 min"
+}

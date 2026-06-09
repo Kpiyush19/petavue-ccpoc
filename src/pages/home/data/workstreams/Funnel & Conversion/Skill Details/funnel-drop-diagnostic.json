@@ -1,0 +1,51 @@
+{
+  "id": "funnel-drop-diagnostic",
+  "name": "Funnel Drop Diagnostic",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "memo",
+  "description": "Investigate why a funnel stage-pair conversion rate dropped. Runs a structured hypothesis tree against cohort composition, stage-entry quality, time-in-stage, and process changes; narrows to the most likely cause with confidence rating.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~13 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Why did this stage-pair conversion rate drop?",
+    "Was it cohort composition, lead quality, time-in-stage, or process?",
+    "How confident is the diagnosis, and what evidence supports it?",
+    "Who should do what to recover — and what's the expected gap-closing impact?"
+  ],
+  "beforeWeRun": [
+    "Stage pair to investigate — auto-detect the largest recent drop, or specify?",
+    "Drop window — most recent completed cohort vs prior 3 averaged, or custom?",
+    "Hypothesis tree depth — 2, 3, or 4 levels?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Drop confirmation",
+      "desc": "Drop magnitude, stage pair, cohort comparison, severity classification (statistically significant / borderline / within variance)."
+    },
+    {
+      "name": "Primary cause",
+      "desc": "Named cause with confidence rating and the specific data behind it. Compound contributors handled honestly."
+    },
+    {
+      "name": "Hypothesis tree summary",
+      "desc": "Branches as rows; columns for contribution to drop, evidence, depth investigated."
+    },
+    {
+      "name": "Recommended actions",
+      "desc": "2–4 specific actions with owner, next step, and expected gap-closing impact per action."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Stage pair definition, cohort boundaries, lifecycle window, sources read with row counts, Stage 0 resolutions."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your drop diagnostic in ~13 min."
+}

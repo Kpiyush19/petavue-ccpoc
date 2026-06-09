@@ -1,0 +1,14 @@
+{
+  "id": "channel-performance-review",
+  "name": "Channel Performance Review",
+  "description": "Defend (or critique) a single advertising channel with structured evidence. Replaces the rushed pre-meeting prep when the CFO asks \"why are we still spending on LinkedIn?\"",
+  "renderType": "memo",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~12 min"
+}

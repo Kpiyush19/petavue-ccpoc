@@ -1,0 +1,12 @@
+{
+  "id": "lead-scoring-dashboard",
+  "name": "Lead Scoring Dashboard",
+  "description": "Give SDRs a ranked work list today, and tell leadership whether the scoring model is actually predictive enough to trust.",
+  "renderType": "dashboard",
+  "workstream": "Funnel & Conversion",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

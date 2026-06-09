@@ -1,0 +1,53 @@
+{
+  "id": "lead-source-hygiene-report",
+  "name": "Lead Source Hygiene Report",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Audit the data quality underlying every attribution number. Trust score, issue counts, top offenders, concrete examples — so you know exactly where the attribution layer is solid and where to invest in fixing.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "alsoSurfaces": [
+    "How trustworthy is the attribution data we report on?",
+    "Where are pixels failing or UTM tags inconsistent across campaigns?",
+    "Where does identity stitching across CRM and MAP break?",
+    "Which campaigns and owners are causing the most hygiene issues?"
+  ],
+  "beforeWeRun": [
+    "Audit window — last 30, 60, or 90 days?",
+    "Audit scope — comprehensive, or narrow to one category (UTM / lead source / stitching / mapping / source agreement)?",
+    "Refresh schedule — weekly or monthly?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Trust score",
+      "desc": "Big-number KPI with trend indicator and color band (green ≥85, amber 60–84, red <60)."
+    },
+    {
+      "name": "Issue summary",
+      "desc": "Per-category issue counts and severity, color-coded."
+    },
+    {
+      "name": "Coverage breakdown",
+      "desc": "Per-category coverage rates trended over the prior 4 audit runs."
+    },
+    {
+      "name": "Top offenders",
+      "desc": "Per-category sortable tables — campaigns, owners, and sources causing the most issues."
+    },
+    {
+      "name": "Issue examples",
+      "desc": "Expandable cards showing concrete examples of each issue type, fixable or escalatable."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your hygiene audit in ~8 min."
+}

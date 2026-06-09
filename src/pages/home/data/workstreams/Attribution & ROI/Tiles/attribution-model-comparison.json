@@ -1,0 +1,14 @@
+{
+  "id": "attribution-model-comparison",
+  "name": "Attribution Model Comparison",
+  "description": "Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.",
+  "renderType": "memo",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "estimatedRunTime": "~12 min"
+}

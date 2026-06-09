@@ -1,0 +1,11 @@
+{
+  "id": "outbound-sequence-effectiveness",
+  "name": "Outbound Sequence Effectiveness",
+  "description": "Compare reply rates, meeting-booked rates, and downstream pipeline contribution per outbound sequence. Surface-metrics like reply rate are joined with outcome data so sequences get scaled or retired on actual pipeline contribution, not vanity engagement.",
+  "renderType": "dashboard",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~10 min"
+}

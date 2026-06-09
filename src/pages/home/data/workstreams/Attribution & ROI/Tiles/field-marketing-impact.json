@@ -1,0 +1,12 @@
+{
+  "id": "field-marketing-impact",
+  "name": "Field Marketing Impact",
+  "description": "Know whether the events you funded generated real pipeline and revenue, or just vanity leads that never converted.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~8 min"
+}

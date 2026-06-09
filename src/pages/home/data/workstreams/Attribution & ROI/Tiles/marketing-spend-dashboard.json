@@ -1,0 +1,15 @@
+{
+  "id": "marketing-spend-dashboard",
+  "name": "Marketing Spend Dashboard",
+  "description": "Walk into the board meeting knowing exactly what you spent, what came back, what it cost to acquire, and whether efficiency is improving.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~9 min"
+}

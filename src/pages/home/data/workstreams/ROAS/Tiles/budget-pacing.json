@@ -1,0 +1,13 @@
+{
+  "id": "budget-pacing",
+  "name": "Budget Pacing",
+  "description": "Track actual ad spend against the configured budget, with end-of-period projections and pacing health indicators. Replaces the spreadsheet pacing math every Friday afternoon.",
+  "renderType": "dashboard",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~8 min"
+}

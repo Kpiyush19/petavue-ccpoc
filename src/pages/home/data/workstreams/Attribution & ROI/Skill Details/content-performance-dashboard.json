@@ -1,0 +1,52 @@
+{
+  "id": "content-performance-dashboard",
+  "name": "Content Performance Dashboard",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Know which landing pages and content assets actually convert, influence pipeline, and close revenue — and which are just traffic.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "GA4"
+  ],
+  "alsoSurfaces": [
+    "Which content assets are actually moving deals forward?",
+    "Where do prospects engage and then go silent?",
+    "Which assets get views but never produce conversions?",
+    "How does content engagement differ by buyer persona?"
+  ],
+  "beforeWeRun": [
+    "Define \"content asset\" — landing pages only, or include eBooks, blogs, demos?",
+    "Conversion benchmark — form fills, demo requests, or downstream pipeline?",
+    "Window — last 30, 90, or 180 days?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Asset-level KPIs",
+      "desc": "Views, time-on-page, form fills, downstream MQLs, pipeline influenced."
+    },
+    {
+      "name": "Top influencers on closed-won",
+      "desc": "Assets that touched closed-won deals, ranked by frequency and recency."
+    },
+    {
+      "name": "Vanity vs. converted",
+      "desc": "High-traffic pages that never produce conversions."
+    },
+    {
+      "name": "Persona engagement matrix",
+      "desc": "Which assets pull which personas — visualized."
+    },
+    {
+      "name": "Drill-down",
+      "desc": "Click any asset for visitor flow, conversion paths, and influenced opps."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your content dashboard in ~9 min."
+}

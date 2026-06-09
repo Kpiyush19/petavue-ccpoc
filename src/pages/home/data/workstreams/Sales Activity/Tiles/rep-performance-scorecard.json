@@ -1,0 +1,12 @@
+{
+  "id": "rep-performance-scorecard",
+  "name": "Rep Performance Scorecard",
+  "description": "Know which AEs are on track, which need coaching, and exactly where the mismatch between activity and outcome is hiding.",
+  "renderType": "dashboard",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "source-of-pipeline",
+  "name": "Source of Pipeline",
+  "description": "Where pipeline comes from — marketing, sales, partner, expansion, other — under a governed source taxonomy. Replaces the ad-hoc reporting where every team's number disagrees with every other team's.",
+  "renderType": "dashboard",
+  "workstream": "Pipeline Analysis",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

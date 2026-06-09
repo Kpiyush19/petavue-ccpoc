@@ -1,0 +1,15 @@
+{
+  "id": "channel-mix-analysis",
+  "name": "Channel Mix Analysis",
+  "description": "Track how marketing channel mix has shifted over time, with consistent attribution definitions across periods. Period-over-period comparison is real because the underlying definitions are governed.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~10 min"
+}

@@ -1,0 +1,102 @@
+@import '../../../colorography/tokens.css';
+@import '../../../typography/typography.css';
+
+/* ==========================================================================
+   PlannerChip — inline code-style token chip for planner steps
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+
+.planner-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: 0 var(--spacing-6);
+  background: var(--color-neutral-50);
+  border: var(--border-default) solid var(--color-neutral-200);
+  border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  color: #B85300;
+  white-space: nowrap;
+  vertical-align: baseline;
+  cursor: default;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Hover & Active states
+   -------------------------------------------------------------------------- */
+
+.planner-chip:hover {
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-200);
+}
+
+.planner-chip:active,
+.planner-chip--active {
+  background: var(--color-neutral-50);
+  border-color: var(--color-neutral-300);
+}
+
+/* --------------------------------------------------------------------------
+   Size variants
+   -------------------------------------------------------------------------- */
+
+/* Small — 10px text */
+.planner-chip--sm {
+  font-size: 10px;
+  line-height: 19px;
+}
+
+/* Medium — 12px text */
+.planner-chip--md {
+  font-size: 12px;
+  line-height: 20px;
+}
+
+/* Large — 14px text */
+.planner-chip--lg {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   Icon slots
+   -------------------------------------------------------------------------- */
+
+.planner-chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #B85300;
+}
+
+.planner-chip__label {
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Remove (suffix) button
+   -------------------------------------------------------------------------- */
+
+.planner-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #B85300;
+  line-height: 0;
+}
+
+.planner-chip__remove:hover {
+  color: var(--color-neutral-900);
+}

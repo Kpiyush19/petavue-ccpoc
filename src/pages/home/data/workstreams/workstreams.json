@@ -1,0 +1,173 @@
+[
+  {
+    "id": "ws_a1b2c3d4e5f6g7h8",
+    "name": "Attribution & ROI",
+    "description": "Source, multi-touch, self-reported gap. Across-channel pipeline credit and decision-grade reconciliation.",
+    "discoveryStatus": "complete",
+    "skillCount": 12,
+    "tags": [
+      "Multi-touch",
+      "Channel mix",
+      "Lift analysis",
+      "Sourced diagnostic",
+      "Hygiene report",
+      "Content perf",
+      "Field marketing",
+      "Lead source",
+      "Spend dashboard",
+      "Performance review",
+      "Deal source",
+      "Model comparison"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "Diagnose a metric drop",
+      "Compare two periods",
+      "Plan a budget shift",
+      "Reconcile two attribution models",
+      "Build a board-ready dashboard"
+    ],
+    "governingKDs": 8,
+    "contradictionCount": 1,
+    "workstreamInputPlaceholder": "e.g. why did paid social attribution drop last week?"
+  },
+  {
+    "id": "ws_b2c3d4e5f6g7h8i9",
+    "name": "Pipeline Analysis",
+    "description": "Coverage, source mix, end-of-quarter defensibility.",
+    "discoveryStatus": "complete",
+    "skillCount": 8,
+    "tags": [
+      "Coverage",
+      "Snapshot",
+      "Aging",
+      "Velocity",
+      "Source of pipeline",
+      "Gap analysis",
+      "Deal prioritization",
+      "Quarterly review"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "What's our pipeline coverage ratio?",
+      "Which deals are at risk of slipping?",
+      "Compare pipeline to last quarter",
+      "Show aging by stage",
+      "Build a pipeline review deck"
+    ],
+    "governingKDs": 9,
+    "contradictionCount": 0,
+    "workstreamInputPlaceholder": "e.g. is this quarter's number going to land?"
+  },
+  {
+    "id": "ws_c3d4e5f6g7h8i9j0",
+    "name": "Account Intelligence / ABM",
+    "description": "Target-account monitoring, buying-unit penetration, and buyer-journey signals.",
+    "discoveryStatus": "complete",
+    "skillCount": 11,
+    "tags": [
+      "Engagement velocity",
+      "Account ranking",
+      "Buying group",
+      "Buying-unit penetration",
+      "Target monitoring",
+      "Campaign reach",
+      "Coverage gap",
+      "Intent shift",
+      "Buyer journey",
+      "Campaign penetration",
+      "ABM overview"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "Which accounts are heating up?",
+      "Where are we single-threaded?",
+      "Show buying committee gaps",
+      "Compare engagement to last month",
+      "Build an ABM review dashboard"
+    ],
+    "governingKDs": 9,
+    "contradictionCount": 1,
+    "workstreamInputPlaceholder": "e.g. which target accounts went cold this week?"
+  },
+  {
+    "id": "ws_d4e5f6g7h8i9j0k1",
+    "name": "Funnel & Conversion",
+    "description": "MQL to closed-won, stage by stage. Lead scoring, journey, and leakage.",
+    "discoveryStatus": "complete",
+    "skillCount": 9,
+    "tags": [
+      "Conversion rates",
+      "MQL→SQL",
+      "Lifecycle velocity",
+      "SDR conversion",
+      "Drop diagnostic",
+      "Quarterly review",
+      "Lead scoring",
+      "Full-funnel",
+      "Closed-won journey"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "Where is the funnel leaking?",
+      "Compare conversion rates to benchmark",
+      "Which stage has the longest dwell time?",
+      "Show lead-to-MQL trend",
+      "Build a funnel health dashboard"
+    ],
+    "governingKDs": 11,
+    "contradictionCount": 0,
+    "workstreamInputPlaceholder": "e.g. where is the funnel leaking velocity?"
+  },
+  {
+    "id": "ws_e5f6g7h8i9j0k1l2",
+    "name": "ROAS & ad performance",
+    "description": "Channel, campaign, creative, and audience efficiency. Spend pacing, reallocation memos, and quarterly reviews.",
+    "discoveryStatus": "complete",
+    "skillCount": 9,
+    "tags": [
+      "Channel ROAS",
+      "Campaign perf",
+      "Creative perf",
+      "Audience perf",
+      "Budget pacing",
+      "Spend reallocation",
+      "ROAS drop",
+      "Channel review",
+      "Quarterly ad review"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "Why did ROAS drop last week?",
+      "Compare channel efficiency",
+      "Where should we reallocate spend?",
+      "Show creative performance breakdown",
+      "Build a paid media review"
+    ],
+    "governingKDs": 11,
+    "contradictionCount": 0,
+    "workstreamInputPlaceholder": "e.g. where should I shift next month's paid budget?"
+  },
+  {
+    "id": "ws_f6g7h8i9j0k1l2m3",
+    "name": "Sales Activity",
+    "description": "SDR, AE, and rep-level execution and outcomes.",
+    "discoveryStatus": "complete",
+    "skillCount": 8,
+    "tags": [
+      "SDR capacity",
+      "Activity mix",
+      "Sequence effectiveness",
+      "Activity→outcome",
+      "Quarterly review",
+      "SDR hit list",
+      "Rep scorecard",
+      "Rep commission"
+    ],
+    "proposedWorkflowAgentQuestions": [
+      "Which reps are behind on activity?",
+      "Compare rep performance to quota",
+      "Show activity-to-outcome correlation",
+      "Where is outreach not converting?",
+      "Build a sales activity dashboard"
+    ],
+    "governingKDs": 9,
+    "contradictionCount": 0,
+    "workstreamInputPlaceholder": "e.g. which reps are at risk of missing quota?"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "id": "sdr-capacity-utilization",
+  "name": "SDR Capacity Utilization",
+  "description": "Track how much of each SDR's working hours are accounted for by logged activity. Surfaces under-utilized SDRs (coverage capacity), over-utilized SDRs (burnout/quality risk), and pairs utilization with output to distinguish execution issues from healthy hustle.",
+  "renderType": "dashboard",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce"
+  ],
+  "estimatedRunTime": "~10 min"
+}

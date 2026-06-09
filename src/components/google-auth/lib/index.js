@@ -1,0 +1,1 @@
+export { initReactQueryAuth } from './initReactQueryAuth';

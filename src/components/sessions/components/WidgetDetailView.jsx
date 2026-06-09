@@ -1,0 +1,341 @@
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { ArrowLeft, ArrowsClockwise, ShieldCheck, CaretRight, ArrowLineRight, ArrowLineLeft } from '@phosphor-icons/react'
+import { Button } from '@/common-components'
+import { apiGet, apiPost } from '../../../api'
+import HtmlViewer from '../viewers/HtmlViewer'
+import LineagePanel from './LineagePanel'
+import WidgetChatPanel from './WidgetChatPanel'
+
+const COL_MIN_PCT = 15
+
+function computeWidths(chatMin, lineageMin, widgetPct, chatPct, lineagePct) {
+  if (chatMin && lineageMin) return { widget: 'calc(100% - 64px)', chat: '32px', lineage: '32px' }
+  if (chatMin) {
+    const vis = widgetPct + lineagePct
+    return { widget: `calc((100% - 32px) * ${widgetPct / vis})`, chat: '32px', lineage: `calc((100% - 32px) * ${lineagePct / vis})` }
+  }
+  if (lineageMin) {
+    const vis = widgetPct + chatPct
+    return { widget: `calc((100% - 32px) * ${widgetPct / vis})`, chat: `calc((100% - 32px) * ${chatPct / vis})`, lineage: '32px' }
+  }
+  return { widget: `${widgetPct}%`, chat: `${chatPct}%`, lineage: `${lineagePct}%` }
+}
+
+function MinimizedStrip({ label, onExpand }) {
+  return (
+    <button
+      type="button"
+      onClick={onExpand}
+      title={`Expand ${label}`}
+      className="h-full w-full flex flex-col items-center justify-between py-3 bg-[var(--bg-secondary)] border-l border-[var(--border-primary)] border-t-0 border-b-0 border-r-0 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
+    >
+      <ArrowLineLeft size={14} className="text-[var(--text-secondary)]" />
+      <span
+        className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap"
+        style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+      >
+        {label}
+      </span>
+      <span aria-hidden="true" />
+    </button>
+  )
+}
+
+function ColumnHeader({ title, extra, onMinimize, minimizeTitle }) {
+  return (
+    <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+      <span className="text-[12px] font-semibold text-[var(--text-primary)] flex-1 truncate">
+        {title}
+      </span>
+      {extra}
+      {onMinimize && (
+        <button
+          type="button"
+          onClick={onMinimize}
+          title={minimizeTitle}
+          className="p-1 rounded hover:bg-[var(--bg-hover)] cursor-pointer border-none bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+        >
+          <ArrowLineRight size={13} />
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default function WidgetDetailView({
+  widget,
+  sessionId,
+  sessionStatus,
+  liveMessages = [],
+  onSendFeedback,
+  onBack,
+  onVerified,
+  onBackToSession,
+  onContinueToPublish,
+}) {
+  const [lineage, setLineage] = useState(null)
+  const [lineageLoading, setLineageLoading] = useState(true)
+  const [lineageError, setLineageError] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [widgetPct, setWidgetPct] = useState(40)
+  const [lineagePct, setLineagePct] = useState(30)
+  const [chatPct, setChatPct] = useState(30)
+  const [lineageMin, setLineageMin] = useState(false)
+  const [chatMin, setChatMin] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [verified, setVerified] = useState(widget?.verified || false)
+  const containerRef = useRef(null)
+  const aliveRef = useRef(true)
+  const prevStatusRef = useRef(sessionStatus)
+
+  useEffect(() => {
+    aliveRef.current = true
+    return () => { aliveRef.current = false }
+  }, [])
+
+  const rawFile = widget?.file || ''
+  const widgetPath = rawFile.startsWith('output/') ? rawFile : `output/dashboard/${rawFile}`
+  const editsCount = lineage?.main_chat_edits_count || 0
+
+  const fetchLineage = () => {
+    if (!sessionId || !widgetPath) return
+    setLineageError(null)
+    apiGet(`/api/sessions/${sessionId}/widget-lineage?path=${encodeURIComponent(widgetPath)}`)
+      .then((data) => {
+        if (!aliveRef.current) return
+        setLineage(data)
+        setLineageLoading(false)
+      })
+      .catch((err) => {
+        if (!aliveRef.current) return
+        setLineageError(err.message || 'Failed to load lineage')
+        setLineageLoading(false)
+      })
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setLineageLoading(true)
+    setLineage(null)
+    fetchLineage()
+  }, [sessionId, widgetPath])
+
+  useEffect(() => {
+    if (prevStatusRef.current === 'thinking' && sessionStatus !== 'thinking') {
+      fetchLineage()
+      setRefreshKey((k) => k + 1)
+    }
+    prevStatusRef.current = sessionStatus
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionStatus])
+
+  const handleLoadComplete = useCallback(() => {}, [])
+
+  const handleRefresh = () => {
+    setRefreshKey((k) => k + 1)
+    fetchLineage()
+  }
+
+  const handleToggleVerified = async () => {
+    const newVal = !verified
+    setVerified(newVal)
+    try {
+      await apiPost(`/api/sessions/${sessionId}/widgets/${widget.id}/verify`, { verified: newVal })
+      onVerified?.(widget.id, newVal)
+    } catch {
+      setVerified(!newVal)
+    }
+  }
+
+  const startDrag = (which) => (e) => {
+    e.preventDefault()
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const startX = e.clientX
+    const sW = widgetPct, sL = lineagePct, sC = chatPct
+    setIsDragging(true)
+    const onMove = (ev) => {
+      const dxPct = ((ev.clientX - startX) / rect.width) * 100
+      if (which === 'widget-chat') {
+        let nW = sW + dxPct, nC = sC - dxPct
+        if (nW < COL_MIN_PCT) { nW = COL_MIN_PCT; nC = sW + sC - COL_MIN_PCT }
+        if (nC < COL_MIN_PCT) { nC = COL_MIN_PCT; nW = sW + sC - COL_MIN_PCT }
+        setWidgetPct(nW); setChatPct(nC)
+      } else {
+        let nC = sC + dxPct, nL = sL - dxPct
+        if (nC < COL_MIN_PCT) { nC = COL_MIN_PCT; nL = sC + sL - COL_MIN_PCT }
+        if (nL < COL_MIN_PCT) { nL = COL_MIN_PCT; nC = sC + sL - COL_MIN_PCT }
+        setChatPct(nC); setLineagePct(nL)
+      }
+    }
+    const onUp = () => {
+      setIsDragging(false)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
+  const widths = computeWidths(chatMin, lineageMin, widgetPct, chatPct, lineagePct)
+  const colTransition = isDragging ? 'none' : 'width 150ms ease'
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Top bar */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-[var(--border-primary)]">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1 text-[12px] text-[var(--accent)] hover:underline bg-transparent border-none cursor-pointer p-0"
+        >
+          <ArrowLeft size={12} weight="bold" />
+          Back to widgets
+        </button>
+        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0">
+          {widget?.name}
+        </h3>
+        <div className="w-[80px]" />
+      </div>
+
+      {/* Three-column layout: Widget | Chat | How it's built */}
+      <div ref={containerRef} className="flex-1 min-h-0 flex relative">
+        {isDragging && <div className="absolute inset-0 z-20 cursor-col-resize" />}
+
+        {/* Widget preview */}
+        <div
+          className="h-full min-h-0 flex flex-col border-r border-[var(--border-primary)]"
+          style={{ width: widths.widget, transition: colTransition }}
+        >
+          <div className="shrink-0 flex items-center justify-between px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+            <span className="text-[11px] text-[var(--text-muted)] truncate">{widget?.name}</span>
+            <Button
+              btnColor="ghost"
+              btnSize="sm"
+              mainBtnClassName="p-0.5"
+              onClick={handleRefresh}
+              title="Refresh widget preview"
+            >
+              <ArrowsClockwise size={13} weight="bold" />
+            </Button>
+          </div>
+          <div className="flex-1 min-h-0">
+            <HtmlViewer
+              key={refreshKey}
+              sessionId={sessionId}
+              path={widgetPath}
+              onLoadComplete={handleLoadComplete}
+            />
+          </div>
+        </div>
+
+        {/* Drag handle: widget | chat */}
+        {!chatMin && (
+          <div
+            onMouseDown={startDrag('widget-chat')}
+            title="Drag to resize"
+            className={`shrink-0 w-1 cursor-col-resize z-10 transition-colors ${
+              isDragging ? 'bg-[var(--accent)]' : 'bg-transparent hover:bg-[var(--accent)]/40'
+            }`}
+            style={{ marginLeft: '-2px', marginRight: '-2px' }}
+          />
+        )}
+
+        {/* Chat */}
+        <div
+          className="h-full min-h-0 flex flex-col border-r border-[var(--border-primary)]"
+          style={{ width: widths.chat, transition: colTransition }}
+        >
+          {chatMin ? (
+            <MinimizedStrip label="Chat" onExpand={() => setChatMin(false)} />
+          ) : (
+            <>
+              <ColumnHeader
+                title="Chat"
+                onMinimize={() => setChatMin(true)}
+                minimizeTitle="Minimize chat"
+              />
+              <div className="flex-1 min-h-0 flex flex-col">
+                <WidgetChatPanel
+                  widgetPath={widgetPath}
+                  sessionId={sessionId}
+                  onSubmit={(text, path) => onSendFeedback?.(text, path)}
+                  sessionStatus={sessionStatus}
+                  mainChatEditsCount={editsCount}
+                  liveMessages={liveMessages}
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Drag handle: chat | lineage */}
+        {!chatMin && !lineageMin && (
+          <div
+            onMouseDown={startDrag('chat-lineage')}
+            title="Drag to resize"
+            className={`shrink-0 w-1 cursor-col-resize z-10 transition-colors ${
+              isDragging ? 'bg-[var(--accent)]' : 'bg-transparent hover:bg-[var(--accent)]/40'
+            }`}
+            style={{ marginLeft: '-2px', marginRight: '-2px' }}
+          />
+        )}
+
+        {/* How it's built (lineage) */}
+        <div
+          className="h-full min-h-0 flex flex-col"
+          style={{ width: widths.lineage, transition: colTransition }}
+        >
+          {lineageMin ? (
+            <MinimizedStrip label="How it's built" onExpand={() => setLineageMin(false)} />
+          ) : (
+            <>
+              <ColumnHeader
+                title="How it's built"
+                extra={lineage?.chain && (
+                  <span className="text-[10px] text-[var(--text-muted)]">{lineage.chain.length} steps</span>
+                )}
+                onMinimize={() => setLineageMin(true)}
+                minimizeTitle="Minimize lineage"
+              />
+              <div className="flex-1 min-h-0 flex flex-col">
+                <LineagePanel lineage={lineage} loading={lineageLoading} error={lineageError} />
+              </div>
+              <div className="shrink-0 px-4 py-2 border-t border-[var(--border-primary)]">
+                <button
+                  onClick={handleToggleVerified}
+                  className={`w-full flex items-center justify-center gap-2 py-1.5 rounded-lg border text-[12px] font-medium cursor-pointer transition-colors ${
+                    verified
+                      ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                      : 'bg-[var(--bg-primary)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                  }`}
+                >
+                  <ShieldCheck size={15} weight={verified ? 'fill' : 'regular'} />
+                  {verified ? 'Verified' : 'Mark as Verified'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+        <button
+          onClick={onBackToSession}
+          className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-0 transition-colors"
+        >
+          <ArrowLeft size={13} weight="bold" />
+          Back to Session
+        </button>
+        <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={onContinueToPublish}>
+          <span className="text-[12px]">Continue to Publish</span>
+          <CaretRight size={13} weight="bold" />
+        </Button>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ra_001",
+    "title": "Multi-Touch Revenue Attribution",
+    "type": "dashboard",
+    "workstreamId": "ws_a1b2c3d4e5f6g7h8",
+    "workstreamName": "Attribution & ROI",
+    "timestamp": "2024-05-13T10:30:00Z",
+    "relativeTime": "2h ago"
+  },
+  {
+    "id": "ra_002",
+    "title": "Lift Analysis",
+    "type": "memo",
+    "workstreamId": "ws_a1b2c3d4e5f6g7h8",
+    "workstreamName": "Attribution & ROI",
+    "timestamp": "2024-04-30T14:00:00Z",
+    "relativeTime": "Apr 30"
+  },
+  {
+    "id": "ra_003",
+    "title": "Pipeline Coverage Report",
+    "type": "dashboard",
+    "workstreamId": "ws_b2c3d4e5f6g7h8i9",
+    "workstreamName": "Pipeline Analysis",
+    "timestamp": "2024-05-10T09:15:00Z",
+    "relativeTime": "3d ago"
+  },
+  {
+    "id": "ra_004",
+    "title": "ABM Engagement Velocity",
+    "type": "dashboard",
+    "workstreamId": "ws_c3d4e5f6g7h8i9j0",
+    "workstreamName": "Account Intelligence / ABM",
+    "timestamp": "2024-05-08T16:45:00Z",
+    "relativeTime": "5d ago"
+  }
+]

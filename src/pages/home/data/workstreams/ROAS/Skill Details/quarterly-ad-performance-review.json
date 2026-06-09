@@ -1,0 +1,62 @@
+{
+  "id": "quarterly-ad-performance-review",
+  "name": "Quarterly Ad Performance Review",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & ad performance",
+  "renderType": "memo",
+  "description": "Comprehensive quarterly review of paid performance for marketing-leadership audiences. Replaces 1–2 days of compilation per cycle with a defensible memo grounded in governed definitions.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~16 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "What did paid produce this quarter — spend, ROAS, pipeline, revenue?",
+    "Which channels grew, which declined, and by how much?",
+    "Where did efficiency improve or deteriorate?",
+    "What changed structurally — channel adds, pauses, creative refreshes — and how did it land?"
+  ],
+  "beforeWeRun": [
+    "Which quarter — last completed, or custom?",
+    "Comparison quarter — prior, or year-over-year?",
+    "ROAS variant — pipeline or revenue?",
+    "Audience tone — marketing leadership (detailed) or board-ready (concise)?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Executive summary",
+      "desc": "Three to five sentences: total spend, blended ROAS, period-over-period direction, the single most important takeaway."
+    },
+    {
+      "name": "Quarter highlights",
+      "desc": "5–8 bullets: channels that grew or declined, efficiency changes, notable campaign wins or losses."
+    },
+    {
+      "name": "Channel performance",
+      "desc": "Sortable table — channels as rows, columns for spend, attributed pipeline/revenue, ROAS, CAC, PoP deltas."
+    },
+    {
+      "name": "Efficiency trends",
+      "desc": "Two paragraphs on efficiency trajectory and volume-vs-efficiency tradeoffs."
+    },
+    {
+      "name": "What changed",
+      "desc": "3–5 paragraphs on structural changes during the quarter and their observed impact."
+    },
+    {
+      "name": "Next quarter recommendations",
+      "desc": "Channels to scale, channels to reduce, experiments to consider — each tied to specific data."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Canonical attribution model, ROAS variant, period boundaries, sources read with row counts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your quarterly review in ~16 min."
+}

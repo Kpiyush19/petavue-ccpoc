@@ -1,0 +1,172 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   DropdownMenu — floating panel with optional search, list, and footer
+   ========================================================================== */
+
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Search bar
+   -------------------------------------------------------------------------- */
+
+.dropdown-menu__search-wrap {
+  padding: var(--spacing-12) var(--spacing-12) var(--spacing-6);
+}
+
+.dropdown-menu__search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  height: 32px;
+  padding: var(--spacing-8);
+  border: var(--border-default) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.dropdown-menu__search--active {
+  border-color: var(--color-primary-500);
+}
+
+.dropdown-menu__search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dropdown-menu__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+  padding: 0;
+  min-width: 0;
+}
+
+.dropdown-menu__search-input::placeholder {
+  color: var(--color-neutral-400);
+}
+
+.dropdown-menu__search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-neutral-500);
+  flex-shrink: 0;
+}
+
+.dropdown-menu__search-clear:hover {
+  color: var(--color-neutral-700);
+}
+
+/* --------------------------------------------------------------------------
+   Search status text
+   -------------------------------------------------------------------------- */
+
+.dropdown-menu__search-status {
+  padding: 0 var(--spacing-16);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.dropdown-menu__search-status-term {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Items list
+   -------------------------------------------------------------------------- */
+
+.dropdown-menu__list {
+  display: flex;
+  flex-direction: column;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.dropdown-menu__item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-12) var(--spacing-16);
+  background: var(--color-white);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  text-align: left;
+  width: 100%;
+}
+
+.dropdown-menu__item:hover {
+  background: var(--color-neutral-50);
+}
+
+/* Empty state */
+.dropdown-menu__empty {
+  padding: var(--spacing-8) var(--spacing-16);
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.dropdown-menu__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  padding: var(--spacing-6) var(--spacing-12);
+  border-top: var(--border-thin) solid var(--color-neutral-100);
+  background: var(--color-white);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.dropdown-menu__footer-reset {
+  padding: var(--spacing-6) var(--spacing-12);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: 10px;
+  font-weight: var(--font-weight-regular);
+  line-height: 16px;
+  color: var(--color-neutral-600);
+}
+
+.dropdown-menu__footer-reset:hover {
+  background: var(--color-neutral-50);
+}
+
+.dropdown-menu__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}

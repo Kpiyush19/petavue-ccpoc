@@ -1,0 +1,51 @@
+{
+  "id": "sdr-hit-list",
+  "name": "SDR Hit List",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Hand each SDR a ranked list of exactly which accounts to work this week, and why — with DM gaps and newly-activated accounts flagged.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which 30 accounts should this SDR contact this week?",
+    "Where are decision-maker gaps that we should fill?",
+    "Which accounts just activated and should get an early call?",
+    "What's the last-touch state for each priority account?"
+  ],
+  "beforeWeRun": [
+    "SDR scope — single rep, pod, or all SDRs?",
+    "List size — top 20, 30, or 50 per rep?",
+    "Newly-activated threshold — last 7 or 14 days?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Per-SDR ranked list",
+      "desc": "Top accounts for each rep with reason-to-call and last-touch."
+    },
+    {
+      "name": "DM gap flags",
+      "desc": "Accounts where the decision-maker has not been reached."
+    },
+    {
+      "name": "Newly-activated list",
+      "desc": "Accounts that just hit intent thresholds this week."
+    },
+    {
+      "name": "Last-touch ages",
+      "desc": "How stale outreach has gotten on each priority account."
+    },
+    {
+      "name": "Pod totals",
+      "desc": "Aggregated work-list size and gap count by pod."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your SDR work list in ~8 min."
+}

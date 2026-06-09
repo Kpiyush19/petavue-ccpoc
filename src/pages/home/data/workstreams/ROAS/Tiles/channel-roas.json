@@ -1,0 +1,14 @@
+{
+  "id": "channel-roas",
+  "name": "Channel ROAS",
+  "description": "Track ROAS by channel against configured targets, refreshed daily. One governed definition replaces the three different ROAS numbers leadership keeps citing from three different places.",
+  "renderType": "dashboard",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~8 min"
+}

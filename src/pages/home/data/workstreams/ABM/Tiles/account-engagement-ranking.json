@@ -1,0 +1,12 @@
+{
+  "id": "account-engagement-ranking",
+  "name": "Account Engagement Ranking",
+  "description": "Give your AEs a ranked list of the hottest accounts right now — and a flag list of the target accounts that have gone quiet.",
+  "renderType": "dashboard",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~8 min"
+}

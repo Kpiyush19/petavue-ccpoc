@@ -1,0 +1,14 @@
+{
+  "id": "roas-drop-analysis",
+  "name": "ROAS Drop Analysis",
+  "description": "Investigate why ROAS dropped. Runs a structured hypothesis tree against spend, attribution, creative, audience, and platform-cost data, narrows to the most likely cause, and recommends remediation paths.",
+  "renderType": "memo",
+  "workstream": "ROAS & ad performance",
+  "dataSources": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "estimatedRunTime": "~12 min"
+}

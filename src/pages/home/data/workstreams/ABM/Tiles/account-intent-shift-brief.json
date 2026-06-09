@@ -1,0 +1,12 @@
+{
+  "id": "account-intent-shift-brief",
+  "name": "Account Intent Shift Brief",
+  "description": "Single-account narrative explaining a meaningful shift in engagement — what changed, who's engaging, what signals surfaced, what action makes sense. Replaces the cross-functional reconstruction meeting where AE / SDR / marketing each share part of the picture.",
+  "renderType": "memo",
+  "workstream": "Account Intelligence / ABM",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~11 min"
+}

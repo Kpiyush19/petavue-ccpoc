@@ -1,0 +1,51 @@
+{
+  "id": "source-of-pipeline",
+  "name": "Source of Pipeline",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "dashboard",
+  "description": "Where pipeline comes from — marketing, sales, partner, expansion, other — under a governed source taxonomy. Replaces the ad-hoc reporting where every team's number disagrees with every other team's.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "How is our pipeline mix split across marketing, sales, partner, and expansion?",
+    "How has the mix shifted over the last 12 weeks?",
+    "Which source category has the highest win rate and largest deals?",
+    "Where do we suspect double-counting between marketing and sales?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 12 weeks, or custom?",
+    "Granularity — weekly, monthly, or quarterly buckets?",
+    "Which source categories to display — all five, or a custom subset?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline mix",
+      "desc": "Donut chart of current-period mix with category percentages."
+    },
+    {
+      "name": "Mix over time",
+      "desc": "Stacked area chart showing mix evolution across the time window."
+    },
+    {
+      "name": "Per-category trends",
+      "desc": "Small-multiple line charts — one per category — with shared scale."
+    },
+    {
+      "name": "Conversion quality",
+      "desc": "Sortable table with pipeline value, count, win rate, avg deal size, and time-to-close per category."
+    },
+    {
+      "name": "Trend signals",
+      "desc": "Card list highlighting categories with sustained mix shifts and their magnitude."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your source-of-pipeline dashboard in ~9 min."
+}

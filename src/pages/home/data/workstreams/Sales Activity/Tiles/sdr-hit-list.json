@@ -1,0 +1,12 @@
+{
+  "id": "sdr-hit-list",
+  "name": "SDR Hit List",
+  "description": "Hand each SDR a ranked list of exactly which accounts to work this week, and why — with DM gaps and newly-activated accounts flagged.",
+  "renderType": "dashboard",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~8 min"
+}

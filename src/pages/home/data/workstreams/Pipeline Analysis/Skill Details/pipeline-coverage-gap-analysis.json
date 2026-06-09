@@ -1,0 +1,51 @@
+{
+  "id": "pipeline-coverage-gap-analysis",
+  "name": "Pipeline Coverage Gap Analysis",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "memo",
+  "description": "Investigate why coverage is below target. Runs a structured hypothesis tree against pipeline, sourcing, and velocity data, narrows to the primary cause, and recommends remediation paths with confidence ratings.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~13 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Why is coverage below target this quarter?",
+    "Is the gap driven by sourcing, velocity, conversion, or compound across many?",
+    "Which segments and stages contribute most to the shortfall?",
+    "What specific actions could close the gap — and how much does each one estimate to recover?"
+  ],
+  "beforeWeRun": [
+    "Time horizon — current quarter, or next quarter forward look?",
+    "Coverage target — tenant config, or override for this analysis?",
+    "Hypothesis tree depth — 2, 3, or 4 levels?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Gap confirmation",
+      "desc": "Current coverage vs target, gap magnitude, severity classification (small / moderate / structural)."
+    },
+    {
+      "name": "Primary cause",
+      "desc": "Named primary cause with confidence rating and the specific data behind it. Compound contributors handled honestly."
+    },
+    {
+      "name": "Hypothesis tree summary",
+      "desc": "Branches as rows; columns for contribution to gap, evidence, and depth investigated."
+    },
+    {
+      "name": "Recommended actions",
+      "desc": "2–4 specific actions with owner, next step, and estimated gap-closing magnitude per action."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Period boundaries, sources read, the quota source used, and Stage 0 resolutions."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your gap analysis in ~13 min."
+}

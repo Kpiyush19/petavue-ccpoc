@@ -1,0 +1,13 @@
+{
+  "id": "content-performance-dashboard",
+  "name": "Content Performance Dashboard",
+  "description": "Know which landing pages and content assets actually convert, influence pipeline, and close revenue — and which are just traffic.",
+  "renderType": "dashboard",
+  "workstream": "Attribution & ROI",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot",
+    "GA4"
+  ],
+  "estimatedRunTime": "~9 min"
+}

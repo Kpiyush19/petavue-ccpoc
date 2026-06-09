@@ -1,0 +1,59 @@
+/* ==========================================================================
+   BrandLogo Component
+   ========================================================================== */
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   Icon
+   -------------------------------------------------------------------------- */
+
+.brand-logo__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Wordmark — "Peta" is semibold, "vue" is regular
+   -------------------------------------------------------------------------- */
+
+.brand-logo__wordmark {
+  font-family: var(--font-family-primary, 'Poppins', sans-serif);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.brand-logo__wordmark-bold {
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.brand-logo__wordmark-regular {
+  font-weight: var(--font-weight-regular, 400);
+}
+
+/* --------------------------------------------------------------------------
+   Light mode (default) — blue icon, blue text
+   -------------------------------------------------------------------------- */
+
+.brand-logo--light .brand-logo__wordmark {
+  color: var(--color-primary-500, #3661ED);
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode — white icon, white text, blue background
+   -------------------------------------------------------------------------- */
+
+.brand-logo--dark {
+  background-color: var(--color-primary-500, #3661ED);
+  border-radius: 4px;
+}
+
+.brand-logo--dark .brand-logo__wordmark {
+  color: var(--color-white, #FFFFFF);
+}

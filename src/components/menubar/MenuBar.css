@@ -1,0 +1,518 @@
+/* ==========================================================================
+   MenuBar — Collapsible sidebar navigation
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Container
+   -------------------------------------------------------------------------- */
+
+.menubar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border-right: var(--border-default) solid var(--color-neutral-100);
+  padding: var(--spacing-12) var(--spacing-10);
+  font-family: var(--font-family-primary);
+  transition: width 0.2s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.menubar--open {
+  width: 230px;
+  background-color: var(--color-white);
+  align-items: flex-start;
+}
+
+.menubar--closed {
+  width: 52px;
+  background-color: var(--color-neutral-50);
+  align-items: center;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   Header — logo + sidebar toggle
+   -------------------------------------------------------------------------- */
+
+.menubar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.menubar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  cursor: default;
+}
+
+.menubar__brand-text {
+  font-size: var(--font-size-display-2);
+  line-height: var(--line-height-display-2);
+  color: var(--color-primary-500);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.menubar__brand-bold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.menubar__brand-regular {
+  font-weight: var(--font-weight-regular);
+}
+
+/* Brand hover — text shifts to primary-800 per Figma */
+.menubar__brand--hovered .menubar__brand-text {
+  color: var(--color-primary-800);
+}
+
+.menubar__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.menubar__toggle:hover {
+  background-color: var(--color-primary-50);
+}
+
+.menubar__toggle--logo {
+  padding: 0;
+}
+
+/* Closed logo hover — primary-50 background like Figma */
+.menubar__toggle--logo-hovered {
+  background-color: var(--color-primary-50);
+  padding: var(--spacing-6);
+}
+
+/* Closed logo wrapper — positions tooltip */
+.menubar__logo-closed {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Tooltip for closed logo — "Open sidebar" */
+.menubar__logo-tooltip {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-neutral-700);
+  border: var(--border-default) solid var(--color-neutral-100);
+  color: var(--color-white);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  padding: var(--spacing-4) var(--spacing-12);
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0px 12px 12px 0px rgba(177, 177, 177, 0.1);
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   Nav items list — 12px gap per Figma, 20px top gap from header
+   -------------------------------------------------------------------------- */
+
+.menubar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: var(--spacing-20);
+}
+
+/* --------------------------------------------------------------------------
+   MenuBarItem — Figma states: Rest, Hover, Active, Active Hover
+   -------------------------------------------------------------------------- */
+
+.menubar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: 32px;
+  padding-right: var(--spacing-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+/* Closed state — icon centered, full width */
+.menubar-item--closed {
+  width: 100%;
+  padding: var(--spacing-6);
+  justify-content: center;
+}
+
+/* Hover state — primary-50 background */
+.menubar-item:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* Active + Hover — primary-50 background */
+.menubar-item--active:hover {
+  background-color: var(--color-primary-50);
+}
+
+.menubar-item__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* In open state, icon wrapper is 32px with padding to hold 20px icon */
+.menubar-item--open .menubar-item__icon {
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-6);
+  border-radius: var(--radius-md);
+}
+
+.menubar-item__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active label — primary-500 blue */
+.menubar-item--active .menubar-item__label {
+  color: var(--color-primary-500);
+}
+
+/* Accent style — "New Workbook" */
+.menubar-item--accent .menubar-item__label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-500);
+}
+
+/* Tooltip for closed state — dark bg, white text, positioned to the right */
+.menubar-item__tooltip {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-neutral-700);
+  border: var(--border-default) solid var(--color-neutral-100);
+  color: var(--color-white);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  padding: var(--spacing-4) var(--spacing-12);
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0px 12px 12px 0px rgba(177, 177, 177, 0.1);
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   History Panel
+   -------------------------------------------------------------------------- */
+
+.history-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  border-top: var(--border-default) solid var(--color-neutral-100);
+  position: relative;
+  overflow: hidden;
+}
+
+.history-panel__header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-4) var(--spacing-8) var(--spacing-8);
+  flex-shrink: 0;
+}
+
+.history-panel__title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+}
+
+.history-panel__list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar but keep scroll */
+.history-panel__list::-webkit-scrollbar {
+  width: 0;
+}
+
+.history-panel__group-label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-neutral-500);
+  padding: var(--spacing-4) var(--spacing-8) 0;
+}
+
+.history-panel__entry {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: var(--spacing-12);
+  width: 100%;
+  border: none;
+  border-bottom: var(--border-default) solid var(--color-neutral-100);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.history-panel__entry:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.history-panel__entry-title {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-panel__entry-time {
+  flex-shrink: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-neutral-500);
+  white-space: nowrap;
+}
+
+/* Bottom fade gradient */
+.history-panel__fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--color-white));
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   User Profile — pushed to bottom via flex spacer
+   -------------------------------------------------------------------------- */
+
+.menubar__footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: auto;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-10);
+  width: 100%;
+  padding: var(--spacing-12) var(--spacing-10);
+  border: none;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.user-profile:hover {
+  background-color: var(--color-neutral-50);
+}
+
+/* Closed state — center the avatar */
+.user-profile--closed {
+  justify-content: center;
+  padding: var(--spacing-12) var(--spacing-10);
+  background: transparent;
+}
+
+.user-profile--closed:hover {
+  background-color: var(--color-primary-50);
+}
+
+.user-profile__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary-100);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.user-profile__info {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  gap: var(--spacing-12);
+  padding-right: var(--spacing-6);
+}
+
+.user-profile__name {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.user-profile__caret {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+/* Active state when dropdown is open */
+.user-profile--active {
+  background-color: var(--color-neutral-50);
+}
+
+/* --------------------------------------------------------------------------
+   User Profile Dropdown
+   -------------------------------------------------------------------------- */
+
+.user-profile-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.user-profile-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-8) var(--spacing-12);
+  background-color: var(--color-neutral-50);
+  border: var(--border-default) solid var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  margin-bottom: var(--spacing-8);
+  box-sizing: border-box;
+}
+
+.user-profile-dropdown__email {
+  padding: 0 var(--spacing-6);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-profile-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  height: 32px;
+  padding: 0 var(--spacing-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.user-profile-dropdown__item:hover {
+  background-color: var(--color-neutral-100);
+}
+
+.user-profile-dropdown__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: var(--spacing-6);
+  box-sizing: border-box;
+  color: var(--color-text-secondary);
+}
+
+.user-profile-dropdown__divider {
+  width: 100%;
+  height: 0;
+  border-top: var(--border-default) solid var(--color-neutral-200);
+}

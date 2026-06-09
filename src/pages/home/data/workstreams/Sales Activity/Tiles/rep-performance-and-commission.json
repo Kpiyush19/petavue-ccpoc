@@ -1,0 +1,12 @@
+{
+  "id": "rep-performance-and-commission",
+  "name": "Rep Performance & Commission",
+  "description": "Know exactly what each AE earned this quarter, where their deals came from, and whether the attribution is clean enough to defend.",
+  "renderType": "dashboard",
+  "workstream": "Sales Activity",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}

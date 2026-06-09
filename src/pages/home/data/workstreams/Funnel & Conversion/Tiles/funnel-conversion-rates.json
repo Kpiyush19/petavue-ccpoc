@@ -1,0 +1,12 @@
+{
+  "id": "funnel-conversion-rates",
+  "name": "Funnel Conversion Rates",
+  "description": "Track conversion rates across the full funnel — Lead through Closed Won — under cohort-consistent definitions. Replaces snapshot math that wobbles week-to-week with stable rates derived from completed cohort journeys.",
+  "renderType": "dashboard",
+  "workstream": "Funnel & Conversion",
+  "dataSources": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "estimatedRunTime": "~9 min"
+}
