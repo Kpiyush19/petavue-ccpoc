@@ -1800,11 +1800,6 @@ export default function PublishView({
                 : 'Your dashboard works and is ready to publish'}
               {autoRefresh && adjustmentCount > 0 ? ` — the agent made ${adjustmentCount} fix${adjustmentCount !== 1 ? 'es' : ''} to harden it.` : '.'}
             </p>
-            {autoRefresh && adjustmentCount > 0 && (
-              <button onClick={() => { const c = {}; (recipe?.steps || []).forEach(s => { if (hardeningStatus[s.id]?.status === 'hardened') c[s.id] = true }); setCollapsedSteps(c); if (recipe?.target_file) setSelectedOutput({ path: recipe.target_file, type: 'html' }); setShowAdjustments(true) }} className="mt-3 text-[12px] text-green-700 font-medium underline bg-transparent border-none cursor-pointer p-0">
-                See what changed
-              </button>
-            )}
           </div>
         ) : isReviewRunning ? (
           <div>
