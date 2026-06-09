@@ -244,17 +244,6 @@ export default function Header({
 
   return (
     <header className="bg-white border-b border-[var(--border-primary)] px-4 h-[58px] flex items-center gap-3 shrink-0 sticky top-0 z-10">
-      {onToggleFiles && (
-        <Button
-          btnColor="transparent"
-          btnSize="sm"
-          onClick={onToggleFiles}
-          mainBtnClassName={`p-2 ${filesOpen ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : ""}`}
-        >
-          <FolderOpen size={18} />
-        </Button>
-      )}
-
       <div className="flex items-center min-w-0 flex-1">
         {editing ? (
           <Input

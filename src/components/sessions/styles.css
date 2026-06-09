@@ -357,16 +357,11 @@
   width: 100%;
   padding: 6px 8px;
   border-radius: 6px;
-  cursor: pointer;
+  cursor: default;
   background: transparent;
   border: none;
   font-family: inherit;
   text-align: left;
-  transition: background 0.15s;
-}
-
-.s-timeline__header:hover {
-  background: var(--bg-secondary);
 }
 
 .s-timeline__header-text {

@@ -202,17 +202,9 @@ export default function ToolCallsContainer({ calls, isStreaming }) {
           <span className="s-timeline-item__dot" />
           {expanded && <span className="s-timeline-item__line" />}
           <div className="s-timeline-item__content">
-            <button
-              type="button"
-              className={`s-timeline__header${allDone ? " s-timeline__header--done" : ""}`}
-              onClick={() => setExpanded(!expanded)}
-            >
+            <div className={`s-timeline__header${allDone ? " s-timeline__header--done" : ""}`}>
               <div className="s-timeline__header-text">{renderNarrativeHeader()}</div>
-              <ChevronDown
-                size={14}
-                className={`s-timeline-item__chevron${expanded ? " s-timeline-item__chevron--expanded" : ""}`}
-              />
-            </button>
+            </div>
 
             <AnimatePresence>
               {expanded && (
