@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import Pusher from 'pusher-js'
 import {
-  ArrowLeft, SquaresFour, CaretRight, Play,
+  CaretLeft, CaretRight, Play,
   CircleNotch, CheckCircle, XCircle, Spinner, ArrowsClockwise, PencilSimple, Sparkle,
   ArrowsOutSimple, ArrowsInSimple, Plus,
 } from '@phosphor-icons/react'
@@ -192,12 +192,15 @@ const PHASE = {
 // Wizard steps. "Verify" (per-widget review) is the first step; "Review" is
 // the mandatory agentic check that gates publishing.
 const STEP = { WORKFLOW: 'workflow', VERIFY: 'verify', OUTPUTS: 'outputs', FREQUENCY: 'frequency', REVIEW: 'review', CONFIRM: 'confirm' }
-const STEP_ORDER = [STEP.VERIFY, STEP.WORKFLOW, STEP.OUTPUTS, STEP.FREQUENCY, STEP.REVIEW, STEP.CONFIRM]
+// Verify is now its own top-level tab (optional, non-blocking). The Publish tab
+// runs this 5-screen sequence.
+const STEP_ORDER = [STEP.WORKFLOW, STEP.OUTPUTS, STEP.FREQUENCY, STEP.REVIEW, STEP.CONFIRM]
+const TAB = { VERIFY: 'verify', PUBLISH: 'publish' }
 const STEP_LABELS = {
   [STEP.WORKFLOW]: 'Workflow',
   [STEP.VERIFY]: 'Verify',
   [STEP.OUTPUTS]: 'Outputs',
-  [STEP.FREQUENCY]: 'Frequency',
+  [STEP.FREQUENCY]: 'Schedule',
   [STEP.REVIEW]: 'Review',
   [STEP.CONFIRM]: 'Configure',
 }
@@ -289,7 +292,10 @@ export default function PublishView({
   const isPetavueUser = (getCurrentUser()?.email || '').includes('@petavue.com')
 
   // Wizard step + review-passed gate
-  const [step, setStep] = useState(STEP.VERIFY)
+  const [step, setStep] = useState(STEP.WORKFLOW)
+  // Two top-level tabs: Verify (optional, standalone widget review) and Publish
+  // (the main workflow sequence). Default to Verify so review comes first.
+  const [tab, setTab] = useState(TAB.VERIFY)
   const [reviewPassed, setReviewPassed] = useState(false)
   const [selectedWidget, setSelectedWidget] = useState(null) // for the Verify step
 
@@ -378,6 +384,8 @@ export default function PublishView({
   // Action block toggles
   const [aiBlockEnabled, setAiBlockEnabled] = useState(false)
   const [slackEnabled, setSlackEnabled] = useState(false)
+  // AI summary is the only Slack message type — keep it on whenever Slack is on.
+  useEffect(() => { if (slackEnabled) setAiBlockEnabled(true) }, [slackEnabled])
   const [emailEnabled, setEmailEnabled] = useState(false)
   const [slackTestSending, setSlackTestSending] = useState(false)
 
@@ -1649,6 +1657,11 @@ export default function PublishView({
     </div>
   )
 
+  // ── Dashboard mark (the grid logo) ──
+  const DashboardMark = ({ size = 20, className = '' }) => (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true"><path d="M7.75 1.75H3.25C2.85218 1.75 2.47064 1.90804 2.18934 2.18934C1.90804 2.47064 1.75 2.85218 1.75 3.25V9.25C1.75 9.64782 1.90804 10.0294 2.18934 10.3107C2.47064 10.592 2.85218 10.75 3.25 10.75H7.75C8.14782 10.75 8.52936 10.592 8.81066 10.3107C9.09196 10.0294 9.25 9.64782 9.25 9.25V3.25C9.25 2.85218 9.09196 2.47064 8.81066 2.18934C8.52936 1.90804 8.14782 1.75 7.75 1.75ZM7.75 9.25H3.25V3.25H7.75V9.25ZM16.75 1.75H12.25C11.8522 1.75 11.4706 1.90804 11.1893 2.18934C10.908 2.47064 10.75 2.85218 10.75 3.25V6.25C10.75 6.64782 10.908 7.02936 11.1893 7.31066C11.4706 7.59196 11.8522 7.75 12.25 7.75H16.75C17.1478 7.75 17.5294 7.59196 17.8107 7.31066C18.092 7.02936 18.25 6.64782 18.25 6.25V3.25C18.25 2.85218 18.092 2.47064 17.8107 2.18934C17.5294 1.90804 17.1478 1.75 16.75 1.75ZM16.75 6.25H12.25V3.25H16.75V6.25ZM7.75 12.25H3.25C2.85218 12.25 2.47064 12.408 2.18934 12.6893C1.90804 12.9706 1.75 13.3522 1.75 13.75V16.75C1.75 17.1478 1.90804 17.5294 2.18934 17.8107C2.47064 18.092 2.85218 18.25 3.25 18.25H7.75C8.14782 18.25 8.52936 18.092 8.81066 17.8107C9.09196 17.5294 9.25 17.1478 9.25 16.75V13.75C9.25 13.3522 9.09196 12.9706 8.81066 12.6893C8.52936 12.408 8.14782 12.25 7.75 12.25ZM7.75 16.75H3.25V13.75H7.75V16.75ZM16.75 9.25H12.25C11.8522 9.25 11.4706 9.40804 11.1893 9.68934C10.908 9.97064 10.75 10.3522 10.75 10.75V16.75C10.75 17.1478 10.908 17.5294 11.1893 17.8107C11.4706 18.092 11.8522 18.25 12.25 18.25H16.75C17.1478 18.25 17.5294 18.092 17.8107 17.8107C18.092 17.5294 18.25 17.1478 18.25 16.75V10.75C18.25 10.3522 18.092 9.97064 17.8107 9.68934C17.5294 9.40804 17.1478 9.25 16.75 9.25ZM16.75 16.75H12.25V10.75H16.75V16.75Z"/></svg>
+  )
+
   // ── Small Slack mark ──
   const SlackMark = ({ size = 16, color = '#4A154B' }) => (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={color}/></svg>
@@ -1656,10 +1669,8 @@ export default function PublishView({
 
   // ── Slack message mockup — this IS the output that gets posted ──
   const renderSlackPreview = () => {
-    const generic = `📊 *${dashboardTitle || 'Your dashboard'}* just updated with the latest data.`
     return (
       <div className="rounded-lg border border-[var(--border-primary)] bg-white overflow-hidden">
-        <div className="px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/60 text-[10px] font-medium text-[var(--text-muted)]">Preview · this is what gets posted</div>
         <div className="p-3 flex gap-2.5">
           <div className="shrink-0 w-9 h-9 rounded-md bg-[var(--accent)] flex items-center justify-center">
             <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M17 19.0549C20.075 19.0549 22.5678 16.4832 22.5678 13.3107C22.5678 10.1382 20.075 7.56641 17 7.56641C13.925 7.56641 11.4322 10.1382 11.4322 13.3107V16.0279C11.4322 16.3117 11.3085 16.5803 11.0954 16.7597L8.37343 19.0501C8.22397 19.1758 8 19.0661 8 18.8671V13.3107C8 8.18258 12.0294 4.02543 17 4.02543C21.9706 4.02543 26 8.18258 26 13.3107C26 18.4388 21.9706 22.5959 17 22.5959C16.4627 22.5959 15.9363 22.5474 15.4249 22.4542C15.2898 22.4296 15.1504 22.4646 15.0443 22.5542L8.74733 27.867C8.44852 28.1191 8 27.8998 8 27.5015V24.0129C8 23.942 8.03092 23.8748 8.0842 23.8301L11.4322 21.0129V21.0274L12.8715 19.8131C13.7856 19.0419 14.9463 18.7713 16.0215 18.9671C16.3368 19.0246 16.6636 19.0549 17 19.0549Z" fill="#fff" /></svg>
@@ -1670,12 +1681,10 @@ export default function PublishView({
               <span className="text-[10px] font-bold uppercase bg-[var(--bg-hover)] text-[var(--text-muted)] px-1 rounded">App</span>
               <span className="text-[10px] text-[var(--text-muted)]">now</span>
             </div>
-            <div className="text-[12px] text-[#1d1c1d] leading-relaxed max-h-[160px] overflow-y-auto">
-              {aiBlockEnabled
-                ? (aiPreviewContent
-                    ? <MarkdownRenderer content={aiPreviewContent} />
-                    : <span className="text-[var(--text-muted)] italic">Generate the summary above to see the message.</span>)
-                : generic}
+            <div className="text-[12px] text-[#1d1c1d] leading-relaxed">
+              {aiPreviewContent
+                ? <MarkdownRenderer content={aiPreviewContent} />
+                : <span className="text-[var(--text-muted)] italic">Generate the summary to see the Slack message.</span>}
             </div>
             {includeDashboardLink && <span className="inline-block mt-1.5 text-[12px] text-[#1264a3] font-medium">View dashboard →</span>}
           </div>
@@ -1688,55 +1697,40 @@ export default function PublishView({
   // the message body, shown live in the preview). The two used to be separate. ──
   const renderSlackBlock = () => {
     const hasTargets = slackChannels.length > 0 || slackDmUsers.length > 0
-    const msgTypes = [
-      { id: false, label: 'Quick update' },
-      { id: true, label: 'AI summary' },
-    ]
     return (
-      <div className="border border-[#4A154B]/30 bg-[#4A154B]/[0.03] rounded-xl overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3.5">
-          <div className="shrink-0 w-8 h-8 rounded-lg bg-[#4A154B]/10 flex items-center justify-center"><SlackMark size={16} /></div>
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex items-start gap-2.5 mb-3 shrink-0">
+          <SlackMark size={20} color="var(--accent)" />
           <div className="flex-1 min-w-0">
-            <span className="text-[14px] font-semibold text-[#4A154B] block">Slack alert</span>
-            <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'Posts to Slack on each refresh' : 'Posts to Slack when published'}</span>
+            <span className="text-[14px] font-semibold text-[#2D3044] block">Slack alert</span>
+            <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'Posts an AI summary to Slack on each refresh' : 'Posts an AI summary to Slack when published'}</span>
           </div>
         </div>
-        <div className="px-4 pb-4 space-y-3.5">
-          <div>
-            <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Send to</label>
-            <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
-          </div>
-
-          {/* Message type — segmented (replaces the on/off toggle) */}
-          <div>
-            <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Message</label>
-            <div className="flex gap-1 p-1 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
-              {msgTypes.map((m) => (
-                <button key={String(m.id)} type="button" onClick={() => setAiBlockEnabled(m.id)}
-                  className={`flex-1 flex items-center justify-center py-2 px-2 rounded-md border-none cursor-pointer transition-colors ${aiBlockEnabled === m.id ? 'bg-[var(--bg-primary)] shadow-sm' : 'bg-transparent'}`}>
-                  <span className={`text-[12px] font-medium flex items-center gap-1 ${aiBlockEnabled === m.id ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'}`}>
-                    {m.id && <Sparkle size={12} weight="fill" />}{m.label}
-                  </span>
-                </button>
-              ))}
+        {/* Left: who + the summary prompt · Right: live preview (fills + scrolls) */}
+        <div className="flex gap-4 flex-1 min-h-0">
+          <div className="flex-1 min-w-0 space-y-3.5">
+            <div>
+              <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Send to</label>
+              <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
             </div>
-          </div>
-
-          {/* AI summary composer — only for the AI message type */}
-          {aiBlockEnabled && (
-            <div className="space-y-2">
-              <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={2} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
-              <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
+            <div>
+              <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">AI summary</label>
+              <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={3} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
+              <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
                 {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate</span></>) : (<><Sparkle size={14} weight="fill" /><span>Generate summary</span></>)}
               </button>
-              {aiPreviewError && <p className="text-[12px] text-red-500 m-0">{aiPreviewError}</p>}
+              {aiPreviewError && <p className="text-[12px] text-red-500 m-0 mt-1.5">{aiPreviewError}</p>}
             </div>
-          )}
-
-          {/* The preview is the single source of truth for what's sent */}
-          <div>
-            {!hasTargets && <p className="text-[10px] text-[var(--text-muted)] mb-1.5">Pick a channel above to choose where this goes.</p>}
-            {renderSlackPreview()}
+          </div>
+          <div className="flex-1 min-w-0 flex flex-col rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/40 overflow-hidden">
+            <div className="px-3.5 py-2.5 border-b border-[var(--border-primary)] shrink-0">
+              <span className="text-[13px] font-semibold text-[var(--text-primary)]">Preview</span>
+              <span className="text-[12px] text-[var(--text-muted)]"> · what gets posted</span>
+            </div>
+            <div className="p-3.5 flex-1 min-h-0 overflow-y-auto">
+              {!hasTargets && <p className="text-[10px] text-[var(--text-muted)] mb-2">Pick a channel to choose where this goes.</p>}
+              {renderSlackPreview()}
+            </div>
           </div>
         </div>
       </div>
@@ -1747,7 +1741,7 @@ export default function PublishView({
   const isEditing = !!(updateMode && updateMode.workflow_id)
   const hasExisting = !!(existingWorkflows && existingWorkflows.length)
   const renderWorkflowStep = () => (
-    <div className="px-[80px] py-6">
+    <div className="px-12 py-6">
       <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">New workflow or edit an existing one?</h2>
       <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">A workflow is the automation — your metric, its schedule, and where the results go.</p>
       <div className="space-y-3">
@@ -1807,7 +1801,7 @@ export default function PublishView({
         onBack={() => setSelectedWidget(null)}
         onVerified={onWidgetVerified}
         onBackToSession={() => onClose?.()}
-        onContinueToPublish={() => { setSelectedWidget(null); setStep(STEP.WORKFLOW) }}
+        onContinueToPublish={() => { setSelectedWidget(null); setTab(TAB.PUBLISH) }}
       />
     ) : (
       <WidgetListView
@@ -1815,7 +1809,7 @@ export default function PublishView({
         widgetCount={widgets.length}
         verifiedCount={widgets.filter((w) => w.verified).length}
         onSelectWidget={(w) => setSelectedWidget(w)}
-        onContinueToPublish={() => setStep(STEP.WORKFLOW)}
+        onContinueToPublish={() => setTab(TAB.PUBLISH)}
         onBack={() => onClose?.()}
         titleMissing={false}
       />
@@ -1824,7 +1818,7 @@ export default function PublishView({
 
   // ── STEP 1 — Outputs ──
   const OutputCard = ({ active, onToggle, icon, title, desc, radio }) => (
-    <button type="button" onClick={onToggle} disabled={isAgentBusy} className={`w-full flex items-center gap-3.5 p-4 rounded-xl border-2 text-left transition-colors cursor-pointer disabled:cursor-not-allowed ${active ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] bg-[var(--bg-primary)] hover:border-[var(--accent)]/40'}`}>
+    <button type="button" onClick={onToggle} disabled={isAgentBusy} className={`w-full flex items-center gap-3.5 p-4 rounded-xl border text-left transition-colors cursor-pointer disabled:cursor-not-allowed ${active ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] bg-[var(--bg-primary)] hover:border-[var(--accent)]/40'}`}>
       <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${active ? 'bg-[var(--accent)]/10' : 'bg-[var(--bg-hover)]'}`}>{icon}</div>
       <div className="flex-1 min-w-0">
         <span className={`text-[14px] font-semibold block ${active ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}>{title}</span>
@@ -1844,11 +1838,11 @@ export default function PublishView({
 
   // ── STEP 1 — Outputs ──
   const renderOutputsStep = () => (
-    <div className="px-[80px] py-6">
+    <div className="px-12 py-6">
       <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">What do you want to publish?</h2>
       <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">Pick one or both — you're choosing the outputs, not publishing yet.</p>
       <div className="space-y-3">
-        <OutputCard active={publishDashboardEnabled} onToggle={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)} icon={<SquaresFour size={20} weight="duotone" className={publishDashboardEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Dashboard" desc="A live dashboard on your Dashboards page." />
+        <OutputCard active={publishDashboardEnabled} onToggle={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)} icon={<DashboardMark size={16} className={publishDashboardEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Dashboard" desc="A live dashboard on your Dashboards page." />
         {isPetavueUser && (
           <OutputCard active={slackEnabled} onToggle={() => !isAgentBusy && setSlackEnabled(v => !v)} icon={<svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'}/></svg>} title="Slack alert" desc="Notify a channel or people when the data updates." />
         )}
@@ -1858,7 +1852,7 @@ export default function PublishView({
 
   // ── STEP 2 — Frequency ──
   const renderFrequencyStep = () => (
-    <div className="px-[80px] py-6">
+    <div className="px-12 py-6">
       <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">How often should this run?</h2>
       <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">The same schedule applies to everything you chose to publish.</p>
       <div className="space-y-3">
@@ -1875,12 +1869,14 @@ export default function PublishView({
       { active: 'Analyzing your dashboard', done: 'Analyzed your dashboard', phases: [PHASE.EXTRACTING, PHASE.PREPARING] },
       { active: 'Testing data sources & recomputing the numbers', done: 'Tested data sources & recomputed the numbers', phases: [PHASE.EXECUTING] },
     ]
-    if (autoRefresh) reviewItems.push({ active: 'Preparing it for reliable scheduled refresh', done: 'Prepared it for reliable scheduled refresh', phases: [PHASE.HARDENING] })
+    // Hardening ("Preparing for scheduled refresh") is shown as its own card
+    // below the checklist — not as a checklist row.
     const order = [PHASE.EXTRACTING, PHASE.PREPARING, PHASE.EXECUTING, PHASE.HARDENING]
     const curIdx = order.indexOf(phase)
+    const hardenedCount = Object.values(hardeningStatus || {}).filter(h => h && h.status && h.status !== 'pending').length
 
     return (
-      <div className="px-[80px] py-6">
+      <div className="px-12 py-6">
         <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">Agentic Review</h2>
         <p className="text-[12px] text-[var(--text-muted)] mt-1 mb-1">
           {autoRefresh
@@ -1888,7 +1884,10 @@ export default function PublishView({
             : 'An AI agent will check your dashboard to ensure everything works correctly.'}
         </p>
         {!reviewPassed && phase !== PHASE.DONE && (
-          <p className="text-[12px] text-[var(--accent)] font-medium mt-1.5 mb-5">Your dashboard can't be published until this review passes.</p>
+          <p className="text-[12px] text-[#8e93af] font-medium mt-1.5 mb-5 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" className="shrink-0" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+            Your dashboard can't be published until this review passes.
+          </p>
         )}
         {(reviewPassed || phase === PHASE.DONE) && <div className="mb-5" />}
 
@@ -1901,23 +1900,9 @@ export default function PublishView({
             <p className="text-[12px] text-red-700/90 mt-2 mb-1 leading-relaxed">{errorMessage}</p>
             <p className="text-[12px] text-red-700/70 m-0">Fix this in your session, then run the review again.</p>
           </div>
-        ) : reviewPassed ? (
-          <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle size={20} weight="fill" className="text-green-500 shrink-0" />
-              <h3 className="text-[14px] font-semibold text-green-700 m-0">Review passed</h3>
-            </div>
-            <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">
-              {autoRefresh
-                ? (adjustmentCount > 0
-                    ? `Tested end-to-end and hardened — the agent fixed ${adjustmentCount} issue${adjustmentCount !== 1 ? 's' : ''} so it keeps running reliably on every scheduled refresh.`
-                    : 'Tested end-to-end. It will keep running reliably on every scheduled refresh.')
-                : 'Tested end-to-end and ready to publish.'}
-            </p>
-          </div>
-        ) : isReviewRunning ? (
+        ) : (reviewPassed || isReviewRunning) ? (
           <div>
-            {phase !== PHASE.HARDENING && (
+            {isReviewRunning && phase !== PHASE.HARDENING && (
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[12px] font-medium text-[var(--text-secondary)]">{phase === PHASE.EXECUTING ? `${completedSteps} of ${totalSteps} checks done` : 'Getting started…'}</span>
@@ -1928,11 +1913,13 @@ export default function PublishView({
                 </div>
               </div>
             )}
+
+            {/* Checklist — kept visible while running AND after the review passes */}
             <div className="space-y-3">
               {reviewItems.map((item, i) => {
                 const itemIdx = Math.max(...item.phases.map(p => order.indexOf(p)))
-                const isActive = item.phases.includes(phase)
-                const isDone = curIdx > itemIdx
+                const isActive = !reviewPassed && item.phases.includes(phase)
+                const isDone = reviewPassed || curIdx > itemIdx
                 return (
                   <div key={i} className="flex items-center gap-3">
                     {isDone ? <CheckCircle size={16} weight="fill" className="text-green-500 shrink-0" /> : isActive ? <Spinner size={16} className="text-[var(--accent)] animate-spin shrink-0" /> : <CircleNotch size={16} className="text-[var(--text-muted)] shrink-0" />}
@@ -1941,9 +1928,33 @@ export default function PublishView({
                 )
               })}
             </div>
-            {progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] italic mt-4 animate-fade-in">— {progressQuip}</p>}
-            {phase === PHASE.HARDENING && hardeningPhase === 'running' && (
-              <p className="text-[12px] text-[var(--text-muted)] mt-4">Preparing your dashboard so every scheduled refresh runs cleanly{hardeningQuip ? ` — ${hardeningQuip}` : '…'}</p>
+            {isReviewRunning && progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] italic mt-4 animate-fade-in">— {progressQuip}</p>}
+
+            {/* Hardening — its own card while preparing for scheduled refresh */}
+            {isReviewRunning && phase === PHASE.HARDENING && (
+              <div className="mt-5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
+                <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">Preparing for scheduled refresh</h3>
+                <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-3 leading-relaxed">An AI agent is preparing your dashboard to ensure every scheduled refresh runs without issues. This may take a few minutes.</p>
+                <p className="text-[12px] font-semibold text-[var(--accent)] m-0">{hardenedCount} of {totalSteps} steps completed</p>
+                {hardeningQuip && <p className="text-[12px] text-[var(--text-muted)] italic mt-3 m-0">— {hardeningQuip}</p>}
+              </div>
+            )}
+
+            {/* Review passed — a checklist row like the steps above, no box */}
+            {reviewPassed && (
+              <div className="mt-3">
+                <div className="flex items-center gap-3">
+                  <CheckCircle size={16} weight="fill" className="text-green-500 shrink-0" />
+                  <span className="text-[12px] flex-1 text-green-600 font-medium">Review passed</span>
+                </div>
+                <p className="text-[12px] text-[var(--text-muted)] mt-1.5 ml-7 mb-0 leading-relaxed">
+                  {autoRefresh
+                    ? (adjustmentCount > 0
+                        ? `Tested end-to-end and hardened — the agent fixed ${adjustmentCount} issue${adjustmentCount !== 1 ? 's' : ''} so it keeps running reliably on every scheduled refresh.`
+                        : 'Tested end-to-end. It will keep running reliably on every scheduled refresh.')
+                    : 'Tested end-to-end and ready to publish.'}
+                </p>
+              </div>
             )}
           </div>
         ) : draftLoading ? (
@@ -1998,8 +2009,8 @@ export default function PublishView({
       )
     }
     return (
-      <div className="px-[80px] py-6 space-y-5">
-        <div>
+      <div className="h-full flex flex-col gap-5 px-12 py-6 min-h-0">
+        <div className="shrink-0">
           <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">Configure your outputs</h2>
           <p className="text-[12px] text-[var(--text-muted)] mt-1.5 flex items-center gap-1.5">
             <CheckCircle size={13} weight="fill" className="text-green-500" />Checked &amp; working · {scheduleSummary.toLowerCase()}
@@ -2008,10 +2019,13 @@ export default function PublishView({
 
         {/* Dashboard output */}
         {publishDashboardEnabled && (
-          <div className="border border-[var(--border-primary)] rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <SquaresFour size={16} weight="duotone" className="text-[var(--accent)]" />
-              <span className="text-[14px] font-semibold text-[var(--text-primary)]">Dashboard</span>
+          <div className="space-y-3 shrink-0">
+            <div className="flex items-start gap-2.5">
+              <DashboardMark size={16} className="text-[var(--accent)]" />
+              <div className="flex-1 min-w-0">
+                <span className="text-[14px] font-semibold text-[#2D3044] block">Dashboard</span>
+                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'A live dashboard on your Dashboards page, refreshed each run' : 'A live dashboard on your Dashboards page'}</span>
+              </div>
             </div>
             <div>
               <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Dashboard name</label>
@@ -2020,11 +2034,16 @@ export default function PublishView({
           </div>
         )}
 
-        {/* Slack alert — channels + message (AI summary lives here, one block) */}
+        {/* Separator between the dashboard and Slack sections */}
+        {publishDashboardEnabled && isPetavueUser && slackEnabled && (
+          <div className="border-t border-[var(--border-primary)] shrink-0" />
+        )}
+
+        {/* Slack alert — fills remaining height; the preview scrolls inside */}
         {isPetavueUser && slackEnabled && renderSlackBlock()}
 
         {!autoRefresh && (
-          <p className="text-[12px] text-amber-600 flex items-center gap-1.5"><ArrowsClockwise size={12} weight="bold" />This is a one-time snapshot — it won't refresh automatically.</p>
+          <p className="text-[12px] text-amber-600 flex items-center gap-1.5 shrink-0"><ArrowsClockwise size={12} weight="bold" />This is a one-time snapshot — it won't refresh automatically.</p>
         )}
       </div>
     )
@@ -2068,22 +2087,19 @@ export default function PublishView({
   // ── Footer (context-aware nav) ──
   const renderFooter = () => {
     const backBtn = (target, label = 'Back') => (
-      <button onClick={() => setStep(target)} disabled={isAgentBusy} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
-        <ArrowLeft size={13} weight="bold" />{label}
+      <button onClick={() => setStep(target)} disabled={isAgentBusy} className="flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+        <CaretLeft size={13} weight="bold" />{label}
       </button>
     )
     const canPublish = hasOutput && (!publishDashboardEnabled || (dashboardTitle || '').trim().length > 0)
     const publishReason = !hasOutput ? 'Choose at least one output' : !canPublish ? 'Name your dashboard' : ''
 
     return (
-      <div className="shrink-0 flex items-center justify-between px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <div>
-          {step === STEP.WORKFLOW && backBtn(STEP.VERIFY)}
-          {step === STEP.OUTPUTS && backBtn(STEP.WORKFLOW)}
-          {step === STEP.FREQUENCY && backBtn(STEP.OUTPUTS)}
-          {step === STEP.REVIEW && backBtn(STEP.FREQUENCY)}
-          {step === STEP.CONFIRM && phase !== PHASE.DONE && backBtn(STEP.REVIEW)}
-        </div>
+      <div className="shrink-0 flex items-center justify-end gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+        {step === STEP.OUTPUTS && backBtn(STEP.WORKFLOW)}
+        {step === STEP.FREQUENCY && backBtn(STEP.OUTPUTS)}
+        {step === STEP.REVIEW && backBtn(STEP.FREQUENCY)}
+        {step === STEP.CONFIRM && phase !== PHASE.DONE && backBtn(STEP.REVIEW)}
         <div>
           {step === STEP.WORKFLOW && (
             <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={isEditing && !updateMode?.workflow_id} onClick={() => setStep(STEP.OUTPUTS)}>
@@ -2126,7 +2142,7 @@ export default function PublishView({
               <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={onClose}><span className="text-[12px]">Done</span></Button>
             ) : (
               <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={isPublishing || !canPublish} onClick={() => createWorkflow(execSessionIdRef.current)} title={publishReason}>
-                {isPublishing ? <><Spinner size={13} className="animate-spin" /><span className="text-[12px]">Publishing…</span></> : <><span className="text-[12px]">Publish</span><CaretRight size={13} weight="bold" /></>}
+                {isPublishing ? <><Spinner size={13} className="animate-spin" /><span className="text-[12px]">Publishing…</span></> : <><CheckCircle size={14} weight="fill" /><span className="text-[12px]">Publish</span></>}
               </Button>
             )
           )}
@@ -2165,7 +2181,7 @@ export default function PublishView({
     return (
       <div className="flex flex-col h-full overflow-hidden">
         <div className="shrink-0 flex items-center gap-2 px-5 py-3 border-b border-[var(--border-primary)]">
-          <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><ArrowLeft size={13} weight="bold" />Back to check</button>
+          <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><CaretLeft size={13} weight="bold" />Back to check</button>
           <span className="text-[14px] font-semibold text-[var(--text-primary)] ml-2">What changed ({adjustmentCount})</span>
         </div>
         <div className="flex-1 min-h-0 flex overflow-hidden" ref={adjustmentContainerRef}>
@@ -2181,7 +2197,7 @@ export default function PublishView({
               })}
               {recipe?.target_file && (
                 <div className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border cursor-pointer transition-all ${selectedOutput?.path === recipe.target_file ? 'border-[var(--accent)] bg-[var(--accent)]/6' : 'border-dashed border-[var(--border-primary)] bg-[var(--bg-secondary)]/50 hover:border-[var(--accent)]/50'}`} onClick={() => setSelectedOutput({ path: recipe.target_file, type: 'html' })}>
-                  <SquaresFour size={14} weight="duotone" className="text-[var(--accent)] shrink-0" />
+                  <DashboardMark size={14} className="text-[var(--accent)] shrink-0" />
                   <div className="flex-1 min-w-0 flex items-baseline"><span className="text-[12px] font-semibold text-[var(--text-primary)] shrink-0">Dashboard</span><span className="text-[12px] text-[var(--text-muted)] ml-2 font-mono truncate min-w-0">{recipe.target_file}</span></div>
                   <span className="text-[12px] text-[var(--accent)] font-medium shrink-0 whitespace-nowrap">{selectedOutput?.path === recipe.target_file ? 'Viewing →' : 'Preview →'}</span>
                 </div>
@@ -2203,24 +2219,50 @@ export default function PublishView({
           )}
         </div>
         <div className="shrink-0 flex items-center justify-between px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-          <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><ArrowLeft size={13} weight="bold" />Back to check</button>
+          <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><CaretLeft size={13} weight="bold" />Back to check</button>
           <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => { setShowAdjustments(false); setStep(STEP.CONFIRM) }}><span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" /></Button>
         </div>
       </div>
     )
   }
 
-  // ── Main wizard return ──
-  // The Verify step renders the widget views, which bring their own footer; all
-  // other steps use the shared wizard footer.
+  // ── Tab bar (Verify | Publish) ──
+  const renderTabBar = () => {
+    const tabs = [
+      { id: TAB.VERIFY, label: 'Verify' },
+      { id: TAB.PUBLISH, label: 'Publish' },
+    ]
+    return (
+      <div className="shrink-0 flex items-center gap-1 px-4 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
+        {tabs.map((t) => {
+          const active = tab === t.id
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`relative px-3 py-2.5 text-[13px] font-medium border-none bg-transparent cursor-pointer transition-colors ${active ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+            >
+              {t.label}
+              {active && <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-[var(--accent)]" />}
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // ── Main return — two tabs. Verify is a standalone widget review; Publish is
+  // the 5-screen sequence (Workflow → Outputs → Schedule → Review → Configure). ──
   return (
-    <div className="flex h-full overflow-hidden">
-      {renderStepper()}
-      <div className="flex-1 flex flex-col min-w-0">
-        {step === STEP.VERIFY ? (
-          <div className="flex-1 min-h-0">{renderVerifyStep()}</div>
-        ) : (
-          <>
+    <div className="flex flex-col h-full overflow-hidden">
+      {renderTabBar()}
+      {tab === TAB.VERIFY ? (
+        <div className="flex-1 min-h-0">{renderVerifyStep()}</div>
+      ) : (
+        <div className="flex-1 min-h-0 flex overflow-hidden">
+          {renderStepper()}
+          <div className="flex-1 flex flex-col min-w-0">
             <div className="flex-1 min-h-0 overflow-y-auto">
               {step === STEP.WORKFLOW && renderWorkflowStep()}
               {step === STEP.OUTPUTS && renderOutputsStep()}
@@ -2229,9 +2271,9 @@ export default function PublishView({
               {step === STEP.CONFIRM && renderConfirmStep()}
             </div>
             {renderFooter()}
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

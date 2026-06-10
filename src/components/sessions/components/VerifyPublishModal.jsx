@@ -68,13 +68,13 @@ export default function VerifyPublishModal({
         className="relative bg-[var(--bg-primary)] shadow-2xl border border-[var(--border-primary)] flex flex-col overflow-hidden transition-all duration-200 rounded-2xl"
         style={maximized
           ? { width: '95vw', height: '95vh', maxWidth: '95vw', maxHeight: '95vh' }
-          : { width: '100%', maxWidth: '1000px', height: '700px', maxHeight: '700px' }
+          : { width: '100%', maxWidth: '1178px', height: '800px', maxHeight: '800px' }
         }
         onClick={(e) => e.stopPropagation()}
       >
         {/* Minimal header — the wizard renders its own step indicator */}
         <div className="shrink-0 flex items-center px-4 py-2.5 border-b border-[var(--border-primary)]">
-          <span className="text-[14px] font-semibold text-[var(--text-primary)]">Verify &amp; publish</span>
+          <span className="text-[14px] font-semibold text-[var(--text-primary)]">Verify &amp; Publish</span>
           <div className="flex-1" />
           <button
             type="button"
