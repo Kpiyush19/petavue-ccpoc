@@ -20,12 +20,12 @@ export default function SuggestedQuestions({ questions, onSelect, disabled, load
       transition={{ duration: 0.25 }}
       className="flex flex-col gap-3 mt-4"
       role="group"
-      aria-label="Related follow-up questions"
+      aria-label="Follow-up questions"
       aria-busy={loading || undefined}
     >
       <div className="flex items-center gap-2">
         <StackSimple size={20} className="text-[var(--text-primary)] shrink-0" aria-hidden="true" />
-        <span className="text-[16px] text-[var(--text-primary)]">Related</span>
+        <span className="text-[16px] text-[var(--text-primary)]">Follow-ups</span>
       </div>
 
       {loading ? (
