@@ -82,7 +82,7 @@ export default function WorkspacePage() {
   // skill-run page), we ALSO request the V&P modal to auto-open once the
   // dashboard tab is active — ArtifactPanel handles the runtime check.
   const pendingArtifact = useRef(location.state?.openArtifact || (isLanding ? LANDING_ARTIFACT : null));
-  const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish || isLanding);
+  const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish);
   useEffect(() => {
     if (!pendingArtifact.current && !pendingVerifyPublish.current) return;
     if (session.sessionId !== id) return;

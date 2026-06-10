@@ -230,6 +230,35 @@ export const db = {
     },
   ],
 
+  // Workflows already linked to the dashboard session — surfaced by
+  // /api/workflows/check so the "Edit existing workflow" path is demoable.
+  // Shape mirrors what PublishView's updateMode-populate effect expects:
+  // blocks[] (ai_summarize / send_slack / publish_dashboard) + schedule.
+  linkedWorkflows: [
+    {
+      workflow_id: "wf-q2-weekly",
+      name: "Q2 Revenue — Weekly",
+      dashboard_name: "Q2 Revenue Dashboard",
+      dashboard_id: "dash-demo-1",
+      blocks: [
+        { type: "publish_dashboard", config: { name: "Q2 Revenue Dashboard", shared: false, include_link: true, message: "" } },
+        { type: "ai_summarize", config: { prompt: "Summarize the week's revenue movement and flag at-risk accounts.", output_file: "agent_memo/weekly_summary.md", save_memo: true } },
+        { type: "send_slack", config: { channels: ["C2"], dm_users: [], mode: "content_from", content_from: "agent_memo/weekly_summary.md" } },
+      ],
+      schedule: { type: "custom", cron: "0 9 * * 1", timezone: "America/New_York" },
+    },
+    {
+      workflow_id: "wf-q2-sync",
+      name: "Q2 Revenue — On data sync",
+      dashboard_name: "Q2 Revenue Dashboard",
+      dashboard_id: "dash-demo-1",
+      blocks: [
+        { type: "publish_dashboard", config: { name: "Q2 Revenue Dashboard", shared: true, include_link: true, message: "" } },
+      ],
+      schedule: { type: "data_sync" },
+    },
+  ],
+
   dashboards: [
     {
       _id: "dash-demo-1",

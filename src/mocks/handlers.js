@@ -111,6 +111,20 @@ function syncSteps(es) {
   }));
 }
 
+// Grounded follow-up chips answering the latest turn. The first set hydrates on
+// load via /recommendations; the second is emitted after a chat reply so the
+// chips always follow the most recent message.
+const FOLLOWUP_QUESTIONS = [
+  { question: "Which at-risk accounts have the largest ARR exposure?", grounded_in: "Top Accounts", grounded_type: "widget" },
+  { question: "What's driving the QoQ growth in average deal size?", grounded_in: "Avg Deal Size", grounded_type: "widget" },
+  { question: "Summarize the biggest revenue risks for Q2.", grounded_in: "Q2 Revenue Dashboard", grounded_type: "dashboard" },
+];
+const NEXT_FOLLOWUP_QUESTIONS = [
+  { question: "Break new ARR down by segment.", grounded_in: "Revenue analysis", grounded_type: "skill" },
+  { question: "Compare this quarter against Q1.", grounded_in: "Q2 Revenue Dashboard", grounded_type: "dashboard" },
+  { question: "Add a Q3 revenue forecast.", grounded_in: "Revenue analysis", grounded_type: "skill" },
+];
+
 function simulateAgentReply(sessionId, userText) {
   const channel = `session-${sessionId}`;
   const reply =
@@ -125,6 +139,8 @@ function simulateAgentReply(sessionId, userText) {
       setTimeout(tick, 30);
     } else {
       emit(channel, "agent-event", { type: "done", context_tokens: 26400, turn_count: 3 });
+      // Fresh follow-ups for the turn we just answered.
+      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: NEXT_FOLLOWUP_QUESTIONS }), 200);
     }
   };
   setTimeout(tick, 250);
@@ -165,8 +181,8 @@ const handlers = [
     },
   },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/history$/, handler: ({ params }) => ({ messages: db.history[params[0]] || [] }) },
-  // Suggested follow-up chips disabled (the s-suggested-questions UI is hidden).
-  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: () => ({ questions: [] }) },
+  // Grounded follow-up chips for the latest turn (shown under the last message).
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: () => ({ questions: FOLLOWUP_QUESTIONS }) },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/files$/, handler: ({ params }) => ({ files: db.fileTree[params[0]] || [], tree: db.fileTree[params[0]] || [] }) },
 
   // ── Verify & Publish: dashboard detection + widgets ────────────────
@@ -349,7 +365,7 @@ const handlers = [
   },
 
   // ── Workflows ──────────────────────────────────────────────────────
-  { method: "GET", pattern: /\/api\/workflows\/check$/, handler: () => ({ exists: false, workflows: [] }) },
+  { method: "GET", pattern: /\/api\/workflows\/check$/, handler: () => ({ exists: db.linkedWorkflows.length > 0, workflows: db.linkedWorkflows }) },
   { method: "GET", pattern: /\/api\/workflows\/dashboards\/all$/, handler: () => ({ dashboards: db.dashboards }) },
   { method: "GET", pattern: /\/api\/workflows\/dashboards\/([^/]+)$/, handler: ({ params }) => db.dashboards.find((d) => d.dashboard_id === params[0]) || db.dashboards[0] },
   {

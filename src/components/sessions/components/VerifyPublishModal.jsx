@@ -74,7 +74,7 @@ export default function VerifyPublishModal({
       >
         {/* Minimal header — the wizard renders its own step indicator */}
         <div className="shrink-0 flex items-center px-4 py-2.5 border-b border-[var(--border-primary)]">
-          <span className="text-[13px] font-semibold text-[var(--text-primary)]">Verify &amp; publish</span>
+          <span className="text-[14px] font-semibold text-[var(--text-primary)]">Verify &amp; publish</span>
           <div className="flex-1" />
           <button
             type="button"
@@ -98,11 +98,11 @@ export default function VerifyPublishModal({
         <div className="flex-1 min-h-0 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <span className="text-[13px] text-[var(--text-muted)] animate-pulse">Loading dashboard…</span>
+              <span className="text-[14px] text-[var(--text-muted)] animate-pulse">Loading dashboard…</span>
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-full">
-              <span className="text-[13px] text-[var(--pv-error-text)]">{error}</span>
+              <span className="text-[14px] text-[var(--pv-error-text)]">{error}</span>
             </div>
           ) : (
             <PublishView
