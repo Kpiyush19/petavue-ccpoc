@@ -122,7 +122,8 @@ export default function ChatArea({
   onSend,
   disabled,
   onOpenWidgetChat,
-  suggestedQuestions = []
+  suggestedQuestions = [],
+  suggestionsLoading = false
 }) {
   const bottomRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -381,11 +382,12 @@ export default function ChatArea({
           })}
           {isThinking && <ThinkingIndicator key="thinking" isCompacting={isCompacting} />}
         </AnimatePresence>
-        {!isThinking && !disabled && suggestedQuestions.length > 0 && (
+        {!isThinking && !disabled && (suggestionsLoading || suggestedQuestions.length > 0) && (
           <SuggestedQuestions
             questions={suggestedQuestions}
             onSelect={(q) => onSend(q)}
             disabled={disabled}
+            loading={suggestionsLoading}
           />
         )}
         <div ref={bottomRef} />

@@ -139,8 +139,9 @@ function simulateAgentReply(sessionId, userText) {
       setTimeout(tick, 30);
     } else {
       emit(channel, "agent-event", { type: "done", context_tokens: 26400, turn_count: 3 });
-      // Fresh follow-ups for the turn we just answered.
-      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: NEXT_FOLLOWUP_QUESTIONS }), 200);
+      // Fresh follow-ups for the turn we just answered — delayed so the
+      // "Related" loading skeleton has a clear moment to shimmer first.
+      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: NEXT_FOLLOWUP_QUESTIONS }), 3500);
     }
   };
   setTimeout(tick, 250);
@@ -182,7 +183,8 @@ const handlers = [
   },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/history$/, handler: ({ params }) => ({ messages: db.history[params[0]] || [] }) },
   // Grounded follow-up chips for the latest turn (shown under the last message).
-  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: () => ({ questions: FOLLOWUP_QUESTIONS }) },
+  // Slight delay so the "Related" loading skeleton renders before they resolve.
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: async () => { await new Promise((r) => setTimeout(r, 3500)); return { questions: FOLLOWUP_QUESTIONS }; } },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/files$/, handler: ({ params }) => ({ files: db.fileTree[params[0]] || [], tree: db.fileTree[params[0]] || [] }) },
 
   // ── Verify & Publish: dashboard detection + widgets ────────────────

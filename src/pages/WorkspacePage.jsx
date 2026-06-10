@@ -13,9 +13,6 @@ import ScheduleFormModal from "../components/ScheduleFormModal";
 import useSessionPanelStore from "../stores/useSessionPanelStore";
 import { MOCK_ENABLED, LANDING_SESSION_ID } from "../mocks";
 
-// Descriptor for the dashboard auto-opened on the /home landing (mock mode).
-const LANDING_ARTIFACT = { path: "output/dashboard/revenue_dashboard.html", title: "Q2 Revenue Dashboard", contentType: "html" };
-
 const FILES_MIN = 200;
 const FILES_MAX = 320;
 const RESIZE_WIDTH = 8;
@@ -26,7 +23,6 @@ export default function WorkspacePage() {
   // On /home there's no :id — fall back to the fixed landing session so the URL
   // stays clean (no session id) while still showing the dashboard workspace.
   const { id: paramId } = useParams();
-  const isLanding = MOCK_ENABLED && !paramId;
   const id = paramId || (MOCK_ENABLED ? LANDING_SESSION_ID : undefined);
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,7 +77,7 @@ export default function WorkspacePage() {
   // If `openVerifyPublish: true` is also set in state (V&P button on the
   // skill-run page), we ALSO request the V&P modal to auto-open once the
   // dashboard tab is active — ArtifactPanel handles the runtime check.
-  const pendingArtifact = useRef(location.state?.openArtifact || (isLanding ? LANDING_ARTIFACT : null));
+  const pendingArtifact = useRef(location.state?.openArtifact || null);
   const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish);
   useEffect(() => {
     if (!pendingArtifact.current && !pendingVerifyPublish.current) return;
@@ -301,6 +297,7 @@ export default function WorkspacePage() {
               disabled={isIdle || isThinking}
               onOpenWidgetChat={artifact.openWidgetLineage}
               suggestedQuestions={session.suggestedQuestions}
+              suggestionsLoading={session.suggestionsLoading}
             />
 
             {session.messages.length > 0 && (

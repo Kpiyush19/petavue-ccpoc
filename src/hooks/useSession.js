@@ -31,6 +31,10 @@ export function useSession() {
   // `suggested-questions` Pusher event (fired just before `done`), cleared when
   // a new turn starts, hydrated from the API on resume.
   const [suggestedQuestions, setSuggestedQuestions] = useState([])
+  // True while we're waiting for the latest turn's follow-up chips (shows the
+  // "Related" loading skeleton). Cleared when the suggested-questions event /
+  // recommendations fetch resolves.
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
 
   const pusherDeliveredRef = useRef(false)
   const textTruncatedRef = useRef(false)
@@ -133,8 +137,13 @@ export function useSession() {
       logEvent({ type: 'advisor_error', error_code: event.error_code })
     } else if (event.type === 'suggested-questions') {
       setSuggestedQuestions(event.questions || [])
+      setSuggestionsLoading(false)
     } else if (event.type === 'done') {
       setStatus('active')
+      // Turn finished — expect follow-up chips next; show the skeleton until
+      // they arrive (safety-cleared after a few seconds if none come).
+      setSuggestionsLoading(true)
+      setTimeout(() => setSuggestionsLoading(false), 5000)
       if (event.context_tokens != null) setTotalTokens(event.context_tokens)
       else if (event.total_tokens != null) setTotalTokens(event.total_tokens)
       if (event.turn_count != null) setTurnCount(event.turn_count)
@@ -441,9 +450,11 @@ export function useSession() {
 
     // Hydrate the latest follow-up chips (non-blocking — never delays the
     // thread render; absent/disabled tenants just return an empty set).
+    setSuggestionsLoading(true)
     apiGet(`/api/sessions/${sid}/recommendations`)
       .then((d) => setSuggestedQuestions(d?.questions || []))
       .catch(() => {})
+      .finally(() => setSuggestionsLoading(false))
 
     return session.session_id
   }, [])
@@ -459,6 +470,7 @@ export function useSession() {
 
     // Previous turn's follow-up chips don't apply to the new turn.
     setSuggestedQuestions([])
+    setSuggestionsLoading(false)
 
     // Show user message with attachment names immediately. Tag with
     // widgetScope when present so widget-chat UIs can render it without
@@ -625,6 +637,7 @@ export function useSession() {
     messages,
     eventLog,
     suggestedQuestions,
+    suggestionsLoading,
     workspaceReadyCounter,
     createSession,
     resumeSession,

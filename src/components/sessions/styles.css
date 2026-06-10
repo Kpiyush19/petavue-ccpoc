@@ -1675,6 +1675,30 @@
   padding-left: 36px;
 }
 
+/* Loading skeleton for the "Related" follow-ups — a shimmer sweep over the
+   grey placeholder bars (Figma node 3905:132638). */
+.s-skel {
+  background-color: #eef0f7;
+  background-image: linear-gradient(
+    90deg,
+    rgba(238, 240, 247, 0) 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(238, 240, 247, 0) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: s-skel-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes s-skel-shimmer {
+  0% { background-position: 150% 0; }
+  100% { background-position: -150% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-skel { animation: none; }
+}
+
 .s-suggested-questions {
   display: flex;
   align-items: flex-start;

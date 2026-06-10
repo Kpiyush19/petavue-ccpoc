@@ -7,9 +7,12 @@ import { StackSimple, ArrowBendUpRight } from "@phosphor-icons/react";
 // divider at rest and a blue rounded highlight on hover. A click sends the
 // question immediately. Provenance (the KD/skill it was grounded in) is
 // hover-only via the button `title`.
-export default function SuggestedQuestions({ questions, onSelect, disabled }) {
-  if (!questions || questions.length === 0) return null;
-  const items = questions.slice(0, 3);
+const SKELETON_WIDTHS = ["45%", "62%", "38%"];
+
+export default function SuggestedQuestions({ questions, onSelect, disabled, loading }) {
+  const items = (questions || []).slice(0, 3);
+  if (!loading && items.length === 0) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -18,11 +21,26 @@ export default function SuggestedQuestions({ questions, onSelect, disabled }) {
       className="flex flex-col gap-3 mt-4"
       role="group"
       aria-label="Related follow-up questions"
+      aria-busy={loading || undefined}
     >
       <div className="flex items-center gap-2">
         <StackSimple size={20} className="text-[var(--text-primary)] shrink-0" aria-hidden="true" />
         <span className="text-[16px] text-[var(--text-primary)]">Related</span>
       </div>
+
+      {loading ? (
+        <div className="flex flex-col">
+          {SKELETON_WIDTHS.map((w, i) => (
+            <div
+              key={i}
+              className="flex h-9 w-full items-center justify-between gap-2 px-4 border border-transparent border-b-[#eef0f7]"
+            >
+              <div className="s-skel h-5 rounded-md" style={{ width: w }} />
+              <div className="s-skel h-5 w-5 shrink-0 rounded-md" />
+            </div>
+          ))}
+        </div>
+      ) : (
       <div className="flex flex-col">
         {items.map((q, i) => (
           <button
@@ -44,6 +62,7 @@ export default function SuggestedQuestions({ questions, onSelect, disabled }) {
           </button>
         ))}
       </div>
+      )}
     </motion.div>
   );
 }
