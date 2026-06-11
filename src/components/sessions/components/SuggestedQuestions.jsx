@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { StackSimple, ArrowBendUpRight } from "@phosphor-icons/react";
+import { StackSimple, ArrowBendUpRight, BellSlash } from "@phosphor-icons/react";
 
 // "Related" follow-up suggestions for the latest turn (max 3). Matches the
 // Figma "Related" design: a header with a stack icon, then full-width rows —
@@ -9,7 +9,7 @@ import { StackSimple, ArrowBendUpRight } from "@phosphor-icons/react";
 // hover-only via the button `title`.
 const SKELETON_WIDTHS = ["45%", "62%", "38%"];
 
-export default function SuggestedQuestions({ questions, onSelect, disabled, loading }) {
+export default function SuggestedQuestions({ questions, onSelect, disabled, loading, onMute }) {
   const items = (questions || []).slice(0, 3);
   if (!loading && items.length === 0) return null;
 
@@ -26,6 +26,18 @@ export default function SuggestedQuestions({ questions, onSelect, disabled, load
       <div className="flex items-center gap-2">
         <StackSimple size={20} className="text-[var(--text-primary)] shrink-0" aria-hidden="true" />
         <span className="text-[16px] text-[var(--text-primary)]">Follow-ups</span>
+        {onMute && (
+          <button
+            type="button"
+            onClick={onMute}
+            title="Hide follow-up suggestions for this session"
+            aria-label="Hide follow-ups"
+            className="ml-auto flex items-center gap-1 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-1 rounded hover:bg-[var(--bg-hover)] transition-colors"
+          >
+            <BellSlash size={14} weight="bold" aria-hidden="true" />
+            Hide
+          </button>
+        )}
       </div>
 
       {loading ? (

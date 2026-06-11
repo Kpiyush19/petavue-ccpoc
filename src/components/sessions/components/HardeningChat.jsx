@@ -11,6 +11,7 @@ export default function HardeningChat({
   disabled,
   onStepUpdate,
   onDiffUpdate,
+  fill = false,
 }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -199,21 +200,29 @@ export default function HardeningChat({
   const isDisabled = disabled || sending || agentActive
 
   return (
-    <div className="flex flex-col mt-2 mb-1">
-      {/* Message history */}
-      {groupedMessages.length > 0 && (
-        <div
-          ref={scrollRef}
-          className="max-h-[240px] overflow-y-auto space-y-2.5 px-1 mb-2 scroll-smooth"
-        >
+    <div className={fill ? 'flex flex-col h-full min-h-0' : 'flex flex-col mt-2 mb-1'}>
+      {/* Message history — fills available height in `fill` mode so the input pins to the bottom */}
+      {fill ? (
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto space-y-2.5 px-1 mb-2 scroll-smooth">
           {groupedMessages.map((msg, i) => (
             <ChatMessage key={i} message={msg} />
           ))}
         </div>
+      ) : (
+        groupedMessages.length > 0 && (
+          <div
+            ref={scrollRef}
+            className="max-h-[240px] overflow-y-auto space-y-2.5 px-1 mb-2 scroll-smooth"
+          >
+            {groupedMessages.map((msg, i) => (
+              <ChatMessage key={i} message={msg} />
+            ))}
+          </div>
+        )
       )}
 
       {/* Input */}
-      <div className="flex items-center gap-2 px-1">
+      <div className={`flex items-center gap-2 px-1 ${fill ? 'shrink-0' : ''}`}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}

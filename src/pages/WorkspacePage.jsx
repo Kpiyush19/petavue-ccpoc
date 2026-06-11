@@ -298,6 +298,9 @@ export default function WorkspacePage() {
               onOpenWidgetChat={artifact.openWidgetLineage}
               suggestedQuestions={session.suggestedQuestions}
               suggestionsLoading={session.suggestionsLoading}
+              onMuteFollowups={session.muteFollowups}
+              followupsMuted={session.followupsMuted}
+              onUnmuteFollowups={session.unmuteFollowups}
             />
 
             {session.messages.length > 0 && (

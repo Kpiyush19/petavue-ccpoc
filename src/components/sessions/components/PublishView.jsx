@@ -6,7 +6,7 @@ import Pusher from 'pusher-js'
 import {
   CaretLeft, CaretRight, Play,
   CircleNotch, CheckCircle, XCircle, Spinner, ArrowsClockwise, PencilSimple, Sparkle,
-  ArrowsOutSimple, ArrowsInSimple, Plus,
+  Plus, ListChecks, Warning, X,
 } from '@phosphor-icons/react'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken, getCurrentUser } from '../../../api'
@@ -83,7 +83,7 @@ function CustomSelect({ value, onChange, options, className = '' }) {
         ref={btnRef}
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 text-[12px] font-medium rounded-lg border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:border-[var(--accent)]/50 transition-colors text-left"
+        className="w-full flex items-center justify-between gap-1.5 px-3 py-2 text-[14px] rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer hover:border-[var(--accent)]/50 transition-colors text-left"
       >
         <span className="truncate">{selected?.label || value}</span>
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}>
@@ -192,9 +192,9 @@ const PHASE = {
 // Wizard steps. "Verify" (per-widget review) is the first step; "Review" is
 // the mandatory agentic check that gates publishing.
 const STEP = { WORKFLOW: 'workflow', VERIFY: 'verify', OUTPUTS: 'outputs', FREQUENCY: 'frequency', REVIEW: 'review', CONFIRM: 'confirm' }
-// Verify is now its own top-level tab (optional, non-blocking). The Publish tab
-// runs this 5-screen sequence.
-const STEP_ORDER = [STEP.WORKFLOW, STEP.OUTPUTS, STEP.FREQUENCY, STEP.REVIEW, STEP.CONFIRM]
+// Verify hosts two sub-steps (User Review + Agentic Review); the agentic review
+// is the gate. Publish runs the remaining 4-screen sequence.
+const STEP_ORDER = [STEP.WORKFLOW, STEP.OUTPUTS, STEP.FREQUENCY, STEP.CONFIRM]
 const TAB = { VERIFY: 'verify', PUBLISH: 'publish' }
 const STEP_LABELS = {
   [STEP.WORKFLOW]: 'Workflow',
@@ -278,6 +278,7 @@ const PROGRESS_MESSAGES_PUBLISH = [
 export default function PublishView({
   dashboardTitle = '',
   setDashboardTitle,
+  codeHash = null,
   widgets = [],
   widgetCount = 0,
   onWidgetVerified,
@@ -296,7 +297,15 @@ export default function PublishView({
   // Two top-level tabs: Verify (optional, standalone widget review) and Publish
   // (the main workflow sequence). Default to Verify so review comes first.
   const [tab, setTab] = useState(TAB.VERIFY)
+  // Verify has two sub-steps: 'user' (widget review) and 'agent' (agentic review).
+  const [verifySubTab, setVerifySubTab] = useState('user')
   const [reviewPassed, setReviewPassed] = useState(false)
+  // True when we skipped the run because the code hasn't changed since the last
+  // review (the agent already reviewed this exact code).
+  const [reviewSkipped, setReviewSkipped] = useState(false)
+  // Step ids whose accept/reject choice has been "applied". The current
+  // selection must match this before you can continue to publish.
+  const [appliedRejected, setAppliedRejected] = useState([])
   const [selectedWidget, setSelectedWidget] = useState(null) // for the Verify step
 
   // A workflow = recipe + schedule + destinations. Distinct from the dashboard.
@@ -353,6 +362,8 @@ export default function PublishView({
   const [selectedOutput, setSelectedOutput] = useState(null)
   const [hardeningLoading, setHardeningLoading] = useState(false)
   const [showAdjustments, setShowAdjustments] = useState(false)
+  // Per-adjustment accept/reject (keyed by step id; missing or true = accepted)
+  const [adjustmentChecked, setAdjustmentChecked] = useState({})
   const [collapsedSteps, setCollapsedSteps] = useState({})
   const [adjustmentSplitPct, setAdjustmentSplitPct] = useState(50)
   const adjustmentDragging = useRef(false)
@@ -398,6 +409,31 @@ export default function PublishView({
   const autoRefreshRef = useRef(autoRefresh)
 
   useEffect(() => { autoRefreshRef.current = autoRefresh }, [autoRefresh])
+
+  // ── Code-change detection ──────────────────────────────────────────
+  // The backend gives us a hash of the dashboard code (code_hash). We remember
+  // the hash we last reviewed (per session) so a re-publish with no code change
+  // can skip the (expensive) review entirely.
+  const reviewHashKey = sessionId ? `agent-review-hash:${sessionId}` : null
+  useEffect(() => {
+    if (!codeHash || !reviewHashKey) return
+    // Only auto-skip before any run this session — never override an in-progress
+    // or just-completed review.
+    if (reviewPassed || isReviewRunning) return
+    if (localStorage.getItem(reviewHashKey) === codeHash) {
+      setReviewSkipped(true)
+      setReviewPassed(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeHash, reviewHashKey])
+
+  // Remember the hash whenever a real review passes, so the next open can skip.
+  useEffect(() => {
+    if (reviewPassed && !reviewSkipped && codeHash && reviewHashKey) {
+      localStorage.setItem(reviewHashKey, codeHash)
+    }
+  }, [reviewPassed, reviewSkipped, codeHash, reviewHashKey])
+
 
   const stepResultsRef = useRef(stepResults)
   useEffect(() => { stepResultsRef.current = stepResults }, [stepResults])
@@ -760,12 +796,19 @@ export default function PublishView({
         }
       }
 
+      // Adjustments the user unchecked — the published workflow should keep the
+      // original code for these steps instead of the agent's hardening fix.
+      const rejectedAdjustments = (recipe?.steps || [])
+        .filter(s => hardeningStatus[s.id]?.status === 'hardened' && adjustmentChecked[s.id] === false)
+        .map(s => s.id)
+
       const body = {
         name: wfName,
         source_session_id: execSid,
         target_file: 'output/dashboard/index.html',
         extra_blocks: extraBlocks,
         skipped_steps: [],
+        rejected_adjustments: rejectedAdjustments,
         verify_session_id: execSid,
         auto_refresh: autoRefresh,
         schedule: scheduleConfig,
@@ -848,7 +891,7 @@ export default function PublishView({
   }, [sessionId, dashboardTitle, workflowName, dashboardMessage, includeDashboardLink, aiDestination, updateMode, autoRefresh,
       aiBlockEnabled, aiPrompt, aiFilename, saveMemo, aiPreviewContent,
       slackEnabled, slackChannels, slackDmUsers,
-      publishDashboardEnabled,
+      publishDashboardEnabled, recipe, hardeningStatus, adjustmentChecked,
       scheduleType, scheduleFrequency, scheduleDay, scheduleTime, scheduleTimezone])
 
   // ── Resume from draft ──
@@ -1010,14 +1053,12 @@ export default function PublishView({
             duration_s: data.duration_s, output_files: data.output_files || [],
           },
         }))
-        if (data.output_files?.length > 0) setSelectedOutput(data.output_files[0])
       })
 
       ch.bind('step-result', (data) => {
         if (!aliveRef.current) return
         if (data.status === 'success' || data.status === 'skipped') markDone(data.step_id)
         setStepResults(prev => ({ ...prev, [data.step_id]: data }))
-        if (data.status === 'success' && data.output_files?.length > 0) setSelectedOutput(data.output_files[0])
       })
 
       ch.bind('step-marked', (data) => {
@@ -1281,14 +1322,12 @@ export default function PublishView({
               output_files: data.output_files || [],
             },
           }))
-          if (data.output_files?.length > 0) setSelectedOutput(data.output_files[0])
         })
 
         ch.bind('step-result', (data) => {
           if (!aliveRef.current) return
           if (data.status === 'success' || data.status === 'skipped') markDone(data.step_id)
           setStepResults(prev => ({ ...prev, [data.step_id]: data }))
-          if (data.status === 'success' && data.output_files?.length > 0) setSelectedOutput(data.output_files[0])
         })
 
         ch.bind('step-marked', (data) => {
@@ -1568,7 +1607,7 @@ export default function PublishView({
 
                 {showExistingDropdown && (
                   <div className="absolute left-0 top-full mt-1 w-64 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-surface)] shadow-lg py-1 z-20">
-                    <div className="px-3 py-1.5 text-[10px] font-semibold text-[var(--text-muted)] uppercase">
+                    <div className="px-3 py-1.5 text-[12px] font-semibold text-[var(--text-muted)] uppercase">
                       Select dashboard to update
                     </div>
                     {existingWorkflows.map((wf) => (
@@ -1619,20 +1658,20 @@ export default function PublishView({
 
   // ── Schedule controls (Step 2, recurring only) ──
   const renderScheduleControls = () => (
-    <div className="mt-4 space-y-2.5">
+    <div className="mt-4 space-y-2.5 bg-white rounded-lg shadow-sm py-3 px-2.5">
       <p className="text-[12px] text-[var(--text-muted)] m-0 mb-2">This schedule applies to everything you publish.</p>
       <label className="flex items-start gap-2.5 cursor-pointer">
         <input type="radio" name="schedule-type" checked={scheduleType === 'data_sync'} onChange={() => setScheduleType('data_sync')} disabled={isAgentBusy} className="mt-0.5 w-3.5 h-3.5 accent-[var(--accent)] cursor-pointer" />
         <div className="flex-1 min-w-0">
           <span className="text-[12px] font-medium text-[var(--text-primary)] block">Every data sync</span>
-          <span className="text-[10px] text-[var(--text-muted)] block">Refreshes whenever new data arrives</span>
+          <span className="text-[12px] text-[var(--text-muted)] block">Refreshes whenever new data arrives</span>
         </div>
       </label>
       <label className="flex items-start gap-2.5 cursor-pointer">
         <input type="radio" name="schedule-type" checked={scheduleType === 'custom'} onChange={() => setScheduleType('custom')} disabled={isAgentBusy} className="mt-0.5 w-3.5 h-3.5 accent-[var(--accent)] cursor-pointer" />
         <div className="flex-1 min-w-0">
           <span className="text-[12px] font-medium text-[var(--text-primary)] block">Custom schedule</span>
-          <span className="text-[10px] text-[var(--text-muted)] block">Pick your own frequency and time</span>
+          <span className="text-[12px] text-[var(--text-muted)] block">Pick your own frequency and time</span>
         </div>
       </label>
       {scheduleType === 'custom' && (
@@ -1662,11 +1701,6 @@ export default function PublishView({
     <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true"><path d="M7.75 1.75H3.25C2.85218 1.75 2.47064 1.90804 2.18934 2.18934C1.90804 2.47064 1.75 2.85218 1.75 3.25V9.25C1.75 9.64782 1.90804 10.0294 2.18934 10.3107C2.47064 10.592 2.85218 10.75 3.25 10.75H7.75C8.14782 10.75 8.52936 10.592 8.81066 10.3107C9.09196 10.0294 9.25 9.64782 9.25 9.25V3.25C9.25 2.85218 9.09196 2.47064 8.81066 2.18934C8.52936 1.90804 8.14782 1.75 7.75 1.75ZM7.75 9.25H3.25V3.25H7.75V9.25ZM16.75 1.75H12.25C11.8522 1.75 11.4706 1.90804 11.1893 2.18934C10.908 2.47064 10.75 2.85218 10.75 3.25V6.25C10.75 6.64782 10.908 7.02936 11.1893 7.31066C11.4706 7.59196 11.8522 7.75 12.25 7.75H16.75C17.1478 7.75 17.5294 7.59196 17.8107 7.31066C18.092 7.02936 18.25 6.64782 18.25 6.25V3.25C18.25 2.85218 18.092 2.47064 17.8107 2.18934C17.5294 1.90804 17.1478 1.75 16.75 1.75ZM16.75 6.25H12.25V3.25H16.75V6.25ZM7.75 12.25H3.25C2.85218 12.25 2.47064 12.408 2.18934 12.6893C1.90804 12.9706 1.75 13.3522 1.75 13.75V16.75C1.75 17.1478 1.90804 17.5294 2.18934 17.8107C2.47064 18.092 2.85218 18.25 3.25 18.25H7.75C8.14782 18.25 8.52936 18.092 8.81066 17.8107C9.09196 17.5294 9.25 17.1478 9.25 16.75V13.75C9.25 13.3522 9.09196 12.9706 8.81066 12.6893C8.52936 12.408 8.14782 12.25 7.75 12.25ZM7.75 16.75H3.25V13.75H7.75V16.75ZM16.75 9.25H12.25C11.8522 9.25 11.4706 9.40804 11.1893 9.68934C10.908 9.97064 10.75 10.3522 10.75 10.75V16.75C10.75 17.1478 10.908 17.5294 11.1893 17.8107C11.4706 18.092 11.8522 18.25 12.25 18.25H16.75C17.1478 18.25 17.5294 18.092 17.8107 17.8107C18.092 17.5294 18.25 17.1478 18.25 16.75V10.75C18.25 10.3522 18.092 9.97064 17.8107 9.68934C17.5294 9.40804 17.1478 9.25 16.75 9.25ZM16.75 16.75H12.25V10.75H16.75V16.75Z"/></svg>
   )
 
-  // ── Small Slack mark ──
-  const SlackMark = ({ size = 16, color = '#4A154B' }) => (
-    <svg width={size} height={size} viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={color}/></svg>
-  )
-
   // ── Slack message mockup — this IS the output that gets posted ──
   const renderSlackPreview = () => {
     return (
@@ -1678,8 +1712,8 @@ export default function PublishView({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
               <span className="text-[12px] font-bold text-[#1d1c1d]">Petavue</span>
-              <span className="text-[10px] font-bold uppercase bg-[var(--bg-hover)] text-[var(--text-muted)] px-1 rounded">App</span>
-              <span className="text-[10px] text-[var(--text-muted)]">now</span>
+              <span className="text-[12px] font-bold uppercase bg-[var(--bg-hover)] text-[var(--text-muted)] px-1 rounded">App</span>
+              <span className="text-[12px] text-[var(--text-muted)]">now</span>
             </div>
             <div className="text-[12px] text-[#1d1c1d] leading-relaxed">
               {aiPreviewContent
@@ -1698,19 +1732,15 @@ export default function PublishView({
   const renderSlackBlock = () => {
     const hasTargets = slackChannels.length > 0 || slackDmUsers.length > 0
     return (
-      <div className="flex-1 min-h-0 flex flex-col">
-        <div className="flex items-start gap-2.5 mb-3 shrink-0">
-          <SlackMark size={20} color="var(--accent)" />
-          <div className="flex-1 min-w-0">
-            <span className="text-[14px] font-semibold text-[#2D3044] block">Slack alert</span>
-            <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'Posts an AI summary to Slack on each refresh' : 'Posts an AI summary to Slack when published'}</span>
-          </div>
+      <div className="flex-1 min-h-0 flex flex-col bg-white rounded-lg shadow-sm py-3 px-2.5">
+        <div className="mb-3 shrink-0">
+          <span className="text-[14px] font-semibold text-[#2D3044] block">Slack alert</span>
+          <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'Posts an AI summary to Slack on each refresh' : 'Posts an AI summary to Slack when published'}</span>
         </div>
         {/* Left: who + the summary prompt · Right: live preview (fills + scrolls) */}
         <div className="flex gap-4 flex-1 min-h-0">
-          <div className="flex-1 min-w-0 space-y-3.5">
+          <div className="flex-1 min-w-0 space-y-3.5 min-h-0 overflow-y-auto">
             <div>
-              <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Send to</label>
               <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
             </div>
             <div>
@@ -1728,7 +1758,7 @@ export default function PublishView({
               <span className="text-[12px] text-[var(--text-muted)]"> · what gets posted</span>
             </div>
             <div className="p-3.5 flex-1 min-h-0 overflow-y-auto">
-              {!hasTargets && <p className="text-[10px] text-[var(--text-muted)] mb-2">Pick a channel to choose where this goes.</p>}
+              {!hasTargets && <p className="text-[12px] text-[var(--text-muted)] mb-2">Pick a channel to choose where this goes.</p>}
               {renderSlackPreview()}
             </div>
           </div>
@@ -1737,14 +1767,30 @@ export default function PublishView({
     )
   }
 
+  // Consistent step header used across Verify/Publish steps.
+  const stepHeader = (title, desc, tooltip) => (
+    <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
+      <div className="flex items-center gap-1.5">
+        <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">{title}</h2>
+        {tooltip && (
+          <span className="relative inline-flex items-center group" aria-label={tooltip}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 256 256" className="text-[var(--text-muted)]"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+            <span role="tooltip" className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 z-20 w-max max-w-[240px] rounded-md bg-[#2D3044] text-white text-[12px] leading-snug px-2.5 py-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">{tooltip}</span>
+          </span>
+        )}
+      </div>
+      {desc && <p className="text-[12px] text-[var(--text-muted)] mt-1 m-0 leading-relaxed">{desc}</p>}
+    </div>
+  )
+
   // ── STEP — Workflow (new vs edit, first step) ──
   const isEditing = !!(updateMode && updateMode.workflow_id)
   const hasExisting = !!(existingWorkflows && existingWorkflows.length)
   const renderWorkflowStep = () => (
-    <div className="px-12 py-6">
-      <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">New workflow or edit an existing one?</h2>
-      <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">A workflow is the automation — your metric, its schedule, and where the results go.</p>
-      <div className="space-y-3">
+    <div className="min-h-full flex flex-col">
+      {stepHeader('New workflow or edit an existing one?', 'A workflow is the automation — your metric, its schedule, and where the results go.')}
+      <div className="flex-1 px-6 py-4 bg-[#FCFCFC]">
+      <div className="flex gap-3 [&>button]:flex-1 [&>button]:min-w-0">
         <OutputCard
           radio
           active={!isEditing}
@@ -1772,7 +1818,7 @@ export default function PublishView({
             placeholder="e.g. Q2 Revenue — Weekly"
             className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors"
           />
-          <p className="text-[10px] text-[var(--text-muted)] mt-1.5">This names the automation, not the dashboard itself.</p>
+          <p className="text-[12px] text-[var(--text-muted)] mt-1.5">This names the automation, not the dashboard itself.</p>
         </div>
       ) : (
         <div className="mt-5">
@@ -1783,9 +1829,10 @@ export default function PublishView({
             options={existingWorkflows.map((w) => ({ value: w.workflow_id, label: w.name }))}
             className="w-full"
           />
-          <p className="text-[10px] text-[var(--text-muted)] mt-1.5">Its outputs and schedule will pre-fill the next steps.</p>
+          <p className="text-[12px] text-[var(--text-muted)] mt-1.5">Its outputs and schedule will pre-fill the next steps.</p>
         </div>
       )}
+      </div>
     </div>
   )
 
@@ -1801,7 +1848,7 @@ export default function PublishView({
         onBack={() => setSelectedWidget(null)}
         onVerified={onWidgetVerified}
         onBackToSession={() => onClose?.()}
-        onContinueToPublish={() => { setSelectedWidget(null); setTab(TAB.PUBLISH) }}
+        onContinueToPublish={() => { setSelectedWidget(null); setVerifySubTab('agent') }}
       />
     ) : (
       <WidgetListView
@@ -1809,9 +1856,10 @@ export default function PublishView({
         widgetCount={widgets.length}
         verifiedCount={widgets.filter((w) => w.verified).length}
         onSelectWidget={(w) => setSelectedWidget(w)}
-        onContinueToPublish={() => setTab(TAB.PUBLISH)}
+        onContinueToPublish={() => setVerifySubTab('agent')}
         onBack={() => onClose?.()}
         titleMissing={false}
+        footerStart={renderVerifyStepNav()}
       />
     )
   )
@@ -1838,28 +1886,30 @@ export default function PublishView({
 
   // ── STEP 1 — Outputs ──
   const renderOutputsStep = () => (
-    <div className="px-12 py-6">
-      <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">What do you want to publish?</h2>
-      <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">Pick one or both — you're choosing the outputs, not publishing yet.</p>
-      <div className="space-y-3">
-        <OutputCard active={publishDashboardEnabled} onToggle={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)} icon={<DashboardMark size={16} className={publishDashboardEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Dashboard" desc="A live dashboard on your Dashboards page." />
-        {isPetavueUser && (
-          <OutputCard active={slackEnabled} onToggle={() => !isAgentBusy && setSlackEnabled(v => !v)} icon={<svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'}/></svg>} title="Slack alert" desc="Notify a channel or people when the data updates." />
-        )}
+    <div className="min-h-full flex flex-col">
+      {stepHeader('What do you want to publish?', "Pick one or both — you're choosing the outputs, not publishing yet.")}
+      <div className="flex-1 px-6 py-4 bg-[#FCFCFC]">
+        <div className="flex gap-3 [&>button]:flex-1 [&>button]:min-w-0">
+          <OutputCard active={publishDashboardEnabled} onToggle={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)} icon={<DashboardMark size={16} className={publishDashboardEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Dashboard" desc="A live dashboard on your Dashboards page." />
+          {isPetavueUser && (
+            <OutputCard active={slackEnabled} onToggle={() => !isAgentBusy && setSlackEnabled(v => !v)} icon={<svg width="20" height="20" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'}/></svg>} title="Slack alert" desc="Notify a channel or people when the data updates." />
+          )}
+        </div>
       </div>
     </div>
   )
 
   // ── STEP 2 — Frequency ──
   const renderFrequencyStep = () => (
-    <div className="px-12 py-6">
-      <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">How often should this run?</h2>
-      <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-5">The same schedule applies to everything you chose to publish.</p>
-      <div className="space-y-3">
-        <OutputCard radio active={!autoRefresh} onToggle={() => !isReviewRunning && setAutoRefresh(false)} icon={<CheckCircle size={20} weight="duotone" className={!autoRefresh ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="One time" desc="A snapshot from today's data. You can refresh it manually later." />
-        <OutputCard radio active={autoRefresh} onToggle={() => !isReviewRunning && setAutoRefresh(true)} icon={<ArrowsClockwise size={20} weight="duotone" className={autoRefresh ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Recurring" desc="Refreshes automatically on a schedule, always up to date." />
+    <div className="min-h-full flex flex-col">
+      {stepHeader('How often should this run?', 'The same schedule applies to everything you chose to publish.')}
+      <div className="flex-1 px-6 py-4 bg-[#FCFCFC]">
+        <div className="flex gap-3 [&>button]:flex-1 [&>button]:min-w-0">
+          <OutputCard radio active={!autoRefresh} onToggle={() => !isReviewRunning && setAutoRefresh(false)} icon={<CheckCircle size={20} weight="duotone" className={!autoRefresh ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="One time" desc="A snapshot from today's data. You can refresh it manually later." />
+          <OutputCard radio active={autoRefresh} onToggle={() => !isReviewRunning && setAutoRefresh(true)} icon={<ArrowsClockwise size={20} weight="duotone" className={autoRefresh ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} />} title="Recurring" desc="Refreshes automatically on a schedule, always up to date." />
+        </div>
+        {autoRefresh && isPetavueUser && renderScheduleControls()}
       </div>
-      {autoRefresh && isPetavueUser && renderScheduleControls()}
     </div>
   )
 
@@ -1876,20 +1926,13 @@ export default function PublishView({
     const hardenedCount = Object.values(hardeningStatus || {}).filter(h => h && h.status && h.status !== 'pending').length
 
     return (
-      <div className="px-12 py-6">
-        <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">Agentic Review</h2>
-        <p className="text-[12px] text-[var(--text-muted)] mt-1 mb-1">
-          {autoRefresh
-            ? 'An AI agent will check your dashboard to ensure every refresh runs without issues.'
-            : 'An AI agent will check your dashboard to ensure everything works correctly.'}
-        </p>
-        {!reviewPassed && phase !== PHASE.DONE && (
-          <p className="text-[12px] text-[#8e93af] font-medium mt-1.5 mb-5 flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" className="shrink-0" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
-            Your dashboard can't be published until this review passes.
-          </p>
+      <div className="min-h-full flex flex-col">
+        {stepHeader(
+          'Agentic Review',
+          autoRefresh ? 'An AI agent will check your dashboard to ensure every refresh runs without issues.' : 'An AI agent will check your dashboard to ensure everything works correctly.',
+          (!reviewPassed && phase !== PHASE.DONE) ? "Your dashboard can't be published until this review passes." : null,
         )}
-        {(reviewPassed || phase === PHASE.DONE) && <div className="mb-5" />}
+        <div className="flex-1 px-6 py-4 bg-[#FCFCFC]">
 
         {phase === PHASE.ERROR ? (
           <div className="rounded-xl border border-red-200 bg-red-50 p-5">
@@ -1898,7 +1941,10 @@ export default function PublishView({
               <h3 className="text-[14px] font-semibold text-red-700 m-0">We found a problem</h3>
             </div>
             <p className="text-[12px] text-red-700/90 mt-2 mb-1 leading-relaxed">{errorMessage}</p>
-            <p className="text-[12px] text-red-700/70 m-0">Fix this in your session, then run the review again.</p>
+            <p className="text-[12px] text-red-700/70 m-0 mb-3">Fix this in your session, then run the review again.</p>
+            <button onClick={handleStartVerification} className="inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
+              <Play size={13} weight="fill" />Run review again
+            </button>
           </div>
         ) : (reviewPassed || isReviewRunning) ? (
           <div>
@@ -1963,7 +2009,12 @@ export default function PublishView({
           <div className="rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 p-5">
             <p className="text-[14px] font-medium text-[var(--text-primary)] m-0">We found a previous review</p>
             {draftInfo.stale && <p className="text-[12px] text-amber-600 m-0 mt-1.5 leading-relaxed">You've changed things since this check — resuming won't include your latest edits.</p>}
-            <button onClick={() => { handleDiscardDraft(); handleStartVerification() }} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer underline p-0 mt-3">Start fresh instead</button>
+            <div className="flex items-center gap-4 mt-3">
+              <button onClick={handleResumeDraft} className="inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
+                <Play size={13} weight="fill" />Resume review
+              </button>
+              <button onClick={() => { handleDiscardDraft(); handleStartVerification() }} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer underline p-0">Start fresh instead</button>
+            </div>
           </div>
         ) : (
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
@@ -1977,8 +2028,12 @@ export default function PublishView({
                 <li key={i} className="flex items-center gap-2.5 text-[12px] text-[var(--text-primary)]"><span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--accent)]" />{t}</li>
               ))}
             </ul>
+            <button onClick={handleStartVerification} disabled={draftLoading} className="mt-4 inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed">
+              <Play size={13} weight="fill" />Start Review
+            </button>
           </div>
         )}
+      </div>
       </div>
     )
   }
@@ -1994,7 +2049,7 @@ export default function PublishView({
             <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">{wasUpdate ? 'Dashboard updated!' : 'Dashboard published!'}</h3>
             <p className="text-[12px] text-[var(--text-muted)] mt-1">{completedSteps} checks passed{autoRefresh ? ` · ${scheduleSummary.toLowerCase()}` : ''}</p>
           </div>
-          <Button btnColor="primary" btnSize="sm" onClick={() => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }}>
+          <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5" onClick={() => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }}>
             <span className="text-[12px]">View dashboard</span>
           </Button>
         </div>
@@ -2009,34 +2064,27 @@ export default function PublishView({
       )
     }
     return (
-      <div className="h-full flex flex-col gap-5 px-12 py-6 min-h-0">
-        <div className="shrink-0">
+      <div className="h-full flex flex-col min-h-0">
+        <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
           <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">Configure your outputs</h2>
-          <p className="text-[12px] text-[var(--text-muted)] mt-1.5 flex items-center gap-1.5">
+          <p className="text-[12px] text-[var(--text-muted)] mt-1 flex items-center gap-1.5">
             <CheckCircle size={13} weight="fill" className="text-green-500" />Checked &amp; working · {scheduleSummary.toLowerCase()}
           </p>
         </div>
+        <div className="flex-1 min-h-0 flex flex-col gap-4 px-6 py-4 overflow-y-auto bg-[#FCFCFC]">
 
-        {/* Dashboard output */}
+        {/* Dashboard output — just the name; the step header already explains the rest */}
         {publishDashboardEnabled && (
-          <div className="space-y-3 shrink-0">
-            <div className="flex items-start gap-2.5">
-              <DashboardMark size={16} className="text-[var(--accent)]" />
-              <div className="flex-1 min-w-0">
-                <span className="text-[14px] font-semibold text-[#2D3044] block">Dashboard</span>
-                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">{autoRefresh ? 'A live dashboard on your Dashboards page, refreshed each run' : 'A live dashboard on your Dashboards page'}</span>
-              </div>
-            </div>
-            <div>
-              <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Dashboard name</label>
-              <input value={dashboardTitle} onChange={(e) => setDashboardTitle && setDashboardTitle(e.target.value)} placeholder="Name your dashboard" className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
-            </div>
+          <div className="shrink-0 bg-white rounded-lg shadow-sm py-3 px-2.5">
+            <label className="text-[14px] font-semibold text-[#2D3044] flex items-center gap-1.5 mb-1.5">
+              Dashboard name
+              <span className="relative inline-flex items-center group" aria-label="Published to your Dashboards page">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" className="text-[var(--text-muted)]"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+                <span role="tooltip" className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 z-20 w-max max-w-[220px] rounded-md bg-[#2D3044] text-white text-[12px] leading-snug px-2.5 py-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">Published to your Dashboards page{autoRefresh ? ', refreshed on each run' : ''}.</span>
+              </span>
+            </label>
+            <input value={dashboardTitle} onChange={(e) => setDashboardTitle && setDashboardTitle(e.target.value)} placeholder="Name your dashboard" className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
           </div>
-        )}
-
-        {/* Separator between the dashboard and Slack sections */}
-        {publishDashboardEnabled && isPetavueUser && slackEnabled && (
-          <div className="border-t border-[var(--border-primary)] shrink-0" />
         )}
 
         {/* Slack alert — fills remaining height; the preview scrolls inside */}
@@ -2046,42 +2094,58 @@ export default function PublishView({
           <p className="text-[12px] text-amber-600 flex items-center gap-1.5 shrink-0"><ArrowsClockwise size={12} weight="bold" />This is a one-time snapshot — it won't refresh automatically.</p>
         )}
       </div>
+      </div>
     )
   }
 
-  // ── Progress indicator (vertical left-panel stepper) ──
+  // ── Horizontal step navigation — one consistent pattern for both tabs ──
+  // Rendered under the Verify|Publish tab bar. Numbered circles + connectors so
+  // it reads as a stepper, distinct from the underline top tabs above it.
   const stepIdx = STEP_ORDER.indexOf(step)
-  const renderStepper = () => (
-    <aside className="shrink-0 w-[212px] border-r border-[var(--border-primary)] bg-[var(--bg-primary)] flex flex-col py-5 px-3 overflow-y-auto">
-      {STEP_ORDER.map((s, i) => {
-        const isCurrent = s === step
-        const isDone = i < stepIdx || (s === STEP.REVIEW && reviewPassed && step !== STEP.REVIEW)
-        const reachable = i <= stepIdx || (i === stepIdx + 1 && (s !== STEP.CONFIRM || reviewPassed)) || (s === STEP.CONFIRM && reviewPassed) || i < stepIdx
-        const locked = s === STEP.CONFIRM && !reviewPassed
-        const clickable = !isAgentBusy && reachable && !locked
-        const isLast = i === STEP_ORDER.length - 1
-        return (
-          <div key={s}>
-            <button
-              type="button"
-              disabled={!clickable}
-              onClick={() => { if (clickable) setStep(s) }}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg border-none text-left transition-colors ${isCurrent ? 'bg-[var(--accent)]/[0.07]' : 'bg-transparent'} ${clickable && !isCurrent ? 'cursor-pointer hover:bg-[var(--bg-hover)]' : clickable ? 'cursor-pointer' : 'cursor-default'}`}
-            >
-              {isDone ? (
-                <CheckCircle size={18} weight="fill" className="text-[var(--accent)] shrink-0" />
-              ) : (
-                <span className={`shrink-0 w-[18px] h-[18px] rounded-full border-2 bg-[var(--bg-primary)] ${isCurrent ? 'border-[var(--accent)]' : 'border-[var(--border-primary)]'}`} />
-              )}
-              <span className={`text-[14px] ${isCurrent ? 'font-semibold text-[var(--accent)]' : isDone ? 'font-medium text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
-                {STEP_LABELS[s]}
-              </span>
-            </button>
-            {!isLast && <div className="ml-[19px] w-px h-4 bg-[var(--border-primary)]" />}
-          </div>
-        )
-      })}
-    </aside>
+  // Phosphor NumberCircle 1–4 + CheckCircle (filled), rendered with currentColor.
+  const STEP_NUMBER_PATHS = [
+    'M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM140,80v96a8,8,0,0,1-16,0V95l-11.56,7.71a8,8,0,1,1-8.88-13.32l24-16A8,8,0,0,1,140,80Z',
+    'M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm25.56-92.74L120,168h32a8,8,0,0,1,0,16H104a8,8,0,0,1-6.4-12.8l43.17-57.56a16,16,0,1,0-27.86-15,8,8,0,0,1-15.09-5.34,32,32,0,1,1,55.74,29.93Z',
+    'M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm32-64a36,36,0,0,1-61.71,25.19A8,8,0,1,1,109.71,166,20,20,0,1,0,124,132a8,8,0,0,1-6.55-12.59L136.63,92H104a8,8,0,0,1,0-16h48a8,8,0,0,1,6.55,12.59l-21,30A36.07,36.07,0,0,1,160,152Z',
+    'M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm32-72h-8V80a8,8,0,0,0-14.31-4.91l-56,72A8,8,0,0,0,88,160h48v16a8,8,0,0,0,16,0V160h8a8,8,0,0,0,0-16Zm-24,0H104.36L136,103.32Z',
+  ]
+  const STEP_CHECK_PATH = 'M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z'
+  const renderStepNavItems = (items, currentId, onSelect) => (
+    items.map((it, i) => {
+      const isCurrent = it.id === currentId
+      return (
+        <div key={it.id} className="flex items-center shrink-0">
+          <button
+            type="button"
+            disabled={!it.clickable}
+            onClick={() => { if (it.clickable && !isCurrent) onSelect(it.id) }}
+            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border-none bg-transparent transition-colors ${it.clickable && !isCurrent ? 'cursor-pointer hover:bg-[var(--bg-hover)]' : 'cursor-default'}`}
+          >
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 256 256" className={`shrink-0 ${isCurrent || it.done ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
+              <path d={it.done ? STEP_CHECK_PATH : (STEP_NUMBER_PATHS[i] || STEP_NUMBER_PATHS[0])} />
+            </svg>
+            <span className={`text-[13px] font-medium whitespace-nowrap ${isCurrent || it.done ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{it.label}</span>
+          </button>
+          {i < items.length - 1 && <div className="w-6 h-px bg-[var(--border-primary)] mx-0.5 shrink-0" />}
+        </div>
+      )
+    })
+  )
+
+  // Step-nav items per tab.
+  const verifyNavItems = [
+    { id: 'user', label: 'User Review', done: false, clickable: !isAgentBusy },
+    { id: 'agent', label: 'Agentic Review', done: reviewPassed, clickable: !isAgentBusy },
+  ]
+  const publishNavItems = STEP_ORDER.map((s, i) => {
+    const isDone = i < stepIdx
+    const reachable = i <= stepIdx || (i === stepIdx + 1 && (s !== STEP.CONFIRM || reviewPassed)) || (s === STEP.CONFIRM && reviewPassed)
+    const locked = s === STEP.CONFIRM && !reviewPassed
+    return { id: s, label: STEP_LABELS[s], done: isDone, clickable: !isAgentBusy && reachable && !locked }
+  })
+  // The Verify stepper, rendered on the left of each Verify footer.
+  const renderVerifyStepNav = () => (
+    <div className="flex items-center gap-0.5 overflow-x-auto min-w-0">{renderStepNavItems(verifyNavItems, verifySubTab, setVerifySubTab)}</div>
   )
 
   // ── Footer (context-aware nav) ──
@@ -2095,11 +2159,12 @@ export default function PublishView({
     const publishReason = !hasOutput ? 'Choose at least one output' : !canPublish ? 'Name your dashboard' : ''
 
     return (
-      <div className="shrink-0 flex items-center justify-end gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+      <div className="shrink-0 flex items-center justify-between gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+        <div className="flex items-center gap-0.5 overflow-x-auto min-w-0">{renderStepNavItems(publishNavItems, step, (id) => setStep(id))}</div>
+        <div className="flex items-center gap-5 shrink-0">
         {step === STEP.OUTPUTS && backBtn(STEP.WORKFLOW)}
         {step === STEP.FREQUENCY && backBtn(STEP.OUTPUTS)}
-        {step === STEP.REVIEW && backBtn(STEP.FREQUENCY)}
-        {step === STEP.CONFIRM && phase !== PHASE.DONE && backBtn(STEP.REVIEW)}
+        {step === STEP.CONFIRM && phase !== PHASE.DONE && backBtn(STEP.FREQUENCY)}
         <div>
           {step === STEP.WORKFLOW && (
             <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={isEditing && !updateMode?.workflow_id} onClick={() => setStep(STEP.OUTPUTS)}>
@@ -2112,28 +2177,13 @@ export default function PublishView({
             </Button>
           )}
           {step === STEP.FREQUENCY && (
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => setStep(STEP.REVIEW)}>
-              <span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" />
-            </Button>
-          )}
-          {step === STEP.REVIEW && (
             reviewPassed ? (
               <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => setStep(STEP.CONFIRM)}>
                 <span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" />
               </Button>
-            ) : isReviewRunning ? (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled><Spinner size={13} className="animate-spin" /><span className="text-[12px]">Reviewing…</span></Button>
-            ) : phase === PHASE.ERROR ? (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={handleStartVerification}>
-                <Play size={13} weight="fill" /><span className="text-[12px]">Run review again</span>
-              </Button>
-            ) : draftInfo ? (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={handleResumeDraft}>
-                <Play size={13} weight="fill" /><span className="text-[12px]">Resume review</span>
-              </Button>
             ) : (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={draftLoading} onClick={handleStartVerification}>
-                <Play size={13} weight="fill" /><span className="text-[12px]">Start Review</span>
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => { setTab(TAB.VERIFY); setVerifySubTab('agent') }} title="The agentic review must pass before you can publish">
+                <Play size={13} weight="fill" /><span className="text-[12px]">Run Agentic Review</span>
               </Button>
             )
           )}
@@ -2146,6 +2196,7 @@ export default function PublishView({
               </Button>
             )
           )}
+        </div>
         </div>
       </div>
     )
@@ -2180,17 +2231,17 @@ export default function PublishView({
 
     return (
       <div className="flex flex-col h-full overflow-hidden">
-        <div className="shrink-0 flex items-center gap-2 px-5 py-3 border-b border-[var(--border-primary)]">
+        <div className="shrink-0 flex items-center gap-2 px-6 py-3 border-b border-[var(--border-primary)]">
           <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><CaretLeft size={13} weight="bold" />Back to check</button>
           <span className="text-[14px] font-semibold text-[var(--text-primary)] ml-2">What changed ({adjustmentCount})</span>
         </div>
         <div className="flex-1 min-h-0 flex overflow-hidden" ref={adjustmentContainerRef}>
           <div className="flex flex-col overflow-y-auto" style={{ width: selectedOutput ? `${adjustmentSplitPct}%` : '100%' }}>
-            <div className="flex items-center justify-between px-5 pt-4 pb-2">
+            <div className="flex items-center justify-between px-6 pt-4 pb-2">
               <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">We made {adjustmentCount} fix{adjustmentCount !== 1 ? 'es' : ''} so it keeps working</h3>
-              <button onClick={() => { const next = {}; const target = !allCollapsed; hardenedSteps.forEach(s => { next[s.id] = target }); setCollapsedSteps(prev => ({ ...prev, ...next })) }} className="p-1 rounded hover:bg-[var(--bg-hover)] bg-transparent border-none cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]" title={allCollapsed ? 'Expand all' : 'Collapse all'}>{allCollapsed ? <ArrowsOutSimple size={14} weight="bold" /> : <ArrowsInSimple size={14} weight="bold" />}</button>
+              <button onClick={() => { const next = {}; const target = !allCollapsed; hardenedSteps.forEach(s => { next[s.id] = target }); setCollapsedSteps(prev => ({ ...prev, ...next })) }} className="p-1 rounded hover:bg-[var(--bg-hover)] bg-transparent border-none cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]" title={allCollapsed ? 'Expand all' : 'Collapse all'}><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z"></path></svg></button>
             </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-2 s-diff-dark">
+            <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-2 s-diff-dark bg-[#FCFCFC]">
               {hardenedSteps.map((s) => {
                 const idx = recipe.steps.indexOf(s)
                 return <RecipeStepCell key={s.id} step={s} stepIndex={idx} result={stepResults[s.id]} onRun={() => {}} onViewOutput={(f) => setSelectedOutput(f)} canRun={false} isRunning={false} removed={false} onRemove={() => {}} onRestore={() => {}} viewMode="card" summaryLoading={false} isFixed={false} codeDiff={codeDiffs[s.id] || null} skipReason={stepResults[s.id]?.skip_reason || null} hideRunButton hardeningInfo={hardeningStatus[s.id] || null} collapsed={!!collapsedSteps[s.id]} onToggleCollapse={() => setCollapsedSteps(prev => ({ ...prev, [s.id]: !prev[s.id] }))} />
@@ -2228,49 +2279,328 @@ export default function PublishView({
 
   // ── Tab bar (Verify | Publish) ──
   const renderTabBar = () => {
+    // Publish is gated on the agentic review passing — you can't jump there until
+    // it's done (User Review is optional and can be skipped).
     const tabs = [
-      { id: TAB.VERIFY, label: 'Verify' },
-      { id: TAB.PUBLISH, label: 'Publish' },
+      { id: TAB.VERIFY, label: 'Verify', locked: false },
+      { id: TAB.PUBLISH, label: 'Publish', locked: !reviewPassed },
     ]
     return (
-      <div className="shrink-0 flex items-center gap-1 px-4 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
+      <div className="shrink-0 flex items-center gap-1 px-5 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
         {tabs.map((t) => {
           const active = tab === t.id
           return (
             <button
               key={t.id}
               type="button"
-              onClick={() => setTab(t.id)}
-              className={`relative px-3 py-2.5 text-[13px] font-medium border-none bg-transparent cursor-pointer transition-colors ${active ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+              disabled={t.locked}
+              onClick={() => { if (!t.locked) setTab(t.id) }}
+              title={t.locked ? 'Complete the agentic review first' : undefined}
+              className={`relative flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-medium border-none bg-transparent transition-colors ${active ? 'text-[var(--accent)]' : t.locked ? 'text-[var(--text-muted)]/50 cursor-not-allowed' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer'}`}
             >
               {t.label}
               {active && <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-[var(--accent)]" />}
             </button>
           )
         })}
+        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={() => onClose?.()}
+          title="Close"
+          className="p-1.5 rounded hover:bg-[var(--bg-hover)] cursor-pointer border-none bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+        >
+          <X size={16} weight="bold" />
+        </button>
       </div>
     )
   }
 
-  // ── Main return — two tabs. Verify is a standalone widget review; Publish is
-  // the 5-screen sequence (Workflow → Outputs → Schedule → Review → Configure). ──
+
+  // Sync the currently-accepted fixes into the main chat session (the source of
+  // truth) so the dashboard you're editing becomes the latest version — not just
+  // the published copy. Guarded so the same accepted set is only pushed once,
+  // whether the user explicitly applies or just continues with the defaults.
+  const syncedAcceptedRef = useRef(null)
+  const syncAcceptedToSession = () => {
+    const hardened = (recipe?.steps || []).filter(s => hardeningStatus[s.id]?.status === 'hardened')
+    const accepted = hardened.filter(s => adjustmentChecked[s.id] !== false)
+    const key = accepted.map(s => s.id).sort().join(',')
+    if (!accepted.length || syncedAcceptedRef.current === key || !onSendFeedback) return false
+    const lines = accepted.map(s => {
+      const title = s.summary?.title || s.name || s.tool || s.id
+      const reason = hardeningStatus[s.id]?.reason
+      return reason ? `• ${title} — ${reason}` : `• ${title}`
+    }).join('\n')
+    onSendFeedback(`Apply these reviewed fixes from the agentic review to the dashboard so the main session stays in sync:\n${lines}`)
+    syncedAcceptedRef.current = key
+    return true
+  }
+
+  // Apply only commits the accept/reject selection locally (so the preview reflects
+  // it and Continue unlocks). The write to the main session happens once, on
+  // Continue to Publish — a single, predictable sync point for both paths.
+  const applyAdjustments = () => {
+    const rejected = (recipe?.steps || [])
+      .filter(s => hardeningStatus[s.id]?.status === 'hardened' && adjustmentChecked[s.id] === false)
+      .map(s => s.id)
+    setAppliedRejected(rejected)
+    setSelectedOutput(prev => prev ? { ...prev } : prev) // nudge the preview to re-render
+    toast(rejected.length > 0
+      ? `Selection updated — ${rejected.length} adjustment${rejected.length !== 1 ? 's' : ''} reverted`
+      : 'Selection updated')
+  }
+
+  // Continue past the review → write the accepted set to the main chat session
+  // (the single sync point; covers both "applied a change" and "kept defaults"),
+  // then go to Publish.
+  const continueToPublish = () => {
+    const synced = syncAcceptedToSession()
+    if (synced) toast('Accepted fixes applied to your main chat session')
+    setTab(TAB.PUBLISH)
+  }
+
+  // Re-run the review even though the code looks unchanged (clears the skip).
+  const runReviewAgain = () => {
+    setReviewSkipped(false)
+    setReviewPassed(false)
+    setAppliedRejected([])
+    syncedAcceptedRef.current = null
+    handleStartVerification()
+  }
+
+  // ── Inline adjustments — chat (left) · selectable code adjustments (middle) · preview (right) ──
+  const renderInlineAdjustments = () => {
+    const hardenedSteps = (recipe?.steps || []).filter(s => hardeningStatus[s.id]?.status === 'hardened')
+    const allCollapsed = hardenedSteps.every(s => collapsedSteps[s.id])
+    const checkedCount = hardenedSteps.filter(s => adjustmentChecked[s.id] !== false).length
+    const currentRejected = hardenedSteps.filter(s => adjustmentChecked[s.id] === false).map(s => s.id)
+    const hasPending = JSON.stringify([...currentRejected].sort()) !== JSON.stringify([...appliedRejected].sort())
+
+    const handleFeedbackUpdate = (steps, diffs) => {
+      if (steps?.length > 0) {
+        setStepResults(prev => {
+          const updated = { ...prev }
+          for (const st of steps) {
+            if (updated[st.id]?.status === 'success') continue
+            const s2 = st.status === 'completed' ? 'success' : st.status === 'skipped' ? 'skipped' : st.status === 'failed' ? 'failed' : null
+            if (s2) { updated[st.id] = { ...updated[st.id], step_id: st.id, status: s2 }; if (st.skip_reason) updated[st.id].skip_reason = st.skip_reason }
+          }
+          return updated
+        })
+        setHardeningStatus(prev => {
+          const updated = { ...prev }
+          for (const st of steps) { if (st.hardening_status && st.hardening_status !== 'pending') updated[st.id] = { status: st.hardening_status, reason: st.hardening_reason || '' } }
+          return updated
+        })
+      }
+      if (diffs && Object.keys(diffs).length > 0) {
+        setCodeDiffs(prev => { const updated = { ...prev }; for (const [stepId, diff] of Object.entries(diffs)) { if (!updated[stepId]) updated[stepId] = { diff, field: 'code', truncated: false } } return updated })
+      }
+    }
+
+    return (
+      <div className="flex-1 min-h-0 flex overflow-hidden">
+        {/* 1st — adjustments */}
+        <div className="flex-1 min-w-0 border-r border-[var(--border-primary)] flex flex-col overflow-hidden">
+          <div className="shrink-0 px-6 pt-4 pb-2 bg-[#FCFCFC]">
+            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0 shrink-0">{adjustmentCount} Adjustment{adjustmentCount !== 1 ? 's' : ''} Made</h3>
+              {hasPending ? (
+                <span className="flex items-center gap-1.5 text-[12px] font-medium text-amber-600 truncate"><Warning size={14} weight="fill" className="shrink-0" />{currentRejected.length > 0 ? `${currentRejected.length} reverted` : 'Selection changed'} — apply to continue</span>
+              ) : appliedRejected.length > 0 ? (
+                <span className="text-[12px] text-[var(--text-muted)] truncate">{checkedCount} fix{checkedCount !== 1 ? 'es' : ''} applied · {appliedRejected.length} reverted</span>
+              ) : null}
+            </div>
+            <button onClick={() => { const next = {}; const target = !allCollapsed; hardenedSteps.forEach(s => { next[s.id] = target }); setCollapsedSteps(prev => ({ ...prev, ...next })) }} className="shrink-0 p-1 rounded hover:bg-[var(--bg-hover)] bg-transparent border-none cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]" title={allCollapsed ? 'Expand all' : 'Collapse all'}><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z"></path></svg></button>
+            </div>
+            <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-0 leading-snug">Accepted fixes are applied to your main chat session when you continue.</p>
+          </div>
+          <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-2 s-diff-dark bg-[#FCFCFC]">
+            {hardenedSteps.map((s, i) => {
+              const idx = recipe.steps.indexOf(s)
+              const checked = adjustmentChecked[s.id] !== false
+              // Default: first adjustment expanded, the rest collapsed (until toggled).
+              const collapsed = collapsedSteps[s.id] !== undefined ? collapsedSteps[s.id] : i !== 0
+              const checkbox = (
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={() => setAdjustmentChecked(prev => ({ ...prev, [s.id]: !checked }))}
+                  className="w-3 h-3 accent-[var(--accent)] cursor-pointer shrink-0"
+                  title={checked ? 'Adjustment accepted — uncheck to skip' : 'Adjustment skipped — check to accept'}
+                />
+              )
+              return (
+                <div key={s.id}>
+                  <div className={`bg-white rounded-xl shadow-sm transition-opacity ${checked ? '' : 'opacity-60'}`}>
+                    <RecipeStepCell key={s.id} step={s} stepIndex={idx} result={stepResults[s.id]} onRun={() => {}} onViewOutput={(f) => setSelectedOutput(f)} canRun={false} isRunning={false} removed={false} onRemove={() => {}} onRestore={() => {}} viewMode="card" summaryLoading={false} isFixed={false} codeDiff={codeDiffs[s.id] || null} skipReason={stepResults[s.id]?.skip_reason || null} hideRunButton hardeningInfo={hardeningStatus[s.id] || null} collapsed={collapsed} onToggleCollapse={() => setCollapsedSteps(prev => ({ ...prev, [s.id]: !(prev[s.id] !== undefined ? prev[s.id] : i !== 0) }))} leading={checkbox} />
+                  </div>
+                  {!checked && (
+                    <p className="flex items-start gap-1.5 mt-1 mb-1 ml-3.5 text-[12px] text-amber-600 leading-snug">
+                      <Warning size={13} weight="fill" className="shrink-0 mt-px" />
+                      Reverted — the agent&apos;s fix won&apos;t be applied; the scheduled refresh may break.
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+            {recipe?.target_file && (
+              <div className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border cursor-pointer transition-all ${selectedOutput?.path === recipe.target_file ? 'border-[var(--accent)] bg-[var(--accent)]/6' : 'border-dashed border-[var(--border-primary)] bg-[var(--bg-secondary)]/50 hover:border-[var(--accent)]/50'}`} onClick={() => setSelectedOutput({ path: recipe.target_file, type: 'html' })}>
+                <DashboardMark size={14} className="text-[var(--accent)] shrink-0" />
+                <div className="flex-1 min-w-0 flex items-baseline"><span className="text-[12px] font-semibold text-[var(--text-primary)] shrink-0">Dashboard</span><span className="text-[12px] text-[var(--text-muted)] ml-2 font-mono truncate min-w-0">{recipe.target_file}</span></div>
+                <span className="text-[12px] text-[var(--accent)] font-medium shrink-0 whitespace-nowrap">{selectedOutput?.path === recipe.target_file ? 'Viewing →' : 'Preview →'}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2nd — Ask or edit (chat) */}
+        <div className="shrink-0 w-[28%] min-w-[280px] border-r border-[var(--border-primary)] flex flex-col overflow-hidden">
+          <div className="shrink-0 px-4 py-3 border-b border-[var(--border-primary)]">
+            <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0">Ask or edit</h3>
+            <p className="text-[12px] text-[var(--text-muted)] mt-0.5 m-0 leading-snug">Ask a question or request changes to any adjustment.</p>
+          </div>
+          <div className="flex-1 min-h-0 flex flex-col p-3">
+            {execSessionIdRef.current ? (
+              <HardeningChat
+                fill
+                sessionId={sessionId}
+                execSessionId={execSessionIdRef.current}
+                disabled={false}
+                onStepUpdate={(stepId, data) => handleFeedbackUpdate([{ ...data, id: stepId }], null)}
+                onDiffUpdate={(stepId, diff) => handleFeedbackUpdate(null, { [stepId]: diff.diff })}
+              />
+            ) : (
+              <p className="text-[12px] text-[var(--text-muted)]">Chat is unavailable for this review.</p>
+            )}
+          </div>
+        </div>
+
+        {/* 3rd — output preview, opens on demand; its header has a close button */}
+        {selectedOutput && (
+          <div className="shrink-0 w-[40%] min-w-[340px] self-stretch flex flex-col overflow-hidden">
+            <OutputPreview sessionId={execSessionIdRef.current} file={selectedOutput} onClose={() => setSelectedOutput(null)} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── Agentic Review sub-tab — gate (pre/running/error) → inline adjustments on pass ──
+  const renderAgenticReviewSubTab = () => {
+    if (reviewSkipped) {
+      return (
+        <div className="flex flex-col h-full overflow-hidden">
+          {stepHeader('Agentic Review')}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 bg-[#FCFCFC]">
+            <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle size={20} weight="fill" className="text-green-500 shrink-0" />
+                <h3 className="text-[14px] font-semibold text-green-700 m-0">No code change detected</h3>
+              </div>
+              <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">The agent already reviewed this dashboard and nothing has changed since. You're ready to publish.</p>
+            </div>
+          </div>
+          <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+            {renderVerifyStepNav()}
+            <div className="flex items-center gap-4 shrink-0">
+              <button onClick={runReviewAgain} className="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-1 rounded hover:bg-[var(--bg-hover)] transition-colors">
+                <Play size={13} weight="fill" />Run review again
+              </button>
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={continueToPublish}>
+                <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    if (reviewPassed) {
+      const hardenedSteps = (recipe?.steps || []).filter(s => hardeningStatus[s.id]?.status === 'hardened')
+      const stepCount = recipe?.steps?.length || totalSteps || 0
+      const checks = ['Analyzed', 'Recipe extracted', `Ran ${stepCount} steps`, ...(autoRefresh ? ['Prepared for scheduled refresh'] : [])]
+      // Pending = current accept/reject selection differs from what's been applied.
+      const currentRejected = hardenedSteps.filter(s => adjustmentChecked[s.id] === false).map(s => s.id)
+      const hasPending = JSON.stringify([...currentRejected].sort()) !== JSON.stringify([...appliedRejected].sort())
+      return (
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="shrink-0 flex items-center gap-x-5 gap-y-1.5 flex-wrap px-6 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
+            <button onClick={() => setVerifySubTab('user')} title="Back to User Review" className="flex items-center gap-1 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer -ml-1 p-1 rounded hover:bg-[var(--bg-hover)] transition-colors">
+              <CaretLeft size={14} weight="bold" />Back
+            </button>
+            {checks.map((l, i) => (
+              <span key={i} className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle size={15} weight="fill" className="text-green-500" />{l}</span>
+            ))}
+          </div>
+          {adjustmentCount > 0 ? renderInlineAdjustments() : (
+            <div className="flex-1 flex items-center justify-center text-[13px] text-[var(--text-muted)] px-6 text-center">No adjustments were needed — your dashboard passed cleanly.</div>
+          )}
+          <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+            {renderVerifyStepNav()}
+            <div className="flex items-center gap-3 shrink-0">
+              {adjustmentCount > 0 ? (
+                <button
+                  onClick={applyAdjustments}
+                  disabled={!hasPending}
+                  title={hasPending ? 'Lock in your accept/reject selection' : 'Uncheck an adjustment to enable'}
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--bg-primary)]"
+                >
+                  Apply adjustments
+                </button>
+              ) : (
+                <button onClick={runReviewAgain} title="Discard this review and run it again" className="flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
+                  <Play size={13} weight="fill" />Run review again
+                </button>
+              )}
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={hasPending} onClick={continueToPublish} title={hasPending ? 'Apply your changes first' : 'Applies the accepted fixes to your main chat session, then continues'}>
+                <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-y-auto">{renderReviewStep()}</div>
+        <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+          {renderVerifyStepNav()}
+          <div className="shrink-0">
+            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled title="Run the agentic review first">
+              <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Main return — two tabs. Verify hosts User Review + Agentic Review (the gate);
+  // Publish runs the 4-screen sequence (Workflow → Outputs → Schedule → Configure). ──
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {renderTabBar()}
       {tab === TAB.VERIFY ? (
-        <div className="flex-1 min-h-0">{renderVerifyStep()}</div>
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-hidden">
+            {selectedWidget || verifySubTab === 'user'
+              ? renderVerifyStep()
+              : renderAgenticReviewSubTab()}
+          </div>
+        </div>
       ) : (
-        <div className="flex-1 min-h-0 flex overflow-hidden">
-          {renderStepper()}
-          <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col min-w-0 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto">
               {step === STEP.WORKFLOW && renderWorkflowStep()}
               {step === STEP.OUTPUTS && renderOutputsStep()}
               {step === STEP.FREQUENCY && renderFrequencyStep()}
-              {step === STEP.REVIEW && renderReviewStep()}
               {step === STEP.CONFIRM && renderConfirmStep()}
             </div>
-            {renderFooter()}
+            {phase !== PHASE.DONE && renderFooter()}
           </div>
         </div>
       )}

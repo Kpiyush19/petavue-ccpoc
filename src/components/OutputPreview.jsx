@@ -19,8 +19,11 @@ export default function OutputPreview({ sessionId, file, onClose }) {
   const [refreshKey, setRefreshKey] = useState(0)
 
   if (!file || !sessionId) return null
+  // Callers pass either a string path or a { path } object — normalize both.
+  const filePath = typeof file === 'string' ? file : file.path
+  if (!filePath) return null
 
-  const fileType = getFileType(file.path)
+  const fileType = getFileType(filePath)
   const canRefresh = fileType === 'jsx' || fileType === 'html'
 
   return (
@@ -28,7 +31,7 @@ export default function OutputPreview({ sessionId, file, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-primary)] shrink-0">
         <span className="text-[12px] font-semibold text-[var(--text-primary)] truncate flex-1 min-w-0">
-          {file.path}
+          {filePath}
         </span>
         <div className="flex items-center gap-1 shrink-0">
           {canRefresh && (
@@ -50,22 +53,22 @@ export default function OutputPreview({ sessionId, file, onClose }) {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {fileType === 'data' && (
-          <DataTableViewer sessionId={sessionId} path={file.path} />
+          <DataTableViewer sessionId={sessionId} path={filePath} />
         )}
         {fileType === 'json' && (
-          <JsonTreeViewer key={refreshKey} sessionId={sessionId} path={file.path} />
+          <JsonTreeViewer key={refreshKey} sessionId={sessionId} path={filePath} />
         )}
         {fileType === 'html' && (
           <iframe
             key={refreshKey}
-            src={`${getApiBase()}/api/sessions/${sessionId}/files/${file.path}?token=${encodeURIComponent(getAuthToken() || '')}&_r=${refreshKey}`}
+            src={`${getApiBase()}/api/sessions/${sessionId}/files/${filePath}?token=${encodeURIComponent(getAuthToken() || '')}&_r=${refreshKey}`}
             className="w-full h-full border-none bg-white"
             sandbox="allow-scripts allow-same-origin"
-            title={file.path}
+            title={filePath}
           />
         )}
         {fileType === 'jsx' && (
-          <HtmlViewer key={refreshKey} sessionId={sessionId} path={file.path} />
+          <HtmlViewer key={refreshKey} sessionId={sessionId} path={filePath} />
         )}
         {fileType === 'text' && (
           <div className="p-3 text-[12px] text-[var(--text-secondary)] font-mono">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle, CaretRight, ArrowLeft, Check } from '@phosphor-icons/react'
+import { CheckCircle, CaretRight, Check } from '@phosphor-icons/react'
 import { Button } from '@/common-components'
 
 const FILTERS = ['All', 'Pending', 'Verified']
@@ -12,6 +12,7 @@ export default function WidgetListView({
   onContinueToPublish,
   onBack,
   titleMissing = false,
+  footerStart = null,
 }) {
   const [activeFilter, setActiveFilter] = useState('All')
 
@@ -23,36 +24,42 @@ export default function WidgetListView({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Counter row */}
-      <div className="shrink-0 flex items-center gap-3 px-5 py-3 border-b border-[var(--border-primary)]">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-green-50 text-green-700 px-2.5 py-1 rounded-full">
-          <CheckCircle size={13} weight="fill" />
-          {verifiedCount} / {widgetCount} verified
-        </span>
-        <span className="text-[11px] text-[var(--text-muted)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-full font-medium">
-          {widgetCount} widget{widgetCount !== 1 ? 's' : ''}
-        </span>
+      {/* Step intro */}
+      <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
+        <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">User Review</h2>
+        <p className="text-[12px] text-[var(--text-muted)] mt-1 m-0 leading-relaxed">Check each widget renders correctly with the right numbers before publishing. Open a widget to verify it, or mark it as verified. This step is optional — you can skip ahead to the agentic review.</p>
       </div>
 
-      {/* Filter tabs */}
-      <div className="shrink-0 flex items-center gap-1 px-5 py-2.5 border-b border-[var(--border-primary)]">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`text-[11px] font-medium px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
-              activeFilter === f
-                ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
+      {/* Counter + filter tabs — one row, space between */}
+      <div className="shrink-0 flex items-center justify-between gap-3 px-6 py-2.5 border-b border-[var(--border-primary)]">
+        <div className="flex items-center gap-1 shrink-0">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`text-[12px] font-medium px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
+                activeFilter === f
+                  ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                  : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold bg-green-50 text-green-700 px-2.5 py-1 rounded-full">
+            <CheckCircle size={13} weight="fill" />
+            {verifiedCount} / {widgetCount} verified
+          </span>
+          <span className="text-[12px] text-[var(--text-muted)] bg-[var(--bg-secondary)] px-2.5 py-1 rounded-full font-medium">
+            {widgetCount} widget{widgetCount !== 1 ? 's' : ''}
+          </span>
+        </div>
       </div>
 
       {/* Widget rows */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-5 py-3">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-3 bg-[#FCFCFC]">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center py-12 text-[12px] text-[var(--text-muted)]">
             No {activeFilter.toLowerCase()} widgets
@@ -83,7 +90,7 @@ export default function WidgetListView({
 
                 {/* Verified badge */}
                 {widget.verified && (
-                  <span className="shrink-0 text-[10px] font-semibold text-green-600">
+                  <span className="shrink-0 text-[12px] font-semibold text-green-600">
                     Verified
                   </span>
                 )}
@@ -101,24 +108,17 @@ export default function WidgetListView({
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center justify-between px-5 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-0 transition-colors"
-        >
-          <ArrowLeft size={13} weight="bold" />
-          Back to Session
-        </button>
-
+      <div className="shrink-0 flex items-center justify-between gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+        {footerStart || <span />}
         <Button
           btnColor="primary"
           btnSize="sm"
-          mainBtnClassName="py-2 px-5 rounded-lg"
+          mainBtnClassName="py-2 px-5 rounded-lg shrink-0"
           onClick={onContinueToPublish}
           disabled={titleMissing}
           title={titleMissing ? 'Enter a dashboard title first' : 'Continue to publish'}
         >
-          <span className="text-[12px]">Continue to Publish</span>
+          <span className="text-[12px]">Continue</span>
           <CaretRight size={13} weight="bold" />
         </Button>
       </div>

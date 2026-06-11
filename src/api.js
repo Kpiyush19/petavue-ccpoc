@@ -24,7 +24,14 @@ export function setAuthToken(token) {
 }
 
 export function clearAuthToken() {
+  // Per-session follow-up mute flags are intentionally sticky — they must
+  // survive sign-out (the user can't re-enable them without contacting
+  // support), so preserve them across the localStorage wipe.
+  const stickyMutes = Object.keys(localStorage)
+    .filter((k) => k.startsWith("followups-muted:"))
+    .map((k) => [k, localStorage.getItem(k)]);
   localStorage.clear();
+  for (const [k, v] of stickyMutes) localStorage.setItem(k, v);
   setUser(null);
   if (POSTHOG_KEY) {
     try {

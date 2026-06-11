@@ -45,7 +45,7 @@ export function getWidgetTagColor(index) {
   return WIDGET_TAG_COLORS[index % WIDGET_TAG_COLORS.length]
 }
 
-export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewOutput, canRun, isRunning, removed, onRemove, onRestore, collapsed, onToggleCollapse, viewMode = 'summary', summaryLoading = false, widgetTags = [], isFixed = false, llmFixData = null, codeDiff = null, skipReason = null, hideRunButton = false, hardeningInfo = null }) {
+export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewOutput, canRun, isRunning, removed, onRemove, onRestore, collapsed, onToggleCollapse, viewMode = 'summary', summaryLoading = false, widgetTags = [], isFixed = false, llmFixData = null, codeDiff = null, skipReason = null, hideRunButton = false, hardeningInfo = null, leading = null }) {
   const [codeExpanded, setCodeExpanded] = useState(!step.summary)
   const hasCard = hasCardContent(step.summary?.card)
   const effectiveViewMode = (viewMode === 'card' && hasCard) ? 'card' : 'summary'
@@ -64,14 +64,14 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
     return (
       <div className="border rounded-xl border-[var(--border-primary)] bg-[var(--bg-secondary)] opacity-40">
         <div className="flex items-center gap-2.5 px-3.5 py-2">
-          <span className="text-[11px] font-mono text-[var(--text-muted)] w-5 text-right shrink-0">
+          <span className="text-[12px] font-mono text-[var(--text-muted)] shrink-0">
             {stepIndex + 1}
           </span>
           <ToolIcon size={14} className="text-[var(--text-muted)]" />
           <span className="text-[12px] text-[var(--text-muted)] flex-1 truncate line-through">
             {stripPills(step.summary?.title) || meta.label}
           </span>
-          <span className="text-[11px] text-[var(--text-muted)]">Skipped</span>
+          <span className="text-[12px] text-[var(--text-muted)]">Skipped</span>
           <Button variant="ghost" size="icon-sm" onClick={() => onRestore(step.id)} title="Restore step">
             <Undo2 size={13} />
           </Button>
@@ -95,12 +95,13 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
         className={`flex items-center gap-2.5 px-3.5 py-2.5 ${onToggleCollapse ? 'cursor-pointer hover:bg-[var(--bg-hover)]/50 transition-colors' : ''}`}
         onClick={onToggleCollapse || undefined}
       >
+        {leading}
         {onToggleCollapse && (
           <span className="text-[var(--text-muted)] shrink-0">
             {isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
           </span>
         )}
-        <span className="text-[11px] font-mono text-[var(--text-muted)] w-5 text-right shrink-0">
+        <span className="text-[12px] font-mono text-[var(--text-muted)] shrink-0">
           {stepIndex + 1}
         </span>
         <ToolIcon size={14} className={meta.color} />
@@ -112,7 +113,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
         {widgetTags.length > 0 && (
           <div className="flex items-center gap-1 shrink-0">
             {widgetTags.map(({ label }) => (
-              <span key={label} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border border-[var(--pv-primary-200)]">
+              <span key={label} className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border border-[var(--pv-primary-200)]">
                 {label}
               </span>
             ))}
@@ -121,47 +122,47 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
 
         {/* Status */}
         {isRunning && (
-          <span className="flex items-center gap-1 text-[11px] text-[var(--accent)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--accent)]">
             <Loader2 size={12} className="animate-spin" /> Running...
           </span>
         )}
         {status === 'success' && (
-          <span className="flex items-center gap-1 text-[11px] text-[var(--pv-success-text)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--pv-success-text)]">
             <CheckCircle2 size={12} />{!hideRunButton && result?.duration_s != null ? ` ${result.duration_s}s` : ''}
           </span>
         )}
         {isFixed && (
-          <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+          <span className="text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
             modified
           </span>
         )}
         {hardeningInfo?.status === 'reviewing' && (
-          <span className="flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+          <span className="flex items-center gap-0.5 text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
             <Loader2 size={10} className="animate-spin" /> reviewing
           </span>
         )}
         {hardeningInfo?.status === 'hardened' && !hideRunButton && (
-          <span className="flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+          <span className="flex items-center gap-0.5 text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
             <ShieldCheck size={10} /> hardened
           </span>
         )}
         {hardeningInfo?.status === 'reviewed' && (
-          <span className="flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+          <span className="flex items-center gap-0.5 text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
             <Shield size={10} /> reviewed
           </span>
         )}
         {status === 'skipped' && (
-          <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--text-muted)]">
             <SkipForward size={12} /> Redundant
           </span>
         )}
         {status === 'failed' && (
-          <span className="flex items-center gap-1 text-[11px] text-[var(--pv-error-text)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--pv-error-text)]">
             <XCircle size={12} /> Failed
           </span>
         )}
         {status === 'pending' && !isRunning && (
-          <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--text-muted)]">
             <Clock size={12} /> Pending
           </span>
         )}
@@ -199,7 +200,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {/* Skip reason (AI mode — step marked redundant) */}
           {skipReason && (
             <div className="px-3.5 py-2 border-t border-[var(--border-primary)]/50 bg-[var(--bg-hover)]/30">
-              <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+              <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)]">
                 <SkipForward size={11} className="shrink-0" />
                 <span>{skipReason}</span>
               </div>
@@ -242,7 +243,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
             <div className="px-3.5 py-1.5 border-t border-[var(--border-primary)]/50 flex items-center gap-1.5 flex-wrap">
               <FileText size={11} className="text-[var(--text-muted)] shrink-0" />
               {step.summary.output_files_detected.map(f => (
-                <span key={f} className="text-[10px] text-[var(--text-muted)] font-mono bg-[var(--bg-primary)] px-1.5 py-0.5 rounded border border-[var(--border-primary)]/50">
+                <span key={f} className="text-[12px] text-[var(--text-muted)] font-mono bg-[var(--bg-primary)] px-1.5 py-0.5 rounded border border-[var(--border-primary)]/50">
                   {f}
                 </span>
               ))}
@@ -255,13 +256,13 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
               <button
                 onClick={() => setCodeExpanded(!codeExpanded)}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 w-full text-left bg-transparent border-none cursor-pointer
-                  text-[11px] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+                  text-[12px] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 {codeExpanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                 {`View Code${meta.label ? ` (${meta.label})` : ''}`}
               </button>
               {codeExpanded && (
-                <pre className="px-3.5 pb-2.5 text-[11px] text-[var(--text-secondary)] font-mono whitespace-pre-wrap break-words max-h-[200px] overflow-y-auto leading-relaxed">
+                <pre className="px-3.5 pb-2.5 text-[12px] text-[var(--text-secondary)] font-mono whitespace-pre-wrap break-words max-h-[200px] overflow-y-auto leading-relaxed">
                   {codePreview}
                 </pre>
               )}
@@ -274,24 +275,31 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {(result?.output_files?.length > 0 || result?.error) && (
             <div className="border-t border-[var(--border-primary)]/50 px-3.5 py-2">
               {result.error && (
-                <p className="text-[11px] text-[var(--pv-error-text)] font-mono mb-1.5 whitespace-pre-wrap break-words max-h-[100px] overflow-y-auto">
+                <p className="text-[12px] text-[var(--pv-error-text)] font-mono mb-1.5 whitespace-pre-wrap break-words max-h-[100px] overflow-y-auto">
                   {result.error}
                 </p>
               )}
-              {result.output_files?.map((f) => (
+              {result.output_files?.map((f) => {
+                // output_files entries may be plain path strings or { path, size_bytes } objects.
+                const fp = typeof f === 'string' ? f : f.path
+                const size = typeof f === 'string' ? null : f.size_bytes
+                return (
                 <button
-                  key={f.path}
-                  onClick={() => onViewOutput(f)}
-                  className="flex items-center gap-1.5 text-[11px] text-[var(--accent)] hover:underline
+                  key={fp}
+                  onClick={() => onViewOutput({ path: fp })}
+                  className="flex items-center gap-1.5 text-[12px] text-[var(--accent)] hover:underline
                     bg-transparent border-none cursor-pointer p-0 mb-0.5"
                 >
                   <Eye size={11} />
-                  {f.path}
-                  <span className="text-[var(--text-muted)]">
-                    ({f.size_bytes > 1024 ? `${(f.size_bytes / 1024).toFixed(1)} KB` : `${f.size_bytes} B`})
-                  </span>
+                  {fp}
+                  {size != null && (
+                    <span className="text-[var(--text-muted)]">
+                      ({size > 1024 ? `${(size / 1024).toFixed(1)} KB` : `${size} B`})
+                    </span>
+                  )}
                 </button>
-              ))}
+                )
+              })}
             </div>
           )}
 
@@ -299,13 +307,13 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {llmFixData && (llmFixData.fixing || llmFixData.activities?.length > 0) && (
             <div className="border-t border-amber-200 px-3.5 py-2 bg-amber-50/30">
               {llmFixData.fixing && (
-                <div className="flex items-center gap-1.5 text-[11px] text-amber-700 mb-1.5">
+                <div className="flex items-center gap-1.5 text-[12px] text-amber-700 mb-1.5">
                   <Loader2 size={11} className="animate-spin" /> LLM fixing...
                 </div>
               )}
               <div className="space-y-0.5 max-h-24 overflow-y-auto">
                 {(llmFixData.activities || []).map((act, ai) => (
-                  <div key={ai} className="text-[10px] text-[var(--text-secondary)]">
+                  <div key={ai} className="text-[12px] text-[var(--text-secondary)]">
                     {act.event_type === 'tool_call' && (
                       <span className="font-mono"><span className="text-amber-600">→ {act.tool}</span></span>
                     )}
@@ -321,11 +329,11 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {/* Hardening reason */}
           {hardeningInfo?.status === 'hardened' && hardeningInfo.reason && (
             <div className="border-t border-amber-200/50 px-3.5 py-2.5 bg-amber-50/30">
-              <div className="flex items-start gap-2 text-[11px]">
+              <div className="flex items-start gap-2 text-[12px]">
                 <ShieldCheck size={12} className="shrink-0 mt-0.5 text-amber-600" />
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-amber-700 text-[10px] uppercase block mb-1">What changed</span>
-                  <div className="text-[var(--text-secondary)] leading-relaxed text-[11px] space-y-0.5">
+                  <span className="font-semibold text-amber-700 text-[12px] uppercase block mb-1">What changed</span>
+                  <div className="text-[var(--text-secondary)] leading-relaxed text-[12px] space-y-0.5">
                     {hardeningInfo.reason.split('\n').filter(Boolean).map((line, i) => {
                       const trimmed = line.replace(/^[-•]\s*/, '')
                       const isBullet = line.trim().startsWith('-') || line.trim().startsWith('•')
@@ -344,20 +352,20 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {/* Code Diff (AI mode) */}
           {codeDiff && (
             <div className="border-t border-[var(--border-primary)]/50 px-3.5 py-2">
-              <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase mb-1">Code Change</div>
+              <div className="text-[12px] font-semibold text-[var(--text-muted)] uppercase mb-1">Code Change</div>
               {codeDiff.diff ? (
-                <div className="max-h-[200px] overflow-y-auto text-[11px]">
+                <div className="max-h-[200px] overflow-y-auto text-[12px]">
                   <DiffView diff={codeDiff.diff} />
                   {codeDiff.truncated && (
-                    <div className="text-[10px] text-[var(--text-muted)] italic mt-1">Diff truncated due to size</div>
+                    <div className="text-[12px] text-[var(--text-muted)] italic mt-1">Diff truncated due to size</div>
                   )}
                 </div>
               ) : codeDiff.original ? (
                 <div className="space-y-1.5">
-                  <div className="bg-red-50 border border-red-200 rounded px-2 py-1.5 font-mono text-[10px] text-red-700 whitespace-pre-wrap max-h-28 overflow-y-auto leading-relaxed">
+                  <div className="bg-red-50 border border-red-200 rounded px-2 py-1.5 font-mono text-[12px] text-red-700 whitespace-pre-wrap max-h-28 overflow-y-auto leading-relaxed">
                     {codeDiff.original}
                   </div>
-                  <div className="bg-green-50 border border-green-200 rounded px-2 py-1.5 font-mono text-[10px] text-green-700 whitespace-pre-wrap max-h-28 overflow-y-auto leading-relaxed">
+                  <div className="bg-green-50 border border-green-200 rounded px-2 py-1.5 font-mono text-[12px] text-green-700 whitespace-pre-wrap max-h-28 overflow-y-auto leading-relaxed">
                     {codeDiff.fixed}
                   </div>
                 </div>

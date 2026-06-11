@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Trash2 } from "lucide-react";
+import { Trash2, BellOff } from "lucide-react";
 import { Button } from "@/common-components";
 import MessageBubble from "./components/MessageBubble";
 import DeleteMessageModal from "./components/DeleteMessageModal";
@@ -123,7 +123,10 @@ export default function ChatArea({
   disabled,
   onOpenWidgetChat,
   suggestedQuestions = [],
-  suggestionsLoading = false
+  suggestionsLoading = false,
+  onMuteFollowups,
+  followupsMuted = false,
+  onUnmuteFollowups
 }) {
   const bottomRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -269,7 +272,8 @@ export default function ChatArea({
     if (isLastTurn && isThinking) return null;
     const showDelete = canDelete && isLastTurn;
     const showTimestamp = timestamp && timestamp > 0;
-    if (!showTimestamp && !showDelete) return null;
+    const showUnmute = isLastTurn && followupsMuted && !!onUnmuteFollowups;
+    if (!showTimestamp && !showDelete && !showUnmute) return null;
     return (
       <div className="s-chat-timestamp-row">
         {showTimestamp && <Timestamp timestamp={timestamp} messagesWrapperRef={messagesWrapperRef} />}
@@ -282,6 +286,17 @@ export default function ChatArea({
           >
             <Trash2 size={14} />
           </Button>
+        )}
+        {showUnmute && (
+          <button
+            type="button"
+            onClick={onUnmuteFollowups}
+            title="Show follow-up suggestions again"
+            className="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-1 rounded hover:bg-[var(--bg-hover)] transition-colors"
+          >
+            <BellOff size={13} />
+            Show follow-ups
+          </button>
         )}
       </div>
     );
@@ -388,6 +403,7 @@ export default function ChatArea({
             onSelect={(q) => onSend(q)}
             disabled={disabled}
             loading={suggestionsLoading}
+            onMute={onMuteFollowups}
           />
         )}
         <div ref={bottomRef} />

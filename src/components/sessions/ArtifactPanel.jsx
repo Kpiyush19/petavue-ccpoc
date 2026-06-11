@@ -231,7 +231,6 @@ export default function ArtifactPanel({
 
       <div className="s-artifact-panel__header">
         <ArtifactTabs tabs={tabs} activeTabId={activeTabId} onSelectTab={onSelectTab} onCloseTab={onCloseTab} inline />
-        <div className="flex shrink-0 w-[1px] h-[80%] bg-neutral-300" />
 
         <div className="s-artifact-panel__actions">
           {isReactDashboard && activeTab?.path === DASHBOARD_ENTRY && (

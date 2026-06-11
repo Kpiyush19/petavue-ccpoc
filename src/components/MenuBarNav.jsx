@@ -43,7 +43,7 @@ export default function MenuBarNav() {
         historyGroups={historyGroups}
         user={user}
         onNewChat={noop}
-        defaultOpen
+        defaultOpen={false}
       />
     </div>
   );

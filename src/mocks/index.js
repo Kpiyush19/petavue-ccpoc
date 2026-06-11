@@ -44,8 +44,20 @@ export function installMockAdapter(axiosInstance) {
   return axiosInstance;
 }
 
+// In mock mode the agentic-review "code change" hash lives in localStorage so
+// re-opening the modal skips a redundant review. We clear it on every hard page
+// load so the demo flow ("No code change detected") resets and can be replayed.
+function resetReviewHashes() {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith("agent-review-hash:"))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch {}
+}
+
 if (MOCK_ENABLED) {
   seedAuth();
+  resetReviewHashes();
   installFetchPatch();
   // eslint-disable-next-line no-console
   console.info(

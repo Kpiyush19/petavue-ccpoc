@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { X, ArrowsOutSimple, ArrowsInSimple } from '@phosphor-icons/react'
 import { apiGet } from '../../../api'
 import PublishView from './PublishView'
 
@@ -14,6 +13,7 @@ export default function VerifyPublishModal({
 }) {
   const [widgets, setWidgets] = useState([])
   const [dashboardTitle, setDashboardTitle] = useState('')
+  const [codeHash, setCodeHash] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [maximized, setMaximized] = useState(false)
@@ -33,6 +33,7 @@ export default function VerifyPublishModal({
         if (!aliveRef.current) return
         setWidgets(data.widgets || [])
         setDashboardTitle(data.title || '')
+        setCodeHash(data.code_hash || null)
         setLoading(false)
       })
       .catch((err) => {
@@ -68,33 +69,11 @@ export default function VerifyPublishModal({
         className="relative bg-[var(--bg-primary)] shadow-2xl border border-[var(--border-primary)] flex flex-col overflow-hidden transition-all duration-200 rounded-2xl"
         style={maximized
           ? { width: '95vw', height: '95vh', maxWidth: '95vw', maxHeight: '95vh' }
-          : { width: '100%', maxWidth: '1178px', height: '720px', maxHeight: '720px' }
+          : { width: '100%', maxWidth: '1178px', height: '700px', maxHeight: '700px' }
         }
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Minimal header — the wizard renders its own step indicator */}
-        <div className="shrink-0 flex items-center px-4 py-2.5 border-b border-[var(--border-primary)]">
-          <span className="text-[14px] font-semibold text-[var(--text-primary)]">Verify &amp; Publish</span>
-          <div className="flex-1" />
-          <button
-            type="button"
-            onClick={() => setMaximized(!maximized)}
-            title={maximized ? 'Restore size' : 'Maximize'}
-            className="p-1.5 rounded hover:bg-[var(--bg-hover)] cursor-pointer border-none bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-          >
-            {maximized ? <ArrowsInSimple size={14} weight="bold" /> : <ArrowsOutSimple size={14} weight="bold" />}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            title="Close"
-            className="p-1.5 rounded hover:bg-[var(--bg-hover)] cursor-pointer border-none bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-          >
-            <X size={16} weight="bold" />
-          </button>
-        </div>
-
-        {/* Body */}
+        {/* Body — PublishView renders its own header (Verify | Publish tabs + close) */}
         <div className="flex-1 min-h-0 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center h-full">
@@ -108,6 +87,7 @@ export default function VerifyPublishModal({
             <PublishView
               dashboardTitle={dashboardTitle}
               setDashboardTitle={setDashboardTitle}
+              codeHash={codeHash}
               widgets={widgets}
               widgetCount={widgets.length}
               onWidgetVerified={handleWidgetVerified}

@@ -31,7 +31,7 @@ function MinimizedStrip({ label, onExpand }) {
     >
       <ArrowLineLeft size={14} className="text-[var(--text-secondary)]" />
       <span
-        className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap"
+        className="text-[12px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap"
         style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
       >
         {label}
@@ -211,7 +211,7 @@ export default function WidgetDetailView({
           style={{ width: widths.widget, transition: colTransition }}
         >
           <div className="shrink-0 flex items-center justify-between px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-            <span className="text-[11px] text-[var(--text-muted)] truncate">{widget?.name}</span>
+            <span className="text-[12px] text-[var(--text-muted)] truncate">{widget?.name}</span>
             <Button
               btnColor="ghost"
               btnSize="sm"
@@ -296,7 +296,7 @@ export default function WidgetDetailView({
               <ColumnHeader
                 title="How it's built"
                 extra={lineage?.chain && (
-                  <span className="text-[10px] text-[var(--text-muted)]">{lineage.chain.length} steps</span>
+                  <span className="text-[12px] text-[var(--text-muted)]">{lineage.chain.length} steps</span>
                 )}
                 onMinimize={() => setLineageMin(true)}
                 minimizeTitle="Minimize lineage"
@@ -323,16 +323,9 @@ export default function WidgetDetailView({
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <button
-          onClick={onBackToSession}
-          className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer p-0 transition-colors"
-        >
-          <ArrowLeft size={13} weight="bold" />
-          Back to Session
-        </button>
+      <div className="shrink-0 flex items-center justify-end px-4 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
         <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={onContinueToPublish}>
-          <span className="text-[12px]">Continue to Publish</span>
+          <span className="text-[12px]">Continue</span>
           <CaretRight size={13} weight="bold" />
         </Button>
       </div>

@@ -125,7 +125,26 @@ const NEXT_FOLLOWUP_QUESTIONS = [
   { question: "Add a Q3 revenue forecast.", grounded_in: "Revenue analysis", grounded_type: "skill" },
 ];
 
+// Per-session "code version" — bumped whenever the user sends a chat message so
+// dashboard-info's code_hash changes, letting the agentic review detect edits.
+const codeVersions = {};
+export function bumpCodeVersion(sessionId) {
+  codeVersions[sessionId] = (codeVersions[sessionId] || 1) + 1;
+}
+export function codeHashFor(sessionId) {
+  return `code-${sessionId}-v${codeVersions[sessionId] || 1}`;
+}
+
+// Applying the agentic review's own accepted fixes back to the session is NOT a
+// new code change (those fixes came from the review), so it must not bump the
+// version — otherwise reopening a just-published dashboard would wrongly think
+// the code changed and re-prompt for review instead of "No code change detected".
+const REVIEW_SYNC_MARKER = /reviewed fixes from the agentic review/i;
+
 function simulateAgentReply(sessionId, userText) {
+  if (!REVIEW_SYNC_MARKER.test(userText || "")) {
+    bumpCodeVersion(sessionId);
+  }
   const channel = `session-${sessionId}`;
   const reply =
     "Done — I re-ran the analysis and refreshed the dashboard. (Simulated response: " +
@@ -193,7 +212,7 @@ const handlers = [
     pattern: /\/api\/sessions\/([^/]+)\/dashboard-info$/,
     handler: ({ params }) => {
       const widgets = getWidgets(params[0]);
-      return { is_react_dashboard: true, title: DASHBOARD_MANIFEST.title, widget_count: widgets.length, widgets };
+      return { is_react_dashboard: true, title: DASHBOARD_MANIFEST.title, widget_count: widgets.length, widgets, code_hash: codeHashFor(params[0]) };
     },
   },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/published-check$/, handler: () => ({ published: false }) },

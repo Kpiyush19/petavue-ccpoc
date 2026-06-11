@@ -1,8 +1,14 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { apiPost, apiGet, apiDelete, apiUpload, getCurrentUser } from '../api'
 import useTodoStore from '../components/todo-progress/useTodoStore'
+
+// Per-session follow-up muting. Persisted in localStorage so it survives page
+// refresh and sign-out. Intentionally one-way — there is no in-app un-mute
+// (the user must contact support), so we only ever write the muted flag.
+const followupsMuteKey = (sid) => `followups-muted:${sid}`
+const isFollowupsMuted = (sid) => !!sid && localStorage.getItem(followupsMuteKey(sid)) === '1'
 
 let msgIdCounter = 0
 function nextId() {
@@ -35,6 +41,9 @@ export function useSession() {
   // "Related" loading skeleton). Cleared when the suggested-questions event /
   // recommendations fetch resolves.
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
+  // Mirror of the persisted per-session mute flag, re-read whenever the session
+  // changes so the chip panel knows to stay hidden.
+  const [followupsMuted, setFollowupsMuted] = useState(false)
 
   const pusherDeliveredRef = useRef(false)
   const textTruncatedRef = useRef(false)
@@ -46,6 +55,36 @@ export function useSession() {
   }, [])
 
   sessionIdRef.current = sessionId
+
+  // Re-read the persisted mute flag whenever we land on a different session.
+  useEffect(() => { setFollowupsMuted(isFollowupsMuted(sessionId)) }, [sessionId])
+
+  // Mute follow-ups for the current session: persist, hide any current chips,
+  // and confirm. There is no un-mute by design.
+  const muteFollowups = useCallback(() => {
+    const sid = sessionIdRef.current
+    if (sid) localStorage.setItem(followupsMuteKey(sid), '1')
+    setFollowupsMuted(true)
+    setSuggestedQuestions([])
+    setSuggestionsLoading(false)
+    toast('Follow-up questions muted for this session')
+  }, [])
+
+  // Re-enable follow-ups for the current session and re-hydrate the chips so
+  // they come back immediately rather than only on the next turn.
+  const unmuteFollowups = useCallback(() => {
+    const sid = sessionIdRef.current
+    if (sid) localStorage.removeItem(followupsMuteKey(sid))
+    setFollowupsMuted(false)
+    if (sid) {
+      setSuggestionsLoading(true)
+      apiGet(`/api/sessions/${sid}/recommendations`)
+        .then((d) => { if (!isFollowupsMuted(sid)) setSuggestedQuestions(d?.questions || []) })
+        .catch(() => {})
+        .finally(() => setSuggestionsLoading(false))
+    }
+    toast('Follow-up questions re-enabled')
+  }, [])
 
   const addSystemMsg = useCallback((text) => {
     addMessage({ type: 'system', text })
@@ -136,14 +175,18 @@ export function useSession() {
     } else if (event.type === 'advisor_error') {
       logEvent({ type: 'advisor_error', error_code: event.error_code })
     } else if (event.type === 'suggested-questions') {
+      if (isFollowupsMuted(sessionIdRef.current)) { setSuggestionsLoading(false); return }
       setSuggestedQuestions(event.questions || [])
       setSuggestionsLoading(false)
     } else if (event.type === 'done') {
       setStatus('active')
       // Turn finished — expect follow-up chips next; show the skeleton until
-      // they arrive (safety-cleared after a few seconds if none come).
-      setSuggestionsLoading(true)
-      setTimeout(() => setSuggestionsLoading(false), 5000)
+      // they arrive (safety-cleared after a few seconds if none come). Skipped
+      // entirely when the user has muted follow-ups for this session.
+      if (!isFollowupsMuted(sessionIdRef.current)) {
+        setSuggestionsLoading(true)
+        setTimeout(() => setSuggestionsLoading(false), 5000)
+      }
       if (event.context_tokens != null) setTotalTokens(event.context_tokens)
       else if (event.total_tokens != null) setTotalTokens(event.total_tokens)
       if (event.turn_count != null) setTurnCount(event.turn_count)
@@ -449,12 +492,16 @@ export function useSession() {
     setEventLog([])
 
     // Hydrate the latest follow-up chips (non-blocking — never delays the
-    // thread render; absent/disabled tenants just return an empty set).
-    setSuggestionsLoading(true)
-    apiGet(`/api/sessions/${sid}/recommendations`)
-      .then((d) => setSuggestedQuestions(d?.questions || []))
-      .catch(() => {})
-      .finally(() => setSuggestionsLoading(false))
+    // thread render; absent/disabled tenants just return an empty set). Skipped
+    // when follow-ups are muted for this session.
+    if (!isFollowupsMuted(sid)) {
+      setSuggestionsLoading(true)
+      apiGet(`/api/sessions/${sid}/recommendations`)
+        // Re-check muted on resolve: the user may have muted while in flight.
+        .then((d) => { if (!isFollowupsMuted(sid)) setSuggestedQuestions(d?.questions || []) })
+        .catch(() => {})
+        .finally(() => setSuggestionsLoading(false))
+    }
 
     return session.session_id
   }, [])
@@ -638,6 +685,9 @@ export function useSession() {
     eventLog,
     suggestedQuestions,
     suggestionsLoading,
+    followupsMuted,
+    muteFollowups,
+    unmuteFollowups,
     workspaceReadyCounter,
     createSession,
     resumeSession,
