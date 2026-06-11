@@ -68,7 +68,7 @@ export default function VerifyPublishModal({
         className="relative bg-[var(--bg-primary)] shadow-2xl border border-[var(--border-primary)] flex flex-col overflow-hidden transition-all duration-200 rounded-2xl"
         style={maximized
           ? { width: '95vw', height: '95vh', maxWidth: '95vw', maxHeight: '95vh' }
-          : { width: '100%', maxWidth: '1178px', height: '800px', maxHeight: '800px' }
+          : { width: '100%', maxWidth: '1178px', height: '720px', maxHeight: '720px' }
         }
         onClick={(e) => e.stopPropagation()}
       >
