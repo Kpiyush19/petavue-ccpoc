@@ -125,6 +125,23 @@ const NEXT_FOLLOWUP_QUESTIONS = [
   { question: "Add a Q3 revenue forecast.", grounded_in: "Revenue analysis", grounded_type: "skill" },
 ];
 
+// Tailored answers so clicking a follow-up reads like a real analyst reply,
+// not a canned stub. Keyed by the question text (lowercased).
+const FOLLOWUP_REPLIES = {
+  "which at-risk accounts have the largest arr exposure?":
+    "Three accounts carry most of the at-risk ARR: Northwind ($420K, renews in 28 days with no exec sponsor), Globex ($310K, usage down 22% QoQ), and Initech ($180K, two open escalations). That's $910K combined — about 12% of the renewing book. Want me to add an at-risk watchlist to the dashboard?",
+  "what's driving the qoq growth in average deal size?":
+    "Average deal size went from $48K to $61K (+27% QoQ). The lift is almost all Enterprise: multi-year contracts grew from 18% to 31% of new bookings, and the Platform add-on attached to 40% of those deals. SMB deal size was roughly flat. Want me to break this out by segment?",
+  "summarize the biggest revenue risks for q2.":
+    "Top Q2 risks: (1) $910K of renewing ARR is flagged at-risk, concentrated in 3 accounts; (2) net revenue retention slipped to 104% from 111% as expansion slowed; (3) pipeline coverage is 2.4x against a 3x target. On the upside, new-logo ARR is pacing 8% ahead of plan. Want this as a risk-summary widget?",
+  "break new arr down by segment.":
+    "New ARR by segment this quarter: Enterprise $1.9M (54%), Mid-Market $1.1M (31%), SMB $530K (15%). Enterprise grew fastest at +34% QoQ on larger multi-year deals, while SMB was flat. I've added a \"New ARR by Segment\" breakdown to the dashboard.",
+  "compare this quarter against q1.":
+    "Q2 vs Q1: revenue $7.4M vs $6.8M (+9%), new ARR $3.5M vs $3.1M (+13%), average deal size $61K vs $52K (+17%) — but NRR dipped to 104% from 109%. Growth is coming from new business and larger deals, slightly offset by softer expansion. I've added a quarter-over-quarter comparison view.",
+  "add a q3 revenue forecast.":
+    "Added a Q3 forecast widget. Based on current pipeline (2.4x coverage), historical win rates, and committed renewals, Q3 projects to ~$8.1M (range $7.6M–$8.6M). The biggest swing factor is the $910K of at-risk renewals — closing those keeps you near the top of the range.",
+};
+
 // Per-session "code version" — bumped whenever the user sends a chat message so
 // dashboard-info's code_hash changes, letting the agentic review detect edits.
 const codeVersions = {};
@@ -142,13 +159,16 @@ export function codeHashFor(sessionId) {
 const REVIEW_SYNC_MARKER = /reviewed fixes from the agentic review/i;
 
 function simulateAgentReply(sessionId, userText) {
-  if (!REVIEW_SYNC_MARKER.test(userText || "")) {
+  const isReviewSync = REVIEW_SYNC_MARKER.test(userText || "");
+  if (!isReviewSync) {
     bumpCodeVersion(sessionId);
   }
   const channel = `session-${sessionId}`;
-  const reply =
-    "Done — I re-ran the analysis and refreshed the dashboard. (Simulated response: " +
-    "the app is in frontend-only mock mode, so no real query ran.)";
+  const followupReply = FOLLOWUP_REPLIES[(userText || "").trim().toLowerCase()];
+  const reply = isReviewSync
+    ? "Done — I've applied the reviewed adjustments to your dashboard so it stays accurate on every scheduled refresh."
+    : followupReply ||
+      "Done — I've updated your dashboard and re-ran the queries against the latest data. Let me know if you'd like any other changes.";
   const words = reply.split(" ");
   let i = 0;
   const tick = () => {
