@@ -15,7 +15,7 @@ export default function UnappliedAdjustmentsCard({ adjustments = [], selected = 
         <span className="text-[12px] font-semibold text-[var(--text-primary)]">
           {adjustments.length} reviewed adjustment{adjustments.length !== 1 ? 's' : ''} you haven't applied
         </span>
-        <span className="text-[12px] text-[var(--text-muted)]">{selCount > 0 ? `· ${selCount} will apply on continue` : '· check to apply'}</span>
+        {selCount > 0 && <span className="text-[12px] text-[var(--text-muted)]">· {selCount} will apply on continue</span>}
       </div>
       <div className="px-3.5 py-2.5 space-y-2.5">
         {adjustments.map((adj) => (

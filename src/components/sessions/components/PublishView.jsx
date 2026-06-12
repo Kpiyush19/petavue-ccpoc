@@ -6,7 +6,7 @@ import Pusher from 'pusher-js'
 import {
   CaretLeft, CaretRight, Play,
   CircleNotch, CheckCircle, XCircle, Spinner, ArrowsClockwise, PencilSimple, Sparkle,
-  Plus, ListChecks, Warning, X,
+  Plus, ListChecks, Warning, X, Eye,
 } from '@phosphor-icons/react'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken, getCurrentUser } from '../../../api'
@@ -15,7 +15,6 @@ import RecipeGroupCard from '../../RecipeGroupCard'
 import RecipeStepCell from '../../RecipeStepCell'
 import OutputPreview from '../../OutputPreview'
 import HardeningChat from './HardeningChat'
-import UnappliedAdjustmentsCard from './UnappliedAdjustmentsCard'
 import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
 import SlackChannelPicker from '../../shared/SlackChannelPicker'
 import WidgetListView from './WidgetListView'
@@ -300,6 +299,8 @@ export default function PublishView({
   const [tab, setTab] = useState(TAB.VERIFY)
   // Verify has two sub-steps: 'user' (widget review) and 'agent' (agentic review).
   const [verifySubTab, setVerifySubTab] = useState('user')
+  // Marked once the user continues past the (optional) User Review step.
+  const [userReviewDone, setUserReviewDone] = useState(false)
   const [reviewPassed, setReviewPassed] = useState(false)
   // True when we skipped the run because the code hasn't changed since the last
   // review (the agent already reviewed this exact code).
@@ -307,6 +308,9 @@ export default function PublishView({
   // True when a prior review exists but the code changed since — so the dashboard
   // needs a fresh review before it can be (re)published.
   const [reviewStale, setReviewStale] = useState(false)
+  // After the review passes we land on a recap first; the user opts in to the
+  // full 3-column adjustments view by clicking "View adjustments" (no auto-jump).
+  const [adjustmentsRevealed, setAdjustmentsRevealed] = useState(false)
   // Adjustments the user chose NOT to apply last time — surfaced in the
   // "No code change detected" / "Changes detected" screens so they can still be
   // applied. `unappliedSelected` is the staged check state (applied on continue).
@@ -451,6 +455,9 @@ export default function PublishView({
   // can skip the (expensive) review entirely.
   const reviewHashKey = sessionId ? `agent-review-hash:${sessionId}` : null
   const unappliedKey = sessionId ? `agent-unapplied-adjustments:${sessionId}` : null
+  // Full snapshot of the passed review (recipe + hardening + diffs + exec session)
+  // so a reopen with unchanged code can *show* the adjustments without re-running.
+  const snapshotKey = sessionId ? `agent-review-snapshot:${sessionId}` : null
   useEffect(() => {
     if (!codeHash || !reviewHashKey) return
     // Never react mid-review; otherwise codeHash changing (e.g. an edit made
@@ -463,7 +470,26 @@ export default function PublishView({
     }
     if (stored === codeHash) {
       // Same code the agent already reviewed → skip (unless we're already passed).
-      if (!reviewPassed) { setReviewSkipped(true); setReviewPassed(true) }
+      if (!reviewPassed) {
+        // Rehydrate the saved review so "View adjustments" can show it without a
+        // re-run. The exec session lives server-side as long as the page wasn't
+        // reloaded; if the snapshot is gone, the skip button falls back to re-run.
+        if (snapshotKey) {
+          try {
+            const snap = JSON.parse(localStorage.getItem(snapshotKey) || 'null')
+            if (snap) {
+              if (snap.recipe) setRecipe(snap.recipe)
+              if (snap.hardeningStatus) setHardeningStatus(snap.hardeningStatus)
+              if (snap.stepResults) setStepResults(snap.stepResults)
+              if (snap.codeDiffs) setCodeDiffs(snap.codeDiffs)
+              if (snap.adjustmentChecked) setAdjustmentChecked(snap.adjustmentChecked)
+              if (typeof snap.totalSteps === 'number') setTotalSteps(snap.totalSteps)
+              if (snap.execSessionId) execSessionIdRef.current = snap.execSessionId
+            }
+          } catch { /* ignore */ }
+        }
+        setReviewSkipped(true); setReviewPassed(true)
+      }
     } else if (stored) {
       // Reviewed before, but the dashboard changed since (e.g. a User Review edit
       // bumped the code) → invalidate the pass/skip and require a fresh review.
@@ -480,6 +506,18 @@ export default function PublishView({
       localStorage.setItem(reviewHashKey, codeHash)
     }
   }, [reviewPassed, reviewSkipped, codeHash, reviewHashKey])
+
+  // Persist a full snapshot of a freshly-passed review so a later reopen (with
+  // unchanged code) can show the adjustments without re-running.
+  useEffect(() => {
+    if (!reviewPassed || reviewSkipped || !snapshotKey || !recipe || !execSessionIdRef.current) return
+    try {
+      localStorage.setItem(snapshotKey, JSON.stringify({
+        execSessionId: execSessionIdRef.current,
+        recipe, hardeningStatus, stepResults, codeDiffs, adjustmentChecked, totalSteps,
+      }))
+    } catch { /* ignore */ }
+  }, [reviewPassed, reviewSkipped, snapshotKey, recipe, hardeningStatus, stepResults, codeDiffs, adjustmentChecked, totalSteps])
 
 
   const stepResultsRef = useRef(stepResults)
@@ -1235,6 +1273,7 @@ export default function PublishView({
     workflowCreatedRef.current = false
     setReviewPassed(false)
     setReviewStale(false)
+    setAdjustmentsRevealed(false)
     setUnappliedAdjustments([])
     setUnappliedSelected({})
     if (unappliedKey) { try { localStorage.removeItem(unappliedKey) } catch { /* ignore */ } }
@@ -1902,7 +1941,7 @@ export default function PublishView({
         onBack={() => setSelectedWidget(null)}
         onVerified={onWidgetVerified}
         onBackToSession={() => onClose?.()}
-        onContinueToPublish={() => { setSelectedWidget(null); setVerifySubTab('agent') }}
+        onContinueToPublish={() => { setSelectedWidget(null); setUserReviewDone(true); setVerifySubTab('agent') }}
       />
     ) : (
       <WidgetListView
@@ -1910,7 +1949,7 @@ export default function PublishView({
         widgetCount={widgets.length}
         verifiedCount={widgets.filter((w) => w.verified).length}
         onSelectWidget={(w) => setSelectedWidget(w)}
-        onContinueToPublish={() => setVerifySubTab('agent')}
+        onContinueToPublish={() => { setUserReviewDone(true); setVerifySubTab('agent') }}
         onBack={() => onClose?.()}
         titleMissing={false}
         footerStart={renderVerifyStepNav()}
@@ -2132,7 +2171,6 @@ export default function PublishView({
             </div>
           </div>
         ) : reviewStale ? (
-          <>
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
             <div className="flex items-center gap-2.5">
               <Warning size={20} weight="fill" className="text-amber-500 shrink-0" />
@@ -2149,10 +2187,6 @@ export default function PublishView({
               <Play size={13} weight="fill" />Run review again
             </button>
           </div>
-          {unappliedAdjustments.length > 0 && (
-            <div className="mt-4"><UnappliedAdjustmentsCard adjustments={unappliedAdjustments} selected={unappliedSelected} onToggle={(adj) => setUnappliedSelected(prev => ({ ...prev, [adj.id]: !prev[adj.id] }))} /></div>
-          )}
-          </>
         ) : (
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
             <p className="text-[12px] text-[var(--text-secondary)] m-0 mb-3 leading-relaxed">
@@ -2203,7 +2237,7 @@ export default function PublishView({
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 256 256" className={`shrink-0 ${isCurrent || it.done ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
               <path d={it.done ? STEP_CHECK_PATH : (STEP_NUMBER_PATHS[i] || STEP_NUMBER_PATHS[0])} />
             </svg>
-            <span className={`text-[13px] font-medium whitespace-nowrap ${isCurrent || it.done ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{it.label}</span>
+            <span className={`text-[12px] font-medium whitespace-nowrap ${isCurrent || it.done ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{it.label}</span>
           </button>
           {i < items.length - 1 && <div className="w-6 h-px bg-[var(--border-primary)] mx-0.5 shrink-0" />}
         </div>
@@ -2213,7 +2247,7 @@ export default function PublishView({
 
   // Step-nav items per tab.
   const verifyNavItems = [
-    { id: 'user', label: 'User Review', done: false, clickable: !isAgentBusy },
+    { id: 'user', label: 'User Review', done: userReviewDone, clickable: !isAgentBusy },
     { id: 'agent', label: 'Agentic Review', done: reviewPassed, clickable: !isAgentBusy },
   ]
   const publishNavItems = STEP_ORDER.map((s, i) => {
@@ -2559,6 +2593,7 @@ export default function PublishView({
   // ── Agentic Review sub-tab — gate (pre/running/error) → inline adjustments on pass ──
   const renderAgenticReviewSubTab = () => {
     if (reviewSkipped) {
+      const unappliedCount = unappliedAdjustments.length
       return (
         <div className="flex flex-col h-full overflow-hidden">
           {stepHeader('Agentic Review', autoRefresh ? 'An AI agent will check your dashboard to ensure every refresh runs without issues.' : 'An AI agent will check your dashboard to ensure everything works correctly.', null, runAgainBtn)}
@@ -2568,13 +2603,15 @@ export default function PublishView({
                 <CheckCircle size={20} weight="fill" className="text-green-500 shrink-0" />
                 <h3 className="text-[14px] font-semibold text-green-700 m-0">No code change detected</h3>
               </div>
-              <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">The agent already reviewed this dashboard and nothing has changed since. You're ready to publish.</p>
+              <p className="text-[12px] text-green-700/90 mt-2 mb-3 leading-relaxed">
+                {unappliedCount > 0
+                  ? `The agent already reviewed this dashboard and nothing's changed since. You still have ${unappliedCount} adjustment${unappliedCount !== 1 ? 's' : ''} you haven't applied — open the review to check ${unappliedCount !== 1 ? 'them' : 'it'}, see the output, and ask or edit before you publish.`
+                  : 'The agent already reviewed this dashboard and nothing has changed since. Open the review to see the adjustments, output and ask or edit — or just publish.'}
+              </p>
+              <button onClick={() => { if (execSessionIdRef.current && adjustmentCount > 0) { setReviewSkipped(false); setAdjustmentsRevealed(true) } else { runReviewAgain() } }} title="See the proposed adjustments, output and ask or edit" className="inline-flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium bg-white border border-green-300 text-green-700 hover:bg-green-100 cursor-pointer transition-colors">
+                <Eye size={14} weight="bold" />View adjustments
+              </button>
             </div>
-            {unappliedAdjustments.length > 0 && (
-              <div className="mt-4">
-                <UnappliedAdjustmentsCard adjustments={unappliedAdjustments} selected={unappliedSelected} onToggle={(adj) => setUnappliedSelected(prev => ({ ...prev, [adj.id]: !prev[adj.id] }))} />
-              </div>
-            )}
           </div>
           <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             {renderVerifyStepNav()}
@@ -2589,28 +2626,82 @@ export default function PublishView({
       const hardenedSteps = (recipe?.steps || []).filter(s => hardeningStatus[s.id]?.status === 'hardened')
       const stepCount = recipe?.steps?.length || totalSteps || 0
       const checks = ['Analyzed', 'Recipe extracted', `Ran ${stepCount} steps`, ...(autoRefresh ? ['Prepared for scheduled refresh'] : [])]
+
+      // Full-screen adjustments view — opened from the recap via "View adjustments".
+      // A compact strip header keeps the checks in view; Back returns to the recap
+      // (the main Agentic Review screen).
+      if (adjustmentsRevealed && adjustmentCount > 0) {
+        return (
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
+              <div className="flex items-center gap-x-5 gap-y-1.5 flex-wrap min-w-0">
+                <button onClick={() => setAdjustmentsRevealed(false)} title="Back to Agentic Review" className="flex items-center gap-1 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer -ml-1 p-1 rounded hover:bg-[var(--bg-hover)] transition-colors">
+                  <CaretLeft size={14} weight="bold" />Back
+                </button>
+                {checks.map((l, i) => (
+                  <span key={i} className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle size={15} weight="fill" className="text-green-500" />{l}</span>
+                ))}
+              </div>
+              <button onClick={runReviewAgain} title="Discard this review and run it again" className="shrink-0 flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border border-[var(--border-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
+                <Play size={13} weight="fill" />Run review again
+              </button>
+            </div>
+            {renderInlineAdjustments()}
+            <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+              {renderVerifyStepNav()}
+              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish} title="Approve the checked adjustments (applied to your main chat session), then continue">
+                <span className="text-[12px]">Approve adjustments & continue</span><CaretRight size={13} weight="bold" />
+              </Button>
+            </div>
+          </div>
+        )
+      }
+
+      // Recap — the main Agentic Review screen kept intact (header, description and
+      // every check that ran), with the "Review passed" box appended below. The
+      // user opts into the full adjustments view rather than being auto-jumped.
       return (
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
-            <div className="flex items-center gap-x-5 gap-y-1.5 flex-wrap min-w-0">
-              <button onClick={() => setVerifySubTab('user')} title="Back to User Review" className="flex items-center gap-1 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer -ml-1 p-1 rounded hover:bg-[var(--bg-hover)] transition-colors">
-                <CaretLeft size={14} weight="bold" />Back
-              </button>
+          {stepHeader(
+            'Agentic Review',
+            autoRefresh ? 'An AI agent will check your dashboard to ensure every refresh runs without issues.' : 'An AI agent will check your dashboard to ensure everything works correctly.',
+            null,
+            runAgainBtn,
+          )}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 bg-[#FCFCFC]">
+            <div className="space-y-3">
               {checks.map((l, i) => (
-                <span key={i} className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle size={15} weight="fill" className="text-green-500" />{l}</span>
+                <div key={i} className="flex items-center gap-3">
+                  <CheckCircle size={16} weight="fill" className="text-green-500 shrink-0" />
+                  <span className="text-[12px] flex-1 text-green-600 font-medium">{l}</span>
+                </div>
               ))}
             </div>
-            <button onClick={runReviewAgain} title="Discard this review and run it again" className="shrink-0 flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border border-[var(--border-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-              <Play size={13} weight="fill" />Run review again
-            </button>
+            <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-5">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle size={20} weight="fill" className="text-green-500 shrink-0" />
+                <h3 className="text-[14px] font-semibold text-green-700 m-0">Review passed</h3>
+              </div>
+              {adjustmentCount > 0 ? (
+                <>
+                  <p className="text-[12px] text-green-700/90 mt-2 mb-3 leading-relaxed">
+                    The agent tested your dashboard end-to-end and proposed {adjustmentCount} adjustment{adjustmentCount !== 1 ? 's' : ''} to keep it running reliably{autoRefresh ? ' on every scheduled refresh' : ''}. Review them, or continue to publish.
+                  </p>
+                  <button onClick={() => setAdjustmentsRevealed(true)} title="See the proposed adjustments, output and ask or edit" className="inline-flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium bg-white border border-green-300 text-green-700 hover:bg-green-100 cursor-pointer transition-colors">
+                    <Eye size={14} weight="bold" />View {adjustmentCount} adjustment{adjustmentCount !== 1 ? 's' : ''}
+                  </button>
+                </>
+              ) : (
+                <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">
+                  Tested end-to-end{autoRefresh ? ' and ready for scheduled refresh' : ' and ready to publish'} — no adjustments were needed.
+                </p>
+              )}
+            </div>
           </div>
-          {adjustmentCount > 0 ? renderInlineAdjustments() : (
-            <div className="flex-1 flex items-center justify-center text-[13px] text-[var(--text-muted)] px-6 text-center">No adjustments were needed — your dashboard passed cleanly.</div>
-          )}
           <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             {renderVerifyStepNav()}
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish} title="Applies the checked adjustments to your main chat session, then continues">
-              <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
+            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish} title={adjustmentCount > 0 ? 'Approve the checked adjustments (applied to your main chat session), then continue' : 'Continue to publish'}>
+              <span className="text-[12px]">{adjustmentCount > 0 ? 'Approve adjustments & continue' : 'Continue to Publish'}</span><CaretRight size={13} weight="bold" />
             </Button>
           </div>
         </div>
