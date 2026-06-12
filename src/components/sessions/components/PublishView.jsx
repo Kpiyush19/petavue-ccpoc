@@ -303,6 +303,9 @@ export default function PublishView({
   // True when we skipped the run because the code hasn't changed since the last
   // review (the agent already reviewed this exact code).
   const [reviewSkipped, setReviewSkipped] = useState(false)
+  // True when a prior review exists but the code changed since — so the dashboard
+  // needs a fresh review before it can be (re)published.
+  const [reviewStale, setReviewStale] = useState(false)
   // Step ids whose accept/reject choice has been "applied". The current
   // selection must match this before you can continue to publish.
   const [appliedRejected, setAppliedRejected] = useState([])
@@ -420,9 +423,14 @@ export default function PublishView({
     // Only auto-skip before any run this session — never override an in-progress
     // or just-completed review.
     if (reviewPassed || isReviewRunning) return
-    if (localStorage.getItem(reviewHashKey) === codeHash) {
+    const stored = localStorage.getItem(reviewHashKey)
+    if (stored === codeHash) {
+      // Same code the agent already reviewed → skip.
       setReviewSkipped(true)
       setReviewPassed(true)
+    } else if (stored) {
+      // Reviewed before, but the dashboard has changed since → needs re-review.
+      setReviewStale(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeHash, reviewHashKey])
@@ -1187,6 +1195,7 @@ export default function PublishView({
     if (!sessionId) return
     workflowCreatedRef.current = false
     setReviewPassed(false)
+    setReviewStale(false)
     setPhase(PHASE.EXTRACTING)
     setPhaseMessage('Analyzing your dashboard...')
     setCompletedSteps(0)
@@ -2015,6 +2024,17 @@ export default function PublishView({
               </button>
               <button onClick={() => { handleDiscardDraft(); handleStartVerification() }} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer underline p-0">Start fresh instead</button>
             </div>
+          </div>
+        ) : reviewStale ? (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+            <div className="flex items-center gap-2.5">
+              <Warning size={20} weight="fill" className="text-amber-500 shrink-0" />
+              <h3 className="text-[14px] font-semibold text-amber-800 m-0">Changes detected since your last review</h3>
+            </div>
+            <p className="text-[12px] text-amber-700 mt-2 mb-3 leading-relaxed">You've edited this dashboard since the agent last reviewed it. Run the agentic review again so every scheduled refresh keeps working before you publish.</p>
+            <button onClick={handleStartVerification} className="inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
+              <Play size={13} weight="fill" />Run review again
+            </button>
           </div>
         ) : (
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
