@@ -56,6 +56,17 @@ export default function VerifyPublishModal({
     )
   }, [])
 
+  // Re-pull the dashboard's code hash after an edit so the agentic review sees
+  // the change — User Review edits (and any chat edit) count as changes too.
+  const handleSendFeedback = useCallback(async (text, scope) => {
+    const result = await onSendFeedback?.(text, scope)
+    try {
+      const data = await apiGet(`/api/sessions/${sessionId}/dashboard-info`)
+      if (aliveRef.current) setCodeHash(data.code_hash || null)
+    } catch { /* ignore */ }
+    return result
+  }, [onSendFeedback, sessionId])
+
   if (!isOpen) return null
 
   return createPortal(
@@ -94,7 +105,7 @@ export default function VerifyPublishModal({
               sessionId={sessionId}
               sessionStatus={sessionStatus}
               liveMessages={liveMessages}
-              onSendFeedback={onSendFeedback}
+              onSendFeedback={handleSendFeedback}
               onClose={onClose}
               onRequestMaximize={() => setMaximized(true)}
             />

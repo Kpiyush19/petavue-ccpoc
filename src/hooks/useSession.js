@@ -692,6 +692,7 @@ export function useSession() {
     createSession,
     resumeSession,
     sendMessage,
+    addMessage,
     endSession,
     goHome,
     cancelTurn,

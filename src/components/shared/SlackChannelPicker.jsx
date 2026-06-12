@@ -168,49 +168,35 @@ export default function SlackChannelPicker({
           Channels
         </label>
 
-        {selectedChannels.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-1.5">
-            {selectedChannels.map((ch) => (
-              <span
-                key={ch.id}
-                className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]"
-              >
-                <Hash size={10} />
-                {ch.name}
-                <button
-                  type="button"
-                  onClick={() => !isDisabled && onChannelsChange(selectedChannels.filter(c => c.id !== ch.id))}
-                  className="ml-0.5 p-0 bg-transparent border-none cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors"
-                >
-                  <X size={10} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="relative mt-1" ref={channelDropdownRef}>
+        <div className="relative mt-1.5" ref={channelDropdownRef}>
           <button
             ref={channelBtnRef}
             type="button"
             onClick={() => !isDisabled && setShowChannelDropdown(!showChannelDropdown)}
             disabled={isDisabled || channelsLoading}
-            className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
+            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
               !isDisabled ? 'cursor-pointer hover:border-[var(--accent)]/50' : 'cursor-not-allowed opacity-60'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <Hash size={13} className="text-[var(--text-muted)]" />
-              <span className={`${selectedChannels.length > 0 ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
-                {channelsLoading ? 'Loading channels...' : selectedChannels.length > 0
-                  ? `${selectedChannels.length} channel${selectedChannels.length > 1 ? 's' : ''} selected`
-                  : 'Select channels'}
-              </span>
+            <div className="flex items-center gap-1.5 flex-wrap flex-1 min-w-0 py-0.5">
+              <Hash size={13} className="text-[var(--text-muted)] shrink-0" />
+              {channelsLoading ? (
+                <span className="text-[var(--text-muted)]">Loading channels...</span>
+              ) : selectedChannels.length > 0 ? (
+                selectedChannels.map((ch) => (
+                  <span key={ch.id} className="inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 text-[11px] font-medium rounded bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]">
+                    <Hash size={9} />{ch.name}
+                    <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); if (!isDisabled) onChannelsChange(selectedChannels.filter(c => c.id !== ch.id)) }} className="ml-0.5 cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors inline-flex"><X size={10} /></span>
+                  </span>
+                ))
+              ) : (
+                <span className="text-[var(--text-muted)]">Select channels</span>
+              )}
             </div>
             {channelsLoading ? (
-              <Loader2 size={13} className="text-[var(--text-muted)] animate-spin" />
+              <Loader2 size={13} className="text-[var(--text-muted)] animate-spin shrink-0" />
             ) : (
-              <ChevronDown size={13} className={`text-[var(--text-muted)] transition-transform ${showChannelDropdown ? 'rotate-180' : ''}`} />
+              <ChevronDown size={13} className={`text-[var(--text-muted)] transition-transform shrink-0 ${showChannelDropdown ? 'rotate-180' : ''}`} />
             )}
           </button>
 
@@ -297,47 +283,36 @@ export default function SlackChannelPicker({
           </div>
         )}
 
-        {selectedDmUsers.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-1.5">
-            {selectedDmUsers.map((u) => (
-              <span
-                key={u.id}
-                className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]"
-              >
-                {u.avatar_url && <img src={u.avatar_url} alt="" className="w-4 h-4 rounded-full" />}
-                {u.real_name || u.display_name || u.name}
-                <button
-                  type="button"
-                  onClick={() => !isDisabled && onDmUsersChange(selectedDmUsers.filter(su => su.id !== u.id))}
-                  className="ml-0.5 p-0 bg-transparent border-none cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors"
-                >
-                  <X size={10} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="relative mt-1" ref={userDropdownRef}>
+        <div className="relative mt-1.5" ref={userDropdownRef}>
           <button
             ref={userBtnRef}
             type="button"
             onClick={() => hasDmScope && !isDisabled && setShowUserDropdown(!showUserDropdown)}
             disabled={isDisabled || !hasDmScope}
-            className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
+            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
               !isDisabled && hasDmScope ? 'cursor-pointer hover:border-[var(--accent)]/50' : 'cursor-not-allowed opacity-60'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <User size={13} className="text-[var(--text-muted)]" />
-              <span className="text-[var(--text-muted)]">
-                {usersLoading ? 'Loading users...' : 'Add DM recipient...'}
-              </span>
+            <div className="flex items-center gap-1.5 flex-wrap flex-1 min-w-0 py-0.5">
+              <User size={13} className="text-[var(--text-muted)] shrink-0" />
+              {usersLoading ? (
+                <span className="text-[var(--text-muted)]">Loading users...</span>
+              ) : selectedDmUsers.length > 0 ? (
+                selectedDmUsers.map((u) => (
+                  <span key={u.id} className="inline-flex items-center gap-1 pl-1 pr-1 py-0.5 text-[11px] font-medium rounded bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]">
+                    {u.avatar_url && <img src={u.avatar_url} alt="" className="w-3.5 h-3.5 rounded-full" />}
+                    {u.real_name || u.display_name || u.name}
+                    <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); if (!isDisabled) onDmUsersChange(selectedDmUsers.filter(su => su.id !== u.id)) }} className="ml-0.5 cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors inline-flex"><X size={10} /></span>
+                  </span>
+                ))
+              ) : (
+                <span className="text-[var(--text-muted)]">Add DM recipient...</span>
+              )}
             </div>
             {usersLoading ? (
-              <Loader2 size={13} className="text-[var(--text-muted)] animate-spin" />
+              <Loader2 size={13} className="text-[var(--text-muted)] animate-spin shrink-0" />
             ) : (
-              <ChevronDown size={13} className={`text-[var(--text-muted)] transition-transform ${showUserDropdown ? 'rotate-180' : ''}`} />
+              <ChevronDown size={13} className={`text-[var(--text-muted)] transition-transform shrink-0 ${showUserDropdown ? 'rotate-180' : ''}`} />
             )}
           </button>
 

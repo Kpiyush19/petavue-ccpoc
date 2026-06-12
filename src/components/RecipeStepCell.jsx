@@ -45,7 +45,7 @@ export function getWidgetTagColor(index) {
   return WIDGET_TAG_COLORS[index % WIDGET_TAG_COLORS.length]
 }
 
-export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewOutput, canRun, isRunning, removed, onRemove, onRestore, collapsed, onToggleCollapse, viewMode = 'summary', summaryLoading = false, widgetTags = [], isFixed = false, llmFixData = null, codeDiff = null, skipReason = null, hideRunButton = false, hardeningInfo = null, leading = null }) {
+export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewOutput, canRun, isRunning, removed, onRemove, onRestore, collapsed, onToggleCollapse, viewMode = 'summary', summaryLoading = false, widgetTags = [], isFixed = false, llmFixData = null, codeDiff = null, skipReason = null, hideRunButton = false, hideStatus = false, hardeningInfo = null, leading = null }) {
   const [codeExpanded, setCodeExpanded] = useState(!step.summary)
   const hasCard = hasCardContent(step.summary?.card)
   const effectiveViewMode = (viewMode === 'card' && hasCard) ? 'card' : 'summary'
@@ -121,12 +121,12 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
         )}
 
         {/* Status */}
-        {isRunning && (
+        {isRunning && !hideStatus && (
           <span className="flex items-center gap-1 text-[12px] text-[var(--accent)]">
             <Loader2 size={12} className="animate-spin" /> Running...
           </span>
         )}
-        {status === 'success' && (
+        {status === 'success' && !hideStatus && (
           <span className="flex items-center gap-1 text-[12px] text-[var(--pv-success-text)]">
             <CheckCircle2 size={12} />{!hideRunButton && result?.duration_s != null ? ` ${result.duration_s}s` : ''}
           </span>

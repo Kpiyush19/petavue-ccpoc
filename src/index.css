@@ -585,3 +585,9 @@ body {
 .diff-view__line--added .diff-view__gutter {
   background: rgba(8, 189, 80, 0.06);
 }
+
+/* While dragging a column divider, stop iframes (e.g. the dashboard preview)
+   from capturing the mouse so the drag keeps tracking across the column. */
+.col-resizing iframe {
+  pointer-events: none !important;
+}
