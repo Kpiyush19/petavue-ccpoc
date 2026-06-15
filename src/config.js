@@ -1,5 +1,7 @@
-export const PUSHER_KEY = import.meta.env.VITE_PUSHER_KEY;
-export const PUSHER_CLUSTER = import.meta.env.VITE_PUSHER_CLUSTER;
+// Fallbacks let mock mode (no real Pusher env) still satisfy consumers that
+// gate on a key being present — the mock Pusher client ignores these values.
+export const PUSHER_KEY = import.meta.env.VITE_PUSHER_KEY || (import.meta.env.VITE_MOCK === 'true' ? 'mock-key' : undefined);
+export const PUSHER_CLUSTER = import.meta.env.VITE_PUSHER_CLUSTER || (import.meta.env.VITE_MOCK === 'true' ? 'mock' : undefined);
 export const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 export const SENTRY_ORG = import.meta.env.VITE_SENTRY_ORG;
 export const APP_ENVIRONMENT = import.meta.env.VITE_APP_ENVIRONMENT;

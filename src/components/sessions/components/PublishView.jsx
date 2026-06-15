@@ -2051,15 +2051,23 @@ export default function PublishView({
   )
 
   // ── STEP — Verify (per-widget review; first step) ──
+  // Persist a widget's verified state (used by both the list and the detail view).
+  const verifyWidget = async (widget, val) => {
+    if (!widget) return
+    try { await apiPost(`/api/sessions/${sessionId}/widgets/${widget.id}/verify`, { verified: val }) } catch { /* ignore */ }
+    onWidgetVerified?.(widget.id, val)
+  }
   const renderVerifyStep = () => (
     selectedWidget ? (
       <WidgetDetailView
         widget={selectedWidget}
+        widgets={widgets}
         sessionId={sessionId}
         sessionStatus={sessionStatus}
         liveMessages={liveMessages}
         onSendFeedback={onSendFeedback}
         onBack={() => setSelectedWidget(null)}
+        onNavigate={(w) => setSelectedWidget(w)}
         onVerified={onWidgetVerified}
         onBackToSession={() => onClose?.()}
         onContinueToPublish={() => { setSelectedWidget(null); setUserReviewDone(true); setVerifySubTab('agent') }}
@@ -2070,6 +2078,8 @@ export default function PublishView({
         widgetCount={widgets.length}
         verifiedCount={widgets.filter((w) => w.verified).length}
         onSelectWidget={(w) => setSelectedWidget(w)}
+        onToggleVerified={(w) => verifyWidget(w, !w.verified)}
+        onVerifyAll={() => widgets.filter((w) => !w.verified).forEach((w) => verifyWidget(w, true))}
         onContinueToPublish={() => { setUserReviewDone(true); setVerifySubTab('agent') }}
         onBack={() => onClose?.()}
         titleMissing={false}

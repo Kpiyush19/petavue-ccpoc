@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { ArrowLeft, ArrowsClockwise, ShieldCheck, CaretRight, ArrowLineRight, ArrowLineLeft } from '@phosphor-icons/react'
+import { ArrowLeft, ArrowsClockwise, ShieldCheck, CaretRight, CaretLeft, ArrowLineRight, ArrowLineLeft } from '@phosphor-icons/react'
 import { Button } from '@/common-components'
 import { apiGet, apiPost } from '../../../api'
 import HtmlViewer from '../viewers/HtmlViewer'
@@ -64,11 +64,13 @@ function ColumnHeader({ title, extra, onMinimize, minimizeTitle }) {
 
 export default function WidgetDetailView({
   widget,
+  widgets = [],
   sessionId,
   sessionStatus,
   liveMessages = [],
   onSendFeedback,
   onBack,
+  onNavigate,
   onVerified,
   onBackToSession,
   onContinueToPublish,
@@ -136,15 +138,30 @@ export default function WidgetDetailView({
     fetchLineage()
   }
 
-  const handleToggleVerified = async () => {
-    const newVal = !verified
-    setVerified(newVal)
+  // Keep the verified state in sync when navigating between widgets.
+  useEffect(() => { setVerified(!!widget?.verified) }, [widget?.id])
+
+  const setVerifiedValue = async (val) => {
+    if (val === verified) return
+    setVerified(val)
     try {
-      await apiPost(`/api/sessions/${sessionId}/widgets/${widget.id}/verify`, { verified: newVal })
-      onVerified?.(widget.id, newVal)
+      await apiPost(`/api/sessions/${sessionId}/widgets/${widget.id}/verify`, { verified: val })
+      onVerified?.(widget.id, val)
     } catch {
-      setVerified(!newVal)
+      setVerified(!val)
     }
+  }
+  const handleToggleVerified = () => setVerifiedValue(!verified)
+
+  // Widget navigation (prev / next) + "verify & advance".
+  const idx = widgets.findIndex((w) => w.id === widget?.id)
+  const total = widgets.length
+  const prevW = idx > 0 ? widgets[idx - 1] : null
+  const nextW = idx >= 0 && idx < total - 1 ? widgets[idx + 1] : null
+  const verifyAndAdvance = async () => {
+    await setVerifiedValue(true)
+    if (nextW) onNavigate?.(nextW)
+    else onBack?.()
   }
 
   const startDrag = (which) => (e) => {
@@ -195,10 +212,28 @@ export default function WidgetDetailView({
           <ArrowLeft size={12} weight="bold" />
           Back to widgets
         </button>
-        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0">
+        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0 truncate max-w-[40%]">
           {widget?.name}
         </h3>
-        <div className="w-[80px]" />
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => prevW && onNavigate?.(prevW)}
+            disabled={!prevW}
+            title="Previous widget"
+            className="flex items-center justify-center w-6 h-6 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-muted)] cursor-pointer hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <CaretLeft size={13} weight="bold" />
+          </button>
+          {total > 0 && <span className="text-[12px] font-medium text-[var(--text-muted)] tabular-nums">{idx + 1} of {total}</span>}
+          <button
+            onClick={() => nextW && onNavigate?.(nextW)}
+            disabled={!nextW}
+            title="Next widget"
+            className="flex items-center justify-center w-6 h-6 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-muted)] cursor-pointer hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <CaretRight size={13} weight="bold" />
+          </button>
+        </div>
       </div>
 
       {/* Three-column layout: Widget | Chat | How it's built */}
@@ -304,28 +339,22 @@ export default function WidgetDetailView({
               <div className="flex-1 min-h-0 flex flex-col">
                 <LineagePanel lineage={lineage} loading={lineageLoading} error={lineageError} />
               </div>
-              <div className="shrink-0 px-4 py-2 border-t border-[var(--border-primary)]">
-                <button
-                  onClick={handleToggleVerified}
-                  className={`w-full flex items-center justify-center gap-2 py-1.5 rounded-lg border text-[12px] font-medium cursor-pointer transition-colors ${
-                    verified
-                      ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
-                      : 'bg-[var(--bg-primary)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-                  }`}
-                >
-                  <ShieldCheck size={15} weight={verified ? 'fill' : 'regular'} />
-                  {verified ? 'Verified' : 'Mark as Verified'}
-                </button>
-              </div>
             </>
           )}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center justify-end px-4 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={onContinueToPublish}>
-          <span className="text-[12px]">Continue</span>
+      <div className="shrink-0 flex items-center justify-between gap-4 px-4 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+        {verified ? (
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-green-600">
+            <ShieldCheck size={15} weight="fill" />Verified
+          </span>
+        ) : (
+          <span className="text-[12px] text-[var(--text-muted)]">Not verified yet</span>
+        )}
+        <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={verifyAndAdvance}>
+          <span className="text-[12px]">{nextW ? (verified ? 'Next' : 'Verify & next') : (verified ? 'Back to list' : 'Verify & finish')}</span>
           <CaretRight size={13} weight="bold" />
         </Button>
       </div>

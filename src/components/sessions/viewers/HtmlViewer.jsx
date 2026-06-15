@@ -38,10 +38,13 @@ const HtmlViewer = forwardRef(function HtmlViewer({ sessionId, path, onLoadCompl
           if (MOCK_ENABLED) {
             const text = await res.text()
             if (controller.signal.aborted) return
+            // Rendered HTML (e.g. a widget preview) is shown as-is; raw source
+            // (jsx/text) is escaped into a readable code view.
+            const isHtml = contentType.includes("text/html")
             setDocContent(
-              isJsx
-                ? `<!DOCTYPE html><html><body style="font-family:ui-monospace,monospace;padding:16px;font-size:12px;white-space:pre-wrap;color:#1a2233">${text.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</body></html>`
-                : text
+              isHtml
+                ? text
+                : `<!DOCTYPE html><html><body style="font-family:ui-monospace,monospace;padding:16px;font-size:12px;white-space:pre-wrap;color:#1a2233">${text.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</body></html>`
             )
           }
           setStatus("ready")

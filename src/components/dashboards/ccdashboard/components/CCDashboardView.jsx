@@ -15,6 +15,12 @@ import {
 import useCCDashboardStore from "../store/useCCDashboardStore";
 import { useNavigate, useBasePath, useConfig, useWidgets } from "../context";
 import { getAuthToken } from "../../../../api";
+import { MOCK_ENABLED } from "../../../../mocks";
+import apolloLogo from "@/assets/integrations/apollo.svg";
+import hubspotLogo from "@/assets/integrations/hubspot.svg";
+import salesforceLogo from "@/assets/integrations/salesforce.svg";
+import snowflakeLogo from "@/assets/integrations/snowflake.svg";
+import lemlistLogo from "@/assets/integrations/lemlist.svg";
 import { queryClient } from "../../../../lib/queryClient";
 import { CardView, hasCardContent, stripPills } from "../../../shared/CardRenderer";
 
@@ -72,6 +78,25 @@ const BLOCK_TYPE_LABELS = {
   write_file: "Write File",
   save_output: "Save Output"
 };
+
+// Connected data sources surfaced in the "Sync Details" popup.
+// To use real brand logos: drop a file in src/assets/integrations/ (e.g.
+// apollo.svg), import it at the top of this file, and set it as `logo` below —
+// e.g. `import apollo from "@/assets/integrations/apollo.svg"` then `logo: apollo`.
+// Until then, the colored monogram badge stands in for the logo.
+// `live: true` means the source is queried in real time (no scheduled sync) —
+// it shows a "Live" badge instead of a last-sync time.
+const DEFAULT_INTEGRATIONS = [
+  { name: "Apollo", synced: "Jun 8, 6:00 PM IST", color: "#5C5CFF", logo: apolloLogo },
+  { name: "HubSpot", synced: "Jun 7, 9:30 AM IST", color: "#FF7A59", logo: hubspotLogo },
+  { name: "Salesforce", live: true, color: "#00A1E0", logo: salesforceLogo },
+  { name: "Snowflake", synced: "Jun 5, 7:30 AM IST", color: "#29B5E8", logo: snowflakeLogo },
+  { name: "Lemlist", synced: "Jun 6, 11:02 AM IST", color: "#0A0A23", logo: lemlistLogo },
+];
+
+// Phosphor "ClockCounterClockwise" (Last updated) + "Stack" (Data freshness) glyphs.
+const CLOCK_ICON_PATH = "M232,136.66A104.12,104.12,0,1,1,119.34,24,8,8,0,0,1,120.66,40,88.12,88.12,0,1,0,216,135.34,8,8,0,0,1,232,136.66ZM120,72v56a8,8,0,0,0,8,8h56a8,8,0,0,0,0-16H136V72a8,8,0,0,0-16,0Zm40-24a12,12,0,1,0-12-12A12,12,0,0,0,160,48Zm36,24a12,12,0,1,0-12-12A12,12,0,0,0,196,72Zm24,36a12,12,0,1,0-12-12A12,12,0,0,0,220,108Z";
+const STACK_ICON_PATH = "M128,24C74.17,24,32,48.6,32,80v96c0,31.4,42.17,56,96,56s96-24.6,96-56V80C224,48.6,181.83,24,128,24Zm80,104c0,9.62-7.88,19.43-21.61,26.92C170.93,163.35,150.19,168,128,168s-42.93-4.65-58.39-13.08C55.88,147.43,48,137.62,48,128V111.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64ZM69.61,53.08C85.07,44.65,105.81,40,128,40s42.93,4.65,58.39,13.08C200.12,60.57,208,70.38,208,80s-7.88,19.43-21.61,26.92C170.93,115.35,150.19,120,128,120s-42.93-4.65-58.39-13.08C55.88,99.43,48,89.62,48,80S55.88,60.57,69.61,53.08ZM186.39,202.92C170.93,211.35,150.19,216,128,216s-42.93-4.65-58.39-13.08C55.88,195.43,48,185.62,48,176V159.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64V176C208,185.62,200.12,195.43,186.39,202.92Z";
 
 function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep, onToggleCode, viewMode = "summary" }) {
   const TypeIcon = BLOCK_TYPE_ICONS[meta?.type] || Code;
@@ -238,6 +263,8 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
   const [isCreatingNewSession, setIsCreatingNewSession] = useState(false);
 
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showFreshness, setShowFreshness] = useState(false);
+  const integrations = DEFAULT_INTEGRATIONS;
   const [expandedSteps, setExpandedSteps] = useState(new Set());
   const [showCode, setShowCode] = useState(new Set());
   const [viewMode, setViewMode] = useState("card");
@@ -489,6 +516,19 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
 
   const iframeUrl = getDashboardFileUrl(artifact);
 
+  // In mock mode the iframe can't load over the network, so fetch the dashboard
+  // HTML (intercepted by the mock fetch patch) and render it via `srcDoc`.
+  const [mockDoc, setMockDoc] = useState(null);
+  useEffect(() => {
+    if (!MOCK_ENABLED || !iframeUrl) { setMockDoc(null); return; }
+    let alive = true;
+    fetch(iframeUrl)
+      .then((r) => r.text())
+      .then((t) => { if (alive) setMockDoc(t); })
+      .catch(() => { if (alive) setIframeError(true); });
+    return () => { alive = false; };
+  }, [iframeUrl]);
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -529,7 +569,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
             <div className="absolute inset-4">
               <iframe
                 ref={dashboardIframeRef}
-                src={iframeUrl}
+                {...(MOCK_ENABLED ? { srcDoc: mockDoc || "" } : { src: iframeUrl })}
                 className="w-full h-full border-none rounded-lg bg-white"
                 sandbox="allow-scripts allow-same-origin"
                 title={artifact.name}
@@ -574,11 +614,27 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
+          {/* Last updated — icon button with a CSS hover tooltip */}
           {artifact?.latest_run && (
-            <span className="text-sm text-[var(--pv-neutral-grey-500)]">
-              Last updated: {formatDateTime(artifact.latest_run.refreshed_at, artifact?.tenant_timezone || "UTC")}
+            <span className="relative group flex">
+              <Button btnColor="ghost" btnSize="lg" aria-label="Last updated">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d={CLOCK_ICON_PATH} /></svg>
+              </Button>
+              <span role="tooltip" className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 whitespace-nowrap rounded-md bg-[#2D3044] text-white text-[12px] leading-snug px-2.5 py-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                Last updated: {formatDateTime(artifact.latest_run.refreshed_at, artifact?.tenant_timezone || "UTC")}
+              </span>
             </span>
           )}
+
+          {/* Separator */}
+          <div className="w-px h-6 bg-[var(--pv-neutral-grey-200)]" />
+
+          {/* Data freshness — opens the Data Freshness popup */}
+          <Button btnColor="ghost" btnSize="lg" onClick={() => setShowFreshness(true)} aria-label="Data freshness">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d={STACK_ICON_PATH} /></svg>
+            <span>Data freshness</span>
+          </Button>
+
           {isWorkflow && (
             <Button btnColor="secondary" btnSize="lg" onClick={handleFindOutHow} disabled={loading || !artifact?.latest_run}>
               <Lightbulb size={16} />
@@ -608,6 +664,52 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
       </div>
 
       <div className="flex-1 min-h-0 relative bg-[var(--pv-neutral-grey-50)]">{renderContent()}</div>
+
+      {/* Sync Details modal — last sync time per connected data source */}
+      {showFreshness && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowFreshness(false)} />
+          <div className="relative w-[660px] max-w-[94vw] max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--pv-primary-500)]">
+            <div className="shrink-0 flex items-center justify-between px-5 py-4">
+              <h3 className="text-[16px] font-semibold text-[var(--pv-neutral-grey-900)] m-0">Data Freshness</h3>
+              <button onClick={() => setShowFreshness(false)} aria-label="Close" className="p-1 rounded-md text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border-none cursor-pointer transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="px-5 pb-5 overflow-y-auto">
+              <div className="rounded-xl border border-[var(--pv-neutral-grey-150)] overflow-hidden">
+                <div className="grid grid-cols-[56px_1fr_1fr] bg-[var(--pv-primary-500)]/8 text-[12px] font-semibold text-[var(--pv-neutral-grey-700)]">
+                  <div className="px-4 py-2.5">#</div>
+                  <div className="px-4 py-2.5">Data Source</div>
+                  <div className="px-4 py-2.5">Last Sync Time</div>
+                </div>
+                {integrations.map((it, i) => (
+                  <div key={it.name} className="grid grid-cols-[56px_1fr_1fr] items-center border-t border-[var(--pv-neutral-grey-150)]">
+                    <div className="px-4 py-3 text-[13px] text-[var(--pv-neutral-grey-400)]">{i + 1}.</div>
+                    <div className="px-4 py-3 flex items-center gap-2.5 min-w-0">
+                      {it.logo ? (
+                        <img src={it.logo} alt="" className="shrink-0 w-6 h-6 rounded-md object-contain" />
+                      ) : (
+                        <span className="shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold text-white" style={{ backgroundColor: it.color }}>{it.name[0]}</span>
+                      )}
+                      <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)] truncate">{it.name}</span>
+                    </div>
+                    <div className="px-4 py-3 text-[13px]">
+                      {it.live ? (
+                        <span className="inline-flex items-center gap-1.5 font-medium text-green-600">
+                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />Live
+                        </span>
+                      ) : (
+                        <span className="text-[var(--pv-neutral-grey-500)]">{it.synced}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showExplanation && (
         <div className="fixed inset-0 z-50">

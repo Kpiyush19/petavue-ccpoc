@@ -67,8 +67,12 @@ export default class MockPusher {
   constructor() {
     this.connection = {
       bind: (eventName, cb) => {
+        // Immediately report a healthy connection so consumers that gate on
+        // connection state (e.g. the analytics chat input) become usable.
         if (eventName === "connected") setTimeout(() => cb(), 0);
+        if (eventName === "state_change") setTimeout(() => cb({ previous: "connecting", current: "connected" }), 0);
       },
+      unbind: () => {},
       unbind_all: () => {},
     };
   }

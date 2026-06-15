@@ -4,7 +4,11 @@ export function formatDate(timestamp) {
 }
 
 export function timeAgo(timestamp) {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000)
+  if (timestamp == null) return ''
+  // Accept both epoch-ms numbers and ISO/date strings.
+  const ms = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime()
+  if (Number.isNaN(ms)) return ''
+  const seconds = Math.floor((Date.now() - ms) / 1000)
   if (seconds < 60) return 'just now'
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`

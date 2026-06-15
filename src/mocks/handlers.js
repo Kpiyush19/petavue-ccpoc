@@ -158,14 +158,40 @@ export function codeHashFor(sessionId) {
 // the code changed and re-prompt for review instead of "No code change detected".
 const REVIEW_SYNC_MARKER = /reviewed fixes from the agentic review/i;
 
+// Sage (Beta) — read-only analytics chat on a published dashboard. Answers are
+// grounded in the demo dashboard's numbers; it never edits the dashboard.
+function sageReply(userText) {
+  const t = (userText || "").toLowerCase();
+  if (/risk|at.?risk|account|churn/.test(t))
+    return "Two accounts are flagged at-risk: Globex Corp ($301K ARR, usage down 22% QoQ) and Umbrella Inc ($198K). That's ~$499K combined — about 10% of the top-5 book. Northwind ($412K) and Contoso ($388K) are both expanding.";
+  if (/grow|qoq|trend|month|revenue/.test(t))
+    return "Revenue is up 14.2% QoQ to $4.82M, with the strongest months in June and September. New ARR rose 9.6% to $1.13M, led by Enterprise deals.";
+  if (/win.?rate|conversion|deal/.test(t))
+    return "Win rate is 27.4%, down 1.8 pts QoQ — the only headline KPI trending down. Avg deal size is up 5.1% to $38.6K, so deals are getting larger but taking longer to close.";
+  if (/summary|overview|how.*doing|tl;?dr|highlight/.test(t))
+    return "Q2 at a glance: $4.82M revenue (+14.2% QoQ), $1.13M new ARR (+9.6%), win rate 27.4% (down 1.8 pts), avg deal $38.6K. Northwind and Contoso are expanding; Globex and Umbrella are at-risk.";
+  return "From this dashboard: total revenue $4.82M (+14.2% QoQ), new ARR $1.13M, win rate 27.4%, avg deal $38.6K. Ask me about revenue trends, at-risk accounts, or win rate and I'll break it down.";
+}
+
+// Open (or resume) a Sage chat session for a dashboard, seeding a welcome turn.
+function startSageChat(sid) {
+  if (!db.history[sid] || db.history[sid].length === 0) {
+    db.history[sid] = [{ type: "assistant", text: "Hi, I'm Sage. Ask me anything about this dashboard — revenue trends, at-risk accounts, win rate, and more.", timestamp: Date.now() }];
+  }
+  return { session_id: sid };
+}
+
 function simulateAgentReply(sessionId, userText) {
+  const isSage = String(sessionId).startsWith("sage-");
   const isReviewSync = REVIEW_SYNC_MARKER.test(userText || "");
-  if (!isReviewSync) {
+  if (!isSage && !isReviewSync) {
     bumpCodeVersion(sessionId);
   }
   const channel = `session-${sessionId}`;
   const followupReply = FOLLOWUP_REPLIES[(userText || "").trim().toLowerCase()];
-  const reply = isReviewSync
+  const reply = isSage
+    ? sageReply(userText)
+    : isReviewSync
     ? "Done — I've applied the reviewed adjustments to your dashboard so it stays accurate on every scheduled refresh."
     : followupReply ||
       "Done — I've updated your dashboard and re-ran the queries against the latest data. Let me know if you'd like any other changes.";
@@ -407,7 +433,26 @@ const handlers = [
 
   // ── Workflows ──────────────────────────────────────────────────────
   { method: "GET", pattern: /\/api\/workflows\/check$/, handler: () => ({ exists: db.linkedWorkflows.length > 0, workflows: db.linkedWorkflows }) },
+  // Sage (Beta) chat — open a read-only analytics chat for a dashboard.
+  { method: "POST", pattern: /\/api\/workflows\/([^/]+)\/chat$/, handler: ({ params }) => startSageChat(`sage-wf-${params[0]}`) },
+  { method: "POST", pattern: /\/api\/published\/([^/]+)\/chat$/, handler: ({ params }) => startSageChat(`sage-pub-${params[0]}`) },
   { method: "GET", pattern: /\/api\/workflows\/dashboards\/all$/, handler: () => ({ dashboards: db.dashboards }) },
+  { method: "GET", pattern: /\/api\/workflows\/dashboards\/([^/]+)\/explanation$/, handler: ({ params }) => {
+    const toolType = (t) => (t === "query_athena" ? "athena_query" : t === "execute_code" ? "python_code" : "write_file");
+    return {
+      workflow_name: (db.dashboards.find((d) => d.dashboard_id === params[0]) || {}).name || "Dashboard",
+      explanation: {
+        groups: DASH_RECIPE.groups.map((g) => ({ group_title: g.name, summary: g.summary, step_ids: g.steps })),
+        steps: Object.fromEntries(DASH_RECIPE.steps.map((s) => [s.id, { title: s.summary.title, explanation: s.summary.explanation, card: s.summary.card }])),
+      },
+      block_meta: Object.fromEntries(DASH_RECIPE.steps.map((s) => {
+        const type = toolType(s.tool);
+        return [s.id, { type, label: s.summary.title, code: s.code, code_language: type === "athena_query" ? "sql" : "python" }];
+      })),
+    };
+  } },
+  { method: "PUT", pattern: /\/api\/workflows\/dashboards\/([^/]+)$/, handler: ({ params, body }) => { const d = db.dashboards.find((x) => x.dashboard_id === params[0]); if (d) { if (body?.name) { d.name = body.name; d.title = body.name; } if (typeof body?.shared === "boolean") d.shared = body.shared; } return d || { ok: true }; } },
+  { method: "DELETE", pattern: /\/api\/workflows\/dashboards\/([^/]+)$/, handler: ({ params }) => { db.dashboards = db.dashboards.filter((x) => x.dashboard_id !== params[0]); return { ok: true }; } },
   { method: "GET", pattern: /\/api\/workflows\/dashboards\/([^/]+)$/, handler: ({ params }) => db.dashboards.find((d) => d.dashboard_id === params[0]) || db.dashboards[0] },
   {
     method: "GET",
@@ -436,7 +481,9 @@ const handlers = [
         });
         db.dashboards.unshift({
           _id: dashId, dashboard_id: dashId, id: dashId, name, title: name, shared: false,
-          status: "published", workflow_id: wfId, owner_id: USER_ID,
+          status: "published", source: "workflow", workflow_id: wfId, owner_id: USER_ID,
+          target_file: "output/dashboard/revenue_dashboard.html", tenant_timezone: "UTC",
+          latest_run: { status: "success", refreshed_at: new Date().toISOString() },
           created_at: new Date().toISOString(), updated_at: new Date().toISOString(), widgets: [],
         });
       }

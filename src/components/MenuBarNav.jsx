@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from "react-router-dom";
 import { MenuBar } from "./menubar";
 import { getCurrentUser } from "../api";
 import { MOCK_ENABLED } from "../mocks";
@@ -13,8 +14,17 @@ const NAV_ITEMS = [
   { id: "settings", label: "Settings", icon: "settings" },
 ];
 
+// Nav item id -> route. Items without a route stay non-navigating.
+// Workflows, Skills and Data Hub are intentionally left unlinked for now.
+const NAV_ROUTES = {
+  dashboards: "/dashboards",
+  settings: "/settings",
+};
+
 export default function MenuBarNav() {
   const currentUser = getCurrentUser();
+  const navigate = useNavigate();
+  const location = useLocation();
   const name = currentUser?.name || currentUser?.username || "User";
   const initials =
     name
@@ -26,9 +36,18 @@ export default function MenuBarNav() {
 
   const user = { name, initials, email: currentUser?.email || "" };
 
-  // Frontend-only mode: nav items are visual only (no navigation), keeping the
-  // focus on the Verify & Publish screen. Handlers are left as no-ops.
-  const noop = () => {};
+  // Navigate when a nav item maps to a route; otherwise it's a no-op.
+  const handleItemClick = (id) => {
+    const route = NAV_ROUTES[id];
+    if (route) navigate(route);
+  };
+
+  // Highlight the section matching the current path.
+  const activeId =
+    NAV_ITEMS.find((item) => {
+      const route = NAV_ROUTES[item.id];
+      return route && location.pathname.startsWith(route);
+    })?.id || null;
 
   const historyGroups = MOCK_ENABLED
     ? [{ label: "Today", items: [{ id: "sess-dash-1", title: "Q2 Revenue Dashboard", time: "now" }] }]
@@ -38,11 +57,11 @@ export default function MenuBarNav() {
     <div className="shrink-0 h-screen">
       <MenuBar
         items={NAV_ITEMS}
-        activeId={null}
-        onItemClick={noop}
+        activeId={activeId}
+        onItemClick={handleItemClick}
         historyGroups={historyGroups}
         user={user}
-        onNewChat={noop}
+        onNewChat={() => {}}
         defaultOpen={false}
       />
     </div>

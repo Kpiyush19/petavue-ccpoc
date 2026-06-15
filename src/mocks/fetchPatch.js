@@ -2,7 +2,7 @@
 // raw-fetch / iframe viewers (HtmlViewer, MarkdownViewer, JsonTreeViewer,
 // DataTableViewer) which bypass axios. Only intercepts `/api/sessions/:id/files/*`.
 
-import { DASHBOARD_FILES } from "./dashboardAssets";
+import { DASHBOARD_FILES, WIDGET_PREVIEWS } from "./dashboardAssets";
 
 function jsonResponse(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -24,6 +24,16 @@ function parseCsv(text) {
 }
 
 function handleFilesRequest(pathname, search) {
+  // Published-dashboard / workflow-dashboard file URL (loaded by the dashboard
+  // iframe). Serve the rendered dashboard HTML.
+  const dashM = pathname.match(/\/api\/(?:workflows\/dashboards|published)\/[^/]+\/files\/(.+)$/);
+  if (dashM) {
+    const dpath = decodeURIComponent(dashM[1]);
+    const dfile = DASHBOARD_FILES[dpath];
+    if (dfile) return new Response(dfile.content, { status: 200, headers: { "content-type": dfile.contentType } });
+    return jsonResponse({ detail: `File not found: ${dpath}` }, 404);
+  }
+
   // /api/sessions/<sid>/files/<filepath>[/data]
   const m = pathname.match(/\/api\/sessions\/[^/]+\/files\/(.+)$/);
   if (!m) return null;
@@ -38,6 +48,11 @@ function handleFilesRequest(pathname, search) {
       return jsonResponse({ columns, rows, total: rows.length, page: 1, page_size: rows.length });
     }
     return jsonResponse({ columns: [], rows: [], total: 0 });
+  }
+
+  // Rendered widget preview (the Verify view asks for jsx with ?preview=1).
+  if (filepath.endsWith(".jsx") && /[?&]preview=1\b/.test(search) && WIDGET_PREVIEWS[filepath]) {
+    return new Response(WIDGET_PREVIEWS[filepath], { status: 200, headers: { "content-type": "text/html" } });
   }
 
   const file = DASHBOARD_FILES[filepath];
@@ -64,7 +79,7 @@ export function installFetchPatch() {
       if (q >= 0) { pathname = url.slice(0, q); search = url.slice(q); }
     }
 
-    if (pathname.includes("/api/sessions/") && pathname.includes("/files/")) {
+    if (pathname.includes("/files/") && (pathname.includes("/api/sessions/") || pathname.includes("/dashboards/") || pathname.includes("/api/published/"))) {
       const res = handleFilesRequest(pathname, search);
       if (res) return res;
     }
