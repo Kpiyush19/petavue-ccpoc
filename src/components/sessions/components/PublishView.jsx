@@ -417,7 +417,7 @@ export default function PublishView({
   const agentRunningRef = useRef(false) // true while execution or hardening is actively running on backend
 
   // AI Preview state (agent_memo)
-  const [aiPrompt, setAiPrompt] = useState('')
+  const [aiPrompt, setAiPrompt] = useState("Summarize this quarter's revenue trends, the biggest movers, and any at-risk accounts.")
   const [aiFilename, setAiFilename] = useState('memo')
   // Folder destination — pick an existing folder or create a new one.
   const NEW_FOLDER = '__new__'
@@ -445,6 +445,8 @@ export default function PublishView({
   const [slackEnabled, setSlackEnabled] = useState(false)
   const [emailEnabled, setEmailEnabled] = useState(false)
   const [slackTestSending, setSlackTestSending] = useState(false)
+  // Set when the user hits Continue with Slack on but no channel/DM picked.
+  const [slackTargetError, setSlackTargetError] = useState(false)
 
   // Refs for cleanup
   const pusherRef = useRef(null)
@@ -530,6 +532,11 @@ export default function PublishView({
   useEffect(() => {
     apiGet('/api/folders').then(d => { if (Array.isArray(d?.folders) && d.folders.length) setFolders(d.folders) }).catch(() => {})
   }, [])
+
+  // Clear the Slack-target error once a channel/DM is picked or Slack is off.
+  useEffect(() => {
+    if (!slackEnabled || slackChannels.length > 0 || slackDmUsers.length > 0) setSlackTargetError(false)
+  }, [slackEnabled, slackChannels, slackDmUsers])
 
   // Once a summary is generated, reveal & scroll to the destinations section.
   useEffect(() => {
@@ -1839,7 +1846,7 @@ export default function PublishView({
             <div className="text-[12px] text-[#1d1c1d] leading-relaxed">
               {aiPreviewContent
                 ? <MarkdownRenderer content={aiPreviewContent} />
-                : <span className="text-[var(--text-muted)] italic">Generate the summary to preview it.</span>}
+                : <span className="text-[var(--text-muted)]">Generate the summary to preview it.</span>}
             </div>
             {includeDashboardLink && <span className="inline-block mt-1.5 text-[12px] text-[#1264a3] font-medium">View dashboard →</span>}
           </div>
@@ -1948,6 +1955,9 @@ export default function PublishView({
                   <button onClick={handleSlackTest} disabled={slackTestSending || !slackHasTarget} title={slackHasTarget ? 'Send a one-off test alert now' : 'Pick a channel or person first'} className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     {slackTestSending ? (<><CircleNotch size={13} className="animate-spin" /><span>Sending…</span></>) : (<><Play size={13} weight="fill" /><span>Test alert</span></>)}
                   </button>
+                  {slackTargetError && !slackHasTarget && (
+                    <p className="text-[12px] text-amber-600 m-0">Select at least one channel or direct message to continue.</p>
+                  )}
                 </div>
               )}
             </div>
@@ -2239,7 +2249,7 @@ export default function PublishView({
                 )
               })}
             </div>
-            {isReviewRunning && progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] italic mt-4 animate-fade-in">— {progressQuip}</p>}
+            {isReviewRunning && progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] mt-4 animate-fade-in">— {progressQuip}</p>}
 
             {/* Hardening — its own card while preparing for scheduled refresh */}
             {isReviewRunning && phase === PHASE.HARDENING && (
@@ -2247,7 +2257,7 @@ export default function PublishView({
                 <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">Preparing for scheduled refresh</h3>
                 <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-3 leading-relaxed">An AI agent is preparing your dashboard to ensure every scheduled refresh runs without issues. This may take a few minutes.</p>
                 <p className="text-[12px] font-semibold text-[var(--accent)] m-0">{hardenedCount} of {totalSteps} steps completed</p>
-                {hardeningQuip && <p className="text-[12px] text-[var(--text-muted)] italic mt-3 m-0">— {hardeningQuip}</p>}
+                {hardeningQuip && <p className="text-[12px] text-[var(--text-muted)] mt-3 m-0">— {hardeningQuip}</p>}
               </div>
             )}
 
@@ -2378,23 +2388,20 @@ export default function PublishView({
         <CaretLeft size={13} weight="bold" />{label}
       </button>
     )
-    const summaryHasDest = summaryToFolder || slackEnabled
-    const slackHasTarget = slackChannels.length > 0 || slackDmUsers.length > 0
     const dashboardOk = !publishDashboardEnabled || (dashboardTitle || '').trim().length > 0
     const newFolderMissing = summaryToFolder && summaryFolder === NEW_FOLDER && !newFolderName.trim()
-    const folderOk = !summaryToFolder || ((aiFilename || '').trim().length > 0 && !newFolderMissing)
-    const summaryOk = !summaryEnabled || (
-      aiPrompt.trim().length > 0 && summaryHasDest && folderOk
-      && (!slackEnabled || slackHasTarget)
-    )
+    // A destination just needs to be toggled on. A valid folder counts; toggling
+    // Slack counts too (picking a channel is nudged inline, not gated here).
+    const folderDest = summaryToFolder && (aiFilename || '').trim().length > 0 && !newFolderMissing
+    const summaryHasDest = folderDest || slackEnabled
+    const summaryOk = !summaryEnabled || (aiPreviewContent && summaryHasDest)
     const canPublish = hasOutput && dashboardOk && summaryOk
     const publishReason = !hasOutput ? 'Choose at least one output'
       : !dashboardOk ? 'Name your dashboard'
-      : (summaryEnabled && !aiPrompt.trim()) ? 'Add a summary prompt'
-      : (summaryEnabled && !summaryHasDest) ? 'Choose where the summary goes'
-      : (summaryEnabled && newFolderMissing) ? 'Name the new folder'
-      : (summaryEnabled && summaryToFolder && !(aiFilename || '').trim()) ? 'Name the summary file'
-      : (summaryEnabled && slackEnabled && !slackHasTarget) ? 'Pick a Slack channel or person'
+      : (summaryEnabled && !aiPreviewContent) ? 'Generate the summary first'
+      : (summaryEnabled && !summaryHasDest && !summaryToFolder && !slackEnabled) ? 'Choose where the summary goes'
+      : (summaryEnabled && !summaryHasDest && newFolderMissing) ? 'Name the new folder'
+      : (summaryEnabled && !summaryHasDest && summaryToFolder && !(aiFilename || '').trim()) ? 'Name the summary file'
       : ''
 
     return (
@@ -2410,7 +2417,7 @@ export default function PublishView({
             </Button>
           )}
           {step === STEP.OUTPUTS && (
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={!canPublish} onClick={() => setStep(STEP.FREQUENCY)} title={publishReason}>
+            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={!canPublish} onClick={() => { if (summaryEnabled && slackEnabled && slackChannels.length === 0 && slackDmUsers.length === 0) { setSlackTargetError(true); return } setStep(STEP.FREQUENCY) }} title={publishReason}>
               <span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" />
             </Button>
           )}
