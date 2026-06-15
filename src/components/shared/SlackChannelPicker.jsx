@@ -174,7 +174,7 @@ export default function SlackChannelPicker({
             type="button"
             onClick={() => !isDisabled && setShowChannelDropdown(!showChannelDropdown)}
             disabled={isDisabled || channelsLoading}
-            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
+            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
               !isDisabled ? 'cursor-pointer hover:border-[var(--accent)]/50' : 'cursor-not-allowed opacity-60'
             }`}
           >
@@ -289,7 +289,7 @@ export default function SlackChannelPicker({
             type="button"
             onClick={() => hasDmScope && !isDisabled && setShowUserDropdown(!showUserDropdown)}
             disabled={isDisabled || !hasDmScope}
-            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
+            className={`w-full flex items-center justify-between gap-2 min-h-[39px] px-2.5 py-1 text-left bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-lg text-[12px] transition-colors ${
               !isDisabled && hasDmScope ? 'cursor-pointer hover:border-[var(--accent)]/50' : 'cursor-not-allowed opacity-60'
             }`}
           >

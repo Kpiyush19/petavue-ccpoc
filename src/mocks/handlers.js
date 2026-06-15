@@ -459,8 +459,11 @@ const handlers = [
   // ── Feature flags ──────────────────────────────────────────────────
   { method: "GET", pattern: /\/api\/(users\/me|tenant)\/feature-flags$/, handler: () => ({ flags: {}, feature_flags: {} }) },
 
+  // ── Folders (summary destination) ──────────────────────────────────
+  { method: "GET", pattern: /\/api\/folders$/, handler: () => ({ folders: ["agent_memo", "reports", "weekly-summaries"] }) },
+
   // ── Slack ──────────────────────────────────────────────────────────
-  { method: "GET", pattern: /\/api\/slack\/connection$/, handler: () => ({ connected: false }) },
+  { method: "GET", pattern: /\/api\/slack\/connection$/, handler: () => ({ connected: true }) },
   {
     method: "GET",
     pattern: /\/api\/slack\/channels$/,

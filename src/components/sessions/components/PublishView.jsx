@@ -131,6 +131,9 @@ function CustomSelect({ value, onChange, options, className = '' }) {
   )
 }
 
+// Sanitize a folder/file segment for a memo path.
+const slugSeg = (s, fallback) => ((s || '').trim().replace(/[^a-zA-Z0-9\-_ ]/g, '').replace(/ /g, '_') || fallback)
+
 function buildCronExpression(frequency, day, time) {
   const [hh, mm] = time.split(':')
   switch (frequency) {
@@ -355,8 +358,6 @@ export default function PublishView({
   // Dashboard output config (Configure step)
   const [dashboardMessage, setDashboardMessage] = useState('')
   const [includeDashboardLink, setIncludeDashboardLink] = useState(true)
-  // AI summary always goes to Slack (constant — kept for createWorkflow).
-  const [aiDestination] = useState('slack')
   const [slackPreviewOpen, setSlackPreviewOpen] = useState(false)
 
   // Schedule config
@@ -418,7 +419,11 @@ export default function PublishView({
   // AI Preview state (agent_memo)
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiFilename, setAiFilename] = useState('memo')
-  const [saveMemo, setSaveMemo] = useState(true) // keep the analysis as a memo file
+  // Folder destination — pick an existing folder or create a new one.
+  const NEW_FOLDER = '__new__'
+  const [folders, setFolders] = useState(['agent_memo'])
+  const [summaryFolder, setSummaryFolder] = useState('agent_memo')
+  const [newFolderName, setNewFolderName] = useState('')
   const [aiPreviewRunning, setAiPreviewRunning] = useState(false)
   const [aiPreviewContent, setAiPreviewContent] = useState(null)
   const [aiPreviewError, setAiPreviewError] = useState('')
@@ -426,16 +431,18 @@ export default function PublishView({
   const aiPreviewSessionRef = useRef(null)
   const aiPusherRef = useRef(null)
   const publishPollRef = useRef(null)
+  // Scroll target — reveal the summary destinations once the first summary lands.
+  const summaryEndRef = useRef(null)
 
   // Slack notification state
   const [slackChannels, setSlackChannels] = useState([])
   const [slackDmUsers, setSlackDmUsers] = useState([])
 
-  // Action block toggles
-  const [aiBlockEnabled, setAiBlockEnabled] = useState(false)
+  // Publish artifacts & summary destinations. The summary is a first-class output;
+  // Slack and Folder are independent destinations it fans out to (a small workflow).
+  const [summaryEnabled, setSummaryEnabled] = useState(false)
+  const [summaryToFolder, setSummaryToFolder] = useState(true) // accessible to agents now; webhooks/API later
   const [slackEnabled, setSlackEnabled] = useState(false)
-  // AI summary is the only Slack message type — keep it on whenever Slack is on.
-  useEffect(() => { if (slackEnabled) setAiBlockEnabled(true) }, [slackEnabled])
   const [emailEnabled, setEmailEnabled] = useState(false)
   const [slackTestSending, setSlackTestSending] = useState(false)
 
@@ -518,6 +525,19 @@ export default function PublishView({
       }))
     } catch { /* ignore */ }
   }, [reviewPassed, reviewSkipped, snapshotKey, recipe, hardeningStatus, stepResults, codeDiffs, adjustmentChecked, totalSteps])
+
+  // Existing folders the summary can be saved into (plus the "create new" option).
+  useEffect(() => {
+    apiGet('/api/folders').then(d => { if (Array.isArray(d?.folders) && d.folders.length) setFolders(d.folders) }).catch(() => {})
+  }, [])
+
+  // Once a summary is generated, reveal & scroll to the destinations section.
+  useEffect(() => {
+    if (aiPreviewContent && summaryEnabled) {
+      const t = setTimeout(() => summaryEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 120)
+      return () => clearTimeout(t)
+    }
+  }, [aiPreviewContent, summaryEnabled])
 
 
   const stepResultsRef = useRef(stepResults)
@@ -615,7 +635,7 @@ export default function PublishView({
 
     setWorkflowName(updateMode.name || '')
 
-    // Slack block
+    // Slack block — a summary destination
     const slackBlock = blocks.find(b => b.type === 'send_slack')
     if (slackBlock?.config) {
       setSlackEnabled(true)
@@ -627,13 +647,24 @@ export default function PublishView({
       setSlackDmUsers([])
     }
 
-    // AI block (always routed to Slack)
+    // Summary block + its destinations (folder file and/or Slack)
     const aiBlock = blocks.find(b => b.type === 'ai_summarize')
     if (aiBlock?.config) {
-      setAiBlockEnabled(true)
+      setSummaryEnabled(true)
       setAiPrompt(aiBlock.config.prompt || '')
+      const dests = aiBlock.config.destinations || []
+      setSummaryToFolder(dests.length ? dests.includes('folder') : (aiBlock.config.save_memo !== false))
+      const outFile = aiBlock.config.output_file || ''
+      const parts = outFile.split('/')
+      const base = parts.pop()?.replace(/\.md$/, '')
+      const folder = parts.join('/')
+      if (folder) {
+        setFolders(prev => prev.includes(folder) ? prev : [...prev, folder])
+        setSummaryFolder(folder)
+      }
+      if (base && base !== '_summary') setAiFilename(base)
     } else {
-      setAiBlockEnabled(false)
+      setSummaryEnabled(false)
     }
 
     // Publish dashboard block + its config
@@ -708,7 +739,7 @@ export default function PublishView({
   // Legacy alias used by renderExistingBanner (hide banner only while reviewing).
   const isVerifying = isReviewRunning
   const progressPct = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
-  const hasOutput = publishDashboardEnabled || slackEnabled
+  const hasOutput = publishDashboardEnabled || summaryEnabled
 
   // ── Helper: create Pusher instance ──
   const createPusher = useCallback(() => {
@@ -819,19 +850,20 @@ export default function PublishView({
       const wfName = isUpdate ? updateMode.name : (workflowName.trim() || dashboardTitle || 'Untitled workflow')
       const extraBlocks = []
 
-      // The AI summary's file path. When the destination is "folder" it's the
-      // user's memo name; otherwise a temp file the agent writes so Slack can read it.
-      const safeName = (aiFilename || 'memo').trim().replace(/[^a-zA-Z0-9\-_ ]/g, '').replace(/ /g, '_') || 'memo'
-      const summaryFile = aiDestination === 'folder' ? `agent_memo/${safeName}.md` : 'agent_memo/_summary.md'
-      const aiOn = aiBlockEnabled && aiPrompt.trim() && aiDestination !== 'none'
+      // The summary is always written to the folder file; Slack (when on) reads
+      // from that same saved file, so the alert posts the persisted summary.
+      const folderSeg = slugSeg(summaryFolder === NEW_FOLDER ? newFolderName : summaryFolder, 'agent_memo')
+      const summaryFile = `${folderSeg}/${slugSeg(aiFilename, 'memo')}.md`
+      const aiOn = summaryEnabled && aiPrompt.trim()
 
-      // AI summarize block — generate + route per destination
-      if (aiBlockEnabled && aiPrompt.trim()) {
+      // AI summarize block — generate once, fan out to the chosen destinations.
+      if (aiOn) {
+        const destinations = [summaryToFolder && 'folder', slackEnabled && 'slack'].filter(Boolean)
         const blockConfig = {
           prompt: aiPrompt,
           output_file: summaryFile,
-          save_memo: aiDestination === 'folder',
-          destination: aiDestination,
+          save_memo: summaryToFolder,
+          destinations,
         }
         const guide = extractFormatGuide(aiPreviewContent)
         if (guide) blockConfig.format_guide = guide
@@ -839,10 +871,9 @@ export default function PublishView({
         extraBlocks.push({ id: 'blk_ai_memo', type: 'ai_summarize', label: 'AI Summary', config: blockConfig })
       }
 
-      // Slack block — emitted when Slack is an output with targets.
-      // Content is the AI summary when the summary's destination is Slack, else generic.
+      // Slack block — a summary destination. Emitted when Slack is on with targets.
       if (slackEnabled && (slackChannels.length > 0 || slackDmUsers.length > 0)) {
-        const sendSummary = aiOn && aiDestination === 'slack'
+        const sendSummary = aiOn
         extraBlocks.push({
           id: 'blk_slack',
           type: 'send_slack',
@@ -973,8 +1004,8 @@ export default function PublishView({
       setErrorMessage(`Failed to ${isUpdate ? 'update' : 'create'} workflow: ${e.message}`)
       toast.error(`Failed: ${e.message}`)
     }
-  }, [sessionId, dashboardTitle, workflowName, dashboardMessage, includeDashboardLink, aiDestination, updateMode, autoRefresh,
-      aiBlockEnabled, aiPrompt, aiFilename, saveMemo, aiPreviewContent,
+  }, [sessionId, dashboardTitle, workflowName, dashboardMessage, includeDashboardLink, updateMode, autoRefresh,
+      summaryEnabled, summaryToFolder, summaryFolder, newFolderName, aiPrompt, aiFilename, aiPreviewContent,
       slackEnabled, slackChannels, slackDmUsers,
       publishDashboardEnabled, recipe, hardeningStatus, adjustmentChecked,
       scheduleType, scheduleFrequency, scheduleDay, scheduleTime, scheduleTimezone])
@@ -1792,7 +1823,7 @@ export default function PublishView({
   )
 
   // ── Slack message mockup — this IS the output that gets posted ──
-  const renderSlackPreview = () => {
+  const renderSummaryPreview = () => {
     return (
       <div className="rounded-lg border border-[var(--border-primary)] bg-white overflow-hidden">
         <div className="p-3 flex gap-2.5">
@@ -1808,7 +1839,7 @@ export default function PublishView({
             <div className="text-[12px] text-[#1d1c1d] leading-relaxed">
               {aiPreviewContent
                 ? <MarkdownRenderer content={aiPreviewContent} />
-                : <span className="text-[var(--text-muted)] italic">Generate the summary to see the Slack message.</span>}
+                : <span className="text-[var(--text-muted)] italic">Generate the summary to preview it.</span>}
             </div>
             {includeDashboardLink && <span className="inline-block mt-1.5 text-[12px] text-[#1264a3] font-medium">View dashboard →</span>}
           </div>
@@ -1817,33 +1848,113 @@ export default function PublishView({
     )
   }
 
-  // ── Slack alert — who to send to + the AI summary, with a live preview. ──
-  const renderSlackBlock = () => {
+  // Restore the "Test alert" button — fires a one-off Slack notification.
+  const handleSlackTest = async () => {
+    setSlackTestSending(true)
+    try {
+      await apiPost(`/api/sessions/${sessionId}/slack-test`, { exec_session_id: execSessionIdRef.current, channels: slackChannels, dm_users: slackDmUsers, content: aiPreviewContent || null })
+      toast.success('Test alert sent!')
+    } catch (e) {
+      toast.error(e.message || 'Failed to send test alert')
+    } finally {
+      setSlackTestSending(false)
+    }
+  }
+
+  // ── Summary — authoring + preview, then a fan-out to its destinations
+  // (a folder file and/or a Slack alert). The summary is decoupled from Slack. ──
+  const renderSummaryBlock = () => {
+    const slackHasTarget = slackChannels.length > 0 || slackDmUsers.length > 0
     return (
-      <div className="flex-1 min-h-0 flex flex-col">
-        <div className="flex gap-4 flex-1 min-h-0">
-          <div className="flex-1 min-w-0 space-y-3.5 min-h-0 overflow-y-auto">
-            <div>
-              <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
-            </div>
-            <div>
-              <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">AI summary</label>
-              <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={3} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
-              <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
-                {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate</span></>) : (<><Sparkle size={14} weight="fill" /><span>Generate summary</span></>)}
-              </button>
-              {aiPreviewError && <p className="text-[12px] text-red-500 m-0 mt-1.5">{aiPreviewError}</p>}
-            </div>
+      <div className="flex flex-col gap-4">
+        {/* Authoring (left) + live preview (right) */}
+        <div className="flex gap-4">
+          <div className="flex-1 min-w-0">
+            <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Summary prompt</label>
+            <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={4} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
+            <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
+              {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate</span></>) : (<><Sparkle size={14} weight="fill" /><span>Generate summary</span></>)}
+            </button>
+            {aiPreviewError && <p className="text-[12px] text-red-500 m-0 mt-1.5">{aiPreviewError}</p>}
           </div>
-          <div className="flex-1 min-w-0 flex flex-col rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/40 overflow-hidden">
+          <div className="flex-1 min-w-0 flex flex-col rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/40 overflow-hidden min-h-[160px]">
             <div className="px-3.5 py-2.5 border-b border-[var(--border-primary)] shrink-0">
               <span className="text-[13px] font-semibold text-[var(--text-primary)]">Preview</span>
             </div>
             <div className="p-3.5 flex-1 min-h-0 overflow-y-auto">
-              {renderSlackPreview()}
+              {renderSummaryPreview()}
             </div>
           </div>
         </div>
+
+        {/* Destinations — revealed once the first summary is generated */}
+        {aiPreviewContent && (
+        <div className="pt-3 border-t border-[var(--border-primary)]">
+          <p className="text-[12px] font-medium text-[var(--text-secondary)] m-0 mb-2.5">What do you want to do with this summary?<span className="text-[var(--accent)] ml-0.5">*</span></p>
+          <div className="relative">
+            {/* branch spine */}
+            <div className="absolute left-[8px] top-0 bottom-5 w-px bg-[var(--border-primary)]" aria-hidden="true" />
+
+            {/* Folder destination */}
+            <div className="relative pl-7 pb-3">
+              <div className="absolute left-[8px] top-[15px] w-4 h-px bg-[var(--border-primary)]" aria-hidden="true" />
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={summaryToFolder} onChange={() => setSummaryToFolder(v => !v)} className="w-3.5 h-3.5 accent-[var(--accent)] shrink-0 mt-0.5 cursor-pointer" />
+                <div className="flex-1 min-w-0">
+                  <span className="block text-[12px] font-medium text-[var(--text-primary)]">Save to a folder</span>
+                  <span className="block text-[12px] text-[var(--text-muted)] leading-snug mt-0.5">Keep it in a folder so your team and AI assistants can pick it up anytime.</span>
+                </div>
+              </label>
+              {summaryToFolder && (
+                <div className="mt-2.5 pl-6 space-y-2">
+                  <div className="flex items-end gap-2 flex-wrap">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium text-[var(--text-muted)]">Folder</span>
+                      <CustomSelect
+                        value={summaryFolder}
+                        onChange={setSummaryFolder}
+                        options={[...folders.map(f => ({ value: f, label: f })), { value: NEW_FOLDER, label: '+ Create new folder…' }]}
+                        className="w-44"
+                      />
+                    </div>
+                    {summaryFolder === NEW_FOLDER && (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[11px] font-medium text-[var(--text-muted)]">New folder name</span>
+                        <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g. weekly-reports" className="w-44 text-[12px] border border-[var(--border-primary)] rounded-lg px-2.5 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium text-[var(--text-muted)]">File name</span>
+                      <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="File name" className="w-40 text-[12px] border border-[var(--border-primary)] rounded-lg px-2.5 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Slack destination */}
+            <div className="relative pl-7">
+              <div className="absolute left-[8px] top-[15px] w-4 h-px bg-[var(--border-primary)]" aria-hidden="true" />
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={slackEnabled} onChange={() => setSlackEnabled(v => !v)} className="w-3.5 h-3.5 accent-[var(--accent)] shrink-0 mt-0.5 cursor-pointer" />
+                <div className="flex-1 min-w-0">
+                  <span className="block text-[12px] font-medium text-[var(--text-primary)]">Send to Slack</span>
+                  <span className="block text-[12px] text-[var(--text-muted)] leading-snug mt-0.5">Send it to a channel or teammates every time the data refreshes.</span>
+                </div>
+              </label>
+              {slackEnabled && (
+                <div className="mt-2.5 pl-6 space-y-2.5">
+                  <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
+                  <button onClick={handleSlackTest} disabled={slackTestSending || !slackHasTarget} title={slackHasTarget ? 'Send a one-off test alert now' : 'Pick a channel or person first'} className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    {slackTestSending ? (<><CircleNotch size={13} className="animate-spin" /><span>Sending…</span></>) : (<><Play size={13} weight="fill" /><span>Test alert</span></>)}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div ref={summaryEndRef} aria-hidden="true" />
+        </div>
+        )}
       </div>
     )
   }
@@ -2002,21 +2113,21 @@ export default function PublishView({
           </div>
         </div>
 
-        {/* Slack alert — toggle + its config clubbed together */}
+        {/* Summary — a first-class output that fans out to a folder and/or Slack */}
         {isPetavueUser && (
           <div className="shrink-0 bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-3 shrink-0 cursor-pointer" onClick={() => !isAgentBusy && setSlackEnabled(v => !v)}>
-              <div className="shrink-0 w-9 h-9 rounded-lg bg-[#4A154B]/8 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 256 256" fill="none"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z" fill={slackEnabled ? '#4A154B' : '#999'} /></svg></div>
+            <div className="flex items-center gap-3 px-4 py-3 shrink-0 cursor-pointer" onClick={() => !isAgentBusy && setSummaryEnabled(v => !v)}>
+              <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--accent)]/8 flex items-center justify-center"><Sparkle size={18} weight="fill" className={summaryEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} /></div>
               <div className="flex-1 min-w-0">
-                <span className="text-[14px] font-semibold text-[#2D3044] block">Slack alert</span>
-                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">Notify a channel or people when the data updates.</span>
+                <span className="text-[14px] font-semibold text-[#2D3044] block">Summary</span>
+                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">An AI-written recap of your data — sent to a folder and/or Slack.</span>
               </div>
-              <Toggle checked={slackEnabled} onChange={() => !isAgentBusy && setSlackEnabled(v => !v)} size="lg" />
+              <Toggle checked={summaryEnabled} onChange={() => !isAgentBusy && setSummaryEnabled(v => !v)} size="lg" />
             </div>
-            <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${slackEnabled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+            <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${summaryEnabled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
               <div className="overflow-hidden">
-                <div className="px-4 pb-3.5 pt-3 border-t border-[var(--border-primary)] min-h-[260px] flex flex-col">
-                  {renderSlackBlock()}
+                <div className="px-4 pb-3.5 pt-3 border-t border-[var(--border-primary)]">
+                  {renderSummaryBlock()}
                 </div>
               </div>
             </div>
@@ -2267,8 +2378,24 @@ export default function PublishView({
         <CaretLeft size={13} weight="bold" />{label}
       </button>
     )
-    const canPublish = hasOutput && (!publishDashboardEnabled || (dashboardTitle || '').trim().length > 0)
-    const publishReason = !hasOutput ? 'Choose at least one output' : !canPublish ? 'Name your dashboard' : ''
+    const summaryHasDest = summaryToFolder || slackEnabled
+    const slackHasTarget = slackChannels.length > 0 || slackDmUsers.length > 0
+    const dashboardOk = !publishDashboardEnabled || (dashboardTitle || '').trim().length > 0
+    const newFolderMissing = summaryToFolder && summaryFolder === NEW_FOLDER && !newFolderName.trim()
+    const folderOk = !summaryToFolder || ((aiFilename || '').trim().length > 0 && !newFolderMissing)
+    const summaryOk = !summaryEnabled || (
+      aiPrompt.trim().length > 0 && summaryHasDest && folderOk
+      && (!slackEnabled || slackHasTarget)
+    )
+    const canPublish = hasOutput && dashboardOk && summaryOk
+    const publishReason = !hasOutput ? 'Choose at least one output'
+      : !dashboardOk ? 'Name your dashboard'
+      : (summaryEnabled && !aiPrompt.trim()) ? 'Add a summary prompt'
+      : (summaryEnabled && !summaryHasDest) ? 'Choose where the summary goes'
+      : (summaryEnabled && newFolderMissing) ? 'Name the new folder'
+      : (summaryEnabled && summaryToFolder && !(aiFilename || '').trim()) ? 'Name the summary file'
+      : (summaryEnabled && slackEnabled && !slackHasTarget) ? 'Pick a Slack channel or person'
+      : ''
 
     return (
       <div className="shrink-0 flex items-center justify-between gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
