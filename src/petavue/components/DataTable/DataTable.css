@@ -1,0 +1,180 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   DataTable Component
+   Max 10 rows visible, horizontal + vertical scroll support
+   ========================================================================== */
+
+.data-table {
+  width: 100%;
+  border: var(--border-default) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll container — caps height at 10 rows, enables both axes
+   -------------------------------------------------------------------------- */
+
+.data-table__scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.data-table__scroll-container--scrollable {
+  /* 10 data rows × 44px row height + 40px header = 480px */
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Table base
+   -------------------------------------------------------------------------- */
+
+.data-table__table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.data-table__thead--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table__th {
+  padding: var(--spacing-10) var(--spacing-16);
+  background-color: var(--color-neutral-50);
+  border-bottom: var(--border-default) solid var(--color-neutral-200);
+  text-align: left;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.data-table__th--sortable {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.data-table__th--sortable:hover {
+  color: var(--color-text-primary);
+}
+
+.data-table__th--active {
+  color: var(--color-primary-500);
+}
+
+.data-table__th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+/* --------------------------------------------------------------------------
+   Sort icons
+   -------------------------------------------------------------------------- */
+
+.data-table__sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 0;
+}
+
+.data-table__sort-icon {
+  color: var(--color-neutral-300);
+  transition: color 0.15s ease;
+}
+
+.data-table__sort-icon--active {
+  color: var(--color-primary-500);
+}
+
+/* --------------------------------------------------------------------------
+   Body rows
+   -------------------------------------------------------------------------- */
+
+.data-table__row {
+  transition: background-color 0.1s ease;
+}
+
+.data-table__row:hover {
+  background-color: var(--color-primary-50);
+}
+
+.data-table__row--striped {
+  background-color: var(--color-neutral-50);
+}
+
+.data-table__row--striped:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* --------------------------------------------------------------------------
+   Cells
+   -------------------------------------------------------------------------- */
+
+.data-table__td {
+  padding: var(--spacing-12) var(--spacing-16);
+  border-bottom: var(--border-default) solid var(--color-neutral-100);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* Remove bottom border on last row */
+.data-table__table tbody tr:last-child .data-table__td {
+  border-bottom: none;
+}
+
+/* --------------------------------------------------------------------------
+   Empty state
+   -------------------------------------------------------------------------- */
+
+.data-table__empty {
+  padding: var(--spacing-48) var(--spacing-16);
+  text-align: center;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbar styling
+   -------------------------------------------------------------------------- */
+
+.data-table__scroll-container::-webkit-scrollbar {
+  width: var(--spacing-6);
+  height: var(--spacing-6);
+}
+
+.data-table__scroll-container::-webkit-scrollbar-track {
+  background: var(--color-neutral-50);
+}
+
+.data-table__scroll-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-300);
+  border-radius: var(--radius-pill);
+}
+
+.data-table__scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-neutral-400);
+}

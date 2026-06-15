@@ -1,0 +1,89 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Notification Component
+   From Figma: rounded-4px, border-left-3px, px-16 py-8
+   Variants: success, warning, error, info
+   ========================================================================== */
+
+.notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-8) var(--spacing-16);
+  border-radius: var(--radius-sm);
+  border-left: var(--border-thick) solid;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-white);
+  min-width: 280px;
+}
+
+/* --------------------------------------------------------------------------
+   Variants
+   -------------------------------------------------------------------------- */
+
+.notification--success {
+  background-color: var(--color-success);
+  border-left-color: var(--color-success);
+}
+
+.notification--warning {
+  background-color: var(--color-warning);
+  border-left-color: var(--color-warning);
+}
+
+.notification--error {
+  background-color: var(--color-error);
+  border-left-color: var(--color-error);
+}
+
+.notification--info {
+  background-color: var(--color-primary-500);
+  border-left-color: var(--color-primary-500);
+}
+
+/* --------------------------------------------------------------------------
+   Content area
+   -------------------------------------------------------------------------- */
+
+.notification__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  flex: 1;
+}
+
+.notification__message {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Close button
+   -------------------------------------------------------------------------- */
+
+.notification__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-white);
+  cursor: pointer;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.notification__close:hover {
+  opacity: 0.8;
+}
+
+.notification__close:focus-visible {
+  outline: var(--border-default) solid var(--color-white);
+  outline-offset: 2px;
+}

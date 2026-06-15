@@ -1,0 +1,138 @@
+@import '../../../colorography/tokens.css';
+@import '../../../typography/typography.css';
+
+/* ==========================================================================
+   Tag — general-purpose colored chip
+   ========================================================================== */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* --------------------------------------------------------------------------
+   Size variants
+   -------------------------------------------------------------------------- */
+
+.tag--sm {
+  padding: var(--spacing-2) var(--spacing-8);
+  font-size: 10px;
+  line-height: 16px;
+}
+
+.tag--md {
+  padding: var(--spacing-2) var(--spacing-10);
+  font-size: var(--font-size-body-2);
+  line-height: var(--line-height-body-2);
+}
+
+.tag--lg {
+  padding: var(--spacing-2) var(--spacing-10);
+  font-size: var(--font-size-body-1);
+  line-height: var(--line-height-body-1);
+}
+
+/* --------------------------------------------------------------------------
+   Icon-only variant
+   -------------------------------------------------------------------------- */
+
+.tag--icon-only {
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   Color variants
+   -------------------------------------------------------------------------- */
+
+.tag--pink {
+  background-color: var(--color-tag-pink);
+}
+
+.tag--yellow {
+  background-color: var(--color-tag-yellow);
+}
+
+.tag--green {
+  background-color: var(--color-tag-green);
+}
+
+.tag--blue {
+  background-color: var(--color-tag-blue);
+}
+
+.tag--purple {
+  background-color: var(--color-tag-purple);
+}
+
+.tag--column {
+  background-color: var(--color-tag-column);
+}
+
+.tag--success-green {
+  background-color: var(--color-tag-success-green);
+}
+
+.tag--warning-yellow {
+  background-color: var(--color-tag-warning-yellow);
+}
+
+.tag--error-red {
+  background-color: var(--color-tag-error-red);
+}
+
+.tag--orange {
+  background-color: var(--color-tag-orange);
+}
+
+.tag--sea-green {
+  background-color: var(--color-tag-sea-green);
+}
+
+.tag--violet {
+  background-color: var(--color-tag-violet);
+}
+
+/* --------------------------------------------------------------------------
+   Icon slots
+   -------------------------------------------------------------------------- */
+
+.tag__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-text-primary);
+}
+
+.tag__label {
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Remove (suffix) button
+   -------------------------------------------------------------------------- */
+
+.tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  line-height: 0;
+}
+
+.tag__remove:hover {
+  opacity: 0.7;
+}

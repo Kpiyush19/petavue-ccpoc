@@ -1,0 +1,201 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   ThoughtProcess — AI reasoning steps with progressive loading
+   ========================================================================== */
+
+.thought-process {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.thought-process__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  box-sizing: border-box;
+}
+
+.thought-process__header:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.thought-process__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.thought-process__title {
+  color: var(--color-neutral-600);
+  white-space: nowrap;
+}
+
+.thought-process__header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 138px;
+}
+
+/* --------------------------------------------------------------------------
+   Spinner animation
+   -------------------------------------------------------------------------- */
+
+.thought-process__spinner-gif {
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------------------------
+   Body / steps area
+   -------------------------------------------------------------------------- */
+
+.thought-process__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thought-process__steps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Individual step
+   -------------------------------------------------------------------------- */
+
+.thought-process__step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+.thought-process__step-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thought-process__step-icon {
+  flex-shrink: 0;
+}
+
+.thought-process__step-label {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Step sub-content with connector line
+   -------------------------------------------------------------------------- */
+
+.thought-process__step-content {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding-left: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thought-process__connector {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  width: 1px;
+  position: relative;
+}
+
+.thought-process__connector-line {
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary-300) 0%,
+    var(--color-primary-100) 100%
+  );
+  min-height: 100%;
+}
+
+.thought-process__step-detail {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.thought-process__step-text {
+  color: var(--color-text-disabled);
+  margin: 0;
+  line-height: var(--line-height-body-2);
+}
+
+/* Bullet list */
+.thought-process__step-list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: disc;
+}
+
+.thought-process__step-list-item {
+  color: var(--color-text-disabled);
+  line-height: var(--line-height-body-2);
+}
+
+/* --------------------------------------------------------------------------
+   Skeleton loading placeholders
+   -------------------------------------------------------------------------- */
+
+.thought-process__skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.thought-process__skeleton {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-neutral-50);
+  animation: thought-process-shimmer 1.5s ease-in-out infinite;
+}
+
+.thought-process__skeleton--wide {
+  width: 345px;
+  max-width: 100%;
+}
+
+.thought-process__skeleton--narrow {
+  width: 211px;
+  max-width: 60%;
+}
+
+@keyframes thought-process-shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

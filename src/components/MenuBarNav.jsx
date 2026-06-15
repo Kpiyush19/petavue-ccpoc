@@ -4,23 +4,30 @@ import { getCurrentUser } from "../api";
 import { MOCK_ENABLED } from "../mocks";
 
 // Navigation items (icon keys map to the MenuBar's Phosphor icon set).
-const NAV_ITEMS = [
+// Canonical nav — identical order/ids in both navbars (see petavue MenuBar) so
+// buttons never shift position between pages. Sage + live Dashboard open the
+// live app; the rest open the Petavue design-system pages.
+export const NAV_ITEMS = [
   { id: "sage", label: "Sage", icon: "sage" },
   { id: "chats", label: "Workbook", icon: "chats" },
-  { id: "dashboards", label: "Dashboards", icon: "dashboard" },
-  { id: "workflows", label: "Workflows", icon: "project" },
+  { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
+  { id: "dashboards-pv", label: "Dashboard", icon: "grid" },
   { id: "reports", label: "Reports", icon: "reports" },
   { id: "data-hub", label: "Data Hub", icon: "data-hub" },
   { id: "skills", label: "Skills", icon: "skills" },
-  { id: "settings", label: "Settings", icon: "settings" },
+  { id: "project", label: "Projects", icon: "project" },
 ];
 
-// Nav item id -> route. Items without a route stay non-navigating.
-// Workflows, Skills and Data Hub are intentionally left unlinked for now.
-const NAV_ROUTES = {
-  sage: "/session/sess-dash-1",
-  dashboards: "/dashboards",
-  settings: "/settings",
+export const NAV_ROUTES = {
+  sage: "/sage/q2-revenue-dashboard",
+  chats: "/petavue/workbooks",
+  "dashboard-live": "/dashboards",
+  "dashboards-pv": "/petavue/dashboards",
+  reports: "/petavue/reports",
+  "data-hub": "/petavue/data-hub",
+  skills: "/petavue/skills",
+  project: "/petavue/projects",
+  settings: "/petavue/settings",
 };
 
 export default function MenuBarNav() {
@@ -52,7 +59,7 @@ export default function MenuBarNav() {
     })?.id || null;
 
   const historyGroups = MOCK_ENABLED
-    ? [{ label: "Today", items: [{ id: "sess-dash-1", title: "Q2 Revenue Dashboard", time: "now" }] }]
+    ? [{ label: "Today", items: [{ id: "q2-revenue-dashboard", title: "Q2 Revenue Dashboard", time: "now" }] }]
     : [];
 
   return (
@@ -64,6 +71,8 @@ export default function MenuBarNav() {
         historyGroups={historyGroups}
         user={user}
         onNewChat={() => {}}
+        onProfile={() => navigate("/petavue/profile")}
+        onSettings={() => navigate("/petavue/settings")}
         defaultOpen={false}
       />
     </div>

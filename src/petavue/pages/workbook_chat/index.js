@@ -1,0 +1,1 @@
+export { WorkbookChat } from './WorkbookChat';

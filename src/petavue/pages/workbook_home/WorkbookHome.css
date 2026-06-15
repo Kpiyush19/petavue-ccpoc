@@ -1,0 +1,280 @@
+/* ==========================================================================
+   WorkbookHome Page
+   ========================================================================== */
+
+.workbook-home {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-white);
+  font-family: var(--font-family-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Body — main content area to the right of MenuBar
+   -------------------------------------------------------------------------- */
+
+.workbook-home__body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 300px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero — centered title + search box
+   -------------------------------------------------------------------------- */
+
+.workbook-home__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-24);
+  width: 700px;
+  max-width: calc(100% - var(--spacing-64));
+}
+
+/* --------------------------------------------------------------------------
+   Title — sparkle icon + heading
+   -------------------------------------------------------------------------- */
+
+.workbook-home__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.workbook-home__heading {
+  font-size: var(--font-size-display-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-display-1);
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Search box
+   -------------------------------------------------------------------------- */
+
+.workbook-home__search {
+  width: 100%;
+}
+
+.workbook-home__search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: 98px;
+  padding: 12px 16px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 12px;
+  box-shadow: 0 12px 12px 0 rgba(173, 178, 206, 0.12);
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Hover state */
+.workbook-home__search-box:hover {
+  border-color: var(--color-neutral-300);
+  box-shadow: 0 12px 24px 0 rgba(173, 178, 206, 0.18);
+}
+
+/* Focused state */
+.workbook-home__search-box--focused {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(54, 97, 237, 0.12), 0 12px 12px 0 rgba(173, 178, 206, 0.12);
+}
+
+.workbook-home__search-box--focused:hover {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(54, 97, 237, 0.12), 0 12px 12px 0 rgba(173, 178, 206, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Input field
+   -------------------------------------------------------------------------- */
+
+.workbook-home__input {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 32px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  padding: 0;
+}
+
+.workbook-home__input::placeholder {
+  color: var(--color-neutral-300);
+}
+
+/* --------------------------------------------------------------------------
+   Submit button
+   -------------------------------------------------------------------------- */
+
+.workbook-home__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-300);
+  cursor: default;
+  padding: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+/* Active state — when there's text to submit */
+.workbook-home__submit--active {
+  background-color: var(--color-primary-500);
+  cursor: pointer;
+}
+
+.workbook-home__submit--active svg {
+  color: var(--color-white);
+}
+
+.workbook-home__submit--active:hover {
+  background-color: var(--color-primary-800);
+}
+
+.workbook-home__submit--active:active {
+  transform: scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   Actions row — mode pill + submit button
+   -------------------------------------------------------------------------- */
+
+.workbook-home__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Mode dropdown pill
+   -------------------------------------------------------------------------- */
+
+.workbook-home__mode-wrapper {
+  position: relative;
+}
+
+.workbook-home__mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  height: 32px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.workbook-home__mode-pill:hover {
+  background-color: var(--color-primary-50);
+}
+
+.workbook-home__mode-pill-caret {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.workbook-home__mode-pill-caret--open {
+  transform: rotate(180deg);
+}
+
+.workbook-home__mode-label {
+  color: var(--color-primary-500);
+}
+
+/* --------------------------------------------------------------------------
+   Dropdown menu
+   -------------------------------------------------------------------------- */
+
+.workbook-home__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.workbook-home__dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.workbook-home__dropdown-item:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.workbook-home__dropdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.workbook-home__dropdown-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.workbook-home__dropdown-label {
+  color: var(--color-text-primary);
+}
+
+.workbook-home__dropdown-label--selected {
+  color: var(--color-primary-500);
+}
+
+.workbook-home__dropdown-desc {
+  color: var(--color-text-secondary);
+}
+
+.workbook-home__dropdown-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

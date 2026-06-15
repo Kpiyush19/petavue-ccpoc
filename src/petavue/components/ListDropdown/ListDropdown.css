@@ -1,0 +1,92 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   ListDropdown — lightweight floating menu with borderless trigger
+   ========================================================================== */
+
+.list-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Trigger button */
+.list-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: var(--font-weight-regular);
+  line-height: 19px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.list-dropdown__trigger:disabled {
+  color: var(--color-neutral-300);
+  cursor: default;
+}
+
+.list-dropdown__trigger:not(:disabled):hover {
+  background: var(--color-neutral-50);
+}
+
+/* Floating menu */
+.list-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutral-100);
+  border-radius: 8px;
+  box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+/* Menu item */
+.list-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  transition: background-color 0.15s ease;
+}
+
+.list-dropdown__item:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.list-dropdown__item--active {
+  background-color: var(--color-primary-50);
+}
+
+.list-dropdown__item--active:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* Disabled state */
+.list-dropdown--disabled {
+  pointer-events: none;
+}

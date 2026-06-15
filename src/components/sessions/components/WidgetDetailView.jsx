@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowLeft, ArrowsClockwise, ShieldCheck, CaretRight, CaretLeft, ArrowLineRight, ArrowLineLeft } from '@phosphor-icons/react'
-import { Button } from '@/common-components'
+import { Button as PvButton } from '../../../petavue'
 import { apiGet, apiPost } from '../../../api'
 import HtmlViewer from '../viewers/HtmlViewer'
 import LineagePanel from './LineagePanel'
@@ -247,15 +247,7 @@ export default function WidgetDetailView({
         >
           <div className="shrink-0 flex items-center justify-between px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             <span className="text-[12px] text-[var(--text-muted)] truncate">{widget?.name}</span>
-            <Button
-              btnColor="ghost"
-              btnSize="sm"
-              mainBtnClassName="p-0.5"
-              onClick={handleRefresh}
-              title="Refresh widget preview"
-            >
-              <ArrowsClockwise size={13} weight="bold" />
-            </Button>
+            <PvButton variant="ghost" size="sm" icon={ArrowsClockwise} iconWeight="bold" onClick={handleRefresh} title="Refresh widget preview" />
           </div>
           <div className="flex-1 min-h-0">
             <HtmlViewer
@@ -353,10 +345,7 @@ export default function WidgetDetailView({
         ) : (
           <span className="text-[12px] text-[var(--text-muted)]">Not verified yet</span>
         )}
-        <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={verifyAndAdvance}>
-          <span className="text-[12px]">{nextW ? (verified ? 'Next' : 'Verify & next') : (verified ? 'Back to list' : 'Verify & finish')}</span>
-          <CaretRight size={13} weight="bold" />
-        </Button>
+        <PvButton variant="primary" size="md" label={nextW ? (verified ? 'Next' : 'Verify & next') : (verified ? 'Back to list' : 'Verify & finish')} icon={CaretRight} iconPosition="suffix" iconWeight="bold" onClick={verifyAndAdvance} />
       </div>
     </div>
   )

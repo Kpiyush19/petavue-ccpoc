@@ -1,0 +1,56 @@
+@import '../../../colorography/tokens.css';
+@import '../../../typography/typography.css';
+
+/* ==========================================================================
+   Tooltip — small floating label
+   ========================================================================== */
+
+.tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-10);
+  padding: var(--spacing-4) var(--spacing-12);
+  background: var(--color-neutral-700);
+  border: var(--border-default) solid var(--color-neutral-100);
+  border-radius: 6px;
+  box-shadow: 0 12px 12px rgba(177, 177, 177, 0.1);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Size variants
+   -------------------------------------------------------------------------- */
+
+.tooltip--lg .tooltip__text {
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-white);
+  text-align: center;
+}
+
+.tooltip--sm .tooltip__text {
+  font-size: 10px;
+  font-weight: var(--font-weight-regular);
+  line-height: 16px;
+  color: var(--color-white);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Icon
+   -------------------------------------------------------------------------- */
+
+.tooltip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-white);
+}
+
+/* Icon-only — no extra label */
+.tooltip--icon-only {
+  padding: var(--spacing-4) var(--spacing-8);
+}

@@ -7,9 +7,9 @@ import { MOCK_ENABLED } from "../mocks";
 const ExplorePage = lazy(() => import("../pages/ExplorePage"));
 
 export default function IndexRedirect() {
-  // Frontend-only mode: land directly on the demo dashboard.
+  // Frontend-only mode: land on Sage (the main chat).
   if (MOCK_ENABLED) {
-    return <Navigate to="/dashboards/dash-demo-1" replace />;
+    return <Navigate to="/sage/q2-revenue-dashboard" replace />;
   }
 
   const homeEnabled = useFeatureFlagEnabled("ccpoc-home");

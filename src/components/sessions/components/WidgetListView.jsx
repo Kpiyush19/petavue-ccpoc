@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CheckCircle, CaretRight, Check } from '@phosphor-icons/react'
-import { Button } from '@/common-components'
+import { Button as PvButton } from '../../../petavue'
 
 const FILTERS = ['All', 'Pending', 'Verified']
 
@@ -24,8 +24,6 @@ export default function WidgetListView({
     return true
   })
 
-  const pendingCount = widgetCount - verifiedCount
-  const pct = widgetCount > 0 ? Math.round((verifiedCount / widgetCount) * 100) : 0
 
   return (
     <div className="flex flex-col h-full">
@@ -35,39 +33,22 @@ export default function WidgetListView({
         <p className="text-[12px] text-[var(--text-muted)] mt-1 m-0 leading-relaxed">Confirm each widget renders with the right numbers. Verify directly from the list, or open a widget to inspect it. This step is optional — you can skip ahead to the agentic review.</p>
       </div>
 
-      {/* Progress + filters + verify all */}
-      <div className="shrink-0 px-6 py-2.5 border-b border-[var(--border-primary)] space-y-2.5">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-1 shrink-0">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`text-[12px] font-medium px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
-                  activeFilter === f
-                    ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                    : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="text-[12px] font-semibold text-[var(--text-primary)]">{verifiedCount} / {widgetCount} verified</span>
-            {pendingCount > 0 && (
-              <button
-                onClick={onVerifyAll}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] hover:border-[var(--accent)]/40 transition-colors"
-              >
-                <Check size={13} weight="bold" />Verify all
-              </button>
-            )}
-          </div>
-        </div>
-        {/* Progress bar */}
-        <div className="h-1.5 w-full rounded-full bg-[var(--bg-secondary)] overflow-hidden">
-          <div className="h-full rounded-full bg-green-500 transition-all duration-300 ease-out" style={{ width: `${pct}%` }} />
+      {/* Filters */}
+      <div className="shrink-0 px-6 py-2.5 border-b border-[var(--border-primary)]">
+        <div className="flex items-center gap-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`text-[12px] font-medium px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
+                activeFilter === f
+                  ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                  : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -102,18 +83,12 @@ export default function WidgetListView({
                     <span className="flex-1 text-[13px] font-medium text-[var(--text-primary)] truncate">{name}</span>
                   </button>
 
-                  {/* Verify toggle — the prominent, never-missable action */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onToggleVerified?.(widget) }}
-                    title={widget.verified ? 'Verified — click to undo' : 'Mark as verified'}
-                    className={`shrink-0 inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer transition-colors ${
-                      widget.verified
-                        ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
-                        : 'bg-[var(--accent)]/8 border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--accent)]/14'
-                    }`}
-                  >
-                    {widget.verified ? <><CheckCircle size={14} weight="fill" />Verified</> : <><Check size={13} weight="bold" />Verify</>}
-                  </button>
+                  {/* Read-only verified badge (verification happens inside the detail view) */}
+                  {widget.verified && (
+                    <span className="shrink-0 inline-flex items-center gap-1.5 text-[12px] font-semibold text-green-600">
+                      <CheckCircle size={14} weight="fill" />Verified
+                    </span>
+                  )}
 
                   {/* Open chevron */}
                   <button onClick={() => onSelectWidget?.(widget)} title="Open to inspect" className="shrink-0 bg-transparent border-none cursor-pointer p-0">
@@ -129,17 +104,18 @@ export default function WidgetListView({
       {/* Footer */}
       <div className="shrink-0 flex items-center justify-between gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
         {footerStart || <span />}
-        <Button
-          btnColor="primary"
-          btnSize="sm"
-          mainBtnClassName="py-2 px-5 rounded-lg shrink-0"
+        <PvButton
+          variant="primary"
+          size="lg"
+          className="shrink-0"
+          label="Continue"
+          icon={CaretRight}
+          iconPosition="suffix"
+          iconWeight="bold"
           onClick={onContinueToPublish}
           disabled={titleMissing}
           title={titleMissing ? 'Enter a dashboard title first' : 'Continue to publish'}
-        >
-          <span className="text-[12px]">Continue</span>
-          <CaretRight size={13} weight="bold" />
-        </Button>
+        />
       </div>
     </div>
   )

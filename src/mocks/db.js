@@ -26,7 +26,7 @@ export const currentUser = {
 
 // The primary dashboard session the app lands on. Its workspace contains a
 // React dashboard so the Verify & Publish flow is immediately accessible.
-export const DASH_SESSION_ID = "sess-dash-1";
+export const DASH_SESSION_ID = "q2-revenue-dashboard";
 
 // Recipe extracted from the dashboard session — the steps the Verify & Publish
 // flow executes and hardens. `card` sections power the "Annotated" view.

@@ -16,6 +16,9 @@ import { SessionProvider } from "./contexts/SessionContext";
 import LegacyRedirect from "./pages/LegacyRedirect";
 import PetavueSplash from "./components/PetavueSplash";
 
+// Petavue design-system pages (router-driven wrapper).
+const PetavueRoutes = lazy(() => import("./PetavueRoutes"));
+
 const ClaudeAuthPage = lazy(() => import("./pages/auth/ClaudeAuthPage"));
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
 const ResetPasswordPage = lazy(() => import("./pages/auth/ResetPasswordPage"));
@@ -76,6 +79,16 @@ function AuthenticatedLayout() {
 }
 
 export const router = createBrowserRouter([
+  {
+    // Petavue design-system pages (self-contained, own MenuBar — outside the app layout).
+    path: "/petavue/*",
+    element: (
+      <SuspenseWrapper>
+        <PetavueRoutes />
+      </SuspenseWrapper>
+    ),
+    errorElement: <BubbleError />
+  },
   {
     path: "/login",
     element: <LoginPage />,
@@ -223,6 +236,15 @@ export const router = createBrowserRouter([
               },
               {
                 path: "session/:id",
+                element: (
+                  <SuspenseWrapper>
+                    <WorkspacePage />
+                  </SuspenseWrapper>
+                )
+              },
+              {
+                // Sage is the new home for the main chat (clean URL).
+                path: "sage/:id",
                 element: (
                   <SuspenseWrapper>
                     <WorkspacePage />

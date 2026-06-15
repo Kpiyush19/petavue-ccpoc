@@ -16,6 +16,7 @@ import useCCDashboardStore from "../store/useCCDashboardStore";
 import { useNavigate, useBasePath, useConfig, useWidgets } from "../context";
 import { getAuthToken } from "../../../../api";
 import { MOCK_ENABLED } from "../../../../mocks";
+import { Button as PvButton } from "../../../../petavue";
 import apolloLogo from "@/assets/integrations/apollo.svg";
 import hubspotLogo from "@/assets/integrations/hubspot.svg";
 import salesforceLogo from "@/assets/integrations/salesforce.svg";
@@ -636,29 +637,28 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           </Button>
 
           {isWorkflow && (
-            <Button btnColor="secondary" btnSize="lg" onClick={handleFindOutHow} disabled={loading || !artifact?.latest_run}>
-              <Lightbulb size={16} />
-              <span>Find out how</span>
-            </Button>
+            <PvButton variant="secondary" size="lg" label="Find out how" icon={Lightbulb} disabled={loading || !artifact?.latest_run} onClick={handleFindOutHow} />
           )}
           <Tooltip title="Ask Sage AI to analyze this dashboard" placement="bottom">
-            <Button
-              btnColor="primary"
-              btnSize="lg"
-              onClick={handleStartChat}
-              disabled={
-                loading ||
-                isStartingChat ||
-                !artifact?.latest_run ||
-                iframeError ||
-                !iframeLoaded ||
-                !AnalyticsChat
-              }
-              aria-label="Open Sage AI chat"
-            >
-              <Sparkle size={16} />
-              <span>{isStartingChat ? "Starting..." : "Sage (Beta)"}</span>
-            </Button>
+            <span>
+              <PvButton
+                variant="primary"
+                size="lg"
+                label={isStartingChat ? "Starting..." : "Sage (Beta)"}
+                icon={Sparkle}
+                iconWeight="fill"
+                disabled={
+                  loading ||
+                  isStartingChat ||
+                  !artifact?.latest_run ||
+                  iframeError ||
+                  !iframeLoaded ||
+                  !AnalyticsChat
+                }
+                aria-label="Open Sage AI chat"
+                onClick={handleStartChat}
+              />
+            </span>
           </Tooltip>
         </div>
       </div>

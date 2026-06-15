@@ -1,0 +1,315 @@
+/* ==========================================================================
+   Petavue Typography System
+   Font: Poppins
+   Extracted from Figma Design System (node 14:813)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* --------------------------------------------------------------------------
+   Font Family
+   -------------------------------------------------------------------------- */
+
+:root {
+  --font-family-primary: 'Poppins', sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Font Weights
+   -------------------------------------------------------------------------- */
+
+:root {
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Font Sizes
+   -------------------------------------------------------------------------- */
+
+:root {
+  --font-size-hero: 36px;
+  --font-size-display-1: 24px;
+  --font-size-display-2: 20px;
+  --font-size-h1: 18px;
+  --font-size-h2: 16px;
+  --font-size-h3: 14px;
+  --font-size-body-1: 14px;
+  --font-size-body-2: 12px;
+  --font-size-metadata: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Line Heights
+   -------------------------------------------------------------------------- */
+
+:root {
+  --line-height-hero-semibold: 54px;
+  --line-height-hero-medium: 54px;
+  --line-height-hero-regular: 40px;
+  --line-height-display-1: 36px;
+  --line-height-display-2: 32px;
+  --line-height-h1: 29px;
+  --line-height-h2: 26px;
+  --line-height-h3: 22px;
+  --line-height-body-1: 22px;
+  --line-height-body-2: 19px;
+  --line-height-metadata: 16px;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Hero — 36px
+   -------------------------------------------------------------------------- */
+
+.text-hero-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-hero-semibold);
+  letter-spacing: 0;
+}
+
+.text-hero-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-hero-medium);
+  letter-spacing: 0;
+}
+
+.text-hero-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-hero-regular);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Display 1 — 24px
+   -------------------------------------------------------------------------- */
+
+.text-display-1-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-1);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-display-1);
+  letter-spacing: 0;
+}
+
+.text-display-1-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-display-1);
+  letter-spacing: 0;
+}
+
+.text-display-1-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-display-1);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Display 2 — 20px
+   -------------------------------------------------------------------------- */
+
+.text-display-2-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-display-2);
+  letter-spacing: 0;
+}
+
+.text-display-2-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-display-2);
+  letter-spacing: 0;
+}
+
+.text-display-2-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-display-2);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Heading 1 — 18px
+   -------------------------------------------------------------------------- */
+
+.text-h1-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h1);
+  letter-spacing: 0;
+}
+
+.text-h1-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-h1);
+  letter-spacing: 0;
+}
+
+.text-h1-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-h1);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Heading 2 — 16px
+   -------------------------------------------------------------------------- */
+
+.text-h2-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h2);
+  letter-spacing: 0;
+}
+
+.text-h2-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-h2);
+  letter-spacing: 0;
+}
+
+.text-h2-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-h2);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Heading 3 — 14px
+   -------------------------------------------------------------------------- */
+
+.text-h3-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h3);
+  letter-spacing: 0;
+}
+
+.text-h3-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-h3);
+  letter-spacing: 0;
+}
+
+.text-h3-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-h3);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Body 1 — 14px
+   -------------------------------------------------------------------------- */
+
+.text-body-1-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body-1);
+  letter-spacing: 0;
+}
+
+.text-body-1-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  letter-spacing: 0;
+}
+
+.text-body-1-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Body 2 — 12px
+   -------------------------------------------------------------------------- */
+
+.text-body-2-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body-2);
+  letter-spacing: 0;
+}
+
+.text-body-2-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  letter-spacing: 0;
+}
+
+.text-body-2-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Metadata — 10px
+   -------------------------------------------------------------------------- */
+
+.text-metadata-semibold {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-metadata);
+  letter-spacing: 0;
+}
+
+.text-metadata-medium {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-metadata);
+  letter-spacing: 0;
+}
+
+.text-metadata-regular {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-metadata);
+  letter-spacing: 0;
+}

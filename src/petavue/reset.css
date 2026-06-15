@@ -1,0 +1,21 @@
+/* Minimal reset.
+   box-sizing + Poppins stay global (box-sizing matches Tailwind; harmless to the
+   host app). The aggressive margin/padding zero is SCOPED to Petavue pages
+   (.petavue-root) so it doesn't clobber the host app's existing components. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-primary, 'Poppins', sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.petavue-root,
+.petavue-root *,
+.petavue-root *::before,
+.petavue-root *::after {
+  margin: 0;
+  padding: 0;
+}

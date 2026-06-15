@@ -1,0 +1,370 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   SageTextBox — Sage text field with mode dropdown
+   ========================================================================== */
+
+.sage-text-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Recommendations panel
+   -------------------------------------------------------------------------- */
+
+.sage-text-box__recommendations {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sage-text-box__recommendations-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-neutral-200);
+  border-left: 1px solid var(--color-neutral-200);
+  border-right: 1px solid var(--color-neutral-200);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+  padding: 4px 4px 8px 4px;
+  box-sizing: border-box;
+}
+
+.sage-text-box__recommendations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sage-text-box__recommendations-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+}
+
+.sage-text-box__recommendations-text {
+  color: var(--color-neutral-600);
+  white-space: nowrap;
+}
+
+.sage-text-box__refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sage-text-box__refresh-btn:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.sage-text-box__refresh-text {
+  color: var(--color-primary-500);
+  white-space: nowrap;
+}
+
+/* Recommendation items */
+.sage-text-box__recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sage-text-box__recommendation-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--color-white);
+  border: none;
+  border-bottom: 0.5px solid var(--color-neutral-100);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.sage-text-box__recommendation-item:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.sage-text-box__recommendation-text {
+  flex: 1;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Main text box
+   -------------------------------------------------------------------------- */
+
+.sage-text-box__box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-neutral-200);
+  background-color: var(--color-white);
+  box-shadow: 0px 8px 8px 0px rgba(122, 122, 122, 0.08);
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* State modifiers */
+.sage-text-box__box--rest {
+  border-color: var(--color-neutral-200);
+  background-color: var(--color-white);
+}
+
+.sage-text-box__box--typing {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-white);
+}
+
+.sage-text-box__box--disabled {
+  border-color: var(--color-neutral-200);
+  background-color: var(--color-neutral-50);
+}
+
+.sage-text-box__box--generating {
+  border-color: var(--color-neutral-200);
+  background-color: var(--color-neutral-50);
+}
+
+/* Textarea */
+.sage-text-box__textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.sage-text-box__textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.sage-text-box__textarea:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Actions row */
+.sage-text-box__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Mode selector pill
+   -------------------------------------------------------------------------- */
+
+.sage-text-box__mode-wrapper {
+  position: relative;
+}
+
+.sage-text-box__mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-primary-500);
+  background-color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sage-text-box__mode-pill:hover {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+}
+
+.sage-text-box__mode-pill--disabled,
+.sage-text-box__mode-pill--generating {
+  border-color: var(--color-neutral-100);
+  background-color: var(--color-neutral-100);
+  cursor: not-allowed;
+}
+
+.sage-text-box__mode-pill--disabled:hover,
+.sage-text-box__mode-pill--generating:hover {
+  background-color: var(--color-neutral-100);
+  border-color: var(--color-neutral-100);
+}
+
+.sage-text-box__mode-label {
+  color: var(--color-primary-500);
+  white-space: nowrap;
+}
+
+.sage-text-box__mode-pill--disabled .sage-text-box__mode-label,
+.sage-text-box__mode-pill--generating .sage-text-box__mode-label {
+  color: var(--color-text-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Dropdown menu
+   -------------------------------------------------------------------------- */
+
+.sage-text-box__dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: clip;
+  box-sizing: border-box;
+}
+
+.sage-text-box__dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 6px;
+  border: none;
+  background-color: var(--color-white);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.sage-text-box__dropdown-item:hover {
+  background-color: var(--color-neutral-50);
+}
+
+.sage-text-box__dropdown-icon {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.sage-text-box__dropdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sage-text-box__dropdown-label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.sage-text-box__dropdown-label--selected {
+  color: var(--color-primary-500);
+}
+
+.sage-text-box__dropdown-desc {
+  color: var(--color-text-primary);
+}
+
+.sage-text-box__dropdown-check {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Submit / Stop button
+   -------------------------------------------------------------------------- */
+
+.sage-text-box__submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.sage-text-box__submit-btn--default {
+  background-color: var(--color-neutral-100);
+}
+
+.sage-text-box__submit-btn--default:hover {
+  background-color: var(--color-neutral-200);
+}
+
+.sage-text-box__submit-btn--default:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sage-text-box__submit-btn--active {
+  background-color: var(--color-primary-500);
+}
+
+.sage-text-box__submit-btn--active:hover {
+  background-color: var(--color-primary-800);
+}
+
+.sage-text-box__submit-btn--stop {
+  background-color: var(--color-primary-500);
+}
+
+.sage-text-box__submit-btn--stop:hover {
+  background-color: var(--color-primary-800);
+}

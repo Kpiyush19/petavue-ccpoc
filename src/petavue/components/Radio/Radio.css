@@ -1,0 +1,166 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Radio Component
+   States: rest, hover, disabled × selected/unselected
+   From Figma: 16×16 outer, 12×12 inner circle, 6×6 dot
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Single Radio
+   -------------------------------------------------------------------------- */
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  cursor: pointer;
+  position: relative;
+}
+
+.radio--disabled {
+  cursor: not-allowed;
+}
+
+/* Hide native input but keep it accessible */
+.radio__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Custom radio circle — 16×16 container */
+.radio__circle {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inner ring — 12×12 with 1px border */
+.radio__circle::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: var(--border-default) solid var(--color-neutral-900);
+  background-color: transparent;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Dot — 6×6, hidden by default */
+.radio__circle::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Selected state
+   -------------------------------------------------------------------------- */
+
+.radio__input:checked + .radio__circle::before {
+  border-color: var(--color-primary-500);
+}
+
+.radio__input:checked + .radio__circle::after {
+  background-color: var(--color-primary-500);
+}
+
+/* --------------------------------------------------------------------------
+   Hover state
+   -------------------------------------------------------------------------- */
+
+.radio:hover:not(.radio--disabled) .radio__circle::before {
+  background-color: var(--color-primary-100);
+}
+
+.radio:hover:not(.radio--disabled) .radio__input:not(:checked) + .radio__circle::before {
+  border-color: var(--color-neutral-900);
+  background-color: var(--color-primary-100);
+}
+
+.radio:hover:not(.radio--disabled) .radio__input:checked + .radio__circle::before {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-100);
+}
+
+/* --------------------------------------------------------------------------
+   Disabled state
+   -------------------------------------------------------------------------- */
+
+.radio--disabled .radio__circle::before {
+  border-color: var(--color-neutral-300);
+  background-color: var(--color-white);
+}
+
+.radio--disabled .radio__input:checked + .radio__circle::before {
+  border-color: var(--color-primary-300);
+}
+
+.radio--disabled .radio__input:checked + .radio__circle::after {
+  background-color: var(--color-primary-300);
+}
+
+/* --------------------------------------------------------------------------
+   Focus-visible ring
+   -------------------------------------------------------------------------- */
+
+.radio__input:focus-visible + .radio__circle {
+  box-shadow: var(--shadow-focus);
+  border-radius: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   Label text
+   -------------------------------------------------------------------------- */
+
+.radio__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.radio--disabled .radio__label {
+  color: var(--color-text-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Radio Group
+   -------------------------------------------------------------------------- */
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.radio-group__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.radio-group__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-10);
+}

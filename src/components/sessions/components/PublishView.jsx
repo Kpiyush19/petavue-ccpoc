@@ -10,7 +10,8 @@ import {
 } from '@phosphor-icons/react'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken, getCurrentUser } from '../../../api'
-import { Button, Toggle } from '@/common-components'
+import { Toggle } from '@/common-components'
+import { Button as PvButton } from '../../../petavue'
 import RecipeGroupCard from '../../RecipeGroupCard'
 import RecipeStepCell from '../../RecipeStepCell'
 import OutputPreview from '../../OutputPreview'
@@ -133,6 +134,10 @@ function CustomSelect({ value, onChange, options, className = '' }) {
 
 // Sanitize a folder/file segment for a memo path.
 const slugSeg = (s, fallback) => ((s || '').trim().replace(/[^a-zA-Z0-9\-_ ]/g, '').replace(/ /g, '_') || fallback)
+
+// Spinning icon for Petavue Button loading states (the Button renders a static
+// icon, so we supply one that animates itself).
+const SpinnerIcon = (props) => <CircleNotch {...props} className="animate-spin" />
 
 function buildCronExpression(frequency, day, time) {
   const [hh, mm] = time.split(':')
@@ -1879,9 +1884,7 @@ export default function PublishView({
           <div className="flex-1 min-w-0">
             <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Summary prompt</label>
             <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={4} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
-            <button onClick={handleAiPreview} disabled={aiPreviewRunning || !aiPrompt.trim()} className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--accent)] text-white hover:opacity-90">
-              {aiPreviewRunning ? (<><CircleNotch size={14} className="animate-spin" /><span>Generating…</span></>) : aiPreviewContent ? (<><ArrowsClockwise size={14} weight="bold" /><span>Regenerate</span></>) : (<><Sparkle size={14} weight="fill" /><span>Generate summary</span></>)}
-            </button>
+            <PvButton variant="primary" size="md" className="mt-2 w-full" label={aiPreviewRunning ? 'Generating…' : aiPreviewContent ? 'Regenerate' : 'Generate summary'} icon={aiPreviewRunning ? SpinnerIcon : aiPreviewContent ? ArrowsClockwise : Sparkle} iconWeight={aiPreviewContent && !aiPreviewRunning ? 'bold' : 'fill'} disabled={aiPreviewRunning || !aiPrompt.trim()} onClick={handleAiPreview} />
             {aiPreviewError && <p className="text-[12px] text-red-500 m-0 mt-1.5">{aiPreviewError}</p>}
           </div>
           <div className="flex-1 min-w-0 flex flex-col rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/40 overflow-hidden min-h-[160px]">
@@ -1927,12 +1930,12 @@ export default function PublishView({
                     {summaryFolder === NEW_FOLDER && (
                       <div className="flex flex-col gap-1">
                         <span className="text-[11px] font-medium text-[var(--text-muted)]">New folder name</span>
-                        <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g. weekly-reports" className="w-44 text-[12px] border border-[var(--border-primary)] rounded-lg px-2.5 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
+                        <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g. weekly-reports" className="w-44 text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
                       </div>
                     )}
                     <div className="flex flex-col gap-1">
                       <span className="text-[11px] font-medium text-[var(--text-muted)]">File name</span>
-                      <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="File name" className="w-40 text-[12px] border border-[var(--border-primary)] rounded-lg px-2.5 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
+                      <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="File name" className="w-40 text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -1952,9 +1955,7 @@ export default function PublishView({
               {slackEnabled && (
                 <div className="mt-2.5 pl-6 space-y-2.5">
                   <SlackChannelPicker selectedChannels={slackChannels} onChannelsChange={setSlackChannels} selectedDmUsers={slackDmUsers} onDmUsersChange={setSlackDmUsers} disabled={false} />
-                  <button onClick={handleSlackTest} disabled={slackTestSending || !slackHasTarget} title={slackHasTarget ? 'Send a one-off test alert now' : 'Pick a channel or person first'} className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    {slackTestSending ? (<><CircleNotch size={13} className="animate-spin" /><span>Sending…</span></>) : (<><Play size={13} weight="fill" /><span>Test alert</span></>)}
-                  </button>
+                  <PvButton variant="blueGhost" size="sm" label={slackTestSending ? 'Sending…' : 'Test alert'} icon={slackTestSending ? SpinnerIcon : Play} iconWeight="fill" disabled={slackTestSending || !slackHasTarget} title={slackHasTarget ? 'Send a one-off test alert now' : 'Pick a channel or person first'} onClick={handleSlackTest} />
                   {slackTargetError && !slackHasTarget && (
                     <p className="text-[12px] text-amber-600 m-0">Select at least one channel or direct message to continue.</p>
                   )}
@@ -1992,9 +1993,7 @@ export default function PublishView({
 
   // Reusable "Run review again" pill for the review headers.
   const runAgainBtn = (
-    <button onClick={() => runReviewAgain()} title="Discard this review and run it again" className="shrink-0 flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border border-[var(--border-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-      <Play size={13} weight="fill" />Run review again
-    </button>
+    <PvButton variant="ghost" size="md" className="shrink-0" label="Run review again" icon={Play} iconWeight="fill" title="Discard this review and run it again" onClick={() => runReviewAgain()} />
   )
 
   // ── STEP — Workflow (new vs edit, first step) ──
@@ -2167,9 +2166,7 @@ export default function PublishView({
             <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">{wasUpdate ? 'Dashboard updated!' : 'Dashboard published!'}</h3>
             <p className="text-[12px] text-[var(--text-muted)] mt-1">{completedSteps} checks passed{autoRefresh ? ` · ${scheduleSummary.toLowerCase()}` : ''}</p>
           </div>
-          <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5" onClick={() => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }}>
-            <span className="text-[12px]">View dashboard</span>
-          </Button>
+          <PvButton variant="primary" size="md" label="View dashboard" onClick={() => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }} />
         </div>
       )
     }
@@ -2227,9 +2224,7 @@ export default function PublishView({
             </div>
             <p className="text-[12px] text-red-700/90 mt-2 mb-1 leading-relaxed">{errorMessage}</p>
             <p className="text-[12px] text-red-700/70 m-0 mb-3">Fix this in your session, then run the review again.</p>
-            <button onClick={handleStartVerification} className="inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
-              <Play size={13} weight="fill" />Run review again
-            </button>
+            <PvButton variant="primary" size="md" label="Run review again" icon={Play} iconWeight="fill" onClick={handleStartVerification} />
           </div>
         ) : (reviewPassed || isReviewRunning) ? (
           <div>
@@ -2314,9 +2309,7 @@ export default function PublishView({
                 <p className="text-[12px] text-[var(--text-secondary)] m-0 leading-snug line-clamp-3">{lastUserMsg}</p>
               </div>
             )}
-            <button onClick={handleStartVerification} className="mt-3 inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
-              <Play size={13} weight="fill" />Run review again
-            </button>
+            <div className="mt-3"><PvButton variant="primary" size="md" label="Run review again" icon={Play} iconWeight="fill" onClick={handleStartVerification} /></div>
           </div>
         ) : (
           <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-5">
@@ -2330,9 +2323,7 @@ export default function PublishView({
                 <li key={i} className="flex items-center gap-2.5 text-[12px] text-[var(--text-primary)]"><span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--accent)]" />{t}</li>
               ))}
             </ul>
-            <button onClick={handleStartVerification} disabled={draftLoading} className="mt-4 inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed">
-              <Play size={13} weight="fill" />Start Review
-            </button>
+            <div className="mt-4"><PvButton variant="primary" size="md" label="Start Review" icon={Play} iconWeight="fill" disabled={draftLoading} onClick={handleStartVerification} /></div>
           </div>
         )}
       </div>
@@ -2394,9 +2385,7 @@ export default function PublishView({
   // ── Footer (context-aware nav) ──
   const renderFooter = () => {
     const backBtn = (target, label = 'Back') => (
-      <button onClick={() => setStep(target)} disabled={isAgentBusy} className="flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
-        <CaretLeft size={13} weight="bold" />{label}
-      </button>
+      <PvButton variant="secondary" size="lg" label={label} icon={CaretLeft} iconWeight="bold" disabled={isAgentBusy} onClick={() => setStep(target)} />
     )
     const dashboardOk = !publishDashboardEnabled || (dashboardTitle || '').trim().length > 0
     const newFolderMissing = summaryToFolder && summaryFolder === NEW_FOLDER && !newFolderName.trim()
@@ -2422,24 +2411,16 @@ export default function PublishView({
         {step === STEP.FREQUENCY && phase !== PHASE.DONE && !isPublishing && backBtn(STEP.OUTPUTS)}
         <div>
           {step === STEP.WORKFLOW && (
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={isEditing && !updateMode?.workflow_id} onClick={() => setStep(STEP.OUTPUTS)}>
-              <span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" />
-            </Button>
+            <PvButton variant="primary" size="lg" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled={isEditing && !updateMode?.workflow_id} onClick={() => setStep(STEP.OUTPUTS)} />
           )}
           {step === STEP.OUTPUTS && (
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={!canPublish} onClick={() => { if (summaryEnabled && slackEnabled && slackChannels.length === 0 && slackDmUsers.length === 0) { setSlackTargetError(true); return } setStep(STEP.FREQUENCY) }} title={publishReason}>
-              <span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" />
-            </Button>
+            <PvButton variant="primary" size="lg" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled={!canPublish} title={publishReason} onClick={() => { if (summaryEnabled && slackEnabled && slackChannels.length === 0 && slackDmUsers.length === 0) { setSlackTargetError(true); return } setStep(STEP.FREQUENCY) }} />
           )}
           {step === STEP.FREQUENCY && (
             reviewPassed ? (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled={isPublishing || !canPublish} onClick={() => createWorkflow(execSessionIdRef.current)} title={publishReason}>
-                {isPublishing ? <><Spinner size={13} className="animate-spin" /><span className="text-[12px]">Publishing…</span></> : <><CheckCircle size={14} weight="fill" /><span className="text-[12px]">Publish</span></>}
-              </Button>
+              <PvButton variant="primary" size="lg" label={isPublishing ? 'Publishing…' : 'Publish'} icon={isPublishing ? SpinnerIcon : CheckCircle} iconPosition="suffix" iconWeight="fill" disabled={isPublishing || !canPublish} title={publishReason} onClick={() => createWorkflow(execSessionIdRef.current)} />
             ) : (
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => { setTab(TAB.VERIFY); setVerifySubTab('agent') }} title="The agentic review must pass before you can publish">
-                <Play size={13} weight="fill" /><span className="text-[12px]">Run Agentic Review</span>
-              </Button>
+              <PvButton variant="primary" size="lg" label="Run Agentic Review" icon={Play} iconWeight="fill" title="The agentic review must pass before you can publish" onClick={() => { setTab(TAB.VERIFY); setVerifySubTab('agent') }} />
             )
           )}
         </div>
@@ -2517,7 +2498,7 @@ export default function PublishView({
         </div>
         <div className="shrink-0 flex items-center justify-between px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
           <button onClick={() => setShowAdjustments(false)} className="flex items-center gap-1.5 text-[12px] bg-transparent border-none p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"><CaretLeft size={13} weight="bold" />Back to check</button>
-          <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" onClick={() => { setShowAdjustments(false); setStep(STEP.FREQUENCY) }}><span className="text-[12px]">Continue</span><CaretRight size={13} weight="bold" /></Button>
+          <PvButton variant="primary" size="md" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" onClick={() => { setShowAdjustments(false); setStep(STEP.FREQUENCY) }} />
         </div>
       </div>
     )
@@ -2752,16 +2733,12 @@ export default function PublishView({
                   ? `The agent already reviewed this dashboard and nothing's changed since. You still have ${unappliedCount} adjustment${unappliedCount !== 1 ? 's' : ''} you haven't applied — open the review to check ${unappliedCount !== 1 ? 'them' : 'it'}, see the output, and ask or edit before you publish.`
                   : 'The agent already reviewed this dashboard and nothing has changed since. Open the review to see the adjustments, output and ask or edit — or just publish.'}
               </p>
-              <button onClick={() => { if (execSessionIdRef.current && adjustmentCount > 0) { setReviewSkipped(false); setAdjustmentsRevealed(true) } else { runReviewAgain() } }} title="See the proposed adjustments, output and ask or edit" className="inline-flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium bg-white border border-green-300 text-green-700 hover:bg-green-100 cursor-pointer transition-colors">
-                <Eye size={14} weight="bold" />View adjustments
-              </button>
+              <PvButton variant="secondary" size="md" label="View adjustments" icon={Eye} iconWeight="bold" title="See the proposed adjustments, output and ask or edit" onClick={() => { if (execSessionIdRef.current && adjustmentCount > 0) { setReviewSkipped(false); setAdjustmentsRevealed(true) } else { runReviewAgain() } }} />
             </div>
           </div>
           <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             {renderVerifyStepNav()}
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish}>
-              <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
-            </Button>
+            <PvButton variant="primary" size="lg" className="shrink-0" label="Continue to Publish" icon={CaretRight} iconPosition="suffix" iconWeight="bold" onClick={continueToPublish} />
           </div>
         </div>
       )
@@ -2786,16 +2763,12 @@ export default function PublishView({
                   <span key={i} className="flex items-center gap-1.5 text-[12px] font-medium text-green-600"><CheckCircle size={15} weight="fill" className="text-green-500" />{l}</span>
                 ))}
               </div>
-              <button onClick={runReviewAgain} title="Discard this review and run it again" className="shrink-0 flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border border-[var(--border-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors">
-                <Play size={13} weight="fill" />Run review again
-              </button>
+              <PvButton variant="ghost" size="md" className="shrink-0" label="Run review again" icon={Play} iconWeight="fill" title="Discard this review and run it again" onClick={runReviewAgain} />
             </div>
             {renderInlineAdjustments()}
             <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
               {renderVerifyStepNav()}
-              <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish} title="Approve the checked adjustments (applied to your main chat session), then continue">
-                <span className="text-[12px]">Approve adjustments & continue</span><CaretRight size={13} weight="bold" />
-              </Button>
+              <PvButton variant="primary" size="lg" className="shrink-0" label="Approve & Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" title="Approve the checked adjustments (applied to your main chat session), then continue" onClick={continueToPublish} />
             </div>
           </div>
         )
@@ -2831,9 +2804,7 @@ export default function PublishView({
                   <p className="text-[12px] text-green-700/90 mt-2 mb-3 leading-relaxed">
                     The agent tested your dashboard end-to-end and proposed {adjustmentCount} adjustment{adjustmentCount !== 1 ? 's' : ''} to keep it running reliably{autoRefresh ? ' on every scheduled refresh' : ''}. Review them, or continue to publish.
                   </p>
-                  <button onClick={() => setAdjustmentsRevealed(true)} title="See the proposed adjustments, output and ask or edit" className="inline-flex items-center gap-1.5 py-2 px-4 rounded-lg text-[12px] font-medium bg-white border border-green-300 text-green-700 hover:bg-green-100 cursor-pointer transition-colors">
-                    <Eye size={14} weight="bold" />View {adjustmentCount} adjustment{adjustmentCount !== 1 ? 's' : ''}
-                  </button>
+                  <PvButton variant="secondary" size="md" label={`View ${adjustmentCount} adjustment${adjustmentCount !== 1 ? 's' : ''}`} icon={Eye} iconWeight="bold" title="See the proposed adjustments, output and ask or edit" onClick={() => setAdjustmentsRevealed(true)} />
                 </>
               ) : (
                 <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">
@@ -2844,9 +2815,7 @@ export default function PublishView({
           </div>
           <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             {renderVerifyStepNav()}
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg shrink-0" onClick={continueToPublish} title={adjustmentCount > 0 ? 'Approve the checked adjustments (applied to your main chat session), then continue' : 'Continue to publish'}>
-              <span className="text-[12px]">{adjustmentCount > 0 ? 'Approve adjustments & continue' : 'Continue to Publish'}</span><CaretRight size={13} weight="bold" />
-            </Button>
+            <PvButton variant="primary" size="lg" className="shrink-0" label={adjustmentCount > 0 ? 'Approve & Continue' : 'Continue to Publish'} icon={CaretRight} iconPosition="suffix" iconWeight="bold" title={adjustmentCount > 0 ? 'Approve the checked adjustments (applied to your main chat session), then continue' : 'Continue to publish'} onClick={continueToPublish} />
           </div>
         </div>
       )
@@ -2857,9 +2826,7 @@ export default function PublishView({
         <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
           {renderVerifyStepNav()}
           <div className="shrink-0">
-            <Button btnColor="primary" btnSize="sm" mainBtnClassName="py-2 px-5 rounded-lg" disabled title="Run the agentic review first">
-              <span className="text-[12px]">Continue to Publish</span><CaretRight size={13} weight="bold" />
-            </Button>
+            <PvButton variant="primary" size="lg" label="Continue to Publish" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled title="Run the agentic review first" onClick={() => {}} />
           </div>
         </div>
       </div>

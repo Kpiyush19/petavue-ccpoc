@@ -1,0 +1,9 @@
+Petavue design system — drop-in bundle.
+
+To install in this repo, open Claude Code here and say:
+
+    Read petavue/MIGRATE.md and set up the Petavue design system in this repo.
+
+That's it. Claude will install deps, load the styles, and wire up the
+components/pages. (This folder must sit at src/petavue/ — or just petavue/
+if the repo has no src/.)

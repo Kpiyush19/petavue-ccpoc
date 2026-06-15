@@ -1,0 +1,243 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Profile Page
+   ========================================================================== */
+
+.profile-page {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-neutral-50);
+}
+
+/* --------------------------------------------------------------------------
+   Content area (right of sidebar)
+   -------------------------------------------------------------------------- */
+
+.profile-page__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   Header — breadcrumb bar
+   -------------------------------------------------------------------------- */
+
+.profile-page__header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: var(--spacing-16) var(--spacing-24);
+  background-color: var(--color-white);
+  border-bottom: var(--border-default) solid var(--color-neutral-100);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.profile-page__breadcrumb-text {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-h2);
+  color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Tabs
+   -------------------------------------------------------------------------- */
+
+.profile-page__tabs {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--color-white);
+  border-bottom: var(--border-default) solid var(--color-neutral-100);
+  flex-shrink: 0;
+}
+
+.profile-page__tabs-inner {
+  display: flex;
+  gap: var(--spacing-24);
+  padding: 0 var(--spacing-12);
+  height: 48px;
+}
+
+.profile-page__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-16);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.profile-page__tab--active {
+  color: var(--color-primary-500);
+  border-bottom-color: var(--color-primary-500);
+}
+
+/* --------------------------------------------------------------------------
+   Body — scrollable content area
+   -------------------------------------------------------------------------- */
+
+.profile-page__body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-16);
+}
+
+.profile-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  padding: var(--spacing-16);
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  min-height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Profile Image section
+   -------------------------------------------------------------------------- */
+
+.profile-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.profile-page__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary-100);
+}
+
+.profile-page__avatar-text {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-display-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-display-2);
+  color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Form fields
+   -------------------------------------------------------------------------- */
+
+.profile-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
+}
+
+.profile-page__field--narrow {
+  width: 450px;
+}
+
+.profile-page__field-label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.profile-page__label-with-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.profile-page__input {
+  width: 100%;
+  height: 42px;
+  padding: var(--spacing-10) var(--spacing-16);
+  background-color: var(--color-white);
+  border: var(--border-thin) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-page__input:focus {
+  border: var(--border-default) solid var(--color-primary-500);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Read-only fields — grey background, no border */
+.profile-page__input--readonly {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-neutral-50);
+  border-color: transparent;
+  cursor: default;
+}
+
+.profile-page__readonly-value {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Password field */
+.profile-page__input--password {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-page__password-dots {
+  font-size: var(--font-size-body-2);
+  letter-spacing: 2px;
+  color: var(--color-text-primary);
+}
+
+.profile-page__eye-icon {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Field row — field + action button side by side
+   -------------------------------------------------------------------------- */
+
+.profile-page__field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-16);
+}
+
+.profile-page__field-action {
+  display: flex;
+  align-items: center;
+  height: 42px;
+}

@@ -6,6 +6,7 @@ import {
   CheckCircle
 } from "@phosphor-icons/react";
 import { Button } from "@/common-components";
+import { Button as PvButton } from "../../petavue";
 import { getCurrentUser, getApiBase, getAuthToken, apiGet } from "../../api";
 import { MOCK_ENABLED } from "../../mocks";
 import ArtifactTabs from "./components/ArtifactTabs";
@@ -234,17 +235,16 @@ export default function ArtifactPanel({
 
         <div className="s-artifact-panel__actions">
           {isReactDashboard && activeTab?.path === DASHBOARD_ENTRY && (
-            <Button
-              onClick={() => setVerifyPublishOpen(true)}
+            <PvButton
+              variant="primary"
+              size="md"
+              label="Verify & Publish"
+              icon={CheckCircle}
+              iconWeight="fill"
               disabled={isLoading}
-              btnColor="primary"
-              btnSize="sm"
-              mainBtnClassName="py-1 px-3 rounded-lg"
               title="Verify & Publish"
-            >
-              <CheckCircle size={14} weight="fill" />
-              <span className="text-[12px]">Verify &amp; Publish</span>
-            </Button>
+              onClick={() => setVerifyPublishOpen(true)}
+            />
           )}
           {isWidget && (
             <Button

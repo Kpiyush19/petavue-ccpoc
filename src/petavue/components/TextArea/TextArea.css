@@ -1,0 +1,98 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   TextArea Component
+   States: default, focus, error, disabled, filled
+   ========================================================================== */
+
+.text-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Label
+   -------------------------------------------------------------------------- */
+
+.text-area__label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+}
+
+.text-area--disabled .text-area__label {
+  color: var(--color-text-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Textarea field
+   -------------------------------------------------------------------------- */
+
+.text-area__field {
+  width: 100%;
+  min-height: 86px;
+  padding: var(--spacing-10) var(--spacing-16);
+  background-color: var(--color-white);
+  border: var(--border-thin) solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.text-area__field::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* Focus state */
+.text-area__field:focus {
+  border: var(--border-default) solid var(--color-primary-500);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Error state */
+.text-area--error .text-area__field {
+  border: var(--border-default) solid var(--color-error);
+}
+
+.text-area--error .text-area__field:focus {
+  box-shadow: var(--shadow-error-focus);
+}
+
+/* Disabled state */
+.text-area__field:disabled {
+  background-color: var(--color-neutral-50);
+  border-color: transparent;
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  resize: none;
+}
+
+.text-area__field:disabled::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   Error message
+   -------------------------------------------------------------------------- */
+
+.text-area__error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-error);
+}
