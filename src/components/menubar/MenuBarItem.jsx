@@ -8,6 +8,7 @@ import {
   DatabaseIcon,
   GearIcon,
   SkillsIcon,
+  SageIcon,
 } from './icons/NavIcons';
 
 /*
@@ -30,6 +31,7 @@ const ICON_MAP = {
   'data-hub': DatabaseIcon,
   'skills': SkillsIcon,
   'settings': GearIcon,
+  'sage': SageIcon,
 };
 
 export function MenuBarItem({

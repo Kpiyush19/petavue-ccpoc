@@ -5,6 +5,7 @@ import { MOCK_ENABLED } from "../mocks";
 
 // Navigation items (icon keys map to the MenuBar's Phosphor icon set).
 const NAV_ITEMS = [
+  { id: "sage", label: "Sage", icon: "sage" },
   { id: "chats", label: "Workbook", icon: "chats" },
   { id: "dashboards", label: "Dashboards", icon: "dashboard" },
   { id: "workflows", label: "Workflows", icon: "project" },
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
 // Nav item id -> route. Items without a route stay non-navigating.
 // Workflows, Skills and Data Hub are intentionally left unlinked for now.
 const NAV_ROUTES = {
+  sage: "/session/sess-dash-1",
   dashboards: "/dashboards",
   settings: "/settings",
 };
