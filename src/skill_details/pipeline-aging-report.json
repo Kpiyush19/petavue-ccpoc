@@ -1,0 +1,60 @@
+{
+  "id": "pipeline-aging-report",
+  "name": "Pipeline Aging Report",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "dashboard",
+  "description": "Surface stalled opportunities — open deals with no recent activity — sorted by value and prioritized for action. Removes the dead weight inflating coverage and skewing forecasts.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~11 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "Outreach",
+    "Gong"
+  ],
+  "alsoSurfaces": [
+    "Which open deals have gone silent and need reviving or closing out?",
+    "How much of our open pipeline is technically dead?",
+    "Where is stalling concentrated — by stage, by owner, by segment?",
+    "Which stalled deals have positive recent signals worth re-engaging on?"
+  ],
+  "beforeWeRun": [
+    "Stalled threshold — 14, 21, or 30 days since last activity?",
+    "Which stages to include — all open stages, or exclude Prospecting?",
+    "Activity types that count — calls, emails, meetings, sequence steps, all?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Stalled count, stalled value, % of open pipeline, WoW delta."
+    },
+    {
+      "name": "Aging buckets",
+      "desc": "Distribution of stalled deals across configurable buckets (e.g., 21–30d, 31–60d, 60–90d, 90+d)."
+    },
+    {
+      "name": "Stalled deals table",
+      "desc": "Sortable table with action recommendations — revive, downgrade, close-lost."
+    },
+    {
+      "name": "Stall rate by stage",
+      "desc": "Per-stage stall percentage with health-band coloring."
+    },
+    {
+      "name": "Stall rate by owner",
+      "desc": "Per-owner stall percentage to spot patterns by rep."
+    },
+    {
+      "name": "Stall trend",
+      "desc": "Stalled-as-percent-of-pipeline over trailing 12 weeks."
+    },
+    {
+      "name": "Reactivation candidates",
+      "desc": "Card list of stalled deals showing recent positive signals worth a follow-up."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your aging report in ~11 min."
+}

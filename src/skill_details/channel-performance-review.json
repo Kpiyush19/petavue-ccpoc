@@ -1,0 +1,54 @@
+{
+  "id": "channel-performance-review",
+  "name": "Channel Performance Review",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & Ad Performance",
+  "renderType": "memo",
+  "description": "Defend (or critique) a single advertising channel with structured evidence. Replaces the rushed pre-meeting prep when the CFO asks \"why are we still spending on LinkedIn?\"",
+  "badges": {
+    "ready": true,
+    "buildTime": "~12 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "Why are we still spending on this channel?",
+    "How has this channel evolved over the last quarter?",
+    "What unique contribution does this channel make to the mix?",
+    "Should we continue, scale, scale-back, or pause?"
+  ],
+  "beforeWeRun": [
+    "Which channel to review (required input — name)?",
+    "Time window for current performance — trailing 90 days, or custom?",
+    "Comparison period — prior 90 days, or year-over-year?",
+    "Audience tone — CFO/CEO defensible, or marketing-team detailed?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Situation",
+      "desc": "Channel's current state — spend, attributed pipeline, ROAS, role in mix. Concrete numbers, no spin."
+    },
+    {
+      "name": "Performance trajectory",
+      "desc": "Two paragraphs on how performance has evolved. Period-over-period. Trajectory characterization (improving / stable / declining)."
+    },
+    {
+      "name": "Channel dynamics",
+      "desc": "Two paragraphs on channel-specific characteristics — typical sales cycle, role in multi-touch path, audience or saturation patterns."
+    },
+    {
+      "name": "Contribution context",
+      "desc": "What this channel contributes that's unique. What would be lost if it stopped."
+    },
+    {
+      "name": "Recommendation",
+      "desc": "Continue / scale up / scale down / pause — with rationale and confidence rating. Willing to recommend pause if data supports."
+    }
+  ],
+  "callout": "5 quick inputs, then Sage drafts your channel review in ~12 min."
+}

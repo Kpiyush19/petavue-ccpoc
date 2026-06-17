@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attribution Model Comparison — Skills | Petavue</title>
+<meta name="description" content="Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Attribution Model Comparison — Skills | Petavue">
+<meta property="og:description" content="Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.">
+<meta property="og:image" content="https://www.petavue.com/assets/og-image.png">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.petavue.com/skills/attribution-model-comparison">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Attribution Model Comparison — Skills | Petavue">
+<meta name="twitter:description" content="Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.">
+<meta name="twitter:image" content="https://www.petavue.com/assets/og-image.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Petavue",
+  "url": "https://www.petavue.com/",
+  "logo": "https://www.petavue.com/assets/petavue-logo.svg",
+  "description": "Vertical AI for B2B GTM Teams.",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "sales@petavue.com",
+    "contactType": "sales",
+    "availableLanguage": ["English"]
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1100 NE Campus Pkwy #200",
+    "addressLocality": "Seattle",
+    "addressRegion": "WA",
+    "postalCode": "98105",
+    "addressCountry": "US"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/petavue",
+    "https://www.youtube.com/@petavue-ai"
+  ]
+}
+</script>
+<link rel="stylesheet" href="/style/colorography.min.css">
+<link rel="stylesheet" href="/style/global.min.css">
+<link rel="stylesheet" href="/style/skills.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Geist+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Geist+Mono:wght@400;500;600&display=swap"></noscript>
+<!-- Start cookieyes banner -->
+<script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8d2cfe2097e62cf6996a6973/script.js"></script>
+<!-- End cookieyes banner -->
+<!-- Google Analytics 4 (gtag.js) — loaded after CookieYes analytics consent -->
+<script>
+(function () {
+  var GA_ID = 'G-CL9WB3E937';
+  var loaded = false;
+  function loadGA4() {
+    if (loaded) return;
+    loaded = true;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA_ID, { anonymize_ip: true });
+  }
+  function analyticsAllowed() {
+    try {
+      if (typeof window.getCkyConsent !== 'function') return false;
+      var c = window.getCkyConsent() || {};
+      if (c.categories && c.categories.analytics) return true;
+      if (c.consent && c.consent.analytics) return true;
+      return false;
+    } catch (e) { return false; }
+  }
+  function maybeLoad(accepted) {
+    if ((accepted && accepted.indexOf && accepted.indexOf('analytics') !== -1) || analyticsAllowed()) {
+      loadGA4();
+    }
+  }
+  function init() { if (analyticsAllowed()) loadGA4(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+  function onConsent(e) {
+    var d = (e && e.detail) || {};
+    maybeLoad(d.accepted || (d.consent && d.consent.accepted) || []);
+  }
+  document.addEventListener('cookieyes_consent_update', onConsent);
+  window.addEventListener('cookieyes_consent_update', onConsent);
+})();
+</script>
+<!-- End Google Analytics 4 -->
+</head>
+<body class="sd-page" data-nav-dark>
+
+<!-- NAVBAR (loaded by components.js, dark variant) -->
+<div id="navbar-placeholder" data-nav-dark></div>
+
+<!-- HERO -->
+<section class="sd-hero" data-nav-dark>
+  <div class="padding-global"><div class="container-large">
+    <a class="sd-back" href="/skills">
+      <span class="sd-back-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      All Skills
+    </a>
+    <h1 class="sd-h1">Attribution Model Comparison</h1>
+    <p class="sd-desc">Compare attribution models side-by-side against the same opportunity dataset, surface where they disagree, and recommend a canonical model with rationale. Replaces 4–6 hours of MOps reconciliation per cycle with a defensible memo in minutes.</p>
+  </div></div>
+</section>
+
+<!-- DOCS LAYOUT: main content + right-side details panel -->
+<section class="sd-docs-section" data-nav-dark>
+<div class="padding-global"><div class="container-large">
+<div class="sd-docs">
+
+  <main class="sd-content">
+
+    
+
+    <section id="overview">
+      <h2 class="sd-section-title">Overview</h2>
+      <p class="sd-section-lead">This Skill builds a memo grounded in your connected GTM data, with 5 sections that answer the questions below. Build time on typical data: ~12 min.</p>
+    </section>
+
+    <section id="what-youll-get">
+      <h2 class="sd-section-title">What you'll get</h2>
+      <p class="sd-section-lead">Sage assembles a memo in roughly <strong>~12 min</strong> covering 5 distinct sections. Every value is source-linked back to 4 integrations and computed using your team's canonical definitions.</p>
+    </section>
+
+    <section id="questions-answered">
+      <h2 class="sd-section-title">Questions answered</h2>
+      <p class="sd-section-lead">This Skill is designed to answer 4 concrete questions GTM teams ask repeatedly:</p>
+      <ul class="sd-questions"><li>Where do our attribution models disagree, and by how much, on which channels?</li><li>Which model should be canonical for board reporting, and why?</li><li>How much credit shifts between last-touch and multi-touch on the same deals?</li><li>How confident can we be in the canonical recommendation given our data completeness?</li></ul>
+    </section>
+
+    <section id="before-we-run">
+      <h2 class="sd-section-title">Before we run</h2>
+      <p class="sd-section-lead">
+        Sage proposes a complete plan and asks you to confirm <strong>3 inputs</strong>
+        before any query executes. Defaults are applied if you accept the plan as-is —
+        you can override any of them or set the override as your new canonical.
+      </p>
+    </section>
+
+    <section id="how-it-works">
+      <h2 class="sd-section-title">How it works</h2>
+      <p class="sd-section-lead">A 4-step flow from your connected data to a verified, source-linked output.</p>
+      <div class="sd-steps"><div class="sd-step"><span class="sd-step-num">01</span><div class="sd-step-meta"><p class="sd-step-title">Connect</p><p class="sd-step-body">Sage reads from your existing source systems — Salesforce, HubSpot, Google Ads, and 1 more. No ETL, schema changes, or warehouse builds required. The data stays where it lives; Sage authenticates and queries it in place.</p></div></div><div class="sd-step"><span class="sd-step-num">02</span><div class="sd-step-meta"><p class="sd-step-title">Confirm</p><p class="sd-step-body">Sage proposes a plan and surfaces 3 inputs for you to confirm (listed under &quot;Inputs required&quot; below). You approve or modify the plan. Nothing executes until you sign off.</p></div></div><div class="sd-step"><span class="sd-step-num">03</span><div class="sd-step-meta"><p class="sd-step-title">Compute</p><p class="sd-step-body">Sage runs the SQL queries, joins, and Python transforms, applying your team&#x27;s canonical KDs (Key Definitions) — your ROAS formula, your attribution model, your stage definitions. Every metric uses your math, not a textbook default.</p></div></div><div class="sd-step"><span class="sd-step-num">04</span><div class="sd-step-meta"><p class="sd-step-title">Render</p><p class="sd-step-body">Output is generated as a memo with 5 sections (listed under &quot;Outputs generated&quot; below). Every number is source-linked — click any value to see the SQL issued, the rows that contributed, and the formula applied.</p></div></div></div>
+    </section>
+
+    <section id="inputs-required">
+      <h2 class="sd-section-title">Inputs required</h2>
+      <p class="sd-section-lead">The 3 parameters Sage will confirm before running:</p>
+      <ul class="sd-inputs"><li><span class="sd-inputs-num">1.</span>Which models — last-touch, first-touch, linear, U/W-shaped, time-decay, custom?</li><li><span class="sd-inputs-num">2.</span>Time window — last 90 days, last quarter, or custom?</li><li><span class="sd-inputs-num">3.</span>Anchor metric — SQL opportunity count or pipeline value?</li></ul>
+    </section>
+
+    <section id="example-prompts">
+      <h2 class="sd-section-title">Example prompts</h2>
+      <p class="sd-section-lead">Ask Sage any of these in natural language and it will run this Skill:</p>
+      <div class="sd-prompts"><div class="sd-prompt"><svg class="sd-prompt-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sd-prompt-text">Run Attribution Model Comparison for the last quarter.</span></div><div class="sd-prompt"><svg class="sd-prompt-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sd-prompt-text">Where do our attribution models disagree, and by how much, on which channels?</span></div><div class="sd-prompt"><svg class="sd-prompt-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sd-prompt-text">Which model should be canonical for board reporting, and why?</span></div><div class="sd-prompt"><svg class="sd-prompt-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sd-prompt-text">How much credit shifts between last-touch and multi-touch on the same deals?</span></div><div class="sd-prompt"><svg class="sd-prompt-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sd-prompt-text">How confident can we be in the canonical recommendation given our data completeness?</span></div></div>
+    </section>
+
+    <section id="integrations">
+      <h2 class="sd-section-title">Integrations</h2>
+      <p class="sd-section-lead">This Skill reads from 4 connected sources. Authenticate them once and Sage handles the rest.</p>
+      <div class="sd-integrations"><div class="sd-integration"><img class="sd-integration-icon" src="/assets/connectors/Salesforce.svg" alt="" loading="lazy"><div class="sd-integration-body"><p class="sd-integration-name">Salesforce</p><p class="sd-integration-desc">Pipeline, opportunities, accounts, contacts, and activities.</p></div></div><div class="sd-integration"><img class="sd-integration-icon" src="/assets/connectors/HubSpot.svg" alt="" loading="lazy"><div class="sd-integration-body"><p class="sd-integration-name">HubSpot</p><p class="sd-integration-desc">Marketing automation — lead activity, contact engagement, email opens.</p></div></div><div class="sd-integration"><img class="sd-integration-icon" src="/assets/connectors/Google%20Ads.svg" alt="" loading="lazy"><div class="sd-integration-body"><p class="sd-integration-name">Google Ads</p><p class="sd-integration-desc">Paid search spend, campaign performance, and conversions.</p></div></div><div class="sd-integration"><img class="sd-integration-icon" src="/assets/connectors/LinkedIn.svg" alt="" loading="lazy"><div class="sd-integration-body"><p class="sd-integration-name">LinkedIn Ads</p><p class="sd-integration-desc">Paid social spend, impressions, clicks, lead-gen forms.</p></div></div></div>
+    </section>
+
+    <section id="related-skills">
+      <h2 class="sd-section-title">Related skills</h2>
+      <p class="sd-section-lead">Other Skills in the Attribution &amp; ROI workstream:</p>
+      <div class="sd-related-grid">
+      <a class="sk-card" href="/skills/channel-mix-analysis.html" data-workstream="attribution" data-type="dashboard" data-search="channel mix analysis track how marketing channel mix has shifted over time, with consistent attribution definitions across periods. period-over-period comparison is real because the underlying definitions are governed.">
+        <div class="sk-card-top">
+          <span class="sk-card-type sk-card-type--dashboard"><svg class="sk-card-type-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"/></svg><span class="sk-card-type-label">Dashboard</span></span>
+          <span class="sk-card-time">~10 min</span>
+        </div>
+        <h3 class="sk-card-name">Channel Mix Analysis</h3>
+        <p class="sk-card-desc">Track how marketing channel mix has shifted over time, with consistent attribution definitions across periods. Period-over-period comparison is real because the underlying definitions are governed.</p>
+        <div class="sk-card-foot">
+          <div class="sk-card-connectors"><span class="sk-card-conn" data-tooltip="Salesforce"><img class="sk-card-conn-icon" src="/assets/connectors/Salesforce.svg" alt="Salesforce" loading="lazy"></span><span class="sk-card-conn" data-tooltip="HubSpot"><img class="sk-card-conn-icon" src="/assets/connectors/HubSpot.svg" alt="HubSpot" loading="lazy"></span><span class="sk-card-conn" data-tooltip="Google Ads"><img class="sk-card-conn-icon" src="/assets/connectors/Google%20Ads.svg" alt="Google Ads" loading="lazy"></span><span class="sk-card-conn" data-tooltip="LinkedIn Ads"><img class="sk-card-conn-icon" src="/assets/connectors/LinkedIn.svg" alt="LinkedIn Ads" loading="lazy"></span><span class="sk-card-conn" data-tooltip="Meta Ads"><img class="sk-card-conn-icon" src="/assets/connectors/Meta%20Ads.svg" alt="Meta Ads" loading="lazy"></span></div>
+          <span class="sk-card-arrow">
+            View
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <a class="sk-card" href="/skills/content-performance-dashboard.html" data-workstream="attribution" data-type="dashboard" data-search="content performance dashboard know which landing pages and content assets actually convert, influence pipeline, and close revenue — and which are just traffic.">
+        <div class="sk-card-top">
+          <span class="sk-card-type sk-card-type--dashboard"><svg class="sk-card-type-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"/></svg><span class="sk-card-type-label">Dashboard</span></span>
+          <span class="sk-card-time">~9 min</span>
+        </div>
+        <h3 class="sk-card-name">Content Performance Dashboard</h3>
+        <p class="sk-card-desc">Know which landing pages and content assets actually convert, influence pipeline, and close revenue — and which are just traffic.</p>
+        <div class="sk-card-foot">
+          <div class="sk-card-connectors"><span class="sk-card-conn" data-tooltip="Salesforce"><img class="sk-card-conn-icon" src="/assets/connectors/Salesforce.svg" alt="Salesforce" loading="lazy"></span><span class="sk-card-conn" data-tooltip="HubSpot"><img class="sk-card-conn-icon" src="/assets/connectors/HubSpot.svg" alt="HubSpot" loading="lazy"></span><span class="sk-card-conn" data-tooltip="GA4"><img class="sk-card-conn-icon" src="/assets/connectors/GA4.svg" alt="GA4" loading="lazy"></span></div>
+          <span class="sk-card-arrow">
+            View
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+
+      <a class="sk-card" href="/skills/deal-source-brief.html" data-workstream="attribution" data-type="memo" data-search="deal source brief single-deal autopsy. where the opp came from, what touches and activities shaped it, and how credit allocates under the canonical model. saves 60–90 minutes of reconstruction every time the cro asks.">
+        <div class="sk-card-top">
+          <span class="sk-card-type sk-card-type--memo"><svg class="sk-card-type-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H156.69A15.86,15.86,0,0,0,168,219.31L219.31,168A15.86,15.86,0,0,0,224,156.69V48A16,16,0,0,0,208,32ZM48,48H208V152H160a8,8,0,0,0-8,8v48H48ZM196.69,168,168,196.69V168Z"/></svg><span class="sk-card-type-label">Memo</span></span>
+          <span class="sk-card-time">~12 min</span>
+        </div>
+        <h3 class="sk-card-name">Deal Source Brief</h3>
+        <p class="sk-card-desc">Single-deal autopsy. Where the opp came from, what touches and activities shaped it, and how credit allocates under the canonical model. Saves 60–90 minutes of reconstruction every time the CRO asks.</p>
+        <div class="sk-card-foot">
+          <div class="sk-card-connectors"><span class="sk-card-conn" data-tooltip="Salesforce"><img class="sk-card-conn-icon" src="/assets/connectors/Salesforce.svg" alt="Salesforce" loading="lazy"></span><span class="sk-card-conn" data-tooltip="HubSpot"><img class="sk-card-conn-icon" src="/assets/connectors/HubSpot.svg" alt="HubSpot" loading="lazy"></span><span class="sk-card-conn" data-tooltip="Outreach"><img class="sk-card-conn-icon" src="/assets/connectors/Outreach.svg" alt="Outreach" loading="lazy"></span><span class="sk-card-conn" data-tooltip="Gong"><img class="sk-card-conn-icon" src="/assets/connectors/Gong.svg" alt="Gong" loading="lazy"></span></div>
+          <span class="sk-card-arrow">
+            View
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 8h10m0 0L9 4m4 4l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a></div>
+    </section>
+
+  </main>
+
+  <aside class="sd-side" aria-label="Skill details">
+    <div class="sd-meta">
+      <div class="sd-meta-label">Type</div>
+      <div class="sd-meta-value"><span class="sd-meta-pill sd-meta-pill--memo"><svg class="sk-card-type-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H156.69A15.86,15.86,0,0,0,168,219.31L219.31,168A15.86,15.86,0,0,0,224,156.69V48A16,16,0,0,0,208,32ZM48,48H208V152H160a8,8,0,0,0-8,8v48H48ZM196.69,168,168,196.69V168Z"/></svg>Memo</span></div>
+
+      <div class="sd-meta-label">Workstream</div>
+      <div class="sd-meta-value"><a class="sd-meta-link" href="/skills#attribution"><svg class="sk-chip-icon sk-chip-icon--outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><path d="M232,64a32,32,0,1,0-40,31v17a8,8,0,0,1-8,8H96a23.84,23.84,0,0,0-8,1.38V95a32,32,0,1,0-16,0v66a32,32,0,1,0,16,0V144a8,8,0,0,1,8-8h88a24,24,0,0,0,24-24V95A32.06,32.06,0,0,0,232,64ZM64,64A16,16,0,1,1,80,80,16,16,0,0,1,64,64ZM96,192a16,16,0,1,1-16-16A16,16,0,0,1,96,192ZM200,80a16,16,0,1,1,16-16A16,16,0,0,1,200,80Z"/></svg><span>Attribution &amp; ROI</span></a></div>
+
+      <div class="sd-meta-label">Build time</div>
+      <div class="sd-meta-value sd-meta-mono sd-meta-time">~12 min</div>
+
+      <div class="sd-meta-label">Integrations</div>
+      <div class="sd-meta-value"><div class="sd-meta-connectors"><span class="sd-meta-conn"><img class="sd-meta-conn-icon" src="/assets/connectors/Salesforce.svg" alt="" loading="lazy">Salesforce</span><span class="sd-meta-conn"><img class="sd-meta-conn-icon" src="/assets/connectors/HubSpot.svg" alt="" loading="lazy">HubSpot</span><span class="sd-meta-conn"><img class="sd-meta-conn-icon" src="/assets/connectors/Google%20Ads.svg" alt="" loading="lazy">Google Ads</span><span class="sd-meta-conn"><img class="sd-meta-conn-icon" src="/assets/connectors/LinkedIn.svg" alt="" loading="lazy">LinkedIn Ads</span></div></div>
+    </div>
+  </aside>
+
+</div>
+</div></div>
+</section>
+
+<!-- FOOTER -->
+<div id="footer-placeholder"></div>
+
+<!-- Screenshot lightbox -->
+<div class="sd-lightbox" id="sdLightbox" role="dialog" aria-modal="true" aria-hidden="true">
+  <button class="sd-lightbox-close" type="button" aria-label="Close preview">&times;</button>
+  <div class="sd-lightbox-stage">
+    <img class="sd-lightbox-img" alt="">
+  </div>
+  <div class="sd-lightbox-controls">
+    <button class="sd-lightbox-btn" id="sdZoomOut" type="button" aria-label="Zoom out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <span class="sd-lightbox-zoom-level" id="sdZoomLevel">100%</span>
+    <button class="sd-lightbox-btn" id="sdZoomIn" type="button" aria-label="Zoom in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="sd-lightbox-btn" id="sdZoomReset" type="button" aria-label="Reset zoom">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="/js/components.js"></script>
+<script>
+(function() {
+  var frame = document.querySelector('.sd-screenshot-frame.is-clickable');
+  var lightbox = document.getElementById('sdLightbox');
+  if (!frame || !lightbox) return;
+  var stage = lightbox.querySelector('.sd-lightbox-stage');
+  var img = lightbox.querySelector('.sd-lightbox-img');
+  var closeBtn = lightbox.querySelector('.sd-lightbox-close');
+  var zoomInBtn = document.getElementById('sdZoomIn');
+  var zoomOutBtn = document.getElementById('sdZoomOut');
+  var zoomResetBtn = document.getElementById('sdZoomReset');
+  var zoomLabel = document.getElementById('sdZoomLevel');
+
+  var scale = 1;
+  var MIN = 1, MAX = 3, STEP = 0.5;
+
+  function apply() {
+    img.style.width = (90 * scale) + 'vw';
+    zoomLabel.textContent = Math.round(scale * 100) + '%';
+    zoomOutBtn.disabled = scale <= MIN + 0.001;
+    zoomInBtn.disabled = scale >= MAX - 0.001;
+    img.classList.toggle('is-zoomed', scale > 1);
+  }
+  function reset() { scale = 1; apply(); stage.scrollTop = 0; stage.scrollLeft = 0; }
+
+  function open() {
+    img.src = frame.dataset.previewSrc;
+    img.alt = frame.dataset.previewAlt || '';
+    reset();
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  frame.addEventListener('click', open);
+  closeBtn.addEventListener('click', function(e) { e.stopPropagation(); close(); });
+  lightbox.addEventListener('click', function(e) { if (e.target === lightbox) close(); });
+  zoomInBtn.addEventListener('click', function(e) { e.stopPropagation(); scale = Math.min(MAX, scale + STEP); apply(); });
+  zoomOutBtn.addEventListener('click', function(e) { e.stopPropagation(); scale = Math.max(MIN, scale - STEP); apply(); });
+  zoomResetBtn.addEventListener('click', function(e) { e.stopPropagation(); reset(); });
+
+  img.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (scale >= MAX) { scale = MIN; }
+    else { scale = Math.min(MAX, scale + STEP); }
+    apply();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === '+' || e.key === '=') { scale = Math.min(MAX, scale + STEP); apply(); }
+    else if (e.key === '-' || e.key === '_') { scale = Math.max(MIN, scale - STEP); apply(); }
+    else if (e.key === '0') reset();
+  });
+})();
+</script>
+</body>
+</html>

@@ -119,7 +119,7 @@ export function DashboardList({
     <div className="dashboard-list">
       <MenuBar
         items={NAV_ITEMS}
-        activeId="dashboard"
+        activeId="dashboards-pv"
         onItemClick={(id) => onNavigate && onNavigate(id)}
         user={user}
         onNewChat={() => onNavigate && onNavigate('new-chat')}

@@ -1,0 +1,56 @@
+{
+  "id": "quarterly-pipeline-review",
+  "name": "Quarterly Pipeline Review",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "memo",
+  "description": "Quarterly review of pipeline state, written for board and executive audiences. Bottom line first, supporting detail second. Replaces 1–2 days of RevOps board-prep per cycle.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~16 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Salesforce",
+    "NetSuite"
+  ],
+  "alsoSurfaces": [
+    "What does open pipeline look like, and are we on track to land the number?",
+    "What's the single most important risk to call out?",
+    "Which large deals or segments shifted materially this quarter?",
+    "What should leadership watch in the next quarter?"
+  ],
+  "beforeWeRun": [
+    "Quarter to review — current, or last completed (auto-detect if within 7 days of quarter close)?",
+    "Comparison quarter — prior, or year-ago?",
+    "Audience tone — board (concise, financial, risk-forward) or internal-leadership (more tactical)?",
+    "Include rep-level detail — yes for internal-leadership, no for board?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Executive summary",
+      "desc": "Three to five sentences with open pipeline, coverage ratio, period-over-period direction, and the single most important risk."
+    },
+    {
+      "name": "Pipeline state",
+      "desc": "Markdown table — open pipeline, coverage, weighted pipeline, opp count, won-to-date, avg deal size, stage distribution — with PoP deltas."
+    },
+    {
+      "name": "Quarter highlights",
+      "desc": "4–6 bullets — deals won/lost, segment shifts, velocity changes, source mix changes. Mix of positive and negative."
+    },
+    {
+      "name": "Risk register",
+      "desc": "Markdown table — risk category, severity, magnitude, recommended attention level (immediate / monitor / informational)."
+    },
+    {
+      "name": "Forward look",
+      "desc": "Two-paragraph narrative on what to watch next quarter, tied to specific data."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Coverage target source, period boundaries, sources read, Stage 0 resolutions."
+    }
+  ],
+  "callout": "5 quick inputs, then Sage drafts your QBR memo in ~16 min."
+}

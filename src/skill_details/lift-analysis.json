@@ -1,0 +1,53 @@
+{
+  "id": "lift-analysis",
+  "name": "Lift Analysis",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "memo",
+  "description": "Know whether a campaign, sequence, or content push actually moved the needle above baseline — with statistical confidence, not gut feel.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~14 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads"
+  ],
+  "alsoSurfaces": [
+    "Did the campaign produce real lift, or were these conversions going to happen anyway?",
+    "What's the holdout-vs-treated delta with confidence intervals?",
+    "Which segments responded most strongly?",
+    "How long should we run before we have a defensible read?"
+  ],
+  "beforeWeRun": [
+    "Define the campaign or push — name, dates, audience selector?",
+    "Holdout group — statistical match or random sample?",
+    "Confidence threshold — 90%, 95%, or 99%?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Situation summary",
+      "desc": "One-paragraph framing of the campaign and the question being tested."
+    },
+    {
+      "name": "Holdout comparison",
+      "desc": "Treated vs. holdout metrics with effect size and confidence intervals."
+    },
+    {
+      "name": "Segment breakdown",
+      "desc": "Lift by persona, region, or company size — segments where the effect is concentrated."
+    },
+    {
+      "name": "Recommendation",
+      "desc": "Whether the lift is real and what to do next, with confidence level cited."
+    },
+    {
+      "name": "Sensitivity",
+      "desc": "How the answer changes under different assumptions and windows."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage drafts your lift memo in ~14 min."
+}

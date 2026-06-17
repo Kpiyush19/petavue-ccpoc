@@ -1,0 +1,60 @@
+{
+  "id": "mql-sql-conversion-trend",
+  "name": "MQL→SQL Conversion Trend",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "Cohort-consistent tracking of the marketing→sales handoff. Replaces fragile snapshot math (count MQLs / count SQLs in the same month) with stable, lag-aware cohort rates so the marketing-sales conversation stops devolving into \"whose number is right\".",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Outreach"
+  ],
+  "alsoSurfaces": [
+    "How is MQL→SQL converting cohort over cohort?",
+    "How long does it typically take an MQL to become an SQL?",
+    "Which sources and segments produce the highest-converting MQLs?",
+    "Which SDRs convert their handed-off MQLs at above-team rate?"
+  ],
+  "beforeWeRun": [
+    "Time period coverage — trailing 6, 12, or 24 months?",
+    "Cohort granularity — weekly, monthly, or daily?",
+    "Lifecycle window — 30, 60, or 90 days?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Current rate, trend direction, median time-to-conversion, in-flight cohort count."
+    },
+    {
+      "name": "Cohort trend",
+      "desc": "Per-cohort rate as points + moving-average overlay; in-flight cohorts visually distinct."
+    },
+    {
+      "name": "Time-to-conversion distribution",
+      "desc": "Histogram of days from MQL to SQL among converters."
+    },
+    {
+      "name": "By source",
+      "desc": "Bar chart with sources as bars and conversion rate as height with cohort-size context."
+    },
+    {
+      "name": "By segment",
+      "desc": "Same view at segment level."
+    },
+    {
+      "name": "By SDR",
+      "desc": "Sortable table — SDRs, MQL volume handled, conversion rate, time-to-conversion."
+    },
+    {
+      "name": "Bottleneck indicators",
+      "desc": "KPI tiles + interpretation hints based on active-vs-dormant cohort balance."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your MQL→SQL dashboard in ~8 min."
+}

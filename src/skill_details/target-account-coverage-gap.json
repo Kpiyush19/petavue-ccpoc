@@ -1,0 +1,53 @@
+{
+  "id": "target-account-coverage-gap",
+  "name": "Target Account Coverage Gap",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "memo",
+  "description": "Identifies target accounts that aren't being adequately covered — no engagement, no opportunities — and recommends reactivation actions categorized by root cause. Replaces the year-end discovery that a third of named accounts received zero touches.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~13 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "HubSpot",
+    "Outreach"
+  ],
+  "alsoSurfaces": [
+    "Which Tier 1 accounts have received zero outbound touches in the window?",
+    "How does the gap break down by category (no coverage / light / cooled-out / buying-group gap)?",
+    "Which root cause dominates — assignment, execution, or sustained-attention?",
+    "What specific reactivation actions should we take, and on which accounts?"
+  ],
+  "beforeWeRun": [
+    "Account list — Tier 1, all named accounts, or custom?",
+    "Analysis window — trailing 60, 90, or 180 days?",
+    "Coverage gap threshold — fewer than 3, 5, or 10 buying-group signals?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Coverage state",
+      "desc": "One paragraph headline: of N target accounts, X% are in coverage-gap states, broken down by category and tier."
+    },
+    {
+      "name": "Accounts at risk",
+      "desc": "Markdown table — account, tier, current owner, last engagement, gap category, root cause."
+    },
+    {
+      "name": "Root cause analysis",
+      "desc": "Two paragraphs on the dominant root causes — assigned-but-not-worked vs. cooled-out vs. never-assigned — with implications."
+    },
+    {
+      "name": "Recommended actions",
+      "desc": "3–5 specific actions tied to root cause categories, naming counts and target teams."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Buying-group definition, signal weights, gap threshold, period boundaries, sources read with row counts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your coverage-gap memo in ~13 min."
+}

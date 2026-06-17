@@ -1,0 +1,61 @@
+{
+  "id": "creative-performance",
+  "name": "Creative Performance",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & Ad Performance",
+  "renderType": "dashboard",
+  "description": "Rank ad creatives by performance with statistical-significance flags so marketers can distinguish meaningful signal from sample-size noise. Fatigue warnings and rotation recommendations included.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads",
+    "Salesforce"
+  ],
+  "alsoSurfaces": [
+    "Which creatives are statistically winning vs. just lucky?",
+    "Which creatives are fatiguing and need rotation?",
+    "Which creative–audience pairings produce differential lift?",
+    "When should we kill an underperforming creative vs. give it more time?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 30 days, or custom?",
+    "Significance threshold — p < 0.05, p < 0.10, or custom?",
+    "Channels — all platforms with creative-level data, or specific platforms?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Total creatives, top/bottom counts, fatiguing count."
+    },
+    {
+      "name": "Creatives table",
+      "desc": "Sortable — metrics, significance flag, fatigue flag, audience-of-best-fit per creative."
+    },
+    {
+      "name": "Top performers",
+      "desc": "Card list with thumbnails, key metrics, significance, audience fit."
+    },
+    {
+      "name": "Underperformers",
+      "desc": "Card list with thumbnails, reason flagged, recommended action."
+    },
+    {
+      "name": "Fatigue warnings",
+      "desc": "Time-series chart per fatiguing creative showing declining trend."
+    },
+    {
+      "name": "Audience–creative matrix",
+      "desc": "Heatmap of creative × audience interactions with differential winners flagged."
+    },
+    {
+      "name": "Rotation recommendations",
+      "desc": "Specific suggestions tied to specific creatives (kill, scale, refresh, test new variant)."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your creative dashboard in ~9 min."
+}

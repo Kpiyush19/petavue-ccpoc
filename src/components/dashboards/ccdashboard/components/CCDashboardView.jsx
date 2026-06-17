@@ -22,7 +22,26 @@ import hubspotLogo from "@/assets/integrations/hubspot.svg";
 import salesforceLogo from "@/assets/integrations/salesforce.svg";
 import snowflakeLogo from "@/assets/integrations/snowflake.svg";
 import lemlistLogo from "@/assets/integrations/lemlist.svg";
+import gongLogo from "@/assets/integrations/Gong.svg";
+import outreachLogo from "@/assets/integrations/Outreach.svg";
 import { queryClient } from "../../../../lib/queryClient";
+
+// Status glyphs for the Data Freshness popup (Phosphor solids at 16px).
+const CheckSolid = ({ size = 16, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className} aria-hidden="true">
+    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z" />
+  </svg>
+);
+const WarnSolid = ({ size = 16, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={className} aria-hidden="true">
+    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z" />
+  </svg>
+);
+const SpinnerSolid = ({ size = 16, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 256 256" className={`animate-spin ${className}`} aria-hidden="true">
+    <path d="M236,128a108,108,0,0,1-216,0c0-42.52,24.73-81.34,63-98.9A12,12,0,1,1,93,50.91C63.24,64.57,44,94.83,44,128a84,84,0,0,0,168,0c0-33.17-19.24-63.43-49-77.09A12,12,0,1,1,173,29.1C211.27,46.66,236,85.48,236,128Z" />
+  </svg>
+);
 import { CardView, hasCardContent, stripPills } from "../../../shared/CardRenderer";
 
 const MIN_PERCENT = 40;
@@ -85,14 +104,22 @@ const BLOCK_TYPE_LABELS = {
 // apollo.svg), import it at the top of this file, and set it as `logo` below —
 // e.g. `import apollo from "@/assets/integrations/apollo.svg"` then `logo: apollo`.
 // Until then, the colored monogram badge stands in for the logo.
-// `live: true` means the source is queried in real time (no scheduled sync) —
-// it shows a "Live" badge instead of a last-sync time.
+// Each source has a `status`:
+//   "synced"  — last scheduled sync completed cleanly (shows last-sync time)
+//   "live"    — queried in real time, no scheduled sync (shows a "Live" badge)
+//   "syncing" — a sync is currently in progress (shows progress)
+//   "issue"   — sync ran but one or more tables failed (lists the failed tables)
+// Covers every sync state: live, synced, syncing, and issue. If all sources are
+// "synced"/"live", the green "Your data is synced and up to date" banner shows;
+// a "syncing" source shows the in-progress banner; an "issue" shows heads-up.
 const DEFAULT_INTEGRATIONS = [
-  { name: "Apollo", synced: "Jun 8, 6:00 PM IST", color: "#5C5CFF", logo: apolloLogo },
-  { name: "HubSpot", synced: "Jun 7, 9:30 AM IST", color: "#FF7A59", logo: hubspotLogo },
-  { name: "Salesforce", live: true, color: "#00A1E0", logo: salesforceLogo },
-  { name: "Snowflake", synced: "Jun 5, 7:30 AM IST", color: "#29B5E8", logo: snowflakeLogo },
-  { name: "Lemlist", synced: "Jun 6, 11:02 AM IST", color: "#0A0A23", logo: lemlistLogo },
+  { name: "Salesforce", status: "live", live: true, color: "#00A1E0", logo: salesforceLogo },
+  { name: "Outreach", status: "live", live: true, color: "#5952FF", logo: outreachLogo },
+  { name: "HubSpot", status: "syncing", progress: 64, color: "#FF7A59", logo: hubspotLogo },
+  { name: "Apollo", status: "synced", synced: "Jun 8, 6:00 PM IST", color: "#5C5CFF", logo: apolloLogo },
+  { name: "Snowflake", status: "synced", synced: "Jun 5, 7:30 AM IST", color: "#29B5E8", logo: snowflakeLogo },
+  { name: "Gong", status: "synced", synced: "Jun 7, 8:15 AM IST", color: "#8039DF", logo: gongLogo },
+  { name: "Lemlist", status: "issue", synced: "Jun 6, 11:02 AM IST", issueTables: ["campaigns", "email_activity"], color: "#0A0A23", logo: lemlistLogo },
 ];
 
 // Phosphor "ClockCounterClockwise" (Last updated) + "Stack" (Data freshness) glyphs.
@@ -265,7 +292,46 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
 
   const [showExplanation, setShowExplanation] = useState(false);
   const [showFreshness, setShowFreshness] = useState(false);
-  const integrations = DEFAULT_INTEGRATIONS;
+  const [integrations, setIntegrations] = useState(DEFAULT_INTEGRATIONS);
+  const [refreshingSync, setRefreshingSync] = useState(false);
+
+  // Refresh re-runs every source's sync; on completion everything is healthy
+  // ("all good") so the green success banner shows.
+  const handleRefreshSync = () => {
+    if (refreshingSync) return;
+    setRefreshingSync(true);
+    setTimeout(() => {
+      setIntegrations((prev) =>
+        prev.map((it) =>
+          it.status === "live"
+            ? it
+            : { ...it, status: "synced", synced: "Jun 17, 12:30 PM IST", issueTables: undefined, progress: undefined }
+        )
+      );
+      setRefreshingSync(false);
+    }, 1400);
+  };
+
+  // While the modal is open, advance any in-progress sync toward 100%, then flip
+  // it to "synced" with today's timestamp + green check.
+  useEffect(() => {
+    if (!showFreshness) return undefined;
+    const id = setInterval(() => {
+      setIntegrations((prev) => {
+        if (!prev.some((it) => it.status === "syncing")) return prev;
+        return prev.map((it) => {
+          if (it.status !== "syncing") return it;
+          const next = (typeof it.progress === "number" ? it.progress : 0) + 7;
+          if (next >= 100) {
+            return { ...it, status: "synced", progress: undefined, synced: "Jun 17, 12:30 PM IST" };
+          }
+          return { ...it, progress: next };
+        });
+      });
+    }, 800);
+    return () => clearInterval(id);
+  }, [showFreshness]);
+
   const [expandedSteps, setExpandedSteps] = useState(new Set());
   const [showCode, setShowCode] = useState(new Set());
   const [viewMode, setViewMode] = useState("card");
@@ -672,40 +738,105 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           <div className="relative w-[660px] max-w-[94vw] max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--pv-primary-500)]">
             <div className="shrink-0 flex items-center justify-between px-5 py-4">
               <h3 className="text-[16px] font-semibold text-[var(--pv-neutral-grey-900)] m-0">Data Freshness</h3>
-              <button onClick={() => setShowFreshness(false)} aria-label="Close" className="p-1 rounded-md text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border-none cursor-pointer transition-colors">
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handleRefreshSync}
+                  disabled={refreshingSync}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium text-[var(--pv-neutral-grey-600)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border border-[var(--pv-neutral-grey-150)] cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-default"
+                >
+                  {refreshingSync ? (
+                    <SpinnerSolid size={14} />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.32C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"/></svg>
+                  )}
+                  {refreshingSync ? "Refreshing…" : "Refresh"}
+                </button>
+                <button onClick={() => setShowFreshness(false)} aria-label="Close" className="p-1 rounded-md text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border-none cursor-pointer transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
             </div>
             <div className="px-5 pb-5 overflow-y-auto">
               <div className="rounded-xl border border-[var(--pv-neutral-grey-150)] overflow-hidden">
-                <div className="grid grid-cols-[56px_1fr_1fr] bg-[var(--pv-primary-500)]/8 text-[12px] font-semibold text-[var(--pv-neutral-grey-700)]">
+                <div className="grid grid-cols-[56px_1fr_1.3fr] bg-[var(--pv-primary-500)]/8 text-[12px] font-semibold text-[var(--pv-neutral-grey-700)]">
                   <div className="px-4 py-2.5">#</div>
                   <div className="px-4 py-2.5">Data Source</div>
-                  <div className="px-4 py-2.5">Last Sync Time</div>
+                  <div className="px-4 py-2.5">Sync Status</div>
                 </div>
                 {integrations.map((it, i) => (
-                  <div key={it.name} className="grid grid-cols-[56px_1fr_1fr] items-center border-t border-[var(--pv-neutral-grey-150)]">
+                  <div key={it.name} className="grid grid-cols-[56px_1fr_1.3fr] items-center border-t border-[var(--pv-neutral-grey-150)]">
                     <div className="px-4 py-3 text-[13px] text-[var(--pv-neutral-grey-400)]">{i + 1}.</div>
                     <div className="px-4 py-3 flex items-center gap-2.5 min-w-0">
                       {it.logo ? (
-                        <img src={it.logo} alt="" className="shrink-0 w-6 h-6 rounded-md object-contain" />
+                        <img src={it.logo} alt="" className="shrink-0 w-5 h-5 rounded-md object-contain" />
                       ) : (
-                        <span className="shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold text-white" style={{ backgroundColor: it.color }}>{it.name[0]}</span>
+                        <span className="shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-bold text-white" style={{ backgroundColor: it.color }}>{it.name[0]}</span>
                       )}
                       <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)] truncate">{it.name}</span>
                     </div>
                     <div className="px-4 py-3 text-[13px]">
-                      {it.live ? (
-                        <span className="inline-flex items-center gap-1.5 font-medium text-green-600">
+                      {it.status === "live" || it.live ? (
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-green-600">
                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />Live
                         </span>
+                      ) : it.status === "syncing" ? (
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--pv-primary-500)]">
+                          <SpinnerSolid size={12} />
+                          Syncing{typeof it.progress === "number" ? ` · ${it.progress}%` : "…"}
+                        </span>
+                      ) : it.status === "issue" ? (
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-600">
+                          <WarnSolid size={16} />
+                          Petavue is looking into it
+                        </span>
                       ) : (
-                        <span className="text-[var(--pv-neutral-grey-500)]">{it.synced}</span>
+                        <span className="inline-flex items-center gap-1.5 text-[var(--pv-neutral-grey-500)]">
+                          <CheckSolid size={16} className="text-green-500/80" />
+                          {it.synced}
+                        </span>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Overall health summary — below the list. Priority: issue > syncing > all-good */}
+              {(() => {
+                const issues = integrations.filter((it) => it.status === "issue");
+                const syncing = integrations.filter((it) => it.status === "syncing");
+                if (issues.length > 0) {
+                  return (
+                    <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-amber-50 border border-amber-200">
+                      <WarnSolid size={20} className="shrink-0 text-amber-500" />
+                      <div className="text-[13px] text-amber-800">
+                        <span className="font-semibold">Heads up.</span>{" "}
+                        The Petavue team is looking into a sync delay on{" "}
+                        {issues.map((it) => it.name).join(", ")}. The rest of your data is up to date.
+                      </div>
+                    </div>
+                  );
+                }
+                if (syncing.length > 0) {
+                  return (
+                    <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-[var(--pv-primary-500)]/8 border border-[var(--pv-primary-500)]/20">
+                      <SpinnerSolid size={20} className="shrink-0 text-[var(--pv-primary-500)]" />
+                      <div className="text-[13px] text-[var(--pv-neutral-grey-800)]">
+                        <span className="font-semibold">Sync in progress.</span>{" "}
+                        {syncing.map((it) => it.name).join(", ")} {syncing.length > 1 ? "are" : "is"} updating now — figures may change shortly.
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="flex items-center gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-green-50 border border-green-200">
+                    <CheckSolid size={16} className="shrink-0 text-green-600" />
+                    <div className="text-[13px] text-green-800">
+                      <span className="font-semibold">Your data is synced and up to date.</span>{" "}
+                      All connected sources are healthy.
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

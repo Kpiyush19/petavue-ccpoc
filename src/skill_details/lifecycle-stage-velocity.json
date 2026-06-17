@@ -1,0 +1,63 @@
+{
+  "id": "lifecycle-stage-velocity",
+  "name": "Lifecycle Stage Velocity",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "Track how long entities spend at each lifecycle stage and surface where velocity is slowing. Most funnel analysis ignores velocity — this skill makes it the headline.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 8
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Where in the funnel is velocity slowing systemically?",
+    "Which stages have the longest median time-at-stage?",
+    "How does velocity differ by segment and source?",
+    "Which stages get skipped most often, and what does that imply?"
+  ],
+  "beforeWeRun": [
+    "Time period coverage — trailing 6 or 12 months of stage transitions?",
+    "Cohort granularity for trend — weekly or monthly?",
+    "Granularity of breakdown — org + segment, or include source?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Median Lead-to-Won days, WoW delta, primary bottleneck, median skip rate."
+    },
+    {
+      "name": "Time per stage",
+      "desc": "Bar chart with stages on x-axis and median time as bar height; bottleneck-flagged stages colored."
+    },
+    {
+      "name": "Stage contribution",
+      "desc": "Stacked horizontal bar showing each stage's share of total funnel time."
+    },
+    {
+      "name": "Velocity trend",
+      "desc": "Multi-line chart showing time-at-stage trend per stage."
+    },
+    {
+      "name": "By segment",
+      "desc": "Sortable table — segments × time-at-stage per stage."
+    },
+    {
+      "name": "By source",
+      "desc": "Same shape as by-segment for source."
+    },
+    {
+      "name": "Bottleneck cards",
+      "desc": "Card list of flagged bottleneck stages with diagnostic context."
+    },
+    {
+      "name": "Skip-rate detail",
+      "desc": "Bar chart of skip rates per stage as a data quality signal."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your velocity dashboard in ~10 min."
+}

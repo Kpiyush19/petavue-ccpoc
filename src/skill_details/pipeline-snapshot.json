@@ -1,0 +1,47 @@
+{
+  "id": "pipeline-snapshot",
+  "name": "Pipeline Snapshot",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "dashboard",
+  "description": "See whether this quarter's number is going to land, and exactly which deals carry the weight.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 4
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What's our committed vs. best-case vs. closed pipeline this quarter?",
+    "Which deals are anchoring the forecast?",
+    "How does coverage compare to the same point last quarter?",
+    "Where do we stand against the 3x coverage rule?"
+  ],
+  "beforeWeRun": [
+    "Quarter scope — current, next, or rolling 90 days?",
+    "Coverage target — 3x, 4x, or custom?",
+    "Include closed-won YTD in coverage math?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Coverage KPIs",
+      "desc": "Closed-won, commit, best-case, total pipeline, coverage ratio with WoW deltas."
+    },
+    {
+      "name": "Top 25 deals",
+      "desc": "Deals with the largest committed value, ranked."
+    },
+    {
+      "name": "Pipeline by stage",
+      "desc": "Bar chart of pipeline distribution across funnel stages."
+    },
+    {
+      "name": "Coverage vs. last quarter",
+      "desc": "Same-week comparison to last quarter's coverage trajectory."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your pipeline snapshot in ~8 min."
+}

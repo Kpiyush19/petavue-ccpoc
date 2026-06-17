@@ -8,8 +8,10 @@ import {
   DatabaseIcon,
   GearIcon,
   SkillsIcon,
+  HomeIcon,
   SageIcon,
   SquaresGridIcon,
+  WorkflowsIcon,
 } from './icons/NavIcons';
 
 /*
@@ -32,8 +34,10 @@ const ICON_MAP = {
   'data-hub': DatabaseIcon,
   'skills': SkillsIcon,
   'settings': GearIcon,
+  'home': HomeIcon,
   'sage': SageIcon,
   'grid': SquaresGridIcon,
+  'workflows': WorkflowsIcon,
 };
 
 export function MenuBarItem({

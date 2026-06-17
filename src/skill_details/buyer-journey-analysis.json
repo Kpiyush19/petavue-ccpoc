@@ -1,0 +1,53 @@
+{
+  "id": "buyer-journey-analysis",
+  "name": "Buyer Journey Analysis",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "memo",
+  "description": "See every touch that happened on a single account — and get a prioritized next-best-action grounded in how your won deals actually played out.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~12 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "HubSpot",
+    "Outreach"
+  ],
+  "alsoSurfaces": [
+    "What does the typical winning journey look like for this segment?",
+    "Where is this account vs. the winning pattern?",
+    "What's the highest-value next action?",
+    "Which signals predict a stall or a stuck deal?"
+  ],
+  "beforeWeRun": [
+    "Which account — by name, ID, or top-N-from-list?",
+    "Pattern reference — last quarter's wins, all-time wins, or custom?",
+    "Channels to include — email, content, events, ad-engagement?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Journey timeline",
+      "desc": "Chronological view of all touches with channel, persona, and engagement weight."
+    },
+    {
+      "name": "Pattern fit",
+      "desc": "How this journey compares to the winning-deal pattern, with gaps flagged."
+    },
+    {
+      "name": "Next-best-action",
+      "desc": "Prioritized recommendation grounded in pattern data, not gut."
+    },
+    {
+      "name": "Stall risks",
+      "desc": "Specific signals indicating the deal may be at risk."
+    },
+    {
+      "name": "Sources",
+      "desc": "Every claim cited to the underlying interaction record."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage drafts your journey memo in ~12 min."
+}

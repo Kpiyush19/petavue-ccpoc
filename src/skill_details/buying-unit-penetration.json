@@ -1,0 +1,52 @@
+{
+  "id": "buying-unit-penetration",
+  "name": "Buying-Unit Penetration",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Know whether your team is covering the full buying committee at each target account, or single-threaded and quietly at risk.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which target accounts are dangerously single-threaded?",
+    "Where are we engaged with users but missing economic buyers?",
+    "Where have we never reached technical evaluators?",
+    "Which roles have the lowest coverage across our target list?"
+  ],
+  "beforeWeRun": [
+    "Buying-unit definition — by personas, by titles, or 6sense buying-stages?",
+    "Account scope — all target accounts, or top tier only?",
+    "Coverage threshold — at least N personas engaged in last M days?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Penetration KPIs",
+      "desc": "Avg personas engaged per account, accounts at risk, accounts fully covered."
+    },
+    {
+      "name": "Coverage matrix",
+      "desc": "Heatmap of personas × accounts; gaps clearly visible."
+    },
+    {
+      "name": "Risk list",
+      "desc": "Single-threaded accounts ranked by deal size."
+    },
+    {
+      "name": "Persona-level gaps",
+      "desc": "Which roles are systemically under-covered."
+    },
+    {
+      "name": "Drill-down",
+      "desc": "Click any account to see who's engaged and who's missing."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your penetration dashboard in ~9 min."
+}

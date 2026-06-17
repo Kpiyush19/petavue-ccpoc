@@ -341,6 +341,43 @@
   flex-shrink: 0;
 }
 
+/* ===== Sync Activity tab columns ===== */
+
+.data-hub__row--sync {
+  cursor: default;
+}
+
+.data-hub__row--sync:hover {
+  background-color: var(--color-white);
+}
+
+.data-hub__col-records {
+  width: 140px;
+  flex-shrink: 0;
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+}
+
+.data-hub__col-objects {
+  width: 140px;
+  flex-shrink: 0;
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+}
+
+.data-hub__col-lastsync {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+}
+
 /* ===== Three dots menu ===== */
 
 .data-hub__dots-wrapper {

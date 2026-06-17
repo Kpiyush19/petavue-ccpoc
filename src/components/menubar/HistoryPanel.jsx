@@ -18,16 +18,27 @@ export function HistoryPanel({ groups = [], onItemClick }) {
           <div key={group.label} className="history-panel__group">
             <div className="history-panel__group-label">{group.label}</div>
 
-            {group.items.map((item) => (
-              <button
-                key={item.id}
-                className="history-panel__entry"
-                onClick={() => onItemClick && onItemClick(item.id)}
-              >
-                <span className="history-panel__entry-title">{item.title}</span>
-                <span className="history-panel__entry-time">{item.time}</span>
-              </button>
-            ))}
+            {group.items.map((item) =>
+              item.clickable ? (
+                <button
+                  key={item.id}
+                  className="history-panel__entry"
+                  onClick={() => onItemClick && onItemClick(item.id)}
+                >
+                  <span className="history-panel__entry-title">{item.title}</span>
+                  <span className="history-panel__entry-time">{item.time}</span>
+                </button>
+              ) : (
+                <div
+                  key={item.id}
+                  className="history-panel__entry history-panel__entry--static"
+                  aria-disabled="true"
+                >
+                  <span className="history-panel__entry-title">{item.title}</span>
+                  <span className="history-panel__entry-time">{item.time}</span>
+                </div>
+              )
+            )}
           </div>
         ))}
       </div>

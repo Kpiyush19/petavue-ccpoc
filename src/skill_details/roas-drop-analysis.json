@@ -1,0 +1,53 @@
+{
+  "id": "roas-drop-analysis",
+  "name": "ROAS Drop Analysis",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & Ad Performance",
+  "renderType": "memo",
+  "description": "Investigate why ROAS dropped. Runs a structured hypothesis tree against spend, attribution, creative, audience, and platform-cost data, narrows to the most likely cause, and recommends remediation paths.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~12 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "Why did ROAS drop this period?",
+    "Was it creative fatigue, audience saturation, rising CPMs, or compound across many?",
+    "How confident is the diagnosis, and what evidence supports it?",
+    "What specific actions should we take — pause, refresh, shift, raise bids?"
+  ],
+  "beforeWeRun": [
+    "Drop window — last 7 days vs prior 7 days, or custom?",
+    "Significance threshold — 10%, 15%, or 20% relative drop?",
+    "ROAS variant — pipeline or revenue?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Drop confirmation",
+      "desc": "Drop magnitude, period boundaries, severity classification (significant / within variance / compound), historical variance baseline."
+    },
+    {
+      "name": "Primary cause",
+      "desc": "Named cause with confidence rating and the specific data behind it. Compound contributors handled honestly."
+    },
+    {
+      "name": "Hypothesis tree summary",
+      "desc": "Branches as rows; columns for contribution to drop, evidence, depth investigated."
+    },
+    {
+      "name": "Recommended actions",
+      "desc": "2–4 specific actions (pause creative, shift budget, refresh audience, raise bids) each with expected impact."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Period boundaries, canonical attribution model, ROAS variant, sources read with row counts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your ROAS-drop diagnostic in ~12 min."
+}

@@ -1,0 +1,62 @@
+{
+  "id": "audience-performance",
+  "name": "Audience Performance",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & Ad Performance",
+  "renderType": "dashboard",
+  "description": "Rank audience cohorts by ROAS within and across ad platforms. Saturation indicators, overlap analysis, and expansion candidate flags so audiences get scaled or replaced on data, not gut.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads",
+    "Salesforce",
+    "6sense"
+  ],
+  "alsoSurfaces": [
+    "Which audiences are saturating and need expansion or replacement?",
+    "Which expansion candidates should we scale next month?",
+    "Where do audiences overlap and waste impressions?",
+    "Which audience–channel pairings are most efficient?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 30 days, or custom?",
+    "ROAS variant — pipeline or revenue?",
+    "Channels — all platforms with audience-level data?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Audience count, blended ROAS, saturating count, expansion candidate count."
+    },
+    {
+      "name": "Audience leaderboard",
+      "desc": "Sortable table — audiences as rows, columns for spend, impressions, ROAS, saturation flag, frequency."
+    },
+    {
+      "name": "Top performers",
+      "desc": "Card list with definition, stable-trend indicator, suggested next action."
+    },
+    {
+      "name": "Saturation warnings",
+      "desc": "Time-series chart per saturating audience showing ROAS-vs-spend curve."
+    },
+    {
+      "name": "Underperformers",
+      "desc": "Card list with diagnostic indicators and pause/replace recommendations."
+    },
+    {
+      "name": "Expansion candidates",
+      "desc": "Card list with current spend and recommended scaling magnitude."
+    },
+    {
+      "name": "Overlap analysis",
+      "desc": "Network or matrix visualization of overlap relationships between audiences."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your audience dashboard in ~10 min."
+}

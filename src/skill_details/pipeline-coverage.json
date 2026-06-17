@@ -1,0 +1,55 @@
+{
+  "id": "pipeline-coverage",
+  "name": "Pipeline Coverage",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "dashboard",
+  "description": "Coverage ratio across the org, segments, and individual owners — under one governed definition that doesn't change between leadership asks. The single number every executive conversation starts with.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 6
+  },
+  "connectors": [
+    "Salesforce",
+    "NetSuite"
+  ],
+  "alsoSurfaces": [
+    "What's our coverage right now, against quota?",
+    "Which segments and owners are below target?",
+    "How has coverage trended over the past 12 weeks?",
+    "Where in the funnel is the open pipeline concentrated?"
+  ],
+  "beforeWeRun": [
+    "Time horizon — current quarter, or rolling 90 days?",
+    "Coverage target — 3.0x default, or tenant-configured override?",
+    "Granularity — org-wide only, or include segment + owner breakdown?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline coverage",
+      "desc": "Big-number KPI with target indicator and health-band coloring (green/amber/red)."
+    },
+    {
+      "name": "Open pipeline summary",
+      "desc": "Total value, count, weighted value against quota — KPI tile grid."
+    },
+    {
+      "name": "Coverage trend",
+      "desc": "Coverage ratio over trailing 12 weeks with target-line overlay."
+    },
+    {
+      "name": "Coverage by segment",
+      "desc": "Horizontal bar chart with health-band coloring per segment."
+    },
+    {
+      "name": "Coverage by owner",
+      "desc": "Sortable table — owner, open pipeline, quota, coverage, health."
+    },
+    {
+      "name": "Stage breakdown",
+      "desc": "Funnel or stacked bar showing where the open pipeline value sits."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your coverage dashboard in ~10 min."
+}

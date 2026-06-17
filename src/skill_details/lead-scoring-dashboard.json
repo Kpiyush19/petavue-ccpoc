@@ -1,0 +1,51 @@
+{
+  "id": "lead-scoring-dashboard",
+  "name": "Lead Scoring Dashboard",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "Give SDRs a ranked work list today, and tell leadership whether the scoring model is actually predictive enough to trust.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which scored leads should each SDR work today?",
+    "How predictive is the current scoring model on conversion?",
+    "Where is the score over- or under-fitting?",
+    "Which scoring features matter most for downstream outcomes?"
+  ],
+  "beforeWeRun": [
+    "Score source — Salesforce, HubSpot, or composite?",
+    "Cohort window — last 30 or 90 days?",
+    "Conversion definition — MQL → SQL or all the way to closed-won?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "SDR daily work list",
+      "desc": "Top-N scored leads ranked, with persona, source, and score."
+    },
+    {
+      "name": "Predictiveness check",
+      "desc": "Score-bucket-by-conversion-rate showing if score predicts outcome."
+    },
+    {
+      "name": "Calibration table",
+      "desc": "Predicted vs. actual conversion at each score band."
+    },
+    {
+      "name": "Feature importance",
+      "desc": "Which signals are driving score; rank-ordered."
+    },
+    {
+      "name": "False-positive flags",
+      "desc": "High-score leads that don't convert; pattern surfaced."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your scoring dashboard in ~9 min."
+}

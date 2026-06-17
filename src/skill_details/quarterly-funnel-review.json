@@ -1,0 +1,60 @@
+{
+  "id": "quarterly-funnel-review",
+  "name": "Quarterly Funnel Review",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "memo",
+  "description": "Quarterly review of funnel performance for marketing and revenue leadership. Replaces 1–2 days of manual assembly with a structured, defensible memo grounded in governed cohort definitions.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~16 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "What did the funnel produce this quarter — leads, MQLs, SQLs, won deals?",
+    "Where did conversion improve, and where did it decline?",
+    "How did velocity shift across stages?",
+    "What should leadership focus on next quarter?"
+  ],
+  "beforeWeRun": [
+    "Quarter to review — last completed, or custom?",
+    "Comparison quarter — prior, or year-over-year?",
+    "Audience tone — marketing/revenue leadership (detailed) or board-ready (concise)?",
+    "Include rep/SDR-level detail — yes for internal, no for board?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Executive summary",
+      "desc": "3–5 sentences with total leads, blended conversion to closed-won, period-over-period direction, and the single most important takeaway about funnel health."
+    },
+    {
+      "name": "Funnel state",
+      "desc": "Markdown table — stage pairs as rows, columns for review-quarter rate, comparison-quarter rate, delta, time-at-stage. Plus headline lead volume."
+    },
+    {
+      "name": "Conversion trends",
+      "desc": "Two paragraphs on conversion-rate movements, with statistical confidence of the changes."
+    },
+    {
+      "name": "Velocity patterns",
+      "desc": "Two paragraphs on velocity shifts and bottlenecks resolved or emerged."
+    },
+    {
+      "name": "Where the funnel is healthy and where it's leaking",
+      "desc": "3–5 paragraphs naming segments, sources, structural patterns vs cyclical movement."
+    },
+    {
+      "name": "Next quarter recommendations",
+      "desc": "Stages to focus on, segments / sources to investigate, experiments or process changes to consider."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Stage taxonomy, lifecycle windows, period boundaries, sources read with row counts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage drafts your quarterly review in ~16 min."
+}

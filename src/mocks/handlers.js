@@ -462,7 +462,32 @@ const handlers = [
       return pub ? { publish_complete: true, dashboard_id: pub.dashboard_id, dashboard_url: `/dashboards/${pub.dashboard_id}` } : { publish_complete: false };
     },
   },
-  { method: "GET", pattern: /\/api\/workflows\/([^/]+)\/runs$/, handler: () => ({ runs: [] }) },
+  { method: "GET", pattern: /\/api\/workflows\/([^/]+)\/runs$/, handler: ({ params }) => {
+    const wf = db.workflows.find((w) => w.workflow_id === params[0]);
+    const blocks = wf?.blocks || [];
+    if (!blocks.length) return { runs: [] };
+    const iso = (mins) => new Date(Date.now() - mins * 60000).toISOString();
+    const mkRun = (runId, mins, failTail) => {
+      const block_results = blocks.map((b, i) => ({
+        block_id: b.id,
+        label: b.label,
+        status: failTail && i === blocks.length - 1 ? "failed" : "success",
+        duration_ms: 220 + i * 180,
+      }));
+      const total = block_results.reduce((s, r) => s + r.duration_ms, 0);
+      return {
+        run_id: runId,
+        status: failTail ? "failed" : "success",
+        trigger_type: wf?.trigger?.type === "cron" ? "Scheduled" : "Manual",
+        started_at: iso(mins),
+        total_duration_ms: total,
+        total_llm_tokens: { input: 1840, output: 320 },
+        error: failTail ? "Slack post failed: channel not found (#revenue)" : null,
+        block_results,
+      };
+    };
+    return { runs: [mkRun("run-3", 200, false), mkRun("run-2", 1640, false), mkRun("run-1", 3080, true)] };
+  } },
   { method: "GET", pattern: /\/api\/workflows$/, handler: () => ({ workflows: db.workflows }) },
   { method: "GET", pattern: /\/api\/workflows\/([^/]+)$/, handler: ({ params }) => db.workflows.find((w) => w.workflow_id === params[0]) || db.workflows[0] },
   {

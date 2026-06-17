@@ -1,0 +1,55 @@
+{
+  "id": "multi-touch-revenue-attribution",
+  "name": "Multi-Touch Revenue Attribution",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Know which channels, campaigns, and touchpoints actually drive your pipeline and closed revenue — across five attribution models, all at once.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads",
+    "GA4"
+  ],
+  "alsoSurfaces": [
+    "What percentage of closed revenue can we attribute to marketing?",
+    "Which campaigns are generating pipeline but not closing — and why?",
+    "How does last-touch credit shift under multi-touch models?",
+    "If we cut one channel tomorrow, which would hurt least?"
+  ],
+  "beforeWeRun": [
+    "Which models — first-touch, last-touch, linear, U-shaped, W-shaped (or all five)?",
+    "What qualifies as a \"touch\" — clicks, form fills, page visits?",
+    "Minimum touch threshold per journey?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Revenue credit by channel",
+      "desc": "Side-by-side credit allocation across all five attribution models."
+    },
+    {
+      "name": "Model comparison",
+      "desc": "Where models agree and where they diverge, with disagreement highlighted."
+    },
+    {
+      "name": "Top campaigns",
+      "desc": "Ranked campaigns by pipeline credited, each model."
+    },
+    {
+      "name": "Touch density vs. deal size",
+      "desc": "Scatter showing how touchpoint count correlates with deal size."
+    },
+    {
+      "name": "Attribution shift table",
+      "desc": "Detailed view of how credit shifts across models per channel."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your attribution dashboard in ~10 min."
+}

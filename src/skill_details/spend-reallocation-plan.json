@@ -1,0 +1,54 @@
+{
+  "id": "spend-reallocation-plan",
+  "name": "Spend Reallocation Plan",
+  "workstreamId": "roas",
+  "workstreamName": "ROAS & Ad Performance",
+  "renderType": "memo",
+  "description": "Recommend where to shift advertising spend to improve overall efficiency, with each recommendation backed by data and modeled impact. Replaces the gut-feel reallocation conversation every quarter.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~13 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "Google Ads",
+    "LinkedIn Ads",
+    "Meta Ads"
+  ],
+  "alsoSurfaces": [
+    "Where should the next $50K (or $X) of ad budget go?",
+    "Which channels are over-funded relative to their efficient frontier?",
+    "Where would a reallocation hurt least?",
+    "What's the smallest reallocation that lifts blended ROAS by 0.5x?"
+  ],
+  "beforeWeRun": [
+    "Budget amount to reallocate — required (specify dollar amount)?",
+    "Time window for performance analysis — trailing 60 days, or custom?",
+    "Allow channel exclusions (hold or pause specific channels)?",
+    "ROAS variant — pipeline or revenue?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Situation",
+      "desc": "Current state — total spend, blended ROAS, performance distribution, where the budget amount is currently being spent. 4–6 sentences."
+    },
+    {
+      "name": "Options",
+      "desc": "Three modeled scenarios side-by-side. Each: name, brief description, modeled blended ROAS, modeled pipeline impact, key risk."
+    },
+    {
+      "name": "Recommendation",
+      "desc": "One scenario named explicitly, with rationale tied to data and a confidence rating."
+    },
+    {
+      "name": "Modeled impact",
+      "desc": "Specific dollar shifts (move $X from channel A to channel B), expected ROAS change, time horizon, leading indicators to monitor."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Canonical attribution model, ROAS variant, analysis window, saturation curves, sources read."
+    }
+  ],
+  "callout": "5 quick inputs, then Sage drafts your reallocation memo in ~13 min."
+}

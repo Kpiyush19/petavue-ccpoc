@@ -1,0 +1,51 @@
+{
+  "id": "full-funnel-journey-visibility",
+  "name": "Full-Funnel Journey Visibility",
+  "workstreamId": "funnel",
+  "workstreamName": "Funnel & Conversion",
+  "renderType": "dashboard",
+  "description": "See where the funnel is leaking volume or velocity, and exactly how far each stage sits from benchmark — across marketing and sales.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Where in the funnel is conversion under-performing benchmark?",
+    "Where is velocity stretching out and slowing pipeline?",
+    "How do this quarter's conversion rates compare to last?",
+    "Which segments have the worst leakage at which stages?"
+  ],
+  "beforeWeRun": [
+    "Stages — full marketing → sales funnel or sales-only?",
+    "Benchmark — internal trailing 4-quarter, or industry standard?",
+    "Segment slice — by source, persona, or region?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Funnel KPIs",
+      "desc": "Volume and conversion rate at every stage with benchmark comparison."
+    },
+    {
+      "name": "Leakage map",
+      "desc": "Stage-by-stage drop-off visualized with flags on the worst gaps."
+    },
+    {
+      "name": "Velocity trend",
+      "desc": "Time-in-stage trended quarter over quarter."
+    },
+    {
+      "name": "Segment breakdowns",
+      "desc": "Where conversion breaks down by source, persona, or geo."
+    },
+    {
+      "name": "Cohort comparison",
+      "desc": "This quarter vs. last on the same view."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your funnel dashboard in ~10 min."
+}

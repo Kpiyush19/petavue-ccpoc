@@ -1,0 +1,60 @@
+{
+  "id": "outbound-sequence-effectiveness",
+  "name": "Outbound Sequence Effectiveness",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Compare reply rates, meeting-booked rates, and downstream pipeline contribution per outbound sequence. Surface-metrics like reply rate are joined with outcome data so sequences get scaled or retired on actual pipeline contribution, not vanity engagement.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Outreach",
+    "Salesforce",
+    "Gong"
+  ],
+  "alsoSurfaces": [
+    "Which sequences should we scale and which should we retire?",
+    "Which sequence steps are doing the actual work?",
+    "How do sequences perform across audience segments?",
+    "Which recently-changed sequences improved or regressed?"
+  ],
+  "beforeWeRun": [
+    "Time window — trailing 60 or 90 days of completed enrollments?",
+    "Conversion metric to optimize — meetings booked, replies, opportunities, or closed-won?",
+    "Minimum enrollment threshold to include — 50, 100, or custom?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Sequence count, total enrollments, team baseline, top/bottom counts."
+    },
+    {
+      "name": "Sequence leaderboard",
+      "desc": "Sortable — sequences × enrollments, reply/meeting/opp rates, pipeline contribution, classification."
+    },
+    {
+      "name": "Step effectiveness",
+      "desc": "For a selected sequence, bar chart showing engagement and drop-off per step."
+    },
+    {
+      "name": "By audience",
+      "desc": "Heatmap showing sequence × audience performance."
+    },
+    {
+      "name": "Top performers",
+      "desc": "Card list with scaling recommendations."
+    },
+    {
+      "name": "Underperformers",
+      "desc": "Card list with retirement recommendations."
+    },
+    {
+      "name": "Recently changed",
+      "desc": "Card list of changed sequences with pre/post comparison."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your sequence-effectiveness dashboard in ~10 min."
+}

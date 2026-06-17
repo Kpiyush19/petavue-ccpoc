@@ -1,0 +1,52 @@
+{
+  "id": "account-engagement-ranking",
+  "name": "Account Engagement Ranking",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Give your AEs a ranked list of the hottest accounts right now — and a flag list of the target accounts that have gone quiet.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~8 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which 20 accounts should each AE call this week?",
+    "Where is engagement above the team baseline?",
+    "Which accounts have stopped engaging in the last 14 days?",
+    "How does engagement break down by AE territory?"
+  ],
+  "beforeWeRun": [
+    "Ranking horizon — last 7, 14, or 30 days?",
+    "Score weighting — recency, frequency, or both?",
+    "Show by AE territory or aggregate?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Top-N hottest accounts",
+      "desc": "Ranked list with score, recent signals, and AE owner."
+    },
+    {
+      "name": "Flag list",
+      "desc": "Previously-hot accounts that have gone cold."
+    },
+    {
+      "name": "Per-AE leaderboard",
+      "desc": "Engagement totals by AE territory."
+    },
+    {
+      "name": "Score distribution",
+      "desc": "Histogram of engagement scores across the target list."
+    },
+    {
+      "name": "Trend",
+      "desc": "How average engagement is moving week-over-week."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your engagement ranking in ~8 min."
+}

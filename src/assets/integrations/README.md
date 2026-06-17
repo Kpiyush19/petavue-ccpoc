@@ -1,34 +1,34 @@
-# Integration logos
+# Connector icons
 
-Drop brand logo files here (SVG preferred, PNG fine), named after the source:
+Drop logo files here, one per connector. SVG preferred; PNG works too.
 
-```
-src/assets/integrations/
-  apollo.svg
-  hubspot.svg
-  salesforce.svg
-  snowflake.svg
-```
+## Naming convention
 
-Then wire them into the "Sync Details" popup in
-`src/components/dashboards/ccdashboard/components/CCDashboardView.jsx`:
+The Skills page resolves icons by **kebab-case** filename. Use exactly these filenames so the page picks them up automatically when we wire icon rendering into the build script.
 
-```js
-// at the top of the file
-import apollo from "@/assets/integrations/apollo.svg";
-import hubspot from "@/assets/integrations/hubspot.svg";
-import salesforce from "@/assets/integrations/salesforce.svg";
-import snowflake from "@/assets/integrations/snowflake.svg";
+| Connector (as in JSON) | Filename | Used by N skills |
+|---|---|---|
+| Salesforce | `salesforce.svg` | 56 |
+| HubSpot | `hubspot.svg` | 38 |
+| LinkedIn Ads | `linkedin-ads.svg` | 20 |
+| Outreach | `outreach.svg` | 18 |
+| Google Ads | `google-ads.svg` | 17 |
+| Meta Ads | `meta-ads.svg` | 13 |
+| 6sense | `6sense.svg` | 13 |
+| Gong | `gong.svg` | 11 |
+| NetSuite | `netsuite.svg` | 7 |
+| GA4 | `ga4.svg` | 2 |
+| Webflow | `webflow.svg` | 1 |
+| Splash | `splash.svg` | 1 |
+| PartnerStack | `partnerstack.svg` | 1 |
+| LinkedIn Sales Navigator | `linkedin-sales-navigator.svg` | 1 |
 
-// in DEFAULT_INTEGRATIONS, set the `logo` field:
-const DEFAULT_INTEGRATIONS = [
-  { name: "Apollo",     synced: "Today, 9:12 AM",     color: "#5C5CFF", logo: apollo },
-  { name: "HubSpot",    synced: "Today, 7:30 AM",     color: "#FF7A59", logo: hubspot },
-  { name: "Salesforce", synced: "Yesterday, 5:15 PM", color: "#00A1E0", logo: salesforce },
-  { name: "Snowflake",  synced: "2 days ago",         color: "#29B5E8", logo: snowflake },
-];
-```
+## Recommended size + style
 
-The popup renders `logo` as a 24×24 image when present, and falls back to the
-colored monogram badge when `logo` is `null`.
-```
+- 24x24 viewBox SVG, monochrome OR brand-color
+- Avoid baked-in padding — let CSS handle sizing
+- If using monochrome, set `fill="currentColor"` so we can tint per-context (e.g. white on the dark Skills page)
+
+## What's wired today
+
+Right now connectors render as plain **text chips** on the Skills list cards and detail-page hero meta strip. Once enough icons are in this folder, we can swap the text chips for icon+label chips (e.g. on the detail page meta strip and on hover popovers).

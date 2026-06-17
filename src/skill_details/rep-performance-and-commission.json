@@ -1,0 +1,52 @@
+{
+  "id": "rep-performance-and-commission",
+  "name": "Rep Performance & Commission",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Know exactly what each AE earned this quarter, where their deals came from, and whether the attribution is clean enough to defend.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "NetSuite",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "How much did each AE earn this quarter, and from which deals?",
+    "Where is commission attribution disputed or unclear?",
+    "Which reps had inflated numbers from one big deal vs. consistent execution?",
+    "How does this quarter compare to last on quota attainment?"
+  ],
+  "beforeWeRun": [
+    "Period — current quarter, last quarter, or YTD?",
+    "Rep scope — full team or a single rep?",
+    "Attribution rule — first-credit, last-credit, or split?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "AE leaderboard",
+      "desc": "Bookings, commission earned, quota attainment per rep."
+    },
+    {
+      "name": "Commission detail",
+      "desc": "Per-deal credit with attribution rule applied."
+    },
+    {
+      "name": "Disputed attributions",
+      "desc": "Deals with ambiguous credit flagged for review."
+    },
+    {
+      "name": "Concentration check",
+      "desc": "Whose numbers are anchored on one big deal vs. spread."
+    },
+    {
+      "name": "Cohort comparison",
+      "desc": "This quarter vs. last on per-rep attainment."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your commission dashboard in ~9 min."
+}

@@ -1,0 +1,48 @@
+{
+  "id": "deal-prioritization-brief",
+  "name": "Deal Prioritization Brief",
+  "workstreamId": "pipeline",
+  "workstreamName": "Pipeline Analysis",
+  "renderType": "memo",
+  "description": "A weekly memo telling a rep where to focus this week — which open deals deserve effort, which signals matter, and which deals to consider de-prioritizing. Replaces gut-feel triage with explicit reasoning.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~11 min",
+    "widgetCount": 4
+  },
+  "connectors": [
+    "Salesforce",
+    "Outreach",
+    "Gong"
+  ],
+  "alsoSurfaces": [
+    "Which deals should I focus on this week, and why?",
+    "Which open deals should I de-prioritize or close out?",
+    "Which signals on each top deal demand attention right now?",
+    "Where are managers and reps likely to disagree on priorities?"
+  ],
+  "beforeWeRun": [
+    "Owner scope — single rep, or rolled up to a manager view?",
+    "How many top deals to include — 5, 8, or 12?",
+    "Include drop list — yes / no?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Top focus this week",
+      "desc": "Numbered list of top deals. Each entry: name, account, value, stage, expected close date, a one-paragraph \"why this matters\", and a recommended next action."
+    },
+    {
+      "name": "Drop list",
+      "desc": "De-prioritization candidates with reason (stalled / aged / low probability) and recommended action (close-lost, downgrade, backburner)."
+    },
+    {
+      "name": "Why this list?",
+      "desc": "Two-paragraph narrative explaining the prioritization reasoning, referencing the score weights."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Priority score formula with weights, period boundaries, data sources read with row counts."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage drafts your weekly priorities memo in ~11 min."
+}

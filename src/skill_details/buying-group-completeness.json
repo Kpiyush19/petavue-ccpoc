@@ -1,0 +1,61 @@
+{
+  "id": "buying-group-completeness",
+  "name": "Buying Group Completeness",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Track whether the right contacts at the right seniority levels are being engaged at target accounts — economic buyer, technical buyer, end user, champion, decision-maker. Replaces the late discovery that a deal stalled because the buying group was incomplete.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~10 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "HubSpot",
+    "LinkedIn Sales Navigator"
+  ],
+  "alsoSurfaces": [
+    "Which open opportunities have incomplete buying-group coverage?",
+    "Which roles are systematically under-engaged across our target accounts?",
+    "Where do we have contacts but no engagement on the right roles?",
+    "Which accounts have thin buying groups and need expansion?"
+  ],
+  "beforeWeRun": [
+    "Account list — open opportunities, Tier 1 targets, or both?",
+    "Buying-group definition — tenant config or override?",
+    "Engagement window — trailing 8 or 12 weeks?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Account count plus complete / incomplete breakdown."
+    },
+    {
+      "name": "Accounts table",
+      "desc": "Sortable — tier, opp status, completeness, missing roles, unengaged roles, remediation hints."
+    },
+    {
+      "name": "Role coverage distribution",
+      "desc": "Stacked bar per role showing % present and % engaged across all accounts."
+    },
+    {
+      "name": "Completeness distribution",
+      "desc": "Histogram of completeness scores."
+    },
+    {
+      "name": "Critical priority list",
+      "desc": "Card list of accounts with open opportunities AND incomplete buying groups."
+    },
+    {
+      "name": "By tier",
+      "desc": "Bar chart showing completeness rates per tier."
+    },
+    {
+      "name": "Engagement balance",
+      "desc": "Stacked bar / heatmap showing whether engagement is balanced across roles or concentrated."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your buying-group dashboard in ~10 min."
+}

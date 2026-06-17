@@ -311,6 +311,15 @@
   background-color: var(--color-neutral-50);
 }
 
+/* Non-clickable history entries (display only) */
+.history-panel__entry--static {
+  cursor: default;
+}
+
+.history-panel__entry--static:hover {
+  background-color: transparent;
+}
+
 .history-panel__entry-title {
   flex: 1 1 0;
   min-width: 0;

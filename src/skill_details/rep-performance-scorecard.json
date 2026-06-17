@@ -1,0 +1,53 @@
+{
+  "id": "rep-performance-scorecard",
+  "name": "Rep Performance Scorecard",
+  "workstreamId": "sales-activity",
+  "workstreamName": "Sales Activity",
+  "renderType": "dashboard",
+  "description": "Know which AEs are on track, which need coaching, and exactly where the mismatch between activity and outcome is hiding.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "Outreach",
+    "Gong",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which AEs are on track vs. behind for the quarter?",
+    "Where is high activity not translating into outcomes?",
+    "Where is low activity producing outsized results — and what are they doing?",
+    "Which behaviors correlate with quota attainment?"
+  ],
+  "beforeWeRun": [
+    "Performance period — current quarter or rolling 90 days?",
+    "Activity sources — Outreach, Gong, Salesforce tasks?",
+    "Outcome metric — pipeline created, closed-won, or both?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Per-rep scorecard",
+      "desc": "Activity, outcomes, attainment side-by-side per AE."
+    },
+    {
+      "name": "Activity → outcome correlation",
+      "desc": "Scatter showing where activity does and doesn't convert."
+    },
+    {
+      "name": "Coaching list",
+      "desc": "Reps where activity is high but outcomes are lagging — likely coaching candidates."
+    },
+    {
+      "name": "Top performer behaviors",
+      "desc": "Common patterns across reps exceeding plan."
+    },
+    {
+      "name": "Trend",
+      "desc": "How team-wide attainment is moving week-over-week."
+    }
+  ],
+  "callout": "3 quick inputs, then Sage builds your rep scorecard in ~9 min."
+}

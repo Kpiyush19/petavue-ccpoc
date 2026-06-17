@@ -46,8 +46,9 @@ export default function PetavueRoutes() {
   const go = (segment) => navigate(`${PREFIX}/${segment}`);
   const handleNavigate = (id) => {
     // App-level entries jump out of the Petavue section.
-    if (id === "sage") return navigate("/sage/q2-revenue-dashboard");
+    if (id === "home") return navigate("/home");
     if (id === "dashboard-live") return navigate("/dashboards");
+    if (id === "workflows") return navigate("/workflows");
     go(NAV_TO_SEGMENT[id] || "home");
   };
 

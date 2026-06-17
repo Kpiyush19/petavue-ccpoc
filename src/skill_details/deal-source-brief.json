@@ -1,0 +1,53 @@
+{
+  "id": "deal-source-brief",
+  "name": "Deal Source Brief",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "memo",
+  "description": "Single-deal autopsy. Where the opp came from, what touches and activities shaped it, and how credit allocates under the canonical model. Saves 60–90 minutes of reconstruction every time the CRO asks.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~12 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot",
+    "Outreach",
+    "Gong"
+  ],
+  "alsoSurfaces": [
+    "Where did this specific deal come from, end-to-end?",
+    "What were the inflection points that materially shaped this opportunity?",
+    "How does credit allocate across channels under our canonical model for this deal?",
+    "Which touches put this account on the radar before it became an opp?"
+  ],
+  "beforeWeRun": [
+    "Which opportunity — by Salesforce ID, opp name, or account name?",
+    "Include sales activity overlay (calls, emails, meetings)?",
+    "Audience tone — internal CRO/marketing leadership, or customer-facing?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Deal summary",
+      "desc": "One-paragraph synthesis: account, value, stage, time-to-close, narrative arc."
+    },
+    {
+      "name": "Full timeline",
+      "desc": "Chronological events from first touch to current state, grouped by month, with inflection points marked."
+    },
+    {
+      "name": "Key inflection points",
+      "desc": "Three to five highlighted events that materially shaped the deal — radar moment, MQL trigger, opp-creation touch, key sales advance, closing event."
+    },
+    {
+      "name": "Credit allocation",
+      "desc": "Per-channel credit_share under the canonical model, with the formula cited."
+    },
+    {
+      "name": "Sources & definitions",
+      "desc": "Canonical model, every source read with row counts, lookback window, Stage 0 resolutions."
+    }
+  ],
+  "callout": "3 quick inputs (one of which is the opp itself), then Sage drafts your deal brief in ~12 min."
+}

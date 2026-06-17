@@ -1,0 +1,51 @@
+{
+  "id": "lead-source-effectiveness",
+  "name": "Lead Source Effectiveness",
+  "workstreamId": "attribution",
+  "workstreamName": "Attribution & ROI",
+  "renderType": "dashboard",
+  "description": "Know which lead source produces qualified pipeline, not just lead volume — and which channels are expensive noise.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 5
+  },
+  "connectors": [
+    "Salesforce",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which lead sources convert MQL → SQL at above-average rates?",
+    "Where is volume cheap but quality terrible?",
+    "How do enterprise sources compare to mid-market on close rate?",
+    "Which sources should we feed and which should we starve?"
+  ],
+  "beforeWeRun": [
+    "Source field — Salesforce Lead Source, HubSpot Original Source, or both?",
+    "Quality threshold — MQL, SQL, or pipeline stage?",
+    "Window — last 90 days or trailing 12 months?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Source quality KPIs",
+      "desc": "Per-source MQL %, SQL %, win rate, average deal size."
+    },
+    {
+      "name": "Conversion funnel by source",
+      "desc": "Stage-by-stage drop-off for each source."
+    },
+    {
+      "name": "Cost-per-qualified-lead",
+      "desc": "Where applicable, source CPL × conversion = effective cost."
+    },
+    {
+      "name": "Source ranking",
+      "desc": "Sorted by qualified pipeline produced."
+    },
+    {
+      "name": "Volume vs. quality matrix",
+      "desc": "Two-axis view: volume on X, conversion rate on Y."
+    }
+  ],
+  "callout": "2 quick inputs, then Sage builds your source dashboard in ~9 min."
+}

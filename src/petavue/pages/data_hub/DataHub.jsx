@@ -57,6 +57,23 @@ const SOURCES = [
   { id: 6, name: 'Hubspot', logoKey: 'hubspot', description: 'CRM platform for marketing, sales, and customer service management.', enabledTables: 3, totalTables: 9 },
 ];
 
+/* Recent sync sessions (most recent first). Fixed IST timestamps, no relative times. */
+const SYNC_SESSIONS = [
+  { id: 1, name: 'Salesforce Data', logoKey: 'salesforce', status: 'Completed', records: '1.2M', completedObjects: 10, totalObjects: 10, lastSync: 'Jun 17, 6:00 AM IST' },
+  { id: 2, name: 'Hubspot', logoKey: 'hubspot', status: 'Completed', records: '482K', completedObjects: 9, totalObjects: 9, lastSync: 'Jun 17, 6:00 AM IST' },
+  { id: 3, name: 'Marketo Data', logoKey: 'marketo', status: 'In Progress', records: '56K', completedObjects: 7, totalObjects: 12, lastSync: 'Jun 17, 9:15 AM IST' },
+  { id: 4, name: 'Gong', logoKey: 'gong', status: 'Completed', records: '18K', completedObjects: 9, totalObjects: 9, lastSync: 'Jun 17, 5:30 AM IST' },
+  { id: 5, name: 'Mixpanel Data', logoKey: 'mixpanel', status: 'Failed', records: '—', completedObjects: 3, totalObjects: 18, lastSync: 'Jun 16, 11:40 PM IST' },
+  { id: 6, name: 'Outreach', logoKey: 'outreach', status: 'Queued', records: '—', completedObjects: 0, totalObjects: 18, lastSync: '—' },
+];
+
+const SYNC_STATUS_COLOR = {
+  'Completed': 'success-green',
+  'In Progress': 'blue',
+  'Failed': 'error-red',
+  'Queued': 'warning-yellow',
+};
+
 /* ─── Three Dots Dropdown ─── */
 
 function ActionDropdown({ onClose, onEdit, onDelete }) {
@@ -159,6 +176,30 @@ function SourceRow({ index, source, onOpen }) {
       <span className="data-hub__col-tables">
         {source.enabledTables} / {source.totalTables} Enabled
       </span>
+    </div>
+  );
+}
+
+/* ─── Sync Activity Row ─── */
+
+function SyncRow({ index, session }) {
+  return (
+    <div className="data-hub__row data-hub__row--sync">
+      <span className="data-hub__row-num">{index}.</span>
+      <span className="data-hub__col-source">
+        <img src={LOGO_MAP[session.logoKey]} alt={`${session.name} logo`} className="data-hub__source-logo" />
+        <span className="data-hub__source-name">{session.name}</span>
+      </span>
+      <span className="data-hub__col-status">
+        <Tag color={SYNC_STATUS_COLOR[session.status] || 'blue'} size="sm">
+          {session.status}
+        </Tag>
+      </span>
+      <span className="data-hub__col-records">{session.records} records</span>
+      <span className="data-hub__col-objects">
+        {session.completedObjects} / {session.totalObjects} objects
+      </span>
+      <span className="data-hub__col-lastsync">{session.lastSync}</span>
     </div>
   );
 }
@@ -389,6 +430,15 @@ export function DataHub({
                 >
                   Definitions
                 </button>
+                <button
+                  type="button"
+                  className={`data-hub__tab ${activeTab === 'sync-activity' ? 'data-hub__tab--active' : ''}`}
+                  onClick={() => setActiveTab('sync-activity')}
+                  role="tab"
+                  aria-selected={activeTab === 'sync-activity'}
+                >
+                  Sync Activity
+                </button>
               </div>
             </div>
 
@@ -443,6 +493,32 @@ export function DataHub({
                           metric={metric}
                           onOpen={setSelectedMetric}
                         />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'sync-activity' && (
+                <>
+                  <div className="data-hub__toolbar">
+                    <div className="data-hub__toolbar-tab">
+                      Recent Syncs
+                      <span className="data-hub__toolbar-count">{SYNC_SESSIONS.length}</span>
+                    </div>
+                  </div>
+                  <div className="data-hub__table">
+                    <div className="data-hub__table-header data-hub__table-header--sync">
+                      <span className="data-hub__col-num data-hub__col-label">#</span>
+                      <span className="data-hub__col-source data-hub__col-label">Data Source</span>
+                      <span className="data-hub__col-status data-hub__col-label">Status</span>
+                      <span className="data-hub__col-records data-hub__col-label">Records</span>
+                      <span className="data-hub__col-objects data-hub__col-label">Objects</span>
+                      <span className="data-hub__col-lastsync data-hub__col-label">Last Sync Time</span>
+                    </div>
+                    <div className="data-hub__rows">
+                      {SYNC_SESSIONS.map((session, i) => (
+                        <SyncRow key={session.id} index={i + 1} session={session} />
                       ))}
                     </div>
                   </div>

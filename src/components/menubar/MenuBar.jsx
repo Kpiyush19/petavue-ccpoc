@@ -28,6 +28,7 @@ export function MenuBar({
   items = [],
   activeId,
   onItemClick,
+  onHistoryItemClick,
   historyGroups = [],
   user = { name: 'User', initials: 'U', email: '' },
   onNewChat,
@@ -120,7 +121,7 @@ export function MenuBar({
 
       {/* History panel — only in open state */}
       {isOpen && historyGroups.length > 0 && (
-        <HistoryPanel groups={historyGroups} />
+        <HistoryPanel groups={historyGroups} onItemClick={onHistoryItemClick} />
       )}
 
       {/* User profile at bottom */}

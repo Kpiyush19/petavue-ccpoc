@@ -1,0 +1,61 @@
+{
+  "id": "abm-campaign-account-reach",
+  "name": "ABM Campaign Account Reach",
+  "workstreamId": "abm",
+  "workstreamName": "Account Intelligence / ABM",
+  "renderType": "dashboard",
+  "description": "Track which target accounts ABM campaigns actually reach — joins ad-platform reach data with the target account list, surfaces hit rate, untouched accounts, and wasted reach. Replaces the monthly Excel exercise with a live dashboard.",
+  "badges": {
+    "ready": true,
+    "buildTime": "~9 min",
+    "widgetCount": 7
+  },
+  "connectors": [
+    "Salesforce",
+    "6sense",
+    "LinkedIn Ads",
+    "HubSpot"
+  ],
+  "alsoSurfaces": [
+    "Which target accounts are our ABM campaigns actually reaching?",
+    "Which target accounts have zero meaningful reach?",
+    "How does reach intensity correlate with downstream engagement?",
+    "Where is campaign spend leaking to non-target accounts?"
+  ],
+  "beforeWeRun": [
+    "Which campaigns — all active ABM campaigns, or specific set?",
+    "Time window — trailing 30, 60, or 90 days?",
+    "Reach intensity threshold — 3, 5, or 10 impressions per individual?"
+  ],
+  "whatYoullGet": [
+    {
+      "name": "Headline metrics",
+      "desc": "Campaigns analyzed, hit rate, untouched account count, wasted reach %."
+    },
+    {
+      "name": "Campaigns table",
+      "desc": "Sortable — hit rate, reach, spend, wasted reach, intensity per campaign."
+    },
+    {
+      "name": "Accounts reach table",
+      "desc": "Sortable — target accounts × total reach, intensity, engagement velocity, classification."
+    },
+    {
+      "name": "Untouched accounts",
+      "desc": "Card list of target accounts with zero meaningful reach."
+    },
+    {
+      "name": "Reach-to-engagement scatter",
+      "desc": "Reach intensity (x) vs engagement velocity (y), with target accounts as points."
+    },
+    {
+      "name": "Wasted reach breakdown",
+      "desc": "Per-campaign list of top non-target accounts receiving spend."
+    },
+    {
+      "name": "Reach distribution",
+      "desc": "Histogram of reach intensity across reached target accounts."
+    }
+  ],
+  "callout": "4 quick inputs, then Sage builds your account-reach dashboard in ~9 min."
+}

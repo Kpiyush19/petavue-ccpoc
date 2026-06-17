@@ -3,10 +3,17 @@
 const DEFAULT_COLOR = 'var(--color-neutral-500, #757A97)';
 const ACTIVE_COLOR = 'var(--color-primary-500, #3661ED)';
 
-/* SquaresFour grid — second Dashboard entry */
+/* SquaresFour grid — second Dashboard entry. Filled when active. */
 export function SquaresGridIcon({ size = 20, isActive = false, isAccent = false }) {
   const c = iconColor(isActive, isAccent);
   // Tighter viewBox zooms the glyph from ~13.75px to 16px within the 20px box.
+  if (isActive || isAccent) {
+    return (
+      <svg width={size} height={size} viewBox="18 18 220 220" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M120,56v48a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40h48A16,16,0,0,1,120,56Zm80-16H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm-96,96H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm96,0H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Z" />
+      </svg>
+    );
+  }
   return (
     <svg width={size} height={size} viewBox="18 18 220 220" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z" />
@@ -17,6 +24,23 @@ export function SquaresGridIcon({ size = 20, isActive = false, isAccent = false 
 function iconColor(isActive, isAccent) {
   if (isActive || isAccent) return ACTIVE_COLOR;
   return DEFAULT_COLOR;
+}
+
+/* House — Home (filled when active) */
+export function HomeIcon({ size = 20, isActive = false, isAccent = false }) {
+  const c = iconColor(isActive, isAccent);
+  if (isActive || isAccent) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z" />
+      </svg>
+    );
+  }
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z" />
+    </svg>
+  );
 }
 
 /* Sparkle — Sage (filled when active) */
@@ -32,6 +56,16 @@ export function SageIcon({ size = 20, isActive = false, isAccent = false }) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M197.58,129.06,146,110l-19-51.62a15.92,15.92,0,0,0-29.88,0L78,110l-51.62,19a15.92,15.92,0,0,0,0,29.88L78,178l19,51.62a15.92,15.92,0,0,0,29.88,0L146,178l51.62-19a15.92,15.92,0,0,0,0-29.88ZM137,164.22a8,8,0,0,0-4.74,4.74L112,223.85,91.78,169A8,8,0,0,0,87,164.22L32.15,144,87,123.78A8,8,0,0,0,91.78,119L112,64.15,132.22,119a8,8,0,0,0,4.74,4.74L191.85,144ZM144,40a8,8,0,0,1,8-8h16V16a8,8,0,0,1,16,0V32h16a8,8,0,0,1,0,16H184V64a8,8,0,0,1-16,0V48H152A8,8,0,0,1,144,40ZM248,88a8,8,0,0,1-8,8h-8v8a8,8,0,0,1-16,0V96h-8a8,8,0,0,1,0-16h8V72a8,8,0,0,1,16,0v8h8A8,8,0,0,1,248,88Z" />
+    </svg>
+  );
+}
+
+/* TreeStructure — Workflows */
+export function WorkflowsIcon({ size = 20, isActive = false, isAccent = false }) {
+  const c = iconColor(isActive, isAccent);
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M168,112h48a16,16,0,0,0,16-16V48a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16V64h-8a32,32,0,0,0-32,32v24H80v-8A16,16,0,0,0,64,96H32a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16v-8h32v24a32,32,0,0,0,32,32h8v16a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V160a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v16h-8a16,16,0,0,1-16-16V96a16,16,0,0,1,16-16h8V96A16,16,0,0,0,168,112ZM64,144H32V112H64v32Zm104,16h48v48H168Zm0-112h48V96H168Z" />
     </svg>
   );
 }

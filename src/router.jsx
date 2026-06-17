@@ -16,8 +16,34 @@ import { SessionProvider } from "./contexts/SessionContext";
 import LegacyRedirect from "./pages/LegacyRedirect";
 import PetavueSplash from "./components/PetavueSplash";
 
-// Petavue design-system pages (router-driven wrapper).
-const PetavueRoutes = lazy(() => import("./PetavueRoutes"));
+// lazy() but resilient to stale dynamic-import chunks. When a chunk hash is
+// invalidated (Vite HMR/rebuild in dev, or a new deploy in prod), the dynamic
+// import rejects with "Failed to fetch dynamically imported module" and the
+// route renders blank until a manual hard refresh. This auto-performs that
+// refresh exactly once so navigation recovers on its own.
+function lazyWithRetry(importer) {
+  const RELOAD_KEY = "lazy-chunk-reloaded";
+  return lazy(async () => {
+    try {
+      const mod = await importer();
+      window.sessionStorage.removeItem(RELOAD_KEY);
+      return mod;
+    } catch (err) {
+      if (!window.sessionStorage.getItem(RELOAD_KEY)) {
+        window.sessionStorage.setItem(RELOAD_KEY, "1");
+        window.location.reload();
+        // Stall render until the reload kicks in (avoids flashing an error).
+        return new Promise(() => {});
+      }
+      throw err;
+    }
+  });
+}
+
+// Petavue design-system pages (router-driven wrapper). Wrapped with retry
+// because this is a large, separate chunk and the most common victim of the
+// stale-chunk blank-screen-on-navigation problem.
+const PetavueRoutes = lazyWithRetry(() => import("./PetavueRoutes"));
 
 const ClaudeAuthPage = lazy(() => import("./pages/auth/ClaudeAuthPage"));
 const RegisterPage = lazy(() => import("./pages/auth/RegisterPage"));
@@ -287,16 +313,37 @@ export const router = createBrowserRouter([
               }
             ]
           },
-          // Frontend-only mode: /home is the dashboard workspace (clean URL, no
-          // session id). Otherwise it's the flag-gated skill-library home.
+          // Frontend-only mode: /home is the skill-library home (greeting +
+          // search + skills), no flag gate. Otherwise it's gated by HomeGuard.
           MOCK_ENABLED
             ? {
                 path: "home",
                 element: (
                   <SuspenseWrapper>
-                    <WorkspacePage />
+                    <HomeLayout />
                   </SuspenseWrapper>
-                )
+                ),
+                children: [
+                  {
+                    index: true,
+                    element: (
+                      <SuspenseWrapper>
+                        <HomePage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  { path: "workstreams", element: <Navigate to="/home" replace /> },
+                  { path: "workstreams/:workstreamId", element: <Navigate to="/home" replace /> },
+                  { path: "skill", element: <Navigate to="/home" replace /> },
+                  {
+                    path: "skill/:id",
+                    element: (
+                      <SuspenseWrapper>
+                        <SkillDetailPage />
+                      </SuspenseWrapper>
+                    )
+                  }
+                ]
               }
             : {
                 element: <HomeGuard />,
