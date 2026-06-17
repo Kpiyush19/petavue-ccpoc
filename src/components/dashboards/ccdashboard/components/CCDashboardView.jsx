@@ -764,9 +764,9 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                   <div className="px-4 py-2.5">Sync Status</div>
                 </div>
                 {integrations.map((it, i) => (
-                  <div key={it.name} className="grid grid-cols-[56px_1fr_1.3fr] items-center border-t border-[var(--pv-neutral-grey-150)]">
-                    <div className="px-4 py-3 text-[13px] text-[var(--pv-neutral-grey-400)]">{i + 1}.</div>
-                    <div className="px-4 py-3 flex items-center gap-2.5 min-w-0">
+                  <div key={it.name} className="grid grid-cols-[56px_1fr_1.3fr] items-center h-12 border-t border-[var(--pv-neutral-grey-150)]">
+                    <div className="px-4 text-[13px] text-[var(--pv-neutral-grey-400)]">{i + 1}.</div>
+                    <div className="px-4 flex items-center gap-2.5 min-w-0">
                       {it.logo ? (
                         <img src={it.logo} alt="" className="shrink-0 w-5 h-5 rounded-md object-contain" />
                       ) : (
@@ -774,7 +774,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                       )}
                       <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)] truncate">{it.name}</span>
                     </div>
-                    <div className="px-4 py-3 text-[13px]">
+                    <div className="px-4 text-[13px]">
                       {it.status === "live" || it.live ? (
                         <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-green-600">
                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />Live
@@ -782,7 +782,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                       ) : it.status === "syncing" ? (
                         <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--pv-primary-500)]">
                           <SpinnerSolid size={12} />
-                          Syncing{typeof it.progress === "number" ? ` · ${it.progress}%` : "…"}
+                          Syncing…
                         </span>
                       ) : it.status === "issue" ? (
                         <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-600">
