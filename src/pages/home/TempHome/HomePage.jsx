@@ -132,25 +132,18 @@ export default function HomePage() {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const trimmed = message.trim();
     if (createLoading) return;
     if (!trimmed && files.length === 0) return;
 
-    setCreateLoading(true);
-    try {
-      const sid = await session.createSession("");
-      navigate(`/session/${sid}`, {
-        state: {
-          initialMessage: trimmed || null,
-          initialFiles: files.length > 0 ? files : null
-        }
-      });
-    } catch (e) {
-      toast.error("Failed to create session: " + e.message);
-    } finally {
-      setCreateLoading(false);
-    }
+    // Whatever the user types drops them into the Sage Q2 Revenue Dashboard chat.
+    navigate("/sage/q2-revenue-dashboard", {
+      state: {
+        initialMessage: trimmed || null,
+        initialFiles: files.length > 0 ? files : null
+      }
+    });
   };
 
   const handleKeyDown = (e) => {
