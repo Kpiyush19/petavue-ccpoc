@@ -790,7 +790,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                           Petavue is looking into it
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[var(--pv-neutral-grey-500)]">
+                        <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--pv-neutral-grey-500)]">
                           <CheckSolid size={16} className="text-green-500/80" />
                           {it.synced}
                         </span>
@@ -808,7 +808,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                   return (
                     <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-amber-50 border border-amber-200">
                       <WarnSolid size={20} className="shrink-0 text-amber-500" />
-                      <div className="text-[13px] text-amber-800">
+                      <div className="text-[12px] text-amber-800">
                         <span className="font-semibold">Heads up.</span>{" "}
                         The Petavue team is looking into a sync delay on{" "}
                         {issues.map((it) => it.name).join(", ")}. The rest of your data is up to date.
@@ -820,7 +820,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                   return (
                     <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-[var(--pv-primary-500)]/8 border border-[var(--pv-primary-500)]/20">
                       <SpinnerSolid size={20} className="shrink-0 text-[var(--pv-primary-500)]" />
-                      <div className="text-[13px] text-[var(--pv-neutral-grey-800)]">
+                      <div className="text-[12px] text-[var(--pv-neutral-grey-800)]">
                         <span className="font-semibold">Sync in progress.</span>{" "}
                         {syncing.map((it) => it.name).join(", ")} {syncing.length > 1 ? "are" : "is"} updating now — figures may change shortly.
                       </div>
@@ -830,7 +830,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                 return (
                   <div className="flex items-center gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-green-50 border border-green-200">
                     <CheckSolid size={16} className="shrink-0 text-green-600" />
-                    <div className="text-[13px] text-green-800">
+                    <div className="text-[12px] text-green-800">
                       <span className="font-semibold">Your data is synced and up to date.</span>{" "}
                       All connected sources are healthy.
                     </div>

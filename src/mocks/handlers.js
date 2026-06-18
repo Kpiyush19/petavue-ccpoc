@@ -10,6 +10,7 @@ import {
 import { DASHBOARD_MANIFEST } from "./dashboardAssets";
 import { makeFakeJwt } from "./jwt";
 import { emit } from "./pusherBus";
+import { startRun, executeRun, discardRun, getProgress, getPlanSummary } from "./skillRun";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
 function getWidgets(sessionId) {
@@ -235,17 +236,29 @@ const handlers = [
     pattern: /\/api\/sessions$/,
     handler: ({ body }) => {
       const sid = newId("sess");
+      const isSkillRun = !!body?.skill_id;
       const session = {
-        session_id: sid, name: "New Session", session_type: "regular", status: "active",
+        session_id: sid, name: isSkillRun ? "Skill run" : "New Session",
+        session_type: isSkillRun ? "skill_run" : "regular", status: "active",
+        skill_id: body?.skill_id || null,
         provider: "anthropic", dashboard_id: body?.dashboard_id || null,
         created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
         turn_count: 0, total_tokens: 0, context_tokens: 0, agent_running: false,
       };
       db.sessions.unshift(session);
       db.history[sid] = [];
+      if (isSkillRun) startRun(session, body.skill_id);
       return { session };
     },
   },
+
+  // ── Skills v2 run lifecycle ────────────────────────────────────────
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/skill\/progress$/, handler: ({ params }) => getProgress(params[0]) || { step_statuses: {}, clarifications_pending: [], verification_round: 0, finding_count: 0, disclosure_summary: null, blocked_summary: null, key_choices: [] } },
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/skill\/plan-summary$/, handler: ({ params }) => getPlanSummary(params[0]) || {} },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/execute$/, handler: ({ params }) => { executeRun(params[0]); return { ok: true }; } },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/discard$/, handler: ({ params }) => { discardRun(params[0]); return { ok: true }; } },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/handoff$/, handler: () => ({ ok: true }) },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/clarify$/, handler: () => ({ ok: true }) },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/history$/, handler: ({ params }) => ({ messages: db.history[params[0]] || [] }) },
   // Grounded follow-up chips for the latest turn (shown under the last message).
   // Slight delay so the "Related" loading skeleton renders before they resolve.

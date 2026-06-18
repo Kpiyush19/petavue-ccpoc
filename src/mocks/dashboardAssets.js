@@ -262,6 +262,7 @@ export const DASHBOARD_MANIFEST = {
 // Extra workspace files the viewers/tree may request.
 export const DASHBOARD_FILES = {
   "output/dashboard/revenue_dashboard.html": { content: DASHBOARD_HTML, contentType: "text/html" },
+  "output/dashboard/index.html": { content: DASHBOARD_HTML, contentType: "text/html" },
   "output/dashboard/manifest.json": { content: JSON.stringify(DASHBOARD_MANIFEST, null, 2), contentType: "application/json" },
   "output/dashboard/runtime/app.js": { content: "/* mock dashboard runtime */", contentType: "application/javascript" },
   "output/dashboard/widgets/scoreboard.jsx": { content: "export default function Scoreboard({ data }) {\n  return <div className=\"scoreboard\">{/* KPI cards */}</div>\n}\n", contentType: "text/plain" },
