@@ -20,8 +20,11 @@ const CONNECTOR_ICON_MODULES = import.meta.glob("../../../assets/integrations/*.
   query: "?url",
   import: "default",
 });
+// Key by lower-cased filename so a case mismatch between the glob keys and the
+// CONNECTOR_FILE values (the same file is imported elsewhere as salesforce.svg
+// vs Salesforce.svg on a case-insensitive FS) still resolves.
 const CONNECTOR_ICON_BY_FILE = Object.fromEntries(
-  Object.entries(CONNECTOR_ICON_MODULES).map(([path, url]) => [path.split("/").pop(), url])
+  Object.entries(CONNECTOR_ICON_MODULES).map(([path, url]) => [path.split("/").pop().toLowerCase(), url])
 );
 const CONNECTOR_FILE = {
   "6sense": "6sense.svg",
@@ -35,7 +38,10 @@ const CONNECTOR_FILE = {
   Outreach: "Outreach.svg",
   Salesforce: "Salesforce.svg",
 };
-const connectorIcon = (name) => CONNECTOR_ICON_BY_FILE[CONNECTOR_FILE[name]] || null;
+const connectorIcon = (name) => {
+  const file = CONNECTOR_FILE[name];
+  return file ? CONNECTOR_ICON_BY_FILE[file.toLowerCase()] || null : null;
+};
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes}B`;
