@@ -49,6 +49,7 @@ export default function PetavueRoutes() {
     if (id === "home") return navigate("/home");
     if (id === "dashboard-live") return navigate("/dashboards");
     if (id === "workflows") return navigate("/workflows");
+    if (id === "goals") return navigate("/goals");
     go(NAV_TO_SEGMENT[id] || "home");
   };
 

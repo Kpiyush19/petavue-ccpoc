@@ -65,6 +65,8 @@ const WorkflowsLayout = lazy(() => import("./layouts/WorkflowsLayout"));
 const DashboardsLayout = lazy(() => import("./layouts/DashboardsLayout"));
 const SessionsLayout = lazy(() => import("./layouts/SessionsLayout"));
 const HomeLayout = lazy(() => import("./pages/home/TempHome/HomeLayout"));
+const GoalsPage = lazy(() => import("./pages/goals/GoalsPage"));
+const GoalDetailPage = lazy(() => import("./pages/goals/GoalDetailPage"));
 const HomePage = lazy(() => import("./pages/home/TempHome/HomePage"));
 const SkillDetailPage = lazy(() => import("./pages/home/TempHome/SkillDetailPage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
@@ -379,6 +381,22 @@ export const router = createBrowserRouter([
                   }
                 ]
               },
+          {
+            path: "goals",
+            element: (
+              <SuspenseWrapper>
+                <GoalsPage />
+              </SuspenseWrapper>
+            )
+          },
+          {
+            path: "goals/:id",
+            element: (
+              <SuspenseWrapper>
+                <GoalDetailPage />
+              </SuspenseWrapper>
+            )
+          },
           {
             element: <PetavueGuard />,
             children: [

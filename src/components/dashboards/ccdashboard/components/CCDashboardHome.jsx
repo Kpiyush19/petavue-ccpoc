@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Input, Button } from "@/common-components";
+import { Input } from "@/common-components";
+import { Button as PvButton } from "@/petavue";
 import { useScrollCleanup } from "@/common-components/Tooltip/useScrollCleanup";
 import { CCDashboardElement } from "./CCDashboardElement";
 import { DeleteDashboardModal } from "./DeleteDashboardModal";
@@ -33,13 +34,12 @@ const DefaultInput = ({ value, onChange, placeholder, leftElem, disabled }) => (
 );
 
 const DefaultButton = ({ children, onClick, variant }) => (
-  <Button
+  <PvButton
     onClick={onClick}
-    btnSize="sm"
-    btnColor={variant === "primary" ? "primary" : "secondary"}
-  >
-    {children}
-  </Button>
+    size="sm"
+    variant={variant === "primary" ? "primary" : "secondary"}
+    label={children}
+  />
 );
 
 const ListLoader = ({ length = 8, Skeleton }) => {
@@ -215,7 +215,7 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
             ) : (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: "calc(100% - 56px)" }}>
                 <div
-                  className={`grid p-2 border-b border-[var(--pv-neutral-grey-150)] ${listOverflow ? "w-[calc(100%-8px)]" : "w-full"}`}
+                  className={`grid p-2 ${listOverflow ? "w-[calc(100%-8px)]" : "w-full"}`}
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
                   <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>

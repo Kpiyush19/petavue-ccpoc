@@ -12,6 +12,7 @@ const CANONICAL_NAV = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'chats', label: 'Workbook', icon: 'chats' },
   { id: 'workflows', label: 'Workflows', icon: 'workflows' },
+  { id: 'goals', label: 'Goals', icon: 'goals' },
   { id: 'dashboard-live', label: 'Dashboard', icon: 'dashboard' },
   { id: 'reports', label: 'Reports', icon: 'reports' },
   { id: 'data-hub', label: 'Data Hub', icon: 'data-hub' },

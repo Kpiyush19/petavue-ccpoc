@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import { ArrowLeft, ArrowRight, LayoutDashboard, FileText, Plug, CheckCircle2, Loader2, Search, X } from "lucide-react";
 import { Play, CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Button } from "../../../common-components";
 import { Button as PvButton } from "../../../petavue";
 import { apiPost } from "../../../api";
 import { useSessionContext } from "../../../contexts/SessionContext";
@@ -62,7 +61,7 @@ export default function SkillDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full gap-4 bg-pv-neutral-grey-50">
         <p className="text-[15px] text-[var(--text-secondary)]">Skill not found.</p>
-        <Button btnColor="primary" btnSize="sm" onClick={() => navigate("/home")}>Back to Home</Button>
+        <PvButton variant="primary" size="md" label="Back to Home" onClick={() => navigate("/home")} />
       </div>
     );
   }

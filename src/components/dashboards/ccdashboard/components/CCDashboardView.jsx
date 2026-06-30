@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { CaretRight, CaretDown, Sparkle, Lightbulb, X, Database, Code, File, FloppyDisk, TextAlignLeft, ListDashes } from "@phosphor-icons/react";
+import { CaretRight, CaretDown, Sparkle, Lightbulb, X, Database, Code, File, FloppyDisk, TextAlignLeft, ListDashes, ClockCounterClockwise, Stack, ArrowClockwise } from "@phosphor-icons/react";
 import { ClickAwayListener } from "@mui/material";
-import { Button, Tooltip } from "@/common-components";
+import { Tooltip } from "@/common-components";
 import spinner from "@/common-components/assets/spinner.gif";
 import CCDashboardDropdown from "./CCDashboardDropdown";
 import { formatDateTime } from "@/common-utils/formatDateTime";
@@ -122,9 +122,6 @@ const DEFAULT_INTEGRATIONS = [
   { name: "Lemlist", status: "issue", synced: "Jun 6, 11:02 AM IST", issueTables: ["campaigns", "email_activity"], color: "#0A0A23", logo: lemlistLogo },
 ];
 
-// Phosphor "ClockCounterClockwise" (Last updated) + "Stack" (Data freshness) glyphs.
-const CLOCK_ICON_PATH = "M232,136.66A104.12,104.12,0,1,1,119.34,24,8,8,0,0,1,120.66,40,88.12,88.12,0,1,0,216,135.34,8,8,0,0,1,232,136.66ZM120,72v56a8,8,0,0,0,8,8h56a8,8,0,0,0,0-16H136V72a8,8,0,0,0-16,0Zm40-24a12,12,0,1,0-12-12A12,12,0,0,0,160,48Zm36,24a12,12,0,1,0-12-12A12,12,0,0,0,196,72Zm24,36a12,12,0,1,0-12-12A12,12,0,0,0,220,108Z";
-const STACK_ICON_PATH = "M128,24C74.17,24,32,48.6,32,80v96c0,31.4,42.17,56,96,56s96-24.6,96-56V80C224,48.6,181.83,24,128,24Zm80,104c0,9.62-7.88,19.43-21.61,26.92C170.93,163.35,150.19,168,128,168s-42.93-4.65-58.39-13.08C55.88,147.43,48,137.62,48,128V111.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64ZM69.61,53.08C85.07,44.65,105.81,40,128,40s42.93,4.65,58.39,13.08C200.12,60.57,208,70.38,208,80s-7.88,19.43-21.61,26.92C170.93,115.35,150.19,120,128,120s-42.93-4.65-58.39-13.08C55.88,99.43,48,89.62,48,80S55.88,60.57,69.61,53.08ZM186.39,202.92C170.93,211.35,150.19,216,128,216s-42.93-4.65-58.39-13.08C55.88,195.43,48,185.62,48,176V159.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64V176C208,185.62,200.12,195.43,186.39,202.92Z";
 
 function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep, onToggleCode, viewMode = "summary" }) {
   const TypeIcon = BLOCK_TYPE_ICONS[meta?.type] || Code;
@@ -615,7 +612,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
             <span className="text-sm text-[var(--pv-error-text)]">
               {error?.response?.data?.error?.message || error?.message || "Dashboard not found"}
             </span>
-            <Button btnColor="secondary" btnSize="lg" onClick={() => navigate(basePath)}>Back to List</Button>
+            <PvButton variant="secondary" size="lg" label="Back to List" onClick={() => navigate(basePath)} />
           </div>
         </div>
       );
@@ -684,9 +681,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           {/* Last updated — icon button with a CSS hover tooltip */}
           {artifact?.latest_run && (
             <span className="relative group flex">
-              <Button btnColor="ghost" btnSize="lg" aria-label="Last updated">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d={CLOCK_ICON_PATH} /></svg>
-              </Button>
+              <PvButton variant="ghost" size="lg" icon={ClockCounterClockwise} aria-label="Last updated" />
               <span role="tooltip" className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 whitespace-nowrap rounded-md bg-[#2D3044] text-white text-[12px] leading-snug px-2.5 py-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                 Last updated: {formatDateTime(artifact.latest_run.refreshed_at, artifact?.tenant_timezone || "UTC")}
               </span>
@@ -697,10 +692,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           <div className="w-px h-6 bg-[var(--pv-neutral-grey-200)]" />
 
           {/* Data freshness — opens the Data Freshness popup */}
-          <Button btnColor="ghost" btnSize="lg" onClick={() => setShowFreshness(true)} aria-label="Data freshness">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d={STACK_ICON_PATH} /></svg>
-            <span>Data freshness</span>
-          </Button>
+          <PvButton variant="ghost" size="lg" label="Data freshness" icon={Stack} onClick={() => setShowFreshness(true)} />
 
           {isWorkflow && (
             <PvButton variant="secondary" size="lg" label="Find out how" icon={Lightbulb} disabled={loading || !artifact?.latest_run} onClick={handleFindOutHow} />
@@ -739,21 +731,15 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
             <div className="shrink-0 flex items-center justify-between px-5 py-4">
               <h3 className="text-[16px] font-semibold text-[var(--pv-neutral-grey-900)] m-0">Data Freshness</h3>
               <div className="flex items-center gap-1.5">
-                <button
-                  onClick={handleRefreshSync}
+                <PvButton
+                  variant="secondary"
+                  size="sm"
+                  label={refreshingSync ? "Refreshing…" : "Refresh"}
+                  icon={refreshingSync ? SpinnerSolid : ArrowClockwise}
                   disabled={refreshingSync}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium text-[var(--pv-neutral-grey-600)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border border-[var(--pv-neutral-grey-150)] cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-default"
-                >
-                  {refreshingSync ? (
-                    <SpinnerSolid size={14} />
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M197.67,186.37a8,8,0,0,1,0,11.29C196.58,198.73,170.82,224,128,224c-37.39,0-64.53-22.4-80-39.85V208a8,8,0,0,1-16,0V160a8,8,0,0,1,8-8H88a8,8,0,0,1,0,16H55.44C67.76,183.35,93,208,128,208c36,0,58.14-21.46,58.36-21.68A8,8,0,0,1,197.67,186.37ZM216,40a8,8,0,0,0-8,8V71.85C192.53,54.4,165.39,32,128,32,85.18,32,59.42,57.27,58.34,58.34a8,8,0,0,0,11.3,11.32C69.86,69.46,92,48,128,48c35,0,60.24,24.65,72.56,40H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"/></svg>
-                  )}
-                  {refreshingSync ? "Refreshing…" : "Refresh"}
-                </button>
-                <button onClick={() => setShowFreshness(false)} aria-label="Close" className="p-1 rounded-md text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:bg-[var(--pv-neutral-grey-100)] bg-transparent border-none cursor-pointer transition-colors">
-                  <X size={18} />
-                </button>
+                  onClick={handleRefreshSync}
+                />
+                <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={() => setShowFreshness(false)} />
               </div>
             </div>
             <div className="px-5 pb-5 overflow-y-auto">

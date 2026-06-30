@@ -11,6 +11,7 @@ import { DASHBOARD_MANIFEST } from "./dashboardAssets";
 import { makeFakeJwt } from "./jwt";
 import { emit } from "./pusherBus";
 import { startRun, executeRun, discardRun, getProgress, getPlanSummary } from "./skillRun";
+import * as Goals from "./goals";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
 function getWidgets(sessionId) {
@@ -251,6 +252,21 @@ const handlers = [
       return { session };
     },
   },
+
+  // ── Goals ──────────────────────────────────────────────────────────
+  { method: "GET", pattern: /\/api\/goals\/workflows$/, handler: () => ({ workflows: Goals.GOAL_WORKFLOWS }) },
+  { method: "GET", pattern: /\/api\/goals\/config$/, handler: () => Goals.getConfig() },
+  { method: "PUT", pattern: /\/api\/goals\/config$/, handler: ({ body }) => Goals.saveConfig(body) },
+  { method: "GET", pattern: /\/api\/goals\/attention$/, handler: () => Goals.attentionFeed() },
+  { method: "GET", pattern: /\/api\/goals$/, handler: () => ({ goals: Goals.listGoals() }) },
+  { method: "POST", pattern: /\/api\/goals$/, handler: ({ body }) => ({ goal: Goals.createGoal(body || {}) }) },
+  { method: "GET", pattern: /\/api\/goals\/([^/]+)$/, handler: ({ params }) => Goals.getGoal(params[0]) || { detail: "not found" } },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/answer$/, handler: ({ params, body }) => Goals.answerGoal(params[0], body?.answers || {}) },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/adjust$/, handler: ({ params, body }) => Goals.adjustGoal(params[0], body?.text || "") },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/save$/, handler: ({ params, body }) => ({ goal: Goals.saveGoal(params[0], body?.name) }) },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/check-in$/, handler: ({ params }) => Goals.runCheckIn(params[0]) },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/recommendations\/([^/]+)\/act$/, handler: ({ params, body }) => Goals.actOnRecommendation(params[0], params[1], body?.action, body) },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/notes$/, handler: ({ params, body }) => Goals.addNote(params[0], body?.text || "") },
 
   // ── Skills v2 run lifecycle ────────────────────────────────────────
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/skill\/progress$/, handler: ({ params }) => getProgress(params[0]) || { step_statuses: {}, clarifications_pending: [], verification_round: 0, finding_count: 0, disclosure_summary: null, blocked_summary: null, key_choices: [] } },

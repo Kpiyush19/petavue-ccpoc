@@ -25,6 +25,23 @@ export function HomeIcon({ size = 20, isActive = false, isAccent = false }) {
   );
 }
 
+/* Target — Goals. Filled-in spiral when active (primary-500). */
+export function GoalsIcon({ size = 20, isActive = false, isAccent = false }) {
+  const c = iconColor(isActive, isAccent);
+  if (isActive || isAccent) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32L167.6,99.71h0l-37.71,37.71-23.95,23.95a40,40,0,0,0,62-35.67,8,8,0,1,1,16-.9,56,56,0,0,1-95.5,42.79h0a56,56,0,0,1,73.13-84.43L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z" />
+      </svg>
+    );
+  }
+  return (
+    <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z" />
+    </svg>
+  );
+}
+
 /* Sparkle — Sage (path to the chat interface). Filled when active (primary-500). */
 export function SageIcon({ size = 20, isActive = false, isAccent = false }) {
   const c = iconColor(isActive, isAccent);

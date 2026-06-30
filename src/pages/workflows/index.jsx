@@ -226,7 +226,7 @@ export default function WorkflowsPage() {
             ) : (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: 'calc(100% - 56px)' }}>
                 <div
-                  className={`grid p-2 border-b border-[var(--pv-neutral-grey-150)] ${listOverflow ? 'w-[calc(100%-8px)]' : 'w-full'}`}
+                  className={`grid p-2 ${listOverflow ? 'w-[calc(100%-8px)]' : 'w-full'}`}
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
                   <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
