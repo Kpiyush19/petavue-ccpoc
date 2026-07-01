@@ -26,51 +26,41 @@ const CALIBRATION_STEPS = [
   "Ready for your review",
 ];
 
-/* ───────────────────────── Calibrating ───────────────────────── */
-function Calibrating({ goal }) {
-  const p = goal.progress || 0;
-  const labels = ["Getting started…", "Reading your pipeline history…", "Proposing targets…", "Defining conditions to watch…", "Drafting recommended moves…", "Finishing up…"];
-  return (
-    <>
-      <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">Calibrating your goal</h1>
-      <p className="text-[15px] text-[var(--text-secondary)] mb-7">We're reading your data and proposing how to measure this goal.</p>
-      <div className="flex gap-8 items-start">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start gap-3 p-5 bg-white border border-[var(--border-primary)] rounded-xl">
-            <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-0.5">
-              <p className="text-[15px] font-semibold text-[var(--text-primary)]">{labels[Math.min(p, labels.length - 1)]}</p>
-              <p className="text-[13px] text-[var(--text-secondary)]">Searched 38 history files · 497 rows in raw_deals.csv</p>
-            </div>
-          </div>
-          <p className="text-[13px] text-[var(--text-muted)] mt-4">This usually takes a minute. You can leave and come back — your progress is saved.</p>
-        </div>
-        <ProgressRail current={p} />
-      </div>
-    </>
-  );
-}
+/* ───────── Wizard shell: left stepper · right content · sticky footer ───────── */
+const WIZARD_PHASES = [
+  { key: "calibrate", label: "Calibrate", note: "Read data & propose" },
+  { key: "decisions", label: "Decisions", note: "Answer key questions" },
+  { key: "review", label: "Review & save", note: "Confirm and activate" },
+];
 
-function ProgressRail({ current, active }) {
+// Left vertical progress tracker (connecting lines, filled checks, active pill).
+function WizardStepper({ current }) {
   return (
-    <aside className="w-[280px] shrink-0 self-start sticky top-0 bg-white border border-[var(--border-primary)] rounded-xl p-5">
+    <aside className="w-[212px] shrink-0 self-start sticky top-0">
       <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-4">Progress</p>
-      <div className="flex flex-col gap-3.5">
-        {CALIBRATION_STEPS.map((label, i) => {
+      <div className="flex flex-col">
+        {WIZARD_PHASES.map((p, i) => {
           const done = i < current;
-          const isActive = i === current;
+          const active = i === current;
+          const last = i === WIZARD_PHASES.length - 1;
           return (
-            <div key={label} className="flex items-center gap-2.5">
-              {done ? (
-                <CheckCircle size={18} weight="fill" className="text-green-600 shrink-0" />
-              ) : isActive ? (
-                <Spinner size={18} className="text-pv-primary-primary-500 shrink-0" />
-              ) : (
-                <span className="w-[18px] h-[18px] rounded-full border-2 border-[var(--border-primary)] shrink-0" />
-              )}
-              <span className={cn("text-[13px]", done || isActive ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-muted)]")}>
-                {isActive && active ? active : label}
-              </span>
+            <div key={p.key} className="flex gap-3">
+              <div className="flex flex-col items-center self-stretch">
+                {done ? (
+                  <CheckCircle size={20} weight="fill" className="text-pv-primary-primary-600 shrink-0" />
+                ) : active ? (
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-pv-primary-primary-500 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                  </span>
+                ) : (
+                  <span className="w-5 h-5 rounded-full border-2 border-[var(--border-primary)] shrink-0" />
+                )}
+                {!last && <span className={cn("w-[2px] flex-1 my-1 rounded-full min-h-[22px]", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
+              </div>
+              <div className={cn("pb-5 px-2.5 py-1 -mt-1 rounded-lg", active && "bg-pv-primary-primary-50")}>
+                <p className={cn("text-[13px] font-semibold", active ? "text-pv-primary-primary-600" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{p.label}</p>
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">{p.note}</p>
+              </div>
             </div>
           );
         })}
@@ -79,8 +69,81 @@ function ProgressRail({ current, active }) {
   );
 }
 
+// Sticky full-width footer: Cancel/status on the left, actions on the right.
+function WizardFooter({ left, right }) {
+  return (
+    <div className="sticky bottom-0 -mx-8 -mb-8 mt-8 px-8 py-3.5 bg-white/85 backdrop-blur-sm border-t border-[var(--border-primary)] flex items-center justify-between gap-4">
+      <div className="flex items-center gap-2 min-w-0 text-[13px] text-[var(--text-secondary)]">{left}</div>
+      <div className="flex items-center gap-2 shrink-0">{right}</div>
+    </div>
+  );
+}
+
+// Two-column scaffold: stepper on the left, titled content on the right, footer pinned.
+function WizardScaffold({ current, title, subtitle, children, footer }) {
+  return (
+    <div className="flex-1 flex flex-col">
+      <div className="flex gap-10 items-start flex-1">
+        <WizardStepper current={current} />
+        <div className="flex-1 min-w-0">
+          <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">{title}</h1>
+          <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
+          {children}
+        </div>
+      </div>
+      {footer}
+    </div>
+  );
+}
+
+/* ───────────────────────── Calibrating ───────────────────────── */
+function Calibrating({ goal, onCancel }) {
+  const p = goal.progress || 0;
+  const labels = ["Getting started…", "Reading your pipeline history…", "Proposing targets…", "Defining conditions to watch…", "Drafting recommended moves…", "Finishing up…"];
+  return (
+    <WizardScaffold
+      current={0}
+      title="Calibrating your goal"
+      subtitle="We're reading your data and proposing how to measure this goal."
+      footer={
+        <WizardFooter
+          left={<><Spinner size={14} className="text-pv-primary-primary-500" /> This usually takes a minute — you can leave and come back.</>}
+          right={<PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />}
+        />
+      }
+    >
+      <div className="flex items-start gap-3 p-5 bg-white border border-[var(--border-primary)] rounded-xl mb-4">
+        <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+        <div className="flex flex-col gap-0.5">
+          <p className="text-[15px] font-semibold text-[var(--text-primary)]">{labels[Math.min(p, labels.length - 1)]}</p>
+          <p className="text-[13px] text-[var(--text-secondary)]">Searched 38 history files · 497 rows in raw_deals.csv</p>
+        </div>
+      </div>
+
+      {/* Detailed calibration steps (kept as an in-panel checklist) */}
+      <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">What we're doing</p>
+        <div className="flex flex-col gap-2.5">
+          {CALIBRATION_STEPS.map((label, i) => {
+            const done = i < p;
+            const isActive = i === p;
+            return (
+              <div key={label} className="flex items-center gap-2.5">
+                {done ? <CheckCircle size={17} weight="fill" className="text-green-600 shrink-0" />
+                  : isActive ? <Spinner size={17} className="text-pv-primary-primary-500 shrink-0" />
+                  : <span className="w-[17px] h-[17px] rounded-full border-2 border-[var(--border-primary)] shrink-0" />}
+                <span className={cn("text-[13px]", done || isActive ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-muted)]")}>{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </WizardScaffold>
+  );
+}
+
 /* ───────────────────────── Decisions ───────────────────────── */
-function Decisions({ goal, refetch }) {
+function Decisions({ goal, refetch, onCancel }) {
   const qc = useQueryClient();
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -100,68 +163,68 @@ function Decisions({ goal, refetch }) {
   const chosen = answers[q.id];
 
   return (
-    <>
-      <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">A couple of decisions</h1>
-      <p className="text-[15px] text-[var(--text-secondary)] mb-7">Your answers shape the targets — every option is grounded in your real numbers.</p>
-      <div className="flex gap-8 items-start">
-        <div className="flex-1 min-w-0 flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-semibold text-pv-primary-primary-600">A few quick questions</span>
-            <span className="text-[13px] text-[var(--text-muted)]">Question {idx + 1} of {total}</span>
-          </div>
-          <div className="h-1 rounded-full bg-pv-neutral-grey-100 mb-6 overflow-hidden">
-            <div className="h-full bg-pv-primary-primary-500 rounded-full transition-all" style={{ width: `${((idx + 1) / total) * 100}%` }} />
-          </div>
-
-          <p className="text-[16px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
-          <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-pv-primary-primary-50 border border-pv-primary-primary-100">
-            <ChartBar size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
-            <p className="text-[12px] text-[var(--text-secondary)]"><span className="font-semibold text-[var(--text-primary)]">What we found:</span> {q.found}</p>
-          </div>
-
-          <div className="flex flex-col gap-2.5">
-            {q.options.map((o) => (
-              <button
-                key={o.id}
-                onClick={() => choose(o.id)}
-                className={cn(
-                  "flex items-start gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
-                  chosen === o.id ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
-                )}
-              >
-                <span className={cn("shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === o.id ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-                  {chosen === o.id && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
-                </span>
-                <span className="flex-1 text-[14px] text-[var(--text-primary)] leading-relaxed">{o.label}</span>
-                {o.recommended && <span className="shrink-0 px-2 py-0.5 text-[11px] font-medium rounded-full bg-violet-50 text-violet-700 border border-violet-200">recommended</span>}
-              </button>
-            ))}
-            <button
-              onClick={() => choose("other")}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
-                chosen === "other" ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
-              )}
-            >
-              <span className={cn("shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === "other" ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-                {chosen === "other" && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
-              </span>
-              <span className="text-[14px] text-[var(--text-secondary)]">Something else…</span>
-            </button>
-          </div>
-
-          <div className="flex justify-end mt-6">
-            <PvButton variant="primary" size="md" label={idx < total - 1 ? "Next" : (submit.isPending ? "Building…" : "Build targets")} icon={ArrowRight} iconPosition="suffix" disabled={!chosen || submit.isPending} onClick={next} />
-          </div>
-        </div>
-        <ProgressRail current={1} active="Waiting for your answers" />
+    <WizardScaffold
+      current={1}
+      title="A couple of decisions"
+      subtitle="Your answers shape the targets — every option is grounded in your real numbers."
+      footer={
+        <WizardFooter
+          left={<span>Question <span className="font-semibold text-[var(--text-primary)]">{idx + 1}</span> of {total}</span>}
+          right={
+            <>
+              <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
+              <PvButton variant="primary" size="md" label={idx < total - 1 ? "Next" : (submit.isPending ? "Building…" : "Build targets")} icon={ArrowRight} iconPosition="suffix" disabled={!chosen || submit.isPending} onClick={next} />
+            </>
+          }
+        />
+      }
+    >
+      <div className="h-1 rounded-full bg-pv-neutral-grey-100 mb-6 overflow-hidden">
+        <div className="h-full bg-pv-primary-primary-500 rounded-full transition-all" style={{ width: `${((idx + 1) / total) * 100}%` }} />
       </div>
-    </>
+
+      <p className="text-[16px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
+      <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-pv-primary-primary-50 border border-pv-primary-primary-100">
+        <ChartBar size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+        <p className="text-[12px] text-[var(--text-secondary)]"><span className="font-semibold text-[var(--text-primary)]">What we found:</span> {q.found}</p>
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        {q.options.map((o) => (
+          <button
+            key={o.id}
+            onClick={() => choose(o.id)}
+            className={cn(
+              "flex items-start gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
+              chosen === o.id ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
+            )}
+          >
+            <span className={cn("shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === o.id ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
+              {chosen === o.id && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+            </span>
+            <span className="flex-1 text-[14px] text-[var(--text-primary)] leading-relaxed">{o.label}</span>
+            {o.recommended && <span className="shrink-0 px-2 py-0.5 text-[11px] font-medium rounded-full bg-violet-50 text-violet-700 border border-violet-200">recommended</span>}
+          </button>
+        ))}
+        <button
+          onClick={() => choose("other")}
+          className={cn(
+            "flex items-center gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
+            chosen === "other" ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
+          )}
+        >
+          <span className={cn("shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === "other" ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
+            {chosen === "other" && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+          </span>
+          <span className="text-[14px] text-[var(--text-secondary)]">Something else…</span>
+        </button>
+      </div>
+    </WizardScaffold>
   );
 }
 
 /* ───────────────────────── Review ───────────────────────── */
-function Review({ goal, refetch }) {
+function Review({ goal, refetch, onCancel }) {
   const qc = useQueryClient();
   const [showSave, setShowSave] = useState(false);
   const [name, setName] = useState(goal.name || "");
@@ -184,22 +247,35 @@ function Review({ goal, refetch }) {
 
   const sendAdjust = () => { if (!draft.trim()) return; adjust.mutate(draft.trim()); setDraft(""); };
 
+  const summary = `${goal.targets.length} target${goal.targets.length !== 1 ? "s" : ""} · ${goal.conditions.length} conditions · ${goal.moves.length} moves`;
+
   return (
     <>
-      <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
-      <p className="text-[15px] text-[var(--text-secondary)] mb-7">Here's how we'll measure and watch it. Adjust on the right, then save.</p>
-
-      <div className="flex gap-8 items-start pb-24">
-        {/* Left: targets, conditions, moves */}
-        <div className="flex-1 min-w-0 flex flex-col gap-7">
+      <WizardScaffold
+        current={2}
+        title="Review your goal"
+        subtitle="Here's how we'll measure and watch it — adjust in plain language below, then save."
+        footer={
+          <WizardFooter
+            left={<span className="min-w-0 truncate"><span className="font-semibold text-[var(--text-primary)]">{summary}</span><span className="hidden sm:inline"> — ready when you are</span></span>}
+            right={
+              <>
+                <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
+                <PvButton variant="primary" size="md" label="Save goal" icon={CheckCircle} onClick={() => setShowSave(true)} />
+              </>
+            }
+          />
+        }
+      >
+        <div className="flex flex-col gap-7">
           {/* Targets */}
           <section>
             <div className="flex items-center gap-2 mb-1">
               <Target size={16} className="text-pv-primary-primary-500" />
               <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
-              <span className="text-[12px] text-[var(--text-muted)]">— how we'll know you hit the goal</span>
+              <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
             </div>
-            <p className="text-[13px] text-[var(--text-secondary)] mb-3">Your goal breaks into these measurable targets. We check each one every run.</p>
+            <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal — we check each target every run.</p>
             {goal.targets.map((t) => (
               <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
                 <div className="flex items-start justify-between gap-3">
@@ -254,45 +330,44 @@ function Review({ goal, refetch }) {
               </div>
             </section>
           </div>
-        </div>
 
-        {/* Right: adjust panel */}
-        <aside className="w-[340px] shrink-0 self-start sticky top-0 flex flex-col bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-          <div className="px-4 py-3.5 border-b border-[var(--border-primary)]">
-            <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
-            <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
-          </div>
-          <div className="flex flex-col gap-3 p-4 max-h-[300px] overflow-y-auto">
-            <p className="text-[13px] text-[var(--text-secondary)]">
-              Config stands at <span className="font-semibold text-[var(--text-primary)]">{goal.targets.length} target, {goal.conditions.length} conditions, {goal.moves.length} actions</span>. If you'd like any thresholds or scopes adjusted, just say the word.
-            </p>
-            {chat.map((m, i) => (
-              <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[88%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
-                {m.text}
+          {/* Adjust — full-width, plain-language edits */}
+          <section className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+            <div className="flex items-start gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
+              <PencilSimple size={16} className="text-pv-primary-primary-500 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
+                <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
               </div>
-            ))}
-          </div>
-          <div className="p-3 border-t border-[var(--border-primary)]">
-            <textarea
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
-              rows={2}
-              placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
-              className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
-            />
-          </div>
-        </aside>
-      </div>
-
-      {/* Sticky action footer */}
-      <div className="sticky bottom-0 -mx-8 -mb-8 px-8 py-3.5 bg-white/85 backdrop-blur-sm border-t border-[var(--border-primary)] flex items-center justify-between gap-4">
-        <p className="text-[13px] text-[var(--text-secondary)] min-w-0 truncate">
-          <span className="font-semibold text-[var(--text-primary)]">{goal.targets.length} target{goal.targets.length !== 1 && "s"} · {goal.conditions.length} conditions · {goal.moves.length} moves</span>
-          <span className="hidden sm:inline"> — ready when you are</span>
-        </p>
-        <PvButton variant="primary" size="md" label="Save goal" icon={CheckCircle} onClick={() => setShowSave(true)} />
-      </div>
+            </div>
+            <div className="p-4">
+              <p className="text-[13px] text-[var(--text-secondary)] mb-3">
+                Config stands at <span className="font-semibold text-[var(--text-primary)]">{summary}</span>. If you'd like any thresholds or scopes adjusted, just say the word.
+              </p>
+              {chat.length > 0 && (
+                <div className="flex flex-col gap-2 mb-3">
+                  {chat.map((m, i) => (
+                    <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[80%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
+                      {m.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-end gap-2">
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
+                  rows={2}
+                  placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
+                  className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+                />
+                <PvButton variant="secondary" size="md" label={adjust.isPending ? "…" : "Send"} disabled={!draft.trim() || adjust.isPending} onClick={sendAdjust} />
+              </div>
+            </div>
+          </section>
+        </div>
+      </WizardScaffold>
 
       {showSave && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -623,24 +698,34 @@ export default function GoalDetailPage() {
     refetchInterval: 1200,
   });
 
-  return (
-    <div className="flex h-full w-full overflow-y-auto bg-pv-neutral-grey-50">
-      <div className="flex flex-col w-full max-w-[1180px] mx-auto px-8 py-8">
-        <button onClick={() => navigate("/goals")} className="flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer self-start mb-5 p-0">
-          <ArrowLeft size={14} /> Back to goals
-        </button>
+  const cancel = () => navigate("/goals");
+  const crumb = goal?.name || "Goal";
 
+  return (
+    <div className="flex flex-col w-full h-full">
+      {/* Standard app header bar with breadcrumb (consistent with Dashboards) */}
+      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={() => navigate("/goals")} className="text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0">Goals</button>
+          <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
+          <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[420px] text-pv-neutral-grey-900">{crumb}</span>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
+      <div className="flex flex-col min-h-full w-full max-w-[1180px] mx-auto px-8 py-8">
         {isLoading || !goal ? (
           <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
         ) : goal.status === "calibrating" ? (
-          <Calibrating goal={goal} />
+          <Calibrating goal={goal} onCancel={cancel} />
         ) : goal.status === "decisions" ? (
-          <Decisions goal={goal} refetch={refetch} />
+          <Decisions goal={goal} refetch={refetch} onCancel={cancel} />
         ) : goal.status === "review" ? (
-          <Review goal={goal} refetch={refetch} />
+          <Review goal={goal} refetch={refetch} onCancel={cancel} />
         ) : (
           <ActiveGoal goal={goal} refetch={refetch} />
         )}
+      </div>
       </div>
     </div>
   );

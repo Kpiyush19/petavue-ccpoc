@@ -66,6 +66,7 @@ const DashboardsLayout = lazy(() => import("./layouts/DashboardsLayout"));
 const SessionsLayout = lazy(() => import("./layouts/SessionsLayout"));
 const HomeLayout = lazy(() => import("./pages/home/TempHome/HomeLayout"));
 const GoalsPage = lazy(() => import("./pages/goals/GoalsPage"));
+const NewGoalPage = lazy(() => import("./pages/goals/NewGoalPage"));
 const GoalDetailPage = lazy(() => import("./pages/goals/GoalDetailPage"));
 const HomePage = lazy(() => import("./pages/home/TempHome/HomePage"));
 const SkillDetailPage = lazy(() => import("./pages/home/TempHome/SkillDetailPage"));
@@ -386,6 +387,14 @@ export const router = createBrowserRouter([
             element: (
               <SuspenseWrapper>
                 <GoalsPage />
+              </SuspenseWrapper>
+            )
+          },
+          {
+            path: "goals/new",
+            element: (
+              <SuspenseWrapper>
+                <NewGoalPage />
               </SuspenseWrapper>
             )
           },

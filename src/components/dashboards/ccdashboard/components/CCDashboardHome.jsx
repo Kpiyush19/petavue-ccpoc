@@ -145,7 +145,7 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
   return (
     <div className="flex flex-col w-full h-full overflow-x-auto">
       <div className="flex flex-col w-full h-full min-w-[800px]">
-        <div className="flex w-full px-6 items-center justify-between h-[64px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
           <span className="text-[16px] leading-[24px] font-medium">Dashboards</span>
         </div>
 

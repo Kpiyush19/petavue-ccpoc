@@ -217,98 +217,6 @@ function GoalRow({ goal, onOpen, onFull }) {
   );
 }
 
-/* ── New Goal modal ── */
-function NewGoalModal({ onClose }) {
-  const navigate = useNavigate();
-  const qc = useQueryClient();
-  const [statement, setStatement] = useState("");
-  const [selected, setSelected] = useState([]);
-  const [search, setSearch] = useState("");
-  const { data: wfData } = useQuery({ queryKey: ["goal-workflows"], queryFn: () => apiGet("/api/goals/workflows") });
-  const allWorkflows = wfData?.workflows || [];
-  const hasWorkflows = allWorkflows.length > 0;
-  const workflows = allWorkflows.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
-  const create = useMutation({
-    mutationFn: () => apiPost("/api/goals", { statement: statement.trim(), workflowIds: selected }),
-    onSuccess: (res) => { qc.invalidateQueries({ queryKey: ["goals"] }); const id = res?.goal?.id; if (id) navigate(`/goals/${id}`); },
-    onError: (e) => toast.error("Failed: " + e.message),
-  });
-  const toggle = (id) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
-  // A workflow sharpens calibration but is never required — with none selected we
-  // calibrate on all connected data. A goal statement alone is enough to proceed.
-  const canCreate = statement.trim().length > 0 && !create.isPending;
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-        className="relative w-[640px] max-w-[94vw] max-h-[88vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--pv-primary-500)]"
-      >
-        <div className="shrink-0 flex items-center justify-between px-5 py-4">
-          <h3 className="text-[18px] font-semibold text-[var(--text-primary)] m-0">New Goal</h3>
-          <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={onClose} />
-        </div>
-        <div className="px-5 pb-2 overflow-y-auto">
-          <label className="block text-[13px] font-semibold text-[var(--text-primary)] mb-1.5">What's the goal?</label>
-          <textarea value={statement} onChange={(e) => setStatement(e.target.value)} rows={2} autoFocus placeholder="e.g. Grow qualified pipeline to $1.5M and keep win rate above 25% by Sep 30"
-            className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
-          <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-4">Describe the outcome in plain language — we'll figure out how to measure it.</p>
-          <label className="block text-[13px] font-semibold text-[var(--text-primary)] mb-1.5">
-            Which workflows feed this goal? <span className="font-normal text-[var(--text-muted)]">(optional)</span>
-          </label>
-
-          {!hasWorkflows ? (
-            /* No workflows connected yet — still let them proceed on all data. */
-            <div className="flex flex-col items-center text-center gap-2 px-5 py-7 rounded-xl border border-dashed border-[var(--border-primary)] bg-pv-neutral-grey-50">
-              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-[var(--border-primary)]">
-                <FlowArrow size={20} className="text-[var(--text-muted)]" />
-              </span>
-              <p className="text-[14px] font-semibold text-[var(--text-primary)]">No workflows connected yet</p>
-              <p className="text-[13px] text-[var(--text-secondary)] max-w-[420px] leading-relaxed">
-                Workflows sharpen a goal by pointing it at a specific report. You don't need one to start — we'll calibrate on all your connected data, and you can attach a workflow later.
-              </p>
-              <div className="mt-1">
-                <PvButton variant="secondary" size="sm" label="Set up a workflow" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => { onClose(); navigate("/workflows"); }} />
-              </div>
-            </div>
-          ) : (
-            <>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your workflows…" className="w-full text-[14px] px-3.5 py-2.5 mb-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none" />
-              {workflows.length === 0 ? (
-                <div className="flex flex-col items-center text-center gap-1.5 px-5 py-8 rounded-xl border border-dashed border-[var(--border-primary)]">
-                  <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
-                  <p className="text-[13px] text-[var(--text-secondary)]">No workflows match “{search}”.</p>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {workflows.map((w) => (
-                    <button key={w.id} type="button" onClick={() => toggle(w.id)}
-                      className={cn("flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors", selected.includes(w.id) ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white")}>
-                      <span className={cn("shrink-0 w-4 h-4 rounded border flex items-center justify-center", selected.includes(w.id) ? "bg-pv-primary-primary-500 border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-                        {selected.includes(w.id) && <span className="w-2 h-2 rounded-[2px] bg-white" />}
-                      </span>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-[14px] font-medium text-[var(--text-primary)] truncate">{w.name}</span>
-                        <span className="text-[12px] text-[var(--text-muted)]">{w.schedule} · {w.lastRun}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-        <div className="shrink-0 flex items-center justify-end gap-2 px-5 py-4 border-t border-[var(--border-primary)] mt-2">
-          <PvButton variant="secondary" size="md" label="Cancel" onClick={onClose} />
-          <PvButton variant="primary" size="md" label={create.isPending ? "Creating…" : "Create & Calibrate"} disabled={!canCreate} onClick={() => create.mutate()} />
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 /* ── Config popup ── */
 function ConfigModal({ onClose }) {
   const qc = useQueryClient();
@@ -365,7 +273,6 @@ function ConfigModal({ onClose }) {
 
 export default function GoalsPage() {
   const navigate = useNavigate();
-  const [showNew, setShowNew] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [quickId, setQuickId] = useState(null);
   const [openAttn, setOpenAttn] = useState(true);
@@ -406,17 +313,19 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="flex h-full w-full overflow-y-auto bg-pv-neutral-grey-50">
-      <div className="flex flex-col w-full max-w-[1180px] mx-auto px-8 py-8">
-        <div className="flex items-center justify-between mb-7">
-          <h1 className="text-[28px] font-semibold text-[var(--text-primary)]">Goals</h1>
-          <div className="flex items-center gap-2">
-            <PvButton variant="secondary" size="md" label="Configure" icon={Sliders} onClick={() => setShowConfig(true)} />
-            <PvButton variant="primary" size="md" label="New Goal" icon={Target} onClick={() => setShowNew(true)} />
-          </div>
+    <div className="flex flex-col w-full h-full">
+      {/* Standard app header bar (consistent with Dashboards / Sessions / Workflows) */}
+      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <span className="text-[16px] leading-[24px] font-medium">Goals</span>
+        <div className="flex items-center gap-2">
+          <PvButton variant="secondary" size="md" label="Configure" icon={Sliders} onClick={() => setShowConfig(true)} />
+          <PvButton variant="primary" size="md" label="New Goal" icon={Target} onClick={() => navigate("/goals/new")} />
         </div>
+      </div>
 
-        {/* ── Highlights row ── */}
+      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
+        <div className="flex flex-col w-full max-w-[1180px] mx-auto px-8 py-8">
+          {/* ── Highlights row ── */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-[13px] font-semibold text-[var(--text-primary)]">Highlights</span>
           <span className="text-[12px] text-[var(--text-muted)]">· this week</span>
@@ -487,10 +396,10 @@ export default function GoalsPage() {
               </>
             )}
           </Section>
+          </div>
         </div>
       </div>
 
-      {showNew && <NewGoalModal onClose={() => setShowNew(false)} />}
       {showConfig && <ConfigModal onClose={() => setShowConfig(false)} />}
       {quickId && <GoalQuickView id={quickId} onClose={() => setQuickId(null)} onFull={(gid) => { setQuickId(null); navigate(`/goals/${gid}`); }} />}
     </div>
