@@ -1,0 +1,3 @@
+# Sensitive prototype — do not crawl or index any path.
+User-agent: *
+Disallow: /
