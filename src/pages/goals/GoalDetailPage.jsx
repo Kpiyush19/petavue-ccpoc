@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
-  CaretRight, X, ClockCounterClockwise, Play, ChartBar,
+  CaretRight, X, ClockCounterClockwise, Play, ChartBar, WaveSine, Pulse, XCircle, PencilSimple, NotePencil,
+  Clock, UserCircle, TrendUp, ChartPieSlice,
 } from "@phosphor-icons/react";
+
+// Category icon + accent per recommendation type.
+const REC_ICONS = { stale: Clock, owner: UserCircle, stuck: TrendUp, concentration: ChartPieSlice, threshold: Target };
 import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
@@ -40,7 +45,7 @@ function Calibrating({ goal }) {
           </div>
           <p className="text-[13px] text-[var(--text-muted)] mt-4">This usually takes a minute. You can leave and come back — your progress is saved.</p>
         </div>
-        <ProgressRail current={p} active="Read your history" />
+        <ProgressRail current={p} />
       </div>
     </>
   );
@@ -181,57 +186,74 @@ function Review({ goal, refetch }) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
-          <p className="text-[15px] text-[var(--text-secondary)] mb-7">Here's how we'll measure and watch it. Adjust on the right, then save.</p>
-        </div>
-        <PvButton variant="primary" size="md" label="Save" onClick={() => setShowSave(true)} />
-      </div>
+      <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
+      <p className="text-[15px] text-[var(--text-secondary)] mb-7">Here's how we'll measure and watch it. Adjust on the right, then save.</p>
 
-      <div className="flex gap-8 items-start">
+      <div className="flex gap-8 items-start pb-24">
         {/* Left: targets, conditions, moves */}
         <div className="flex-1 min-w-0 flex flex-col gap-7">
+          {/* Targets */}
           <section>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">Your targets — how we'll know you hit the goal</p>
+            <div className="flex items-center gap-2 mb-1">
+              <Target size={16} className="text-pv-primary-primary-500" />
+              <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
+              <span className="text-[12px] text-[var(--text-muted)]">— how we'll know you hit the goal</span>
+            </div>
             <p className="text-[13px] text-[var(--text-secondary)] mb-3">Your goal breaks into these measurable targets. We check each one every run.</p>
             {goal.targets.map((t) => (
-              <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-lg">
-                <div className="flex gap-2.5">
-                  <Target size={18} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+              <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
+                <div className="flex items-start justify-between gap-3">
                   <p className="text-[15px] font-medium text-[var(--text-primary)] leading-relaxed">{t.label}</p>
+                  {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
                 </div>
-                <button onClick={() => setWhyOpen((v) => !v)} className="flex items-center gap-1 mt-2.5 ml-7 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">
+                <button onClick={() => setWhyOpen((v) => !v)} className="flex items-center gap-1 mt-3 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">
                   <CaretRight size={12} className={cn("transition-transform", whyOpen && "rotate-90")} /> Why this, and where it comes from
                 </button>
-                {whyOpen && <p className="ml-7 mt-1.5 text-[13px] text-[var(--text-secondary)] leading-relaxed">{t.why}</p>}
+                {whyOpen && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)] leading-relaxed pl-4 border-l-2 border-pv-primary-primary-100">{t.why}</p>}
               </div>
             ))}
           </section>
 
-          <section>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Conditions we'll watch each run</p>
-            <div className="flex flex-col gap-2">
-              {goal.conditions.map((c) => (
-                <div key={c.id} className="flex items-start gap-2.5 px-4 py-3 bg-white border border-[var(--border-primary)] rounded-lg">
-                  <Eye size={16} className="text-[var(--text-muted)] shrink-0 mt-0.5" />
-                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          {/* Conditions + Moves — the watch/act pair, side by side */}
+          <div className="grid grid-cols-2 gap-5 items-start">
+            {/* Conditions we'll watch */}
+            <section className="flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <WaveSine size={16} className="text-[var(--text-muted)]" />
+                <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">Conditions we'll watch</h2>
+                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.conditions.length}</span>
+              </div>
+              <p className="text-[12px] text-[var(--text-secondary)] mb-2.5">Signals we test on every run to catch drift early.</p>
+              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                {goal.conditions.map((c, i) => (
+                  <div key={c.id} className={cn("flex items-start gap-2.5 px-3.5 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
+                    <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          <section>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Moves we may recommend</p>
-            <div className="flex flex-col gap-2">
-              {goal.moves.map((m) => (
-                <div key={m.id} className="flex items-start gap-2.5 px-4 py-3 bg-white border border-[var(--border-primary)] rounded-lg">
-                  <Lightning size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[13px] text-[var(--text-primary)] leading-relaxed">{m.label}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+            {/* Moves we may recommend */}
+            <section className="flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <Lightning size={16} className="text-amber-500" />
+                <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
+                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.moves.length}</span>
+              </div>
+              <p className="text-[12px] text-[var(--text-secondary)] mb-2.5">Actions we'll surface when a condition fires — you decide.</p>
+              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                {goal.moves.map((m, i) => (
+                  <div key={m.id} className={cn("flex items-start gap-2.5 px-3.5 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-amber-50 mt-0.5">
+                      <Lightning size={12} weight="fill" className="text-amber-500" />
+                    </span>
+                    <p className="text-[13px] text-[var(--text-primary)] leading-relaxed">{m.label}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
 
         {/* Right: adjust panel */}
@@ -263,6 +285,15 @@ function Review({ goal, refetch }) {
         </aside>
       </div>
 
+      {/* Sticky action footer */}
+      <div className="sticky bottom-0 -mx-8 -mb-8 px-8 py-3.5 bg-white/85 backdrop-blur-sm border-t border-[var(--border-primary)] flex items-center justify-between gap-4">
+        <p className="text-[13px] text-[var(--text-secondary)] min-w-0 truncate">
+          <span className="font-semibold text-[var(--text-primary)]">{goal.targets.length} target{goal.targets.length !== 1 && "s"} · {goal.conditions.length} conditions · {goal.moves.length} moves</span>
+          <span className="hidden sm:inline"> — ready when you are</span>
+        </p>
+        <PvButton variant="primary" size="md" label="Save goal" icon={CheckCircle} onClick={() => setShowSave(true)} />
+      </div>
+
       {showSave && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowSave(false)} />
@@ -290,34 +321,112 @@ function Review({ goal, refetch }) {
 }
 
 /* ───────────────────────── Active dashboard ───────────────────────── */
+const SNOOZE_OPTIONS = ["1 day", "3 days", "1 week", "2 weeks", "Until next check-in"];
+
+/* Snooze split-button with a duration dropdown (portaled). */
+function SnoozeMenu({ onSnooze, disabled }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
+  const btnRef = useRef(null);
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, left: r.left });
+    }
+    setOpen((o) => !o);
+  };
+  return (
+    <>
+      <button ref={btnRef} onClick={toggle} disabled={disabled}
+        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50">
+        <ClockCounterClockwise size={14} /> Snooze <CaretRight size={11} className="rotate-90" />
+      </button>
+      {open && pos && createPortal(
+        <>
+          <div className="fixed inset-0 z-[70]" onClick={() => setOpen(false)} />
+          <div className="fixed z-[71] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
+            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
+            {SNOOZE_OPTIONS.map((label) => (
+              <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">
+                {label}
+              </button>
+            ))}
+          </div>
+        </>,
+        document.body
+      )}
+    </>
+  );
+}
+
 function RecommendationCard({ goal, rec, refetch }) {
   const qc = useQueryClient();
   const act = useMutation({
-    mutationFn: ({ action, note }) => apiPost(`/api/goals/${goal.id}/recommendations/${rec.id}/act`, { action, note }),
+    mutationFn: (body) => apiPost(`/api/goals/${goal.id}/recommendations/${rec.id}/act`, body),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["goal", goal.id] }); refetch(); },
   });
   const done = rec.status !== "open";
+  const actNow = rec.severity === "act-now";
+  const Icon = REC_ICONS[rec.iconKey] || Lightning;
+  const tint = done
+    ? { chip: "bg-pv-neutral-grey-100 text-[var(--text-muted)]" }
+    : actNow
+      ? { chip: "bg-rose-50 text-rose-600" }
+      : { chip: "bg-amber-50 text-amber-600" };
+  const resolved = {
+    acted: { icon: CheckCircle, cls: "text-green-600", label: "Done" },
+    rejected: { icon: XCircle, cls: "text-[var(--text-muted)]", label: "Dismissed" },
+    snoozed: { icon: ClockCounterClockwise, cls: "text-amber-600", label: rec.snoozeLabel ? `Snoozed · ${rec.snoozeLabel}` : "Snoozed" },
+  }[rec.status];
 
   return (
-    <div className={cn("p-4 rounded-lg border", done ? "border-[var(--border-primary)] bg-pv-neutral-grey-50 opacity-70" : "border-pv-primary-primary-200 bg-pv-primary-primary-50/30")}>
-      <div className="flex items-center justify-between gap-2 mb-1.5">
-        <span className="text-[13px] font-semibold text-pv-primary-primary-600">{rec.title}</span>
-        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-rose-50 text-rose-600 border border-rose-200">Now</span>
+    <div className={cn("flex flex-col h-full p-4 rounded-xl border transition-colors bg-white", done ? "border-[var(--border-primary)] opacity-80" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 shadow-[0_1px_2px_rgba(16,24,40,0.04)]")}>
+      {/* Header: category + severity */}
+      <div className="flex items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={cn("flex items-center justify-center w-7 h-7 rounded-full shrink-0", tint.chip)}>
+            <Icon size={15} weight="fill" />
+          </span>
+          <span className="text-[12px] font-medium text-[var(--text-muted)] truncate">{rec.category || rec.groupLabel}</span>
+        </div>
+        {!done && (
+          <span className={cn("shrink-0 px-2 py-0.5 text-[10px] font-semibold rounded-full", actNow ? "bg-rose-50 text-rose-600 border border-rose-200" : "bg-amber-50 text-amber-700 border border-amber-200")}>
+            {actNow ? "Now" : "Watch"}
+          </span>
+        )}
       </div>
-      <p className="text-[13px] text-[var(--text-primary)] font-medium mb-1.5">→ {rec.tldr}</p>
-      <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-1.5">{rec.body}</p>
-      <p className="text-[12px] text-[var(--text-muted)] leading-relaxed mb-3">{rec.evidence}</p>
-      {done ? (
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)] capitalize">
-          <CheckCircle size={14} weight="fill" className="text-green-500" /> {rec.status === "acted" ? "Done" : rec.status === "rejected" ? "Dismissed" : "Snoozed"}
-        </span>
-      ) : (
-        <div className="flex items-center gap-2">
-          <PvButton variant="secondary" size="sm" label="Done" icon={CheckCircle} onClick={() => act.mutate({ action: "acted" })} />
-          <PvButton variant="ghost" size="sm" label="Dismiss" onClick={() => act.mutate({ action: "rejected" })} />
-          <PvButton variant="ghost" size="sm" label="Snooze" icon={ClockCounterClockwise} onClick={() => act.mutate({ action: "snoozed", note: "Snoozed until next run" })} />
+
+      {/* Headline + body */}
+      <p className={cn("text-[14px] font-semibold leading-snug mb-1.5", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>{rec.tldr}</p>
+      <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">{rec.body}</p>
+
+      {/* Impact strip */}
+      {rec.impact && (
+        <div className="flex items-baseline gap-2 px-3 py-2 mb-3 rounded-lg bg-pv-neutral-grey-50 border border-[var(--pv-neutral-grey-100)]">
+          <span className="text-[16px] font-semibold text-[var(--text-primary)] leading-none">{rec.impact.value}</span>
+          <span className="text-[12px] text-[var(--text-secondary)]">{rec.impact.label}</span>
+          {rec.impact.sub && <span className="ml-auto text-[11px] text-[var(--text-muted)] whitespace-nowrap">{rec.impact.sub}</span>}
         </div>
       )}
+
+      {/* Actions pinned to the bottom so cards align in the grid */}
+      <div className="mt-auto pt-3 border-t border-[var(--pv-neutral-grey-100)]">
+        {done ? (
+          <div className="flex items-center justify-between">
+            <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
+              {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
+            </span>
+            <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <PvButton variant="secondary" size="sm" label="Done" icon={CheckCircle} onClick={() => act.mutate({ action: "acted" })} />
+            <PvButton variant="ghost" size="sm" label="Dismiss" onClick={() => act.mutate({ action: "rejected" })} />
+            <SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => act.mutate({ action: "snoozed", snooze })} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -338,6 +447,8 @@ function ActiveGoal({ goal, refetch }) {
 
   const recs = lastCheckIn?.recommendations || [];
   const actNow = recs.filter((r) => r.severity === "act-now" && r.status === "open").length;
+  const watching = recs.filter((r) => r.severity === "watch" && r.status === "open").length;
+  const doneCount = recs.filter((r) => r.status === "acted").length;
 
   return (
     <>
@@ -376,8 +487,8 @@ function ActiveGoal({ goal, refetch }) {
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Recommendations</p>
               <div className="flex items-center gap-3 text-[12px]">
                 <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" />{actNow} act now</span>
-                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />0 watching</span>
-                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" />{recs.filter((r) => r.status === "acted").length} done</span>
+                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />{watching} watching</span>
+                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" />{doneCount} done</span>
               </div>
             </div>
             {recs.length === 0 ? (
@@ -389,71 +500,113 @@ function ActiveGoal({ goal, refetch }) {
             ) : (
               <div className="flex flex-col gap-3">
                 {lastCheckIn && <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>}
-                <div className="p-4 bg-white border border-[var(--border-primary)] rounded-xl flex flex-col gap-3">
-                  <div>
-                    <p className="text-[14px] font-semibold text-[var(--text-primary)]">{recs[0].groupLabel}</p>
-                    <p className="text-[12px] text-[var(--text-secondary)]">{recs[0].groupNote}</p>
-                  </div>
+                <div className="grid grid-cols-2 gap-4 items-stretch">
                   {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} />)}
                 </div>
               </div>
             )}
           </div>
+
+          {/* Goal notes — a running log, kept with the main content */}
+          <div className="bg-white border border-[var(--border-primary)] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <NotePencil size={16} className="text-[var(--text-muted)]" />
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Goal notes</p>
+              {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">({goal.notes.length})</span>}
+            </div>
+            {goal.notes.length > 0 && (
+              <div className="flex flex-col gap-2 mb-3">
+                {goal.notes.map((n) => (
+                  <div key={n.id} className="flex items-start gap-2.5 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-pv-primary-primary-400 mt-1.5 shrink-0" />
+                    <p className="flex-1 text-[13px] text-[var(--text-primary)]">{n.text}</p>
+                    <span className="text-[11px] text-[var(--text-muted)] whitespace-nowrap">{n.at}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex items-end gap-2">
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
+                rows={1}
+                placeholder="Add a note — e.g. “Pausing Meta for 3 weeks · never pause Brand Search”"
+                className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+              />
+              <PvButton variant="secondary" size="md" label="Add" disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
+            </div>
+          </div>
         </div>
 
-        {/* Right rail */}
+        {/* Right rail — the monitor */}
         <aside className="w-[320px] shrink-0 self-start sticky top-0 flex flex-col gap-4">
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Targets</p>
-            {goal.targets.map((t) => (
-              <div key={t.id} className="flex gap-2">
-                <Target size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[13px] font-medium text-[var(--text-primary)] line-clamp-2">{t.label}</p>
-                  {t.target && <p className="text-[12px] text-[var(--text-muted)] mt-0.5">Target: {t.target}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">What we're watching</p>
-              <span className="text-[11px] text-[var(--text-muted)]">{goal.conditions.length}</span>
+          {/* Targets */}
+          <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
+              <Target size={16} className="text-pv-primary-primary-500" />
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Targets</p>
             </div>
-            <div className="flex flex-col gap-2.5">
-              {goal.conditions.map((c) => (
-                <div key={c.id} className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2 min-w-0">
-                    <Eye size={14} className="text-[var(--text-muted)] shrink-0 mt-0.5" />
-                    <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2">{c.label}</p>
+            <div className="p-4 flex flex-col gap-3">
+              {goal.targets.map((t) => (
+                <div key={t.id} className="flex flex-col gap-1.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
+                    {t.target && <span className="shrink-0 px-2 py-0.5 text-[12px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
                   </div>
-                  <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded", c.state === "fired" ? "bg-rose-50 text-rose-600" : "text-[var(--text-muted)]")}>
-                    {c.state === "fired" ? "fired" : "quiet"}
-                  </span>
+                  <p className="text-[11px] text-[var(--text-muted)]">Checked every run</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Goal notes</p>
-            {goal.notes.length === 0 ? <p className="text-[12px] text-[var(--text-muted)] mb-2">No notes yet.</p> : (
-              <div className="flex flex-col gap-1.5 mb-2">
-                {goal.notes.map((n) => <p key={n.id} className="text-[12px] text-[var(--text-secondary)]">• {n.text}</p>)}
+          {/* What we're watching — status board */}
+          {(() => {
+            const conditions = [...goal.conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
+            const firing = goal.conditions.filter((c) => c.state === "fired").length;
+            const quiet = goal.conditions.length - firing;
+            return (
+              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
+                  <div className="flex items-center gap-2">
+                    <WaveSine size={16} className="text-[var(--text-muted)]" />
+                    <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] font-medium">
+                    <span className={cn("inline-flex items-center gap-1", firing > 0 ? "text-rose-600" : "text-[var(--text-muted)]")}>
+                      <span className={cn("w-1.5 h-1.5 rounded-full", firing > 0 ? "bg-rose-500" : "bg-pv-neutral-grey-300")} />{firing}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[var(--text-muted)]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400" />{quiet}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-2 flex flex-col">
+                  {conditions.map((c) => {
+                    const fired = c.state === "fired";
+                    return (
+                      <div key={c.id} title={c.label} className={cn("flex items-start gap-2.5 px-2.5 py-2.5 rounded-lg", fired && "bg-rose-50/60")}>
+                        <span className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
+                          {fired ? (
+                            <>
+                              <span className="absolute w-2.5 h-2.5 rounded-full bg-rose-400/40 animate-ping" />
+                              <span className="w-2 h-2 rounded-full bg-rose-500" />
+                            </>
+                          ) : (
+                            <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
+                          )}
+                        </span>
+                        <p className={cn("flex-1 text-[12px] leading-snug line-clamp-2", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>
+                        <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
+                          {fired ? (c.count ? `${c.count} fired` : "fired") : "quiet"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            )}
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={2}
-              placeholder="e.g. Pausing Meta for 3 weeks · never pause Brand Search"
-              className="w-full text-[12px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none mb-2"
-            />
-            <div className="flex justify-end">
-              <PvButton variant="secondary" size="sm" label="Add note" disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
-            </div>
-          </div>
+            );
+          })()}
         </aside>
       </div>
     </>

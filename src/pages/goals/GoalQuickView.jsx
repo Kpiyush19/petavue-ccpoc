@@ -1,33 +1,74 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  X, ArrowSquareOut, Play, CircleNotch, CheckCircle, ClockCounterClockwise, Target, Eye, Lightning,
+  X, ArrowSquareOut, Play, CircleNotch, CheckCircle, XCircle, ClockCounterClockwise, Target, WaveSine, CaretRight,
 } from "@phosphor-icons/react";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
+const SNOOZE_OPTIONS = ["1 day", "3 days", "1 week", "2 weeks", "Until next check-in"];
+
+function SnoozeMenu({ onSnooze, disabled }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
+  const btnRef = useRef(null);
+  const toggle = () => {
+    if (!open && btnRef.current) { const r = btnRef.current.getBoundingClientRect(); setPos({ top: r.bottom + 4, left: r.left }); }
+    setOpen((o) => !o);
+  };
+  return (
+    <>
+      <button ref={btnRef} onClick={toggle} disabled={disabled}
+        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50">
+        <ClockCounterClockwise size={14} /> Snooze <CaretRight size={11} className="rotate-90" />
+      </button>
+      {open && pos && createPortal(
+        <>
+          <div className="fixed inset-0 z-[90]" onClick={() => setOpen(false)} />
+          <div className="fixed z-[91] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
+            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
+            {SNOOZE_OPTIONS.map((label) => (
+              <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">{label}</button>
+            ))}
+          </div>
+        </>,
+        document.body
+      )}
+    </>
+  );
+}
 
 function QuickRec({ goalId, rec, onChanged }) {
   const act = useMutation({
-    mutationFn: (action) => apiPost(`/api/goals/${goalId}/recommendations/${rec.id}/act`, { action, note: action === "snoozed" ? "Snoozed from quick view" : undefined }),
+    mutationFn: (body) => apiPost(`/api/goals/${goalId}/recommendations/${rec.id}/act`, body),
     onSuccess: onChanged,
   });
   const done = rec.status !== "open";
+  const resolved = {
+    acted: { icon: CheckCircle, cls: "text-green-600", label: "Done" },
+    rejected: { icon: XCircle, cls: "text-[var(--text-muted)]", label: "Dismissed" },
+    snoozed: { icon: ClockCounterClockwise, cls: "text-amber-600", label: rec.snoozeLabel ? `Snoozed · ${rec.snoozeLabel}` : "Snoozed" },
+  }[rec.status];
   return (
-    <div className={cn("p-3.5 rounded-lg border", done ? "border-[var(--border-primary)] bg-pv-neutral-grey-50 opacity-70" : "border-pv-primary-primary-200 bg-pv-primary-primary-50/30")}>
-      <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug mb-1">→ {rec.tldr}</p>
+    <div className={cn("p-3.5 rounded-lg border", done ? "border-[var(--border-primary)] bg-pv-neutral-grey-50" : "border-pv-primary-primary-200 bg-pv-primary-primary-50/30")}>
+      <p className={cn("text-[13px] font-medium leading-snug mb-1", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>→ {rec.tldr}</p>
       <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mb-2.5">{rec.body}</p>
       {done ? (
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)]">
-          <CheckCircle size={14} weight="fill" className="text-green-500" /> {rec.status === "acted" ? "Done" : rec.status === "rejected" ? "Dismissed" : "Snoozed"}
-        </span>
+        <div className="flex items-center justify-between">
+          <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
+            {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
+          </span>
+          <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+        </div>
       ) : (
         <div className="flex items-center gap-2">
-          <PvButton variant="secondary" size="sm" label="Done" icon={CheckCircle} onClick={() => act.mutate("acted")} />
-          <PvButton variant="ghost" size="sm" label="Dismiss" onClick={() => act.mutate("rejected")} />
-          <PvButton variant="ghost" size="sm" label="Snooze" icon={ClockCounterClockwise} onClick={() => act.mutate("snoozed")} />
+          <PvButton variant="secondary" size="sm" label="Done" icon={CheckCircle} onClick={() => act.mutate({ action: "acted" })} />
+          <PvButton variant="ghost" size="sm" label="Dismiss" onClick={() => act.mutate({ action: "rejected" })} />
+          <SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => act.mutate({ action: "snoozed", snooze })} />
         </div>
       )}
     </div>
@@ -130,20 +171,50 @@ export default function GoalQuickView({ id, onClose, onFull }) {
               </section>
 
               <section>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">What we're watching ({goal.conditions.length})</p>
-                <div className="flex flex-col gap-2.5">
-                  {goal.conditions.map((c) => (
-                    <div key={c.id} className="flex items-start justify-between gap-2">
-                      <div className="flex items-start gap-2 min-w-0">
-                        <Eye size={14} className="text-[var(--text-muted)] shrink-0 mt-0.5" />
-                        <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2">{c.label}</p>
+                {(() => {
+                  const conditions = [...goal.conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
+                  const firing = goal.conditions.filter((c) => c.state === "fired").length;
+                  const quiet = goal.conditions.length - firing;
+                  return (
+                    <div className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
+                        <div className="flex items-center gap-2">
+                          <WaveSine size={16} className="text-[var(--text-muted)]" />
+                          <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] font-medium">
+                          <span className={cn("inline-flex items-center gap-1", firing > 0 ? "text-rose-600" : "text-[var(--text-muted)]")}>
+                            <span className={cn("w-1.5 h-1.5 rounded-full", firing > 0 ? "bg-rose-500" : "bg-pv-neutral-grey-300")} />{firing}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[var(--text-muted)]"><span className="w-1.5 h-1.5 rounded-full bg-green-400" />{quiet}</span>
+                        </div>
                       </div>
-                      <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded", c.state === "fired" ? "bg-rose-50 text-rose-600" : "text-[var(--text-muted)]")}>
-                        {c.state === "fired" ? "fired" : "quiet"}
-                      </span>
+                      <div className="p-2 flex flex-col">
+                        {conditions.map((c) => {
+                          const fired = c.state === "fired";
+                          return (
+                            <div key={c.id} title={c.label} className={cn("flex items-start gap-2.5 px-2.5 py-2.5 rounded-lg", fired && "bg-rose-50/60")}>
+                              <span className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
+                                {fired ? (
+                                  <>
+                                    <span className="absolute w-2.5 h-2.5 rounded-full bg-rose-400/40 animate-ping" />
+                                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                                  </>
+                                ) : (
+                                  <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
+                                )}
+                              </span>
+                              <p className={cn("flex-1 text-[12px] leading-snug line-clamp-2", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>
+                              <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
+                                {fired ? (c.count ? `${c.count} fired` : "fired") : "quiet"}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })()}
               </section>
             </div>
           </>

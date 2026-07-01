@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   X, Target, CheckCircle, ClockCounterClockwise, Play, CircleNotch, CaretRight, CaretDown, Lightning, Sliders,
-  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse,
+  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
@@ -69,6 +69,39 @@ function RowMenu({ items, disabled }) {
         </AnimatePresence>,
         document.body
       )}
+    </div>
+  );
+}
+
+/* ── ThoughtSpot-style insight card: color-coded 2px top border, sharp corners,
+      subtle hover lift. Used for the portfolio "Highlights" row. ── */
+const INSIGHT_COLOR = {
+  red: { bar: "#ef4444", txt: "text-rose-600" },
+  amber: { bar: "#f59e0b", txt: "text-amber-600" },
+  green: { bar: "#22c55e", txt: "text-green-600" },
+  blue: { bar: "var(--pv-primary-500)", txt: "text-pv-primary-primary-600" },
+};
+function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: FootIcon, onClick }) {
+  const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
+  return (
+    <div
+      onClick={onClick}
+      style={{ borderTop: `2px solid ${c.bar}` }}
+      className={cn(
+        "flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] px-4 py-3.5 transition-shadow duration-200 hover:shadow-[0_10px_28px_-12px_rgba(16,24,40,0.24)]",
+        onClick && "cursor-pointer"
+      )}
+    >
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        {Icon && <Icon size={20} weight="fill" className={c.txt} />}
+        <span className="text-[26px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
+      </div>
+      <p className="text-[13px] text-[var(--text-secondary)] leading-snug min-h-[34px]">{desc}</p>
+      <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-[var(--pv-neutral-grey-100)]">
+        {FootIcon && <FootIcon size={13} className="text-[var(--text-muted)] shrink-0" />}
+        <span className="text-[12px] text-[var(--text-muted)] truncate">{foot}</span>
+      </div>
     </div>
   );
 }
@@ -192,14 +225,18 @@ function NewGoalModal({ onClose }) {
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const { data: wfData } = useQuery({ queryKey: ["goal-workflows"], queryFn: () => apiGet("/api/goals/workflows") });
-  const workflows = (wfData?.workflows || []).filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
+  const allWorkflows = wfData?.workflows || [];
+  const hasWorkflows = allWorkflows.length > 0;
+  const workflows = allWorkflows.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
   const create = useMutation({
     mutationFn: () => apiPost("/api/goals", { statement: statement.trim(), workflowIds: selected }),
     onSuccess: (res) => { qc.invalidateQueries({ queryKey: ["goals"] }); const id = res?.goal?.id; if (id) navigate(`/goals/${id}`); },
     onError: (e) => toast.error("Failed: " + e.message),
   });
   const toggle = (id) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
-  const canCreate = statement.trim().length > 0 && selected.length > 0 && !create.isPending;
+  // A workflow sharpens calibration but is never required — with none selected we
+  // calibrate on all connected data. A goal statement alone is enough to proceed.
+  const canCreate = statement.trim().length > 0 && !create.isPending;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -218,22 +255,50 @@ function NewGoalModal({ onClose }) {
           <textarea value={statement} onChange={(e) => setStatement(e.target.value)} rows={2} autoFocus placeholder="e.g. Grow qualified pipeline to $1.5M and keep win rate above 25% by Sep 30"
             className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
           <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-4">Describe the outcome in plain language — we'll figure out how to measure it.</p>
-          <label className="block text-[13px] font-semibold text-[var(--text-primary)] mb-1.5">Which workflows feed this goal?</label>
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your workflows…" className="w-full text-[14px] px-3.5 py-2.5 mb-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none" />
-          <div className="flex flex-col gap-2">
-            {workflows.map((w) => (
-              <button key={w.id} type="button" onClick={() => toggle(w.id)}
-                className={cn("flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors", selected.includes(w.id) ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white")}>
-                <span className={cn("shrink-0 w-4 h-4 rounded border flex items-center justify-center", selected.includes(w.id) ? "bg-pv-primary-primary-500 border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-                  {selected.includes(w.id) && <span className="w-2 h-2 rounded-[2px] bg-white" />}
-                </span>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[14px] font-medium text-[var(--text-primary)] truncate">{w.name}</span>
-                  <span className="text-[12px] text-[var(--text-muted)]">{w.schedule} · {w.lastRun}</span>
+          <label className="block text-[13px] font-semibold text-[var(--text-primary)] mb-1.5">
+            Which workflows feed this goal? <span className="font-normal text-[var(--text-muted)]">(optional)</span>
+          </label>
+
+          {!hasWorkflows ? (
+            /* No workflows connected yet — still let them proceed on all data. */
+            <div className="flex flex-col items-center text-center gap-2 px-5 py-7 rounded-xl border border-dashed border-[var(--border-primary)] bg-pv-neutral-grey-50">
+              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-[var(--border-primary)]">
+                <FlowArrow size={20} className="text-[var(--text-muted)]" />
+              </span>
+              <p className="text-[14px] font-semibold text-[var(--text-primary)]">No workflows connected yet</p>
+              <p className="text-[13px] text-[var(--text-secondary)] max-w-[420px] leading-relaxed">
+                Workflows sharpen a goal by pointing it at a specific report. You don't need one to start — we'll calibrate on all your connected data, and you can attach a workflow later.
+              </p>
+              <div className="mt-1">
+                <PvButton variant="secondary" size="sm" label="Set up a workflow" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => { onClose(); navigate("/workflows"); }} />
+              </div>
+            </div>
+          ) : (
+            <>
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your workflows…" className="w-full text-[14px] px-3.5 py-2.5 mb-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none" />
+              {workflows.length === 0 ? (
+                <div className="flex flex-col items-center text-center gap-1.5 px-5 py-8 rounded-xl border border-dashed border-[var(--border-primary)]">
+                  <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
+                  <p className="text-[13px] text-[var(--text-secondary)]">No workflows match “{search}”.</p>
                 </div>
-              </button>
-            ))}
-          </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {workflows.map((w) => (
+                    <button key={w.id} type="button" onClick={() => toggle(w.id)}
+                      className={cn("flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors", selected.includes(w.id) ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white")}>
+                      <span className={cn("shrink-0 w-4 h-4 rounded border flex items-center justify-center", selected.includes(w.id) ? "bg-pv-primary-primary-500 border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
+                        {selected.includes(w.id) && <span className="w-2 h-2 rounded-[2px] bg-white" />}
+                      </span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[14px] font-medium text-[var(--text-primary)] truncate">{w.name}</span>
+                        <span className="text-[12px] text-[var(--text-muted)]">{w.schedule} · {w.lastRun}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
         <div className="shrink-0 flex items-center justify-end gap-2 px-5 py-4 border-t border-[var(--border-primary)] mt-2">
           <PvButton variant="secondary" size="md" label="Cancel" onClick={onClose} />
@@ -311,6 +376,26 @@ export default function GoalsPage() {
   const items = attn?.items || [];
   const attentionGoals = goals.filter((g) => g.health === "attention").length;
   const onTrack = goals.filter((g) => g.health === "ontrack").length;
+  const setup = goals.filter((g) => g.health === "setup").length;
+
+  // Portfolio "Highlights" cards (ThoughtSpot-style). Top exposure surfaces the
+  // single largest-dollar open recommendation across all goals.
+  const num = (v) => parseFloat(String(v || "").replace(/[^0-9.]/g, "")) || 0;
+  const topExposure = [...items].filter((i) => i.impact?.value?.includes("$")).sort((a, b) => num(b.impact.value) - num(a.impact.value))[0];
+  const insights = [
+    { kind: "Needs action", color: "red", icon: Lightning, value: String(items.length),
+      desc: items.length ? `recommendation${items.length !== 1 ? "s" : ""} need action now` : "nothing needs action right now",
+      foot: `Across ${goals.length} goal${goals.length !== 1 ? "s" : ""}`, footIcon: Target, onClick: () => setOpenAttn(true) },
+    topExposure
+      ? { kind: "Top exposure", color: "amber", icon: Flag, value: topExposure.impact.value,
+          desc: `${topExposure.impact.label} · ${topExposure.goalName}`, foot: topExposure.category, footIcon: Pulse, onClick: () => openGoal(topExposure.goalId) }
+      : { kind: "In calibration", color: "amber", icon: Sliders, value: String(setup),
+          desc: `goal${setup !== 1 ? "s" : ""} being set up`, foot: "Calibrating", footIcon: Pulse },
+    { kind: "On track", color: "green", icon: CheckCircle, value: String(onTrack),
+      desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on track`, foot: "Healthy pace", footIcon: Pulse },
+    { kind: "Tracked", color: "blue", icon: Target, value: String(goals.length),
+      desc: "goals in your portfolio", foot: setup > 0 ? `${setup} calibrating` : "All configured", footIcon: Target },
+  ];
 
   // Active goals open in the quick-view overlay; goals still in setup go to the
   // full wizard page (calibrate → decisions → review).
@@ -329,6 +414,15 @@ export default function GoalsPage() {
             <PvButton variant="secondary" size="md" label="Configure" icon={Sliders} onClick={() => setShowConfig(true)} />
             <PvButton variant="primary" size="md" label="New Goal" icon={Target} onClick={() => setShowNew(true)} />
           </div>
+        </div>
+
+        {/* ── Highlights row ── */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[13px] font-semibold text-[var(--text-primary)]">Highlights</span>
+          <span className="text-[12px] text-[var(--text-muted)]">· this week</span>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+          {insights.map((ins) => <InsightCard key={ins.kind} {...ins} />)}
         </div>
 
         <div className="flex flex-col gap-5">

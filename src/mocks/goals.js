@@ -102,6 +102,55 @@ function makeRecommendation() {
   };
 }
 
+// A goal typically surfaces several recommendations per check-in — one per
+// condition that fired. Each is grounded in a specific deal/number and carries
+// an impact estimate so the card grid reads like a real recommendations board.
+function makeRecommendations() {
+  const base = [
+    {
+      category: "Stale close date", iconKey: "stale", severity: "act-now",
+      title: "D3 - test 2",
+      tldr: "Confirm the deal is live and set a realistic new close date.",
+      body: '"D3 - test 2" ($250,000, owner 79182818) sits at decisionmakerboughtin with $200,000 weighted (80%). Its close date is ~211 days in the past, so it is effectively un-dated and corrupts the forecast every day it stays open.',
+      evidence: "Largest open deal, 211 days overdue — $200K of weighted forecast pinned to a date that already passed.",
+      impact: { label: "Forecast exposure", value: "$250K", sub: "211 days overdue" },
+    },
+    {
+      category: "Unowned pipeline", iconKey: "owner", severity: "act-now",
+      title: "Northwind Retail — $42K",
+      tldr: "Assign an owner so this high-value deal gets actively worked.",
+      body: "Northwind Retail ($42,000) crossed the high-value bar 6 days ago but has no hubspot_owner_id, so no one is accountable for advancing it. Unowned deals in your history close at less than half the rate of owned ones.",
+      evidence: "1 high-value deal, no owner for 6 days — sitting idle in the queue.",
+      impact: { label: "At risk", value: "$42K", sub: "no owner · 6 days" },
+    },
+    {
+      category: "Stalled early stage", iconKey: "stuck", severity: "watch",
+      title: "Acme Logistics — $88K",
+      tldr: "Drive the stalled deal to its next stage with a concrete next step.",
+      body: "Acme Logistics ($88,000) has been in appointmentscheduled for 34 days with no stage change and weighted pipeline below 0.3× amount — the pattern your history associates with slippage.",
+      evidence: "34 days in one stage, weighted well under 0.3× amount.",
+      impact: { label: "Slipping", value: "$88K", sub: "34 days, no movement" },
+    },
+    {
+      category: "Pipeline concentration", iconKey: "concentration", severity: "watch",
+      title: "Single-deal risk",
+      tldr: "Add coverage so one deal isn't your entire high-value pipeline.",
+      body: "One deal makes up 82% of open high-value value. If it slips, the goal misses regardless of everything else — worth building a second and third viable path now.",
+      evidence: "Largest single deal = 82% of open high-value pipeline.",
+      impact: { label: "Concentration", value: "82%", sub: "1 deal = most value" },
+    },
+    {
+      category: "Approaching threshold", iconKey: "threshold", severity: "watch",
+      title: "2 deals near the bar",
+      tldr: "Nurture two deals about to cross into high-value tracking.",
+      body: "Two open deals sit between $18K and $20K — just under the high-value bar. A small push tips them into the tracked set and grows qualified high-value pipeline.",
+      evidence: "2 deals at $18K–$20K, one nudge from the threshold.",
+      impact: { label: "Upside", value: "+$38K", sub: "2 deals near bar" },
+    },
+  ];
+  return base.map((r) => ({ id: nid("rec"), status: "open", groupLabel: r.category, ...r }));
+}
+
 function seedActiveGoal(name, statement, target, withCheckIn) {
   const cfg = highValueGoalConfig();
   const goal = {
@@ -120,14 +169,14 @@ function seedActiveGoal(name, statement, target, withCheckIn) {
     createdAt: Date.now(),
   };
   if (withCheckIn) {
-    const rec = makeRecommendation();
+    const recs = makeRecommendations();
     goal.checkIns = [{
       id: nid("ci"),
       at: "Just now",
-      flaggedCount: 1,
+      flaggedCount: recs.filter((r) => r.severity === "act-now").length,
       summary:
-        "1 deal flagged: your entire open high-value pipeline is a single $250,000 deal whose close date is 211 days overdue. Have its owner confirm with the buyer whether it's still live and set a realistic new close date now.",
-      recommendations: [rec],
+        `${recs.length} recommendations across your high-value pipeline — ${recs.filter((r) => r.severity === "act-now").length} need action now, the rest are worth watching. Start with the stale $250K deal whose close date is 211 days overdue.`,
+      recommendations: recs,
     }];
   }
   return goal;
@@ -195,6 +244,10 @@ export function attentionFeed() {
           tldr: rec.tldr,
           title: rec.title,
           groupLabel: rec.groupLabel,
+          category: rec.category || rec.groupLabel,
+          iconKey: rec.iconKey || null,
+          impact: rec.impact || null,
+          severity: rec.severity,
           at: last.at,
         });
       }
@@ -294,14 +347,14 @@ export function saveGoal(id, name) {
 export function runCheckIn(id) {
   const g = find(id);
   if (!g) return null;
-  const rec = makeRecommendation();
+  const recs = makeRecommendations();
   const ci = {
     id: nid("ci"),
     at: "Just now",
-    flaggedCount: 1,
+    flaggedCount: recs.filter((r) => r.severity === "act-now").length,
     summary:
-      "1 deal flagged: your entire open high-value pipeline is a single $250,000 deal whose close date is 211 days overdue. Have its owner confirm with the buyer whether it's still live and set a realistic new close date now.",
-    recommendations: [rec],
+      `${recs.length} recommendations across your high-value pipeline — ${recs.filter((r) => r.severity === "act-now").length} need action now, the rest are worth watching. Start with the stale $250K deal whose close date is 211 days overdue.`,
+    recommendations: recs,
   };
   // mark a couple of conditions as fired
   g.conditions.forEach((c, i) => { if (i >= g.conditions.length - 2) { c.state = "fired"; c.count = 1; } });
@@ -317,6 +370,7 @@ export function actOnRecommendation(id, recId, action, payload) {
     if (rec) {
       rec.status = action; // acted | rejected | snoozed
       if (payload?.note) rec.actionNote = payload.note;
+      if (action === "snoozed") rec.snoozeLabel = payload?.snooze || "until next run";
       break;
     }
   }
