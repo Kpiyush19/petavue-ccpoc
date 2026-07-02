@@ -2,7 +2,7 @@
   // Cloudflare Workers static-assets config for the Vite SPA build (dist/).
   // `wrangler deploy` uploads ./dist and serves it, with SPA fallback so client
   // routes like /goals and /home resolve to index.html.
-  "name": "cc-poc",
+  "name": "petavue-ccpoc",
   "compatibility_date": "2025-06-01",
   "assets": {
     "directory": "./dist",
