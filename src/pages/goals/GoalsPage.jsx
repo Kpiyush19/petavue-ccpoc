@@ -8,6 +8,7 @@ import {
   DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass, Plus,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { Tooltip } from "@/common-components";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost, apiPut } from "../../api";
 import { cn } from "../../utils/cn";
@@ -158,7 +159,7 @@ function AttentionRow({ item, onOpen, onOpenRec }) {
     >
       <button onClick={() => onOpenRec(item.goalId, item.recId)} className="flex items-center gap-2 min-w-0 bg-transparent border-none p-0 cursor-pointer text-left">
         <Lightning size={14} weight="fill" className="text-rose-500 shrink-0" />
-        <span className="text-[13px] font-medium text-[var(--text-primary)] truncate hover:text-pv-primary-primary-600">{item.tldr}</span>
+        <span className="text-[13px] font-medium text-[var(--text-primary)] truncate hover:text-pv-primary-primary-600">{item.title}</span>
       </button>
       <button onClick={() => onOpen(item.goalId)} className="text-[12px] font-medium text-pv-primary-primary-600 hover:underline truncate text-left bg-transparent border-none p-0 cursor-pointer">{item.goalName}</button>
       <span className="text-[12px] text-[var(--text-secondary)] truncate">{item.groupLabel}</span>
@@ -299,10 +300,11 @@ function RecListItem({ item, selected, onClick }) {
         </div>
         {/* content */}
         <div className="flex-1 min-w-0 flex flex-col gap-1 pr-3 py-2.5">
-          <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug line-clamp-2">{item.tldr}</p>
-          <div className="flex items-center justify-between gap-2">
-            <span className={cn("text-[11px] font-semibold uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
-            {item.impact && <span className="text-[12px] font-normal text-[var(--text-secondary)] shrink-0">{item.impact.value}</span>}
+          <Tooltip title={item.title} arrow placement="top">
+            <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug truncate cursor-default">{item.title}</p>
+          </Tooltip>
+          <div className="flex items-center gap-2">
+            <span className={cn("text-[12px] font-semibold uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
           </div>
         </div>
       </div>
@@ -393,7 +395,7 @@ export default function GoalsPage() {
       {/* Sub-tab bar (Goals · Recommendations) */}
       <div className="flex w-full shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
         <div className="flex items-start gap-6 px-4">
-          {[{ k: "goals", label: "Goals" }, { k: "recommendations", label: "Recommendations" }].map((t) => (
+          {[{ k: "goals", label: "Objectives" }, { k: "recommendations", label: "Recommendations" }].map((t) => (
             <button
               key={t.k}
               onClick={() => setTab(t.k)}
@@ -404,7 +406,7 @@ export default function GoalsPage() {
             >
               {t.label}
               {t.k === "recommendations" && recCount > 0 && (
-                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-50 text-pv-primary-primary-600" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{recCount}</span>
+                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-500 text-white" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{recCount}</span>
               )}
             </button>
           ))}

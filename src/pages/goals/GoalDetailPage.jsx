@@ -4,8 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
-  CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, XCircle, PencilSimple, NotePencil,
-  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt,
+  CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, Warning, XCircle, PencilSimple, NotePencil,
+  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, ArrowsClockwise,
 } from "@phosphor-icons/react";
 
 // Category icon + accent per recommendation type.
@@ -497,7 +497,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
       </div>
 
       {/* Headline + body */}
-      <p className={cn("text-[14px] font-semibold leading-snug mb-1.5", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>{rec.tldr}</p>
+      <p className={cn("text-[14px] font-semibold leading-snug mb-1.5", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>{rec.title}</p>
       <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">{rec.body}</p>
 
       {/* Impact strip */}
@@ -557,7 +557,7 @@ function ActiveGoal({ goal, refetch }) {
     <>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-[26px] font-semibold text-[var(--text-primary)]">{goal.name}</h1>
+          <h1 className="text-[20px] font-semibold text-[var(--text-primary)]">{goal.name}</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mt-1">{goal.statement}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -584,7 +584,7 @@ function ActiveGoal({ goal, refetch }) {
             >
               {t.label}
               {t.badge > 0 && (
-                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-50 text-pv-primary-primary-600" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
+                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-500 text-white" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
               )}
             </button>
           ))}
@@ -596,8 +596,8 @@ function ActiveGoal({ goal, refetch }) {
         {tab === "overview" && (
           <div className="flex flex-col gap-6">
             {lastCheckIn ? (
-              <div className="p-5 bg-white border border-[var(--border-primary)] rounded-xl">
-                <div className="flex items-center gap-2 mb-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Latest check-in</span>
                   <span className="text-[11px] text-[var(--text-muted)]">· {lastCheckIn.at}</span>
                 </div>
@@ -606,9 +606,9 @@ function ActiveGoal({ goal, refetch }) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
-                <Lightning size={26} className="text-pv-primary-primary-400" />
-                <p className="text-[15px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
-                <p className="text-[13px] text-[var(--text-secondary)] max-w-[440px]">Run a check-in to measure your targets against the latest data and get data-backed recommendations — each with the evidence behind it.</p>
+                <Lightning size={26} className="text-[var(--text-muted)]" />
+                <p className="text-[16px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
+                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">Run a check-in to measure your targets against the latest data and get data-backed recommendations — each with the evidence behind it.</p>
                 <div className="mt-2">
                   <PvButton variant="primary" size="md" label="Run your first check-in" icon={Play} iconPosition="suffix" onClick={() => check.mutate()} />
                 </div>
@@ -618,18 +618,23 @@ function ActiveGoal({ goal, refetch }) {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Target size={16} className="text-pv-primary-primary-500" />
-                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Targets</p>
+                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Targets</p>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
               </div>
               <div className="grid grid-cols-2 gap-4 items-stretch">
                 {goal.targets.map((t) => (
-                  <div key={t.id} className="flex flex-col gap-2 p-4 bg-white border border-[var(--border-primary)] rounded-xl">
+                  <div key={t.id} className="group flex flex-col gap-3 p-4 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] hover:border-pv-primary-primary-200 transition-all">
                     <div className="flex items-start justify-between gap-3">
-                      <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
-                      {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
+                      <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-pv-primary-primary-50 shrink-0">
+                        <Target size={16} weight="bold" className="text-pv-primary-primary-600" />
+                      </span>
+                      {t.target && <span className="shrink-0 px-2.5 py-1 text-[14px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
                     </div>
+                    <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">{t.label}</p>
                     <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{t.why}</p>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-auto pt-1">Checked every run</p>
+                    <div className="flex items-center gap-1.5 mt-auto pt-2.5 border-t border-[var(--pv-neutral-grey-100)] text-[11px] font-medium text-[var(--text-muted)]">
+                      <ArrowsClockwise size={12} weight="bold" /> Checked every run
+                    </div>
                   </div>
                 ))}
               </div>
@@ -651,10 +656,10 @@ function ActiveGoal({ goal, refetch }) {
               </div>
             </div>
             {recs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-1.5 py-16 border border-dashed border-[var(--border-primary)] rounded-xl text-center">
-                <ClockCounterClockwise size={22} className="text-[var(--text-muted)]" />
-                <p className="text-[14px] text-[var(--text-secondary)]">No recommendations yet</p>
-                <p className="text-[12px] text-[var(--text-muted)]">They appear here after your first check-in.</p>
+              <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
+                <ClockCounterClockwise size={26} className="text-[var(--text-muted)]" />
+                <p className="text-[16px] font-medium text-[var(--text-primary)]">No recommendations yet</p>
+                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">They appear here after your first check-in — each with the data that triggered it.</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 items-stretch">
@@ -675,7 +680,7 @@ function ActiveGoal({ goal, refetch }) {
                   <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
                     <div className="flex items-center gap-2">
                       <WaveSine size={16} className="text-[var(--text-muted)]" />
-                      <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
+                      <p className="text-[14px] font-semibold text-[var(--text-primary)]">What we're watching</p>
                     </div>
                     {firingCount > 0 && <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600">{firingCount} firing</span>}
                   </div>
@@ -695,7 +700,8 @@ function ActiveGoal({ goal, refetch }) {
                             )}
                           </span>
                           <p className={cn("flex-1 text-[12px] leading-snug", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>
-                          <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
+                          <span className={cn("shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
+                            {fired ? <Warning size={11} weight="fill" /> : <CheckCircle size={11} weight="fill" />}
                             {fired ? (c.count ? `${c.count} fired` : "fired") : "quiet"}
                           </span>
                         </div>
@@ -710,7 +716,7 @@ function ActiveGoal({ goal, refetch }) {
             <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
                 <NotePencil size={16} className="text-[var(--text-muted)]" />
-                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Notes</p>
+                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Notes</p>
                 {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
               </div>
               <div className="p-3 flex flex-col gap-2.5">
@@ -773,7 +779,7 @@ export default function GoalDetailPage() {
 
       <FooterSlot.Provider value={footerEl}>
         <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
-          <div className="flex flex-col min-h-full w-full h-full">
+          <div className="flex flex-col min-h-full w-full h-full bg-white rounded-xl p-3">
             {isLoading || !goal ? (
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
             ) : goal.status === "calibrating" ? (
