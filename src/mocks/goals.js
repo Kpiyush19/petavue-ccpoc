@@ -299,30 +299,41 @@ export function createGoal({ statement, workflowIds }) {
   return goal;
 }
 
-// Advance the calibration checklist on a timer; at the end, move to decisions.
+// Calibration only loads workflows/history, then pauses for the user's
+// decisions. The goal config (targets/conditions/moves) is NOT built yet — that
+// happens after the questions are answered (see answerGoal).
 function startCalibration(goal) {
   if (!goal) return;
   goal.timers = goal.timers || [];
-  const advance = (to, ms) => goal.timers.push(setTimeout(() => { goal.progress = to; }, ms));
-  // workflows(1) → history(2) → targets(3) → conditions(4) → moves(5)
-  advance(1, 600);
-  advance(2, 1600);
-  advance(3, 2900);
-  advance(4, 4200);
-  advance(5, 5500);
+  goal.progress = 0;
   goal.timers.push(setTimeout(() => {
-    Object.assign(goal, highValueGoalConfig());
     goal.questions = defaultQuestions();
     goal.status = "decisions";
-  }, 6800));
+  }, 2600));
 }
 
 export function answerGoal(id, answers) {
   const g = find(id);
   if (!g) return null;
   g.answers = { ...g.answers, ...answers };
-  g.status = "review";
+  // Now that the decisions are in, build the config, then walk a short "building"
+  // phase (targets → conditions → moves) before landing on review.
+  Object.assign(g, highValueGoalConfig());
+  g.buildProgress = 0;
+  g.status = "building";
+  startBuilding(g);
   return g;
+}
+
+// Advance the three build sub-steps, then move to review.
+function startBuilding(goal) {
+  if (!goal) return;
+  goal.timers = goal.timers || [];
+  const advance = (to, ms) => goal.timers.push(setTimeout(() => { goal.buildProgress = to; }, ms));
+  advance(1, 900);   // targets ready
+  advance(2, 1900);  // conditions ready
+  advance(3, 2900);  // moves ready
+  goal.timers.push(setTimeout(() => { goal.status = "review"; }, 3600));
 }
 
 export function adjustGoal(id, text) {
@@ -360,6 +371,52 @@ export function runCheckIn(id) {
   g.conditions.forEach((c, i) => { if (i >= g.conditions.length - 2) { c.state = "fired"; c.count = 1; } });
   g.checkIns.unshift(ci);
   return g;
+}
+
+// ── Run history ──
+// Token usage per agent/task within a run, so the run-history screen can show
+// cost per agent and drill into transcripts. Raw numbers; the UI formats them.
+const tok = (input, cacheRead, cacheWrite, out) => ({ input, cacheRead, cacheWrite, out });
+
+function runAgents() {
+  return [
+    { name: "Analyst", kind: "agent", tokens: tok(222, 1400000, 41200, 27100) },
+    { name: "Strategist", kind: "agent", tokens: tok(180, 1300000, 108700, 27200) },
+    { name: "Critic", kind: "agent", tokens: tok(168, 784700, 48100, 14500) },
+    { name: "Deep diagnosis", via: "Analyst", index: 1, kind: "task", tokens: tok(427, 35800, 9400, 2100) },
+    { name: "Deep diagnosis", via: "Analyst", index: 2, kind: "task", tokens: tok(485, 99400, 15000, 7600) },
+    { name: "Deep diagnosis", via: "Analyst", index: 3, kind: "task", tokens: tok(554, 183200, 23000, 7800) },
+    { name: "Signal scan", via: "Strategist", index: 1, kind: "task", tokens: tok(312, 220400, 18200, 5400) },
+    { name: "Signal scan", via: "Strategist", index: 2, kind: "task", tokens: tok(298, 140900, 11700, 4300) },
+    { name: "Evidence pull", via: "Critic", index: 1, kind: "task", tokens: tok(341, 96500, 8800, 3600) },
+    { name: "Evidence pull", via: "Critic", index: 2, kind: "task", tokens: tok(276, 71200, 6400, 2900) },
+    { name: "Threshold check", via: "Analyst", index: 4, kind: "task", tokens: tok(198, 44100, 5200, 1800) },
+    { name: "Owner lookup", via: "Strategist", index: 3, kind: "task", tokens: tok(164, 33800, 4100, 1400) },
+    { name: "Concentration model", via: "Analyst", index: 5, kind: "task", tokens: tok(389, 128700, 13900, 6100) },
+    { name: "Recommendation draft", via: "Strategist", index: 4, kind: "task", tokens: tok(512, 210300, 22400, 9200) },
+    { name: "Recommendation review", via: "Critic", index: 3, kind: "task", tokens: tok(233, 88600, 7300, 3100) },
+    { name: "Synthesis", via: "Strategist", index: 5, kind: "task", tokens: tok(447, 156800, 19600, 8400) },
+  ];
+}
+
+export function runHistory(id) {
+  const g = find(id);
+  if (!g) return null;
+  const source = g.checkIns.length ? g.checkIns : [null];
+  const runs = source.map((ci, i) => ({
+    id: ci?.id || `run-${i}`,
+    at: ci && ci.at !== "Just now" ? ci.at : `${1 - i} Jul, 04:${22 - i * 7}`.replace("0 Jul", "30 Jun"),
+    status: "success",
+    duration: i === 0 ? "40m 30s" : "37m 12s",
+    recCount: ci?.recommendations?.length ?? 6,
+    sessionId: "57b619356c59464c",
+    models: [{ name: "claude-opus-4-8", agents: runAgents() }],
+  }));
+  return {
+    goalName: g.name,
+    calibration: { duration: "4m 37s", tokens: tok(234, 430800, 36400, 20700) },
+    runs,
+  };
 }
 
 export function actOnRecommendation(id, recId, action, payload) {

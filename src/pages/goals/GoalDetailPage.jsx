@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,37 +17,45 @@ import { cn } from "../../utils/cn";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
+// The wizard journey. Loading → your decisions → we build (targets, conditions
+// & moves folded into one step, since none need interaction) → review.
 const CALIBRATION_STEPS = [
   "Loaded your workflows",
-  "Read your history",
-  "Targets",
-  "Conditions",
-  "Recommended moves",
+  "A couple of decisions",
+  "Building your goal",
   "Ready for your review",
 ];
 
 /* ───────── Wizard shell: left stepper · right content · sticky footer ───────── */
-const WIZARD_PHASES = [
-  { key: "calibrate", label: "Calibrate", note: "Read data & propose" },
-  { key: "decisions", label: "Decisions", note: "Answer key questions" },
-  { key: "review", label: "Review & save", note: "Confirm and activate" },
-];
+const STEP_NOTES = {
+  "Loaded your workflows": "Read your workflows & history",
+  "A couple of decisions": "Answer a few grounded questions",
+  "Building your goal": "Drafting targets, conditions & moves",
+  "Ready for your review": "Confirm and activate",
+};
 
-// Left vertical progress tracker (connecting lines, filled checks, active pill).
-function WizardStepper({ current }) {
+// Left vertical progress tracker (connecting lines, filled checks, active step).
+// `current` is the active step index; `spinning` shows a spinner on it (during
+// live calibration). `activeLabel`/`activeNote` override the active step's text
+// (e.g. "Read your history" → "Waiting for your answers" during decisions).
+function WizardStepper({ current, spinning, activeLabel, activeNote }) {
   return (
-    <aside className="w-[212px] shrink-0 self-start sticky top-0">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-4">Progress</p>
+    <aside className="w-[224px] shrink-0 self-start sticky top-0">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-4">What we're doing</p>
       <div className="flex flex-col">
-        {WIZARD_PHASES.map((p, i) => {
+        {CALIBRATION_STEPS.map((label, i) => {
           const done = i < current;
           const active = i === current;
-          const last = i === WIZARD_PHASES.length - 1;
+          const last = i === CALIBRATION_STEPS.length - 1;
+          const text = active && activeLabel ? activeLabel : label;
+          const note = active && activeLabel ? activeNote : STEP_NOTES[label];
           return (
-            <div key={p.key} className="flex gap-3">
+            <div key={label} className="flex gap-3">
               <div className="flex flex-col items-center self-stretch">
                 {done ? (
                   <CheckCircle size={20} weight="fill" className="text-pv-primary-primary-600 shrink-0" />
+                ) : active && spinning ? (
+                  <Spinner size={20} className="text-pv-primary-primary-500 shrink-0" />
                 ) : active ? (
                   <span className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-pv-primary-primary-500 shrink-0">
                     <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
@@ -55,11 +63,11 @@ function WizardStepper({ current }) {
                 ) : (
                   <span className="w-5 h-5 rounded-full border-2 border-[var(--border-primary)] shrink-0" />
                 )}
-                {!last && <span className={cn("w-[2px] flex-1 my-1 rounded-full min-h-[22px]", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
+                {!last && <span className={cn("w-[2px] flex-1 my-1 rounded-full min-h-[20px]", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
               </div>
-              <div className={cn("pb-5 px-2.5 py-1 -mt-1 rounded-lg", active && "bg-pv-primary-primary-50")}>
-                <p className={cn("text-[13px] font-semibold", active ? "text-pv-primary-primary-600" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{p.label}</p>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">{p.note}</p>
+              <div className={cn("pb-4 px-2.5 py-1 -mt-1 rounded-lg", active && "bg-pv-primary-primary-50")}>
+                <p className={cn("text-[13px] font-semibold", active ? "text-pv-primary-primary-600" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{text}</p>
+                {note && <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">{note}</p>}
               </div>
             </div>
           );
@@ -69,22 +77,29 @@ function WizardStepper({ current }) {
   );
 }
 
-// Sticky full-width footer: Cancel/status on the left, actions on the right.
+// Page-wide footer slot — GoalDetailPage renders a full-width bar below the
+// scroll area and shares its DOM node here; WizardFooter portals into it so the
+// footer spans the whole page instead of the centered content column.
+const FooterSlot = createContext(null);
+
+// Page-wide footer: Cancel/status on the left, actions on the right.
 function WizardFooter({ left, right }) {
-  return (
-    <div className="sticky bottom-0 -mx-8 -mb-8 mt-8 px-8 py-3.5 bg-white/85 backdrop-blur-sm border-t border-[var(--border-primary)] flex items-center justify-between gap-4">
+  const slot = useContext(FooterSlot);
+  const bar = (
+    <div className="w-full px-6 py-3 border-t border-[var(--border-primary)] bg-white flex items-center justify-between gap-4">
       <div className="flex items-center gap-2 min-w-0 text-[13px] text-[var(--text-secondary)]">{left}</div>
       <div className="flex items-center gap-2 shrink-0">{right}</div>
     </div>
   );
+  return slot ? createPortal(bar, slot) : bar;
 }
 
 // Two-column scaffold: stepper on the left, titled content on the right, footer pinned.
-function WizardScaffold({ current, title, subtitle, children, footer }) {
+function WizardScaffold({ current, spinning, activeLabel, activeNote, title, subtitle, children, footer }) {
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex gap-10 items-start flex-1">
-        <WizardStepper current={current} />
+        <WizardStepper current={current} spinning={spinning} activeLabel={activeLabel} activeNote={activeNote} />
         <div className="flex-1 min-w-0">
           <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">{title}</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
@@ -98,13 +113,12 @@ function WizardScaffold({ current, title, subtitle, children, footer }) {
 
 /* ───────────────────────── Calibrating ───────────────────────── */
 function Calibrating({ goal, onCancel }) {
-  const p = goal.progress || 0;
-  const labels = ["Getting started…", "Reading your pipeline history…", "Proposing targets…", "Defining conditions to watch…", "Drafting recommended moves…", "Finishing up…"];
   return (
     <WizardScaffold
       current={0}
+      spinning
       title="Calibrating your goal"
-      subtitle="We're reading your data and proposing how to measure this goal."
+      subtitle="We're reading your workflows and history before asking you a couple of quick decisions."
       footer={
         <WizardFooter
           left={<><Spinner size={14} className="text-pv-primary-primary-500" /> This usually takes a minute — you can leave and come back.</>}
@@ -112,31 +126,54 @@ function Calibrating({ goal, onCancel }) {
         />
       }
     >
-      <div className="flex items-start gap-3 p-5 bg-white border border-[var(--border-primary)] rounded-xl mb-4">
+      <div className="flex items-start gap-3 p-5 bg-white border border-[var(--border-primary)] rounded-xl">
         <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
         <div className="flex flex-col gap-0.5">
-          <p className="text-[15px] font-semibold text-[var(--text-primary)]">{labels[Math.min(p, labels.length - 1)]}</p>
+          <p className="text-[15px] font-semibold text-[var(--text-primary)]">Reading your workflows and history…</p>
           <p className="text-[13px] text-[var(--text-secondary)]">Searched 38 history files · 497 rows in raw_deals.csv</p>
         </div>
       </div>
+    </WizardScaffold>
+  );
+}
 
-      {/* Detailed calibration steps (kept as an in-panel checklist) */}
-      <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">What we're doing</p>
-        <div className="flex flex-col gap-2.5">
-          {CALIBRATION_STEPS.map((label, i) => {
-            const done = i < p;
-            const isActive = i === p;
-            return (
-              <div key={label} className="flex items-center gap-2.5">
-                {done ? <CheckCircle size={17} weight="fill" className="text-green-600 shrink-0" />
-                  : isActive ? <Spinner size={17} className="text-pv-primary-primary-500 shrink-0" />
-                  : <span className="w-[17px] h-[17px] rounded-full border-2 border-[var(--border-primary)] shrink-0" />}
-                <span className={cn("text-[13px]", done || isActive ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-muted)]")}>{label}</span>
+/* ───────────────────────── Building ───────────────────────── */
+const BUILD_STEPS = [
+  { label: "Targets", note: "Turning your goal into measurable targets" },
+  { label: "Conditions", note: "Defining the signals we'll watch each run" },
+  { label: "Recommended moves", note: "Drafting the actions we may suggest" },
+];
+function Building({ goal, onCancel }) {
+  const p = goal.buildProgress || 0;
+  return (
+    <WizardScaffold
+      current={2}
+      spinning
+      title="Building your goal"
+      subtitle="Using your answers to draft the targets, conditions and moves for this goal."
+      footer={
+        <WizardFooter
+          left={<><Spinner size={14} className="text-pv-primary-primary-500" /> Building — this only takes a moment.</>}
+          right={<PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />}
+        />
+      }
+    >
+      <div className="bg-white border border-[var(--border-primary)] rounded-xl p-5 flex flex-col gap-4">
+        {BUILD_STEPS.map((s, i) => {
+          const done = i < p;
+          const active = i === p;
+          return (
+            <div key={s.label} className="flex items-start gap-3">
+              {done ? <CheckCircle size={20} weight="fill" className="text-green-600 shrink-0 mt-0.5" />
+                : active ? <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+                : <span className="w-5 h-5 rounded-full border-2 border-[var(--border-primary)] shrink-0 mt-0.5" />}
+              <div>
+                <p className={cn("text-[14px] font-semibold", done || active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{s.label}</p>
+                <p className="text-[12px] text-[var(--text-muted)]">{s.note}</p>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
     </WizardScaffold>
   );
@@ -179,10 +216,27 @@ function Decisions({ goal, refetch, onCancel }) {
         />
       }
     >
-      <div className="h-1 rounded-full bg-pv-neutral-grey-100 mb-6 overflow-hidden">
-        <div className="h-full bg-pv-primary-primary-500 rounded-full transition-all" style={{ width: `${((idx + 1) / total) * 100}%` }} />
-      </div>
+      {/* Answered so far — a quick glance; click to revisit */}
+      {idx > 0 && (
+        <div className="flex flex-col gap-2 mb-5">
+          {goal.questions.slice(0, idx).map((qq, i) => {
+            const ansId = answers[qq.id];
+            const opt = qq.options.find((o) => o.id === ansId);
+            const label = opt ? opt.label : ansId === "other" ? "Something else…" : "—";
+            return (
+              <button key={qq.id} onClick={() => setIdx(i)} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg border border-[var(--border-primary)] bg-pv-neutral-grey-50 text-left cursor-pointer hover:border-pv-primary-primary-300 transition-colors">
+                <CheckCircle size={16} weight="fill" className="text-green-600 shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Question {i + 1}</p>
+                  <p className="text-[13px] text-[var(--text-primary)] leading-snug line-clamp-1">{label}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
+      <p className="text-[13px] font-semibold text-pv-primary-primary-600 mb-2">Question {idx + 1} of {total}</p>
       <p className="text-[16px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
       <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-pv-primary-primary-50 border border-pv-primary-primary-100">
         <ChartBar size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
@@ -251,58 +305,45 @@ function Review({ goal, refetch, onCancel }) {
 
   return (
     <>
-      <WizardScaffold
-        current={2}
-        title="Review your goal"
-        subtitle="Here's how we'll measure and watch it — adjust in plain language below, then save."
-        footer={
-          <WizardFooter
-            left={<span className="min-w-0 truncate"><span className="font-semibold text-[var(--text-primary)]">{summary}</span><span className="hidden sm:inline"> — ready when you are</span></span>}
-            right={
-              <>
-                <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
-                <PvButton variant="primary" size="md" label="Save goal" icon={CheckCircle} onClick={() => setShowSave(true)} />
-              </>
-            }
-          />
-        }
-      >
-        <div className="flex flex-col gap-7">
-          {/* Targets */}
-          <section>
-            <div className="flex items-center gap-2 mb-1">
-              <Target size={16} className="text-pv-primary-primary-500" />
-              <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
-              <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
-            </div>
-            <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal — we check each target every run.</p>
-            {goal.targets.map((t) => (
-              <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-[15px] font-medium text-[var(--text-primary)] leading-relaxed">{t.label}</p>
-                  {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
-                </div>
-                <button onClick={() => setWhyOpen((v) => !v)} className="flex items-center gap-1 mt-3 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">
-                  <CaretRight size={12} className={cn("transition-transform", whyOpen && "rotate-90")} /> Why this, and where it comes from
-                </button>
-                {whyOpen && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)] leading-relaxed pl-4 border-l-2 border-pv-primary-primary-100">{t.why}</p>}
-              </div>
-            ))}
-          </section>
+      <div className="flex-1 flex flex-col min-h-0">
+        <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
+        <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
 
-          {/* Conditions + Moves — the watch/act pair, side by side */}
-          <div className="grid grid-cols-2 gap-5 items-start">
+        <div className="flex gap-6 items-start flex-1 min-h-0">
+          {/* Left: targets, conditions, moves */}
+          <div className="flex-1 min-w-0 flex flex-col gap-7">
+            {/* Targets */}
+            <section>
+              <div className="flex items-center gap-2 mb-1">
+                <Target size={16} className="text-pv-primary-primary-500" />
+                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
+                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
+              </div>
+              <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal — we check each target every run.</p>
+              {goal.targets.map((t) => (
+                <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-[15px] font-medium text-[var(--text-primary)] leading-relaxed">{t.label}</p>
+                    {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
+                  </div>
+                  <button onClick={() => setWhyOpen((v) => !v)} className="flex items-center gap-1 mt-3 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">
+                    <CaretRight size={12} className={cn("transition-transform", whyOpen && "rotate-90")} /> Why this, and where it comes from
+                  </button>
+                  {whyOpen && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)] leading-relaxed pl-4 border-l-2 border-pv-primary-primary-100">{t.why}</p>}
+                </div>
+              ))}
+            </section>
+
             {/* Conditions we'll watch */}
-            <section className="flex flex-col">
+            <section>
               <div className="flex items-center gap-2 mb-3">
                 <WaveSine size={16} className="text-[var(--text-muted)]" />
-                <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">Conditions we'll watch</h2>
+                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Conditions we'll watch each run</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.conditions.length}</span>
               </div>
-              <p className="text-[12px] text-[var(--text-secondary)] mb-2.5">Signals we test on every run to catch drift early.</p>
               <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
                 {goal.conditions.map((c, i) => (
-                  <div key={c.id} className={cn("flex items-start gap-2.5 px-3.5 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                  <div key={c.id} className={cn("flex items-start gap-2.5 px-4 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
                     <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
                     <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
                   </div>
@@ -311,16 +352,15 @@ function Review({ goal, refetch, onCancel }) {
             </section>
 
             {/* Moves we may recommend */}
-            <section className="flex flex-col">
+            <section>
               <div className="flex items-center gap-2 mb-3">
                 <Lightning size={16} className="text-amber-500" />
-                <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
+                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.moves.length}</span>
               </div>
-              <p className="text-[12px] text-[var(--text-secondary)] mb-2.5">Actions we'll surface when a condition fires — you decide.</p>
               <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
                 {goal.moves.map((m, i) => (
-                  <div key={m.id} className={cn("flex items-start gap-2.5 px-3.5 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                  <div key={m.id} className={cn("flex items-start gap-2.5 px-4 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
                     <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-amber-50 mt-0.5">
                       <Lightning size={12} weight="fill" className="text-amber-500" />
                     </span>
@@ -331,43 +371,49 @@ function Review({ goal, refetch, onCancel }) {
             </section>
           </div>
 
-          {/* Adjust — full-width, plain-language edits */}
-          <section className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-            <div className="flex items-start gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
-              <PencilSimple size={16} className="text-pv-primary-primary-500 mt-0.5 shrink-0" />
-              <div>
+          {/* Right: full-height adjust chat */}
+          <aside className="w-[360px] shrink-0 sticky top-0 self-start flex flex-col bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden h-[calc(100vh-240px)] min-h-[420px]">
+            <div className="shrink-0 px-4 py-3.5 border-b border-[var(--border-primary)]">
+              <div className="flex items-center gap-2">
+                <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
                 <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
-                <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
               </div>
+              <p className="text-[12px] text-[var(--text-secondary)] mt-1 leading-snug">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
             </div>
-            <div className="p-4">
-              <p className="text-[13px] text-[var(--text-secondary)] mb-3">
-                Config stands at <span className="font-semibold text-[var(--text-primary)]">{summary}</span>. If you'd like any thresholds or scopes adjusted, just say the word.
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+              <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                Config stands at <span className="font-semibold text-[var(--text-primary)]">{summary}</span>. If you'd like any thresholds or scopes adjusted, just say the word and I'll update them.
               </p>
-              {chat.length > 0 && (
-                <div className="flex flex-col gap-2 mb-3">
-                  {chat.map((m, i) => (
-                    <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[80%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
-                      {m.text}
-                    </div>
-                  ))}
+              {chat.map((m, i) => (
+                <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[85%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
+                  {m.text}
                 </div>
-              )}
-              <div className="flex items-end gap-2">
-                <textarea
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
-                  rows={2}
-                  placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
-                  className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
-                />
-                <PvButton variant="secondary" size="md" label={adjust.isPending ? "…" : "Send"} disabled={!draft.trim() || adjust.isPending} onClick={sendAdjust} />
-              </div>
+              ))}
             </div>
-          </section>
+            <div className="shrink-0 p-3 border-t border-[var(--border-primary)] flex items-end gap-2">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
+                rows={2}
+                placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
+                className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+              />
+              <PvButton variant="primary" size="md" label={adjust.isPending ? "…" : "Send"} disabled={!draft.trim() || adjust.isPending} onClick={sendAdjust} />
+            </div>
+          </aside>
         </div>
-      </WizardScaffold>
+      </div>
+
+      <WizardFooter
+        left={<span className="min-w-0 truncate"><span className="font-semibold text-[var(--text-primary)]">{summary}</span><span className="hidden sm:inline"> — ready when you are</span></span>}
+        right={
+          <>
+            <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
+            <PvButton variant="primary" size="md" label="Save goal" icon={CheckCircle} onClick={() => setShowSave(true)} />
+          </>
+        }
+      />
 
       {showSave && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -508,6 +554,7 @@ function RecommendationCard({ goal, rec, refetch }) {
 
 function ActiveGoal({ goal, refetch }) {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [note, setNote] = useState("");
   const lastCheckIn = goal.checkIns[0];
 
@@ -533,7 +580,7 @@ function ActiveGoal({ goal, refetch }) {
           <p className="text-[14px] text-[var(--text-secondary)] mt-1">{goal.statement}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <PvButton variant="secondary" size="md" label="Run history" icon={ClockCounterClockwise} />
+          <PvButton variant="secondary" size="md" label="Run history" icon={ClockCounterClockwise} onClick={() => navigate(`/goals/${goal.id}/runs`)} />
           <PvButton variant="primary" size="md" label={check.isPending ? "Checking…" : "Run check-in"} icon={check.isPending ? Spinner : Play} iconPosition="suffix" disabled={check.isPending} onClick={() => check.mutate()} />
         </div>
       </div>
@@ -582,36 +629,6 @@ function ActiveGoal({ goal, refetch }) {
             )}
           </div>
 
-          {/* Goal notes — a running log, kept with the main content */}
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <NotePencil size={16} className="text-[var(--text-muted)]" />
-              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Goal notes</p>
-              {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">({goal.notes.length})</span>}
-            </div>
-            {goal.notes.length > 0 && (
-              <div className="flex flex-col gap-2 mb-3">
-                {goal.notes.map((n) => (
-                  <div key={n.id} className="flex items-start gap-2.5 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
-                    <span className="w-1.5 h-1.5 rounded-full bg-pv-primary-primary-400 mt-1.5 shrink-0" />
-                    <p className="flex-1 text-[13px] text-[var(--text-primary)]">{n.text}</p>
-                    <span className="text-[11px] text-[var(--text-muted)] whitespace-nowrap">{n.at}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex items-end gap-2">
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
-                rows={1}
-                placeholder="Add a note — e.g. “Pausing Meta for 3 weeks · never pause Brand Search”"
-                className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
-              />
-              <PvButton variant="secondary" size="md" label="Add" disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
-            </div>
-          </div>
         </div>
 
         {/* Right rail — the monitor */}
@@ -682,6 +699,38 @@ function ActiveGoal({ goal, refetch }) {
               </div>
             );
           })()}
+
+          {/* Goal notes — a running log, kept with the goal's context */}
+          <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
+              <NotePencil size={16} className="text-[var(--text-muted)]" />
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Notes</p>
+              {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
+            </div>
+            <div className="p-3 flex flex-col gap-2.5">
+              {goal.notes.length > 0 && (
+                <div className="flex flex-col gap-2 max-h-[240px] overflow-y-auto">
+                  {goal.notes.map((n) => (
+                    <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
+                      <p className="text-[12px] text-[var(--text-primary)] leading-snug">{n.text}</p>
+                      <span className="text-[10px] text-[var(--text-muted)]">{n.at}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-col gap-2">
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
+                  rows={2}
+                  placeholder="Add a note — e.g. “Never pause Brand Search”"
+                  className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+                />
+                <PvButton variant="secondary" size="sm" label="Add note" icon={NotePencil} disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
+              </div>
+            </div>
+          </div>
         </aside>
       </div>
     </>
@@ -700,6 +749,7 @@ export default function GoalDetailPage() {
 
   const cancel = () => navigate("/goals");
   const crumb = goal?.name || "Goal";
+  const [footerEl, setFooterEl] = useState(null);
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -712,21 +762,28 @@ export default function GoalDetailPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-      <div className="flex flex-col min-h-full w-full max-w-[1180px] mx-auto px-8 py-8">
-        {isLoading || !goal ? (
-          <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
-        ) : goal.status === "calibrating" ? (
-          <Calibrating goal={goal} onCancel={cancel} />
-        ) : goal.status === "decisions" ? (
-          <Decisions goal={goal} refetch={refetch} onCancel={cancel} />
-        ) : goal.status === "review" ? (
-          <Review goal={goal} refetch={refetch} onCancel={cancel} />
-        ) : (
-          <ActiveGoal goal={goal} refetch={refetch} />
-        )}
-      </div>
-      </div>
+      <FooterSlot.Provider value={footerEl}>
+        <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
+          <div className="flex flex-col min-h-full w-full max-w-[1180px] mx-auto px-8 py-8">
+            {isLoading || !goal ? (
+              <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
+            ) : goal.status === "calibrating" ? (
+              <Calibrating goal={goal} onCancel={cancel} />
+            ) : goal.status === "decisions" ? (
+              <Decisions goal={goal} refetch={refetch} onCancel={cancel} />
+            ) : goal.status === "building" ? (
+              <Building goal={goal} onCancel={cancel} />
+            ) : goal.status === "review" ? (
+              <Review goal={goal} refetch={refetch} onCancel={cancel} />
+            ) : (
+              <ActiveGoal goal={goal} refetch={refetch} />
+            )}
+          </div>
+        </div>
+      </FooterSlot.Provider>
+
+      {/* Page-wide footer slot — wizard phases portal their footer here */}
+      <div ref={setFooterEl} className="shrink-0 w-full" />
     </div>
   );
 }

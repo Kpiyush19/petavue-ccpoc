@@ -38,81 +38,88 @@ export default function NewGoalPage() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-        <div className="flex flex-col min-h-full w-full max-w-[820px] mx-auto px-8 py-8">
-          <div className="flex-1">
-            <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">Create a new goal</h1>
-            <p className="text-[14px] text-[var(--text-secondary)] mb-7">Describe the outcome you want — we'll read your data and propose how to measure and watch it.</p>
+        <div className="w-full max-w-[860px] mx-auto px-8 py-8">
+          {/* Form card panel */}
+          <div className="bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+            {/* Card header */}
+            <div className="px-6 py-4 border-b border-[var(--pv-neutral-grey-150)]">
+              <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Create a new goal</h2>
+              <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Describe the outcome you want — we'll read your data and propose how to measure and watch it.</p>
+            </div>
 
-            {/* What's the goal? */}
-            <section className="mb-7">
-              <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-2">What's the goal?</label>
-              <textarea
-                value={statement}
-                onChange={(e) => setStatement(e.target.value)}
-                rows={3}
-                autoFocus
-                placeholder="e.g. Grow qualified pipeline to $1.5M and keep win rate above 25% by Sep 30"
-                className="w-full text-[15px] px-4 py-3.5 rounded-xl border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
-              />
-              <p className="text-[12px] text-[var(--text-muted)] mt-2">Describe the outcome in plain language — we'll figure out how to measure it.</p>
-            </section>
+            {/* Card body — stacked labeled fields */}
+            <div className="p-6 flex flex-col gap-6">
+              {/* Goal */}
+              <div>
+                <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-2">What's the goal? <span className="text-rose-500">*</span></label>
+                <textarea
+                  value={statement}
+                  onChange={(e) => setStatement(e.target.value)}
+                  rows={3}
+                  autoFocus
+                  placeholder="e.g. Grow qualified pipeline to $1.5M and keep win rate above 25% by Sep 30"
+                  className="w-full text-[15px] px-4 py-3.5 rounded-xl border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
+                />
+                <p className="text-[12px] text-[var(--text-muted)] mt-2">Describe the outcome in plain language — we'll figure out how to measure it.</p>
+              </div>
 
-            {/* Which workflows feed this goal? */}
-            <section>
-              <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-2">
-                Which workflows feed this goal? <span className="font-normal text-[var(--text-muted)]">(optional)</span>
-              </label>
+              {/* Workflows */}
+              <div>
+                <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-2">
+                  Which workflows feed this goal? <span className="font-normal text-[var(--text-muted)]">(optional)</span>
+                </label>
 
-              {!hasWorkflows ? (
-                <div className="flex flex-col items-center text-center gap-2 px-5 py-9 rounded-xl border border-dashed border-[var(--border-primary)] bg-white">
-                  <span className="flex items-center justify-center w-11 h-11 rounded-full bg-pv-neutral-grey-50 border border-[var(--border-primary)]">
-                    <FlowArrow size={22} className="text-[var(--text-muted)]" />
-                  </span>
-                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">No workflows connected yet</p>
-                  <p className="text-[13px] text-[var(--text-secondary)] max-w-[460px] leading-relaxed">
-                    Workflows sharpen a goal by pointing it at a specific report. You don't need one to start — we'll calibrate on all your connected data, and you can attach a workflow later.
-                  </p>
-                  <div className="mt-1">
-                    <PvButton variant="secondary" size="sm" label="Set up a workflow" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => navigate("/workflows")} />
+                {!hasWorkflows ? (
+                  <div className="flex flex-col items-center text-center gap-2 px-5 py-9 rounded-xl border border-dashed border-[var(--border-primary)] bg-pv-neutral-grey-50">
+                    <span className="flex items-center justify-center w-11 h-11 rounded-full bg-white border border-[var(--border-primary)]">
+                      <FlowArrow size={22} className="text-[var(--text-muted)]" />
+                    </span>
+                    <p className="text-[14px] font-semibold text-[var(--text-primary)]">No workflows connected yet</p>
+                    <p className="text-[13px] text-[var(--text-secondary)] max-w-[460px] leading-relaxed">
+                      Workflows sharpen a goal by pointing it at a specific report. You don't need one to start — we'll calibrate on all your connected data, and you can attach a workflow later.
+                    </p>
+                    <div className="mt-1">
+                      <PvButton variant="secondary" size="sm" label="Set up a workflow" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => navigate("/workflows")} />
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your workflows…" className="w-full text-[14px] px-4 py-2.5 mb-2.5 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none" />
-                  {workflows.length === 0 ? (
-                    <div className="flex flex-col items-center text-center gap-1.5 px-5 py-9 rounded-xl border border-dashed border-[var(--border-primary)]">
-                      <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
-                      <p className="text-[13px] text-[var(--text-secondary)]">No workflows match “{search}”.</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2.5">
-                      {workflows.map((w) => (
-                        <button key={w.id} type="button" onClick={() => toggle(w.id)}
-                          className={cn("flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors", selected.includes(w.id) ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white")}>
-                          <span className={cn("shrink-0 w-4 h-4 rounded border flex items-center justify-center", selected.includes(w.id) ? "bg-pv-primary-primary-500 border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-                            {selected.includes(w.id) && <span className="w-2 h-2 rounded-[2px] bg-white" />}
-                          </span>
-                          <div className="flex flex-col min-w-0">
-                            <span className="text-[14px] font-medium text-[var(--text-primary)] truncate">{w.name}</span>
-                            <span className="text-[12px] text-[var(--text-muted)] truncate">{w.schedule} · {w.lastRun}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </section>
-          </div>
-
-          {/* Sticky footer */}
-          <div className="sticky bottom-0 -mx-8 -mb-8 mt-8 px-8 py-3.5 bg-white/85 backdrop-blur-sm border-t border-[var(--border-primary)] flex items-center justify-between gap-4">
-            <span className="text-[13px] text-[var(--text-muted)]">{selected.length > 0 ? `${selected.length} workflow${selected.length !== 1 ? "s" : ""} selected` : "Calibrates on all connected data"}</span>
-            <div className="flex items-center gap-2">
-              <PvButton variant="secondary" size="md" label="Cancel" onClick={() => navigate("/goals")} />
-              <PvButton variant="primary" size="md" label={create.isPending ? "Creating…" : "Create & Calibrate"} icon={Target} disabled={!canCreate} onClick={() => create.mutate()} />
+                ) : (
+                  <>
+                    <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your workflows…" className="w-full text-[14px] px-4 py-2.5 mb-2.5 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none" />
+                    {workflows.length === 0 ? (
+                      <div className="flex flex-col items-center text-center gap-1.5 px-5 py-9 rounded-xl border border-dashed border-[var(--border-primary)]">
+                        <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
+                        <p className="text-[13px] text-[var(--text-secondary)]">No workflows match “{search}”.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {workflows.map((w) => (
+                          <button key={w.id} type="button" onClick={() => toggle(w.id)}
+                            className={cn("flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors", selected.includes(w.id) ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white")}>
+                            <span className={cn("shrink-0 w-4 h-4 rounded border flex items-center justify-center", selected.includes(w.id) ? "bg-pv-primary-primary-500 border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
+                              {selected.includes(w.id) && <span className="w-2 h-2 rounded-[2px] bg-white" />}
+                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-[14px] font-medium text-[var(--text-primary)] truncate">{w.name}</span>
+                              <span className="text-[12px] text-[var(--text-muted)] truncate">{w.schedule} · {w.lastRun}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Page-wide footer */}
+      <div className="shrink-0 w-full px-6 py-3 border-t border-[var(--pv-neutral-grey-150)] bg-white flex items-center justify-between gap-4">
+        <span className="text-[13px] text-[var(--text-muted)]">{selected.length > 0 ? `${selected.length} workflow${selected.length !== 1 ? "s" : ""} selected` : "Calibrates on all connected data"}</span>
+        <div className="flex items-center gap-2">
+          <PvButton variant="secondary" size="md" label="Cancel" onClick={() => navigate("/goals")} />
+          <PvButton variant="primary" size="md" label={create.isPending ? "Creating…" : "Create & Calibrate"} icon={Target} disabled={!canCreate} onClick={() => create.mutate()} />
         </div>
       </div>
     </div>

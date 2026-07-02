@@ -229,14 +229,12 @@ function ConfigModal({ onClose }) {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["goal-config"] }); toast.success("Context saved"); onClose(); },
   });
   const filled = ["company", "process", "icp", "additional"].filter((k) => (value[k] || "").trim()).length;
-
-  const Field = ({ label, k, placeholder }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-semibold text-[var(--text-primary)]">{label}</label>
-      <textarea value={value[k] || ""} onChange={(e) => set(k, e.target.value)} rows={3} placeholder={placeholder}
-        className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
-    </div>
-  );
+  const FIELDS = [
+    { k: "company", label: "Company", placeholder: "What does your company do?" },
+    { k: "process", label: "Process", placeholder: "How does your GTM / revenue process work?" },
+    { k: "icp", label: "Ideal Customer Profile", placeholder: "Who are your best-fit customers?" },
+    { k: "additional", label: "Additional context", placeholder: "Anything else the engine should know." },
+  ];
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -257,10 +255,13 @@ function ConfigModal({ onClose }) {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-5 py-5 overflow-y-auto">
-          <Field label="Company" k="company" placeholder="What does your company do?" />
-          <Field label="Process" k="process" placeholder="How does your GTM / revenue process work?" />
-          <Field label="Ideal Customer Profile" k="icp" placeholder="Who are your best-fit customers?" />
-          <Field label="Additional context" k="additional" placeholder="Anything else the engine should know." />
+          {FIELDS.map((f) => (
+            <div key={f.k} className="flex flex-col gap-1.5">
+              <label className="text-[13px] font-semibold text-[var(--text-primary)]">{f.label}</label>
+              <textarea value={value[f.k] || ""} onChange={(e) => set(f.k, e.target.value)} rows={3} placeholder={f.placeholder}
+                className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
+            </div>
+          ))}
         </div>
         <div className="shrink-0 flex items-center justify-end gap-2 px-5 py-4 border-t border-[var(--border-primary)]">
           <PvButton variant="secondary" size="md" label="Cancel" onClick={onClose} />

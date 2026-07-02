@@ -265,6 +265,7 @@ const handlers = [
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/adjust$/, handler: ({ params, body }) => Goals.adjustGoal(params[0], body?.text || "") },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/save$/, handler: ({ params, body }) => ({ goal: Goals.saveGoal(params[0], body?.name) }) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/check-in$/, handler: ({ params }) => Goals.runCheckIn(params[0]) },
+  { method: "GET", pattern: /\/api\/goals\/([^/]+)\/runs$/, handler: ({ params }) => Goals.runHistory(params[0]) || { detail: "not found" } },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/recommendations\/([^/]+)\/act$/, handler: ({ params, body }) => Goals.actOnRecommendation(params[0], params[1], body?.action, body) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/notes$/, handler: ({ params, body }) => Goals.addNote(params[0], body?.text || "") },
 
