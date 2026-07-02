@@ -37,18 +37,18 @@ export default function NewGoalPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-        <div className="w-full max-w-[860px] mx-auto px-8 py-8">
-          {/* Form card panel */}
-          <div className="bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+      <div className="flex-1 min-h-0 overflow-hidden bg-pv-neutral-grey-50 p-4">
+        <div className="w-full h-full">
+          {/* Form card panel — full width & height */}
+          <div className="w-full h-full flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
             {/* Card header */}
-            <div className="px-6 py-4 border-b border-[var(--pv-neutral-grey-150)]">
+            <div className="shrink-0 px-6 py-4 border-b border-[var(--pv-neutral-grey-150)]">
               <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Create a new goal</h2>
               <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Describe the outcome you want — we'll read your data and propose how to measure and watch it.</p>
             </div>
 
             {/* Card body — stacked labeled fields */}
-            <div className="p-6 flex flex-col gap-6">
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
               {/* Goal */}
               <div>
                 <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-2">What's the goal? <span className="text-rose-500">*</span></label>

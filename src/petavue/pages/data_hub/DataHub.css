@@ -242,7 +242,8 @@
 .data-hub__row {
   display: flex;
   align-items: center;
-  padding: 17px var(--spacing-12);
+  padding: 0 var(--spacing-12);
+  height: 58px;
   background-color: var(--color-white);
   border: var(--border-default) solid var(--color-neutral-100);
   border-radius: var(--radius-md);
@@ -254,6 +255,7 @@
 
 .data-hub__row:hover {
   background-color: var(--color-primary-50);
+  box-shadow: 0 4px 12px -2px rgba(16, 24, 40, 0.10);
 }
 
 .data-hub__row-num {

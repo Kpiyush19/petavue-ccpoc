@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
   CaretRight, X, ClockCounterClockwise, Play, ChartBar, WaveSine, Pulse, XCircle, PencilSimple, NotePencil,
-  Clock, UserCircle, TrendUp, ChartPieSlice,
+  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt,
 } from "@phosphor-icons/react";
 
 // Category icon + accent per recommendation type.
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
+import RecommendationDrawer from "./RecommendationDrawer";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
@@ -94,14 +95,18 @@ function WizardFooter({ left, right }) {
   return slot ? createPortal(bar, slot) : bar;
 }
 
-// Two-column scaffold: stepper on the left, titled content on the right, footer pinned.
+// Unified panel: bordered stepper rail on the left, titled content, footer pinned.
 function WizardScaffold({ current, spinning, activeLabel, activeNote, title, subtitle, children, footer }) {
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex gap-10 items-start flex-1">
-        <WizardStepper current={current} spinning={spinning} activeLabel={activeLabel} activeNote={activeNote} />
-        <div className="flex-1 min-w-0">
-          <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">{title}</h1>
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
+        {/* Left rail: stepper */}
+        <div className="shrink-0 border-r border-[var(--pv-neutral-grey-150)] px-4 py-5 overflow-y-auto">
+          <WizardStepper current={current} spinning={spinning} activeLabel={activeLabel} activeNote={activeNote} />
+        </div>
+        {/* Content */}
+        <div className="flex-1 min-w-0 overflow-y-auto px-6 py-5">
+          <h1 className="text-[22px] font-semibold text-[var(--text-primary)]">{title}</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
           {children}
         </div>
@@ -285,6 +290,7 @@ function Review({ goal, refetch, onCancel }) {
   const [whyOpen, setWhyOpen] = useState(false);
   const [chat, setChat] = useState([]);
   const [draft, setDraft] = useState("");
+  const [showAdjust, setShowAdjust] = useState(true);
 
   const adjust = useMutation({
     mutationFn: (text) => apiPost(`/api/goals/${goal.id}/adjust`, { text }),
@@ -305,13 +311,17 @@ function Review({ goal, refetch, onCancel }) {
 
   return (
     <>
-      <div className="flex-1 flex flex-col min-h-0">
-        <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
-        <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
+      <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
+        {/* Left rail: progress stepper */}
+        <div className="shrink-0 border-r border-[var(--pv-neutral-grey-150)] px-4 py-5 overflow-y-auto">
+          <WizardStepper current={3} />
+        </div>
 
-        <div className="flex gap-6 items-start flex-1 min-h-0">
-          {/* Left: targets, conditions, moves */}
-          <div className="flex-1 min-w-0 flex flex-col gap-7">
+        {/* Middle: titled content */}
+        <div className="flex-1 min-w-0 overflow-y-auto px-6 py-5">
+          <h1 className="text-[22px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
+          <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
+          <div className="flex flex-col gap-7">
             {/* Targets */}
             <section>
               <div className="flex items-center gap-2 mb-1">
@@ -370,22 +380,27 @@ function Review({ goal, refetch, onCancel }) {
               </div>
             </section>
           </div>
+        </div>
 
-          {/* Right: full-height adjust chat */}
-          <aside className="w-[360px] shrink-0 sticky top-0 self-start flex flex-col bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden h-[calc(100vh-240px)] min-h-[420px]">
-            <div className="shrink-0 px-4 py-3.5 border-b border-[var(--border-primary)]">
-              <div className="flex items-center gap-2">
-                <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
-                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
+        {/* Right rail: adjust chat (collapsible) */}
+        {showAdjust ? (
+          <div className="w-[360px] shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
+            <div className="shrink-0 flex items-start justify-between gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
+                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
+                </div>
+                <p className="text-[12px] text-[var(--text-secondary)] mt-1 leading-snug">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
               </div>
-              <p className="text-[12px] text-[var(--text-secondary)] mt-1 leading-snug">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
+              <button onClick={() => setShowAdjust(false)} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer shrink-0" aria-label="Collapse"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
               <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
                 Config stands at <span className="font-semibold text-[var(--text-primary)]">{summary}</span>. If you'd like any thresholds or scopes adjusted, just say the word and I'll update them.
               </p>
               {chat.map((m, i) => (
-                <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[85%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
+                <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white rounded-br-md" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)] rounded-bl-md")}>
                   {m.text}
                 </div>
               ))}
@@ -399,10 +414,16 @@ function Review({ goal, refetch, onCancel }) {
                 placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
                 className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
               />
-              <PvButton variant="primary" size="md" label={adjust.isPending ? "…" : "Send"} disabled={!draft.trim() || adjust.isPending} onClick={sendAdjust} />
+              <button onClick={sendAdjust} disabled={!draft.trim() || adjust.isPending} className="flex items-center justify-center w-9 h-9 rounded-full bg-pv-primary-primary-500 text-white disabled:opacity-40 shrink-0 cursor-pointer border-none transition-opacity" aria-label="Send">
+                {adjust.isPending ? <Spinner size={16} /> : <PaperPlaneTilt size={16} weight="fill" />}
+              </button>
             </div>
-          </aside>
-        </div>
+          </div>
+        ) : (
+          <button onClick={() => setShowAdjust(true)} className="w-12 shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex items-start justify-center pt-4 hover:bg-pv-neutral-grey-50 cursor-pointer bg-white border-y-0 border-r-0" title="Want to adjust anything?">
+            <PencilSimple size={16} className="text-pv-primary-primary-500" />
+          </button>
+        )}
       </div>
 
       <WizardFooter
@@ -481,7 +502,7 @@ function SnoozeMenu({ onSnooze, disabled }) {
   );
 }
 
-function RecommendationCard({ goal, rec, refetch }) {
+function RecommendationCard({ goal, rec, refetch, onOpen }) {
   const qc = useQueryClient();
   const act = useMutation({
     mutationFn: (body) => apiPost(`/api/goals/${goal.id}/recommendations/${rec.id}/act`, body),
@@ -502,7 +523,7 @@ function RecommendationCard({ goal, rec, refetch }) {
   }[rec.status];
 
   return (
-    <div className={cn("flex flex-col h-full p-4 rounded-xl border transition-colors bg-white", done ? "border-[var(--border-primary)] opacity-80" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 shadow-[0_1px_2px_rgba(16,24,40,0.04)]")}>
+    <div onClick={() => onOpen?.(rec.id)} className={cn("flex flex-col h-full p-4 rounded-xl border transition-colors bg-white cursor-pointer", done ? "border-[var(--border-primary)] opacity-80" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 shadow-[0_1px_2px_rgba(16,24,40,0.04)]")}>
       {/* Header: category + severity */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2 min-w-0">
@@ -532,7 +553,7 @@ function RecommendationCard({ goal, rec, refetch }) {
       )}
 
       {/* Actions pinned to the bottom so cards align in the grid */}
-      <div className="mt-auto pt-3 border-t border-[var(--pv-neutral-grey-100)]">
+      <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-3 border-t border-[var(--pv-neutral-grey-100)]">
         {done ? (
           <div className="flex items-center justify-between">
             <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
@@ -556,6 +577,7 @@ function ActiveGoal({ goal, refetch }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [note, setNote] = useState("");
+  const [recId, setRecId] = useState(null);
   const lastCheckIn = goal.checkIns[0];
 
   const check = useMutation({
@@ -623,7 +645,7 @@ function ActiveGoal({ goal, refetch }) {
               <div className="flex flex-col gap-3">
                 {lastCheckIn && <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>}
                 <div className="grid grid-cols-2 gap-4 items-stretch">
-                  {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} />)}
+                  {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} onOpen={setRecId} />)}
                 </div>
               </div>
             )}
@@ -733,6 +755,8 @@ function ActiveGoal({ goal, refetch }) {
           </div>
         </aside>
       </div>
+
+      {recId && <RecommendationDrawer goalId={goal.id} recId={recId} onClose={() => setRecId(null)} />}
     </>
   );
 }
@@ -763,8 +787,8 @@ export default function GoalDetailPage() {
       </div>
 
       <FooterSlot.Provider value={footerEl}>
-        <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-          <div className="flex flex-col min-h-full w-full max-w-[1180px] mx-auto px-8 py-8">
+        <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
+          <div className="flex flex-col min-h-full w-full h-full">
             {isLoading || !goal ? (
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
             ) : goal.status === "calibrating" ? (

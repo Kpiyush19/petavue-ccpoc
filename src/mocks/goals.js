@@ -108,44 +108,78 @@ function makeRecommendation() {
 function makeRecommendations() {
   const base = [
     {
-      category: "Stale close date", iconKey: "stale", severity: "act-now",
-      title: "D3 - test 2",
+      category: "Stale close date", iconKey: "stale", severity: "act-now", tier: 1, age: "New · day 1",
+      title: '"D3 - test 2" close date is 211 days overdue',
       tldr: "Confirm the deal is live and set a realistic new close date.",
       body: '"D3 - test 2" ($250,000, owner 79182818) sits at decisionmakerboughtin with $200,000 weighted (80%). Its close date is ~211 days in the past, so it is effectively un-dated and corrupts the forecast every day it stays open.',
       evidence: "Largest open deal, 211 days overdue — $200K of weighted forecast pinned to a date that already passed.",
       impact: { label: "Forecast exposure", value: "$250K", sub: "211 days overdue" },
+      metrics: [
+        { label: "Amount", value: "$250K", note: "largest open deal" },
+        { label: "Weighted", value: "$200K", note: "80% confidence" },
+        { label: "Close date", value: "211 days overdue", note: "2025-11-30" },
+        { label: "Stage", value: "decisionmakerboughtin", note: "no change in 30 days" },
+      ],
+      trigger: "Fires when an open high-value deal (> $20K) has a close date on/before today",
+      steps: ["Have the owner confirm with the buyer whether it's still live", "Set a realistic new close date or move it to closed-lost"],
     },
     {
-      category: "Unowned pipeline", iconKey: "owner", severity: "act-now",
-      title: "Northwind Retail — $42K",
+      category: "Unowned pipeline", iconKey: "owner", severity: "act-now", tier: 2, age: "New · day 1",
+      title: "Northwind Retail ($42K) has no owner",
       tldr: "Assign an owner so this high-value deal gets actively worked.",
       body: "Northwind Retail ($42,000) crossed the high-value bar 6 days ago but has no hubspot_owner_id, so no one is accountable for advancing it. Unowned deals in your history close at less than half the rate of owned ones.",
       evidence: "1 high-value deal, no owner for 6 days — sitting idle in the queue.",
       impact: { label: "At risk", value: "$42K", sub: "no owner · 6 days" },
+      metrics: [
+        { label: "Amount", value: "$42K", note: "above $20K bar" },
+        { label: "Owner", value: "None", note: "6 days unassigned" },
+        { label: "Close rate (unowned)", value: "< 0.5×", note: "vs owned deals" },
+      ],
+      trigger: "Fires when an open high-value deal (> $20K) has an empty hubspot_owner_id",
+      steps: ["Assign or reassign an owner", "Confirm the owner has a next step scheduled"],
     },
     {
-      category: "Stalled early stage", iconKey: "stuck", severity: "watch",
-      title: "Acme Logistics — $88K",
+      category: "Stalled early stage", iconKey: "stuck", severity: "watch", tier: 2, age: "Day 3",
+      title: "Acme Logistics ($88K) stalled 34 days early-stage",
       tldr: "Drive the stalled deal to its next stage with a concrete next step.",
       body: "Acme Logistics ($88,000) has been in appointmentscheduled for 34 days with no stage change and weighted pipeline below 0.3× amount — the pattern your history associates with slippage.",
       evidence: "34 days in one stage, weighted well under 0.3× amount.",
       impact: { label: "Slipping", value: "$88K", sub: "34 days, no movement" },
+      metrics: [
+        { label: "Amount", value: "$88K", note: "" },
+        { label: "Days in stage", value: "34", note: "appointmentscheduled" },
+        { label: "Weighted", value: "< 0.3×", note: "low stage probability" },
+      ],
+      trigger: "Fires when a high-value deal's weighted_pipeline < 0.3 × amount",
+      steps: ["Book the next customer touch", "Set a concrete next step to advance the stage"],
     },
     {
-      category: "Pipeline concentration", iconKey: "concentration", severity: "watch",
-      title: "Single-deal risk",
+      category: "Pipeline concentration", iconKey: "concentration", severity: "watch", tier: 1, age: "Day 5",
+      title: "One deal is 82% of open high-value pipeline",
       tldr: "Add coverage so one deal isn't your entire high-value pipeline.",
       body: "One deal makes up 82% of open high-value value. If it slips, the goal misses regardless of everything else — worth building a second and third viable path now.",
       evidence: "Largest single deal = 82% of open high-value pipeline.",
       impact: { label: "Concentration", value: "82%", sub: "1 deal = most value" },
+      metrics: [
+        { label: "Concentration", value: "82%", note: "largest deal / open book" },
+        { label: "Open high-value deals", value: "3", note: "" },
+      ],
+      trigger: "Fires when the largest single open deal ≥ $250K dominates the open book",
+      steps: ["Build a second and third viable path", "Rebalance the queue / add coverage"],
     },
     {
-      category: "Approaching threshold", iconKey: "threshold", severity: "watch",
-      title: "2 deals near the bar",
+      category: "Approaching threshold", iconKey: "threshold", severity: "watch", tier: 3, age: "Day 5",
+      title: "2 deals about to cross the high-value bar",
       tldr: "Nurture two deals about to cross into high-value tracking.",
       body: "Two open deals sit between $18K and $20K — just under the high-value bar. A small push tips them into the tracked set and grows qualified high-value pipeline.",
       evidence: "2 deals at $18K–$20K, one nudge from the threshold.",
       impact: { label: "Upside", value: "+$38K", sub: "2 deals near bar" },
+      metrics: [
+        { label: "Deals near bar", value: "2", note: "$18K–$20K" },
+        { label: "Potential add", value: "+$38K", note: "if both cross" },
+      ],
+      trigger: "Fires when open deals sit between $10K and the $20K high-value bar",
+      steps: ["Prioritize a touch on both deals", "Track whether they cross the bar next run"],
     },
   ];
   return base.map((r) => ({ id: nid("rec"), status: "open", groupLabel: r.category, ...r }));
@@ -255,6 +289,25 @@ export function attentionFeed() {
   }
   return { items };
 }
+// Every recommendation across goals — for the Recommendations tab (master list).
+export function allRecommendations() {
+  const items = [];
+  for (const g of goals) {
+    const last = g.checkIns[0];
+    if (!last) continue;
+    for (const rec of last.recommendations) {
+      items.push({
+        goalId: g.id, goalName: g.name, recId: rec.id,
+        title: rec.title, tldr: rec.tldr, category: rec.category || rec.groupLabel,
+        severity: rec.severity, status: rec.status, impact: rec.impact || null, age: rec.age || null,
+        at: last.at,
+      });
+    }
+  }
+  const rank = (r) => (r.status !== "open" ? 2 : r.severity === "act-now" ? 0 : 1);
+  return { items: items.sort((a, b) => rank(a) - rank(b)) };
+}
+
 export function getConfig() {
   return { ...config };
 }

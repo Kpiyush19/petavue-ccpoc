@@ -31,7 +31,7 @@ export const CCDashboardElement = ({
     <div
       role="button"
       tabIndex={0}
-      className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:border-[var(--pv-primary-300)] active:border-[var(--pv-neutral-grey-200)] active:bg-white text-left group cursor-pointer bg-white"
+      className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
       style={{ gridTemplateColumns: GRID_COLUMNS }}
       onClick={() => navigate(`${basePath}/${dashboardId}`)}
       onKeyDown={(e) => {
@@ -41,8 +41,8 @@ export const CCDashboardElement = ({
         }
       }}
     >
-      <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-500)]">
-        {index + 1}
+      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
+        {index + 1}.
       </span>
 
       <span className="flex items-center px-2 min-w-0 overflow-hidden">
@@ -55,18 +55,18 @@ export const CCDashboardElement = ({
               navigate(`${basePath}/${dashboardId}`);
             }}
             onMouseEnter={onTooltipReset}
-            className="text-sm truncate group-hover:text-[var(--pv-primary-500)] group-hover:underline"
+            className="text-xs truncate"
           >
             {artifact.name}
           </a>
         </Tooltip>
       </span>
 
-      <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-600)]">
+      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
         {artifact.shared ? "Yes" : "No"}
       </span>
 
-      <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-500)]">
+      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
         <Tooltip title={formatDateTime(artifact.latest_run?.refreshed_at || artifact.created_at, artifact.tenant_timezone) || formatDate(artifact.latest_run?.refreshed_at || artifact.created_at)} arrow placement="top" tooltipActive={tooltipActive}>
           <span onMouseEnter={onTooltipReset}>{timeAgo(artifact.latest_run?.refreshed_at || artifact.created_at)}</span>
         </Tooltip>

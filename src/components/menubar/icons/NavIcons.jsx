@@ -77,9 +77,16 @@ export function SquaresGridIcon({ size = 20, isActive = false, isAccent = false 
   );
 }
 
-/* TreeStructure — Workflows */
+/* TreeStructure — Workflows. Filled when active (primary-500). */
 export function WorkflowsIcon({ size = 20, isActive = false, isAccent = false }) {
   const c = iconColor(isActive, isAccent);
+  if (isActive || isAccent) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M216,144H168a16,16,0,0,0-16,16v16h-8a16,16,0,0,1-16-16V96a16,16,0,0,1,16-16h8V96a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16V64h-8a32,32,0,0,0-32,32v24H80v-8A16,16,0,0,0,64,96H32a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16v-8h32v24a32,32,0,0,0,32,32h8v16a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V160A16,16,0,0,0,216,144Z" />
+      </svg>
+    );
+  }
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill={c} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M168,112h48a16,16,0,0,0,16-16V48a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16V64h-8a32,32,0,0,0-32,32v24H80v-8A16,16,0,0,0,64,96H32a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16v-8h32v24a32,32,0,0,0,32,32h8v16a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V160a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v16h-8a16,16,0,0,1-16-16V96a16,16,0,0,1,16-16h8V96A16,16,0,0,0,168,112ZM64,144H32V112H64v32Zm104,16h48v48H168Zm0-112h48V96H168Z" />

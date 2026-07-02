@@ -135,7 +135,7 @@ export default function WorkflowsPage() {
     <div className="flex flex-col w-full gap-2">
       {Array.from({ length }).map((_, ind) => (
         <div
-          className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg"
+          className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg"
           style={{ gridTemplateColumns: GRID_COLUMNS }}
           key={ind}
         >
@@ -249,12 +249,12 @@ export default function WorkflowsPage() {
                     return (
                       <button
                         key={wf.workflow_id}
-                        className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:border-[var(--pv-primary-300)] active:border-[var(--pv-neutral-grey-200)] active:bg-white text-left group cursor-pointer bg-white"
+                        className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
                         style={{ gridTemplateColumns: GRID_COLUMNS }}
                         onClick={() => navigate(`/workflows/${wf.workflow_id}`)}
                       >
-                        <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-500)]">
-                          {index + 1}
+                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
+                          {index + 1}.
                         </span>
 
                         <span className="flex items-center gap-2 px-2 min-w-0 overflow-hidden">
@@ -267,7 +267,7 @@ export default function WorkflowsPage() {
                                 navigate(`/workflows/${wf.workflow_id}`);
                               }}
                               onMouseEnter={() => setTooltipShow(true)}
-                              className="text-sm truncate group-hover:text-[var(--pv-primary-500)] group-hover:underline"
+                              className="text-xs truncate"
                             >
                               {wf.name}
                             </a>
@@ -275,11 +275,11 @@ export default function WorkflowsPage() {
                           {isRunning && <Badge variant="accent" className="shrink-0">Running</Badge>}
                         </span>
 
-                        <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
                           {getTriggerLabel(wf.trigger)}
                         </span>
 
-                        <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
                           {wf.latest_run ? (
                             <Tooltip title={formatDateTime(wf.latest_run.refreshed_at, wf.tenant_timezone) || formatDate(wf.latest_run.refreshed_at)} arrow placement="top" tooltipActive={tooltipShow}>
                               <span onMouseEnter={() => setTooltipShow(true)}>{timeAgo(wf.latest_run.refreshed_at)}</span>
@@ -289,11 +289,11 @@ export default function WorkflowsPage() {
                           )}
                         </span>
 
-                        <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
                           {wf.status === 'paused' ? 'Paused' : 'Active'}
                         </span>
 
-                        <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
                           {wf.shared ? 'Yes' : 'No'}
                         </span>
 

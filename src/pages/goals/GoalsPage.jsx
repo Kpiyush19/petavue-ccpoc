@@ -11,19 +11,19 @@ import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost, apiPut } from "../../api";
 import { cn } from "../../utils/cn";
-import GoalQuickView from "./GoalQuickView";
+import { RecommendationDetail } from "./RecommendationDrawer";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
 const HEALTH = {
-  attention: { dot: "bg-rose-500", label: "Needs attention", text: "text-rose-600" },
+  attention: { dot: "bg-rose-500", label: "Act now", text: "text-rose-600" },
   ontrack: { dot: "bg-green-500", label: "On track", text: "text-green-600" },
   setup: { dot: "bg-amber-500", label: "In setup", text: "text-amber-600" },
 };
 const SETUP_LABEL = { calibrating: "Calibrating", decisions: "Ready for review", review: "Ready for review" };
 
 const NEEDS_COLS = "minmax(0,1fr) 180px 200px 84px 36px";
-const GOALS_COLS = "minmax(0,1fr) 150px 96px 96px 120px 36px";
+const GOALS_COLS = "32px minmax(0,1fr) 150px 96px 96px 120px 36px";
 
 /* ── Row kebab menu (portaled so it escapes section overflow) ── */
 function RowMenu({ items, disabled }) {
@@ -84,14 +84,7 @@ const INSIGHT_COLOR = {
 function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: FootIcon, onClick }) {
   const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
   return (
-    <div
-      onClick={onClick}
-      style={{ borderTop: `2px solid ${c.bar}` }}
-      className={cn(
-        "flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] px-4 py-3.5 transition-shadow duration-200 hover:shadow-[0_10px_28px_-12px_rgba(16,24,40,0.24)]",
-        onClick && "cursor-pointer"
-      )}
-    >
+    <div className="flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg px-4 py-3.5">
       <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={20} weight="fill" className={c.txt} />}
@@ -109,23 +102,24 @@ function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: Foo
 /* ── Column header cell with a Phosphor icon ── */
 function HeaderCell({ icon: Icon, label }) {
   return (
-    <span className="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)]">
+    <span className="flex items-center gap-1.5 text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">
       {Icon && <Icon size={13} />} {label}
     </span>
   );
 }
 
-/* ── Collapsible floating section ── */
-function Section({ title, count, badge, open, onToggle, headerRight, children }) {
+/* ── Collapsible section with a proper heading ── */
+function Section({ title, icon: Icon, iconClass, count, badge, open, onToggle, headerRight, children }) {
   return (
-    <section className="bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-16px_rgba(16,24,40,0.14)]">
-      <div className="flex items-center justify-between px-5 py-3.5 cursor-pointer select-none hover:bg-pv-neutral-grey-50/60 transition-colors" onClick={onToggle}>
-        <div className="flex items-center gap-2">
-          <CaretDown size={14} className={cn("text-[var(--text-muted)] transition-transform", !open && "-rotate-90")} />
-          <span className="text-[14px] font-semibold text-[var(--text-primary)]">{title}</span>
+    <section className="bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-16px_rgba(16,24,40,0.14)]">
+      <div className="flex items-center justify-between px-5 py-4 cursor-pointer select-none hover:bg-pv-neutral-grey-50/60 transition-colors" onClick={onToggle}>
+        <div className="flex items-center gap-2.5">
+          {Icon && <Icon size={18} weight="fill" className={cn("shrink-0", iconClass || "text-[var(--text-muted)]")} />}
+          <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
           {typeof count === "number" && (
             <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", badge || "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{count}</span>
           )}
+          <CaretDown size={15} className={cn("text-[var(--text-muted)] transition-transform ml-0.5", !open && "-rotate-90")} />
         </div>
         {headerRight}
       </div>
@@ -146,8 +140,8 @@ function Section({ title, count, badge, open, onToggle, headerRight, children })
   );
 }
 
-/* ── A "needs attention" recommendation row ── */
-function AttentionRow({ item, onOpen }) {
+/* ── An "act now" recommendation row ── */
+function AttentionRow({ item, onOpen, onOpenRec }) {
   const qc = useQueryClient();
   const act = useMutation({
     mutationFn: (action) => apiPost(`/api/goals/${item.goalId}/recommendations/${item.recId}/act`, { action, note: action === "snoozed" ? "Snoozed from home" : undefined }),
@@ -162,7 +156,7 @@ function AttentionRow({ item, onOpen }) {
       className="grid items-center gap-3 px-5 py-3 border-t border-[var(--pv-neutral-grey-100)] hover:bg-pv-neutral-grey-50/70 transition-colors overflow-hidden"
       style={{ gridTemplateColumns: NEEDS_COLS }}
     >
-      <button onClick={() => onOpen(item.goalId)} className="flex items-center gap-2 min-w-0 bg-transparent border-none p-0 cursor-pointer text-left">
+      <button onClick={() => onOpenRec(item.goalId, item.recId)} className="flex items-center gap-2 min-w-0 bg-transparent border-none p-0 cursor-pointer text-left">
         <Lightning size={14} weight="fill" className="text-rose-500 shrink-0" />
         <span className="text-[13px] font-medium text-[var(--text-primary)] truncate hover:text-pv-primary-primary-600">{item.tldr}</span>
       </button>
@@ -182,7 +176,7 @@ function AttentionRow({ item, onOpen }) {
 }
 
 /* ── A goal row (single line, table) ── */
-function GoalRow({ goal, onOpen, onFull }) {
+function GoalRow({ goal, onOpen, onFull, index }) {
   const qc = useQueryClient();
   const inSetup = goal.health === "setup";
   const h = HEALTH[goal.health] || HEALTH.setup;
@@ -199,20 +193,24 @@ function GoalRow({ goal, onOpen, onFull }) {
     : [{ label: "Resume setup", icon: CaretRight, onClick: () => onFull(goal.id) }];
 
   return (
-    <div className="grid items-center gap-3 px-5 py-3 border-t border-[var(--pv-neutral-grey-100)] hover:bg-pv-neutral-grey-50/70 transition-colors cursor-pointer" style={{ gridTemplateColumns: GOALS_COLS }} onClick={() => onOpen(goal)}>
-      <div className="flex items-center gap-2.5 min-w-0">
-        <span className={cn("shrink-0 w-2 h-2 rounded-full", h.dot)} />
-        <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">{goal.name}</span>
+    <div
+      className="grid items-center w-full px-3 h-[58px] shrink-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all cursor-pointer"
+      style={{ gridTemplateColumns: GOALS_COLS }}
+      onClick={() => onOpen(goal)}
+    >
+      <span className="text-[12px] font-normal text-[var(--text-muted)] px-2">{index}.</span>
+      <div className="flex items-center gap-2.5 min-w-0 px-2">
+        <span className="text-[12px] font-normal text-[var(--text-primary)] truncate">{goal.name}</span>
       </div>
-      <span className={cn("text-[12px] font-medium truncate", h.text)}>{inSetup ? (SETUP_LABEL[goal.status] || "In setup") : h.label}</span>
-      <span className="text-[12px] text-[var(--text-secondary)] whitespace-nowrap">{goal.targetSummary || "—"}</span>
-      <span>
+      <span className={cn("text-[12px] font-normal truncate px-2", h.text)}>{inSetup ? (SETUP_LABEL[goal.status] || "In setup") : h.label}</span>
+      <span className="text-[12px] font-normal text-[var(--text-secondary)] whitespace-nowrap px-2">{goal.targetSummary || "—"}</span>
+      <span className="px-2">
         {goal.actNow > 0
           ? <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600 whitespace-nowrap">{goal.actNow} act now</span>
-          : <span className="text-[12px] text-[var(--text-muted)]">—</span>}
+          : <span className="text-[12px] font-normal text-[var(--text-muted)]">—</span>}
       </span>
-      <span className="text-[12px] text-[var(--text-muted)] whitespace-nowrap">{goal.lastCheckIn ? `checked ${goal.lastCheckIn}` : "—"}</span>
-      <div onClick={(e) => e.stopPropagation()}><RowMenu items={menuItems} /></div>
+      <span className="text-[12px] font-normal text-[var(--text-muted)] whitespace-nowrap px-2">{goal.lastCheckIn ? `checked ${goal.lastCheckIn}` : "—"}</span>
+      <div className="px-2" onClick={(e) => e.stopPropagation()}><RowMenu items={menuItems} /></div>
     </div>
   );
 }
@@ -272,12 +270,87 @@ function ConfigModal({ onClose }) {
   );
 }
 
+/* ── Recommendations tab: master list (left) + detail (right) ── */
+/* Item styled like a Workbook action card: icon frame + content, radius-4 card,
+   hover → primary-50, active → primary-50 + primary-500 border + soft shadow. */
+function RecListItem({ item, selected, onClick }) {
+  const actNow = item.severity === "act-now";
+  const done = item.status !== "open";
+  const Icon = done ? CheckCircle : actNow ? Lightning : Eye;
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
+        selected
+          ? "bg-pv-primary-primary-50 border-pv-primary-primary-500 shadow-[0_4px_4px_rgba(54,97,237,0.08)]"
+          : "border-[var(--pv-neutral-grey-200)] hover:bg-pv-primary-primary-50",
+        done && "opacity-70"
+      )}
+    >
+      <div className="flex items-center">
+        {/* icon frame */}
+        <div className="flex items-center justify-center p-2.5 shrink-0">
+          <div
+            className={cn("flex items-center justify-center w-9 h-9 rounded-[4px] border border-[var(--pv-neutral-grey-200)]", selected ? "bg-white" : "bg-pv-neutral-grey-50")}
+            style={{ boxShadow: "0 4px 4px rgba(122,122,122,0.04)" }}
+          >
+            <Icon size={16} weight="fill" className={done ? "text-[var(--text-muted)]" : actNow ? "text-rose-500" : "text-amber-500"} />
+          </div>
+        </div>
+        {/* content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-1 pr-3 py-2.5">
+          <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug line-clamp-2">{item.tldr}</p>
+          <div className="flex items-center justify-between gap-2">
+            <span className={cn("text-[11px] font-semibold uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
+            {item.impact && <span className="text-[12px] font-normal text-[var(--text-secondary)] shrink-0">{item.impact.value}</span>}
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function RecommendationsPanel({ onOpenGoal }) {
+  const { data } = useQuery({ queryKey: ["goals-recommendations"], queryFn: () => apiGet("/api/goals/recommendations"), refetchInterval: 2500 });
+  const items = data?.items || [];
+  const [sel, setSel] = useState(null);
+  const selected = items.find((i) => i.recId === sel) || items[0];
+
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 h-full text-center px-6">
+        <CheckCircle size={26} weight="fill" className="text-green-500" />
+        <p className="text-[15px] font-medium text-[var(--text-primary)]">You're all caught up</p>
+        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">Run a check-in on a goal to surface new recommendations.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full">
+      {/* Left: recommendation list (wbc__chat-style panel) */}
+      <div className="w-[380px] shrink-0 flex flex-col border-r border-[var(--pv-neutral-grey-150)] overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+          {items.map((it) => (
+            <RecListItem key={it.recId} item={it} selected={selected?.recId === it.recId} onClick={() => setSel(it.recId)} />
+          ))}
+        </div>
+      </div>
+      {/* Right: detail */}
+      <div className="flex-1 min-w-0">
+        {selected && <RecommendationDetail key={selected.recId} goalId={selected.goalId} recId={selected.recId} onOpenGoal={onOpenGoal} />}
+      </div>
+    </div>
+  );
+}
+
 export default function GoalsPage() {
   const navigate = useNavigate();
+  const [tab, setTab] = useState("goals");
   const [showConfig, setShowConfig] = useState(false);
-  const [quickId, setQuickId] = useState(null);
-  const [openAttn, setOpenAttn] = useState(true);
-  const [openGoals, setOpenGoals] = useState(true);
+  const { data: recData } = useQuery({ queryKey: ["goals-recommendations"], queryFn: () => apiGet("/api/goals/recommendations"), refetchInterval: 2500 });
+  const recCount = (recData?.items || []).filter((r) => r.status === "open").length;
   const { data: goalsData } = useQuery({ queryKey: ["goals"], queryFn: () => apiGet("/api/goals"), refetchInterval: 2500 });
   const { data: attn } = useQuery({ queryKey: ["goals-attention"], queryFn: () => apiGet("/api/goals/attention"), refetchInterval: 2500 });
   const goals = goalsData?.goals || [];
@@ -286,31 +359,25 @@ export default function GoalsPage() {
   const onTrack = goals.filter((g) => g.health === "ontrack").length;
   const setup = goals.filter((g) => g.health === "setup").length;
 
-  // Portfolio "Highlights" cards (ThoughtSpot-style). Top exposure surfaces the
-  // single largest-dollar open recommendation across all goals.
-  const num = (v) => parseFloat(String(v || "").replace(/[^0-9.]/g, "")) || 0;
-  const topExposure = [...items].filter((i) => i.impact?.value?.includes("$")).sort((a, b) => num(b.impact.value) - num(a.impact.value))[0];
+  // Portfolio "Highlights" — four lenses on the goal portfolio: what to do now,
+  // what's off track, what's healthy, and what's being watched (lower priority).
+  const watching = (recData?.items || []).filter((r) => r.severity === "watch" && r.status === "open").length;
   const insights = [
-    { kind: "Needs action", color: "red", icon: Lightning, value: String(items.length),
+    { kind: "Act now", color: "red", icon: Lightning, value: String(items.length),
       desc: items.length ? `recommendation${items.length !== 1 ? "s" : ""} need action now` : "nothing needs action right now",
-      foot: `Across ${goals.length} goal${goals.length !== 1 ? "s" : ""}`, footIcon: Target, onClick: () => setOpenAttn(true) },
-    topExposure
-      ? { kind: "Top exposure", color: "amber", icon: Flag, value: topExposure.impact.value,
-          desc: `${topExposure.impact.label} · ${topExposure.goalName}`, foot: topExposure.category, footIcon: Pulse, onClick: () => openGoal(topExposure.goalId) }
-      : { kind: "In calibration", color: "amber", icon: Sliders, value: String(setup),
-          desc: `goal${setup !== 1 ? "s" : ""} being set up`, foot: "Calibrating", footIcon: Pulse },
+      foot: `Across ${goals.length} goal${goals.length !== 1 ? "s" : ""}`, footIcon: Target },
+    { kind: "Needs attention", color: "amber", icon: Flag, value: String(attentionGoals),
+      desc: `goal${attentionGoals !== 1 ? "s" : ""} off track this week`, foot: attentionGoals > 0 ? "See below" : "All clear", footIcon: Pulse },
     { kind: "On track", color: "green", icon: CheckCircle, value: String(onTrack),
-      desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on track`, foot: "Healthy pace", footIcon: Pulse },
-    { kind: "Tracked", color: "blue", icon: Target, value: String(goals.length),
-      desc: "goals in your portfolio", foot: setup > 0 ? `${setup} calibrating` : "All configured", footIcon: Target },
+      desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on track`, foot: setup > 0 ? `${setup} still calibrating` : "Healthy pace", footIcon: Pulse },
+    { kind: "Watching", color: "blue", icon: Eye, value: String(watching),
+      desc: `signal${watching !== 1 ? "s" : ""} we're monitoring`, foot: "No action needed yet", footIcon: Pulse },
   ];
 
-  // Active goals open in the quick-view overlay; goals still in setup go to the
-  // full wizard page (calibrate → decisions → review).
+  // Every goal opens its full detail page (no overlay).
   const openGoal = (goalOrId) => {
-    const g = typeof goalOrId === "string" ? goals.find((x) => x.id === goalOrId) : goalOrId;
-    if (g && g.status !== "active") navigate(`/goals/${g.id}`);
-    else setQuickId(g?.id || goalOrId);
+    const id = typeof goalOrId === "string" ? goalOrId : goalOrId?.id;
+    if (id) navigate(`/goals/${id}`);
   };
 
   return (
@@ -324,85 +391,79 @@ export default function GoalsPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-        <div className="flex flex-col w-full max-w-[1180px] mx-auto px-8 py-8">
-          {/* ── Highlights row ── */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[13px] font-semibold text-[var(--text-primary)]">Highlights</span>
-          <span className="text-[12px] text-[var(--text-muted)]">· this week</span>
+      {/* Sub-tab bar (Goals · Recommendations) */}
+      <div className="flex w-full shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
+        <div className="flex items-start gap-6 px-4">
+          {[{ k: "goals", label: "Goals" }, { k: "recommendations", label: "Recommendations" }].map((t) => (
+            <button
+              key={t.k}
+              onClick={() => setTab(t.k)}
+              className={cn(
+                "flex items-center gap-2 h-12 px-2 border-b-2 bg-transparent cursor-pointer text-[14px] transition-colors",
+                tab === t.k ? "text-pv-primary-primary-500 font-medium border-pv-primary-primary-500" : "text-[var(--text-primary)] border-transparent hover:text-pv-primary-primary-500"
+              )}
+            >
+              {t.label}
+              {t.k === "recommendations" && recCount > 0 && (
+                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-50 text-pv-primary-primary-600" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{recCount}</span>
+              )}
+            </button>
+          ))}
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
-          {insights.map((ins) => <InsightCard key={ins.kind} {...ins} />)}
-        </div>
+      </div>
 
-        <div className="flex flex-col gap-5">
-          {/* ── Needs attention ── */}
-          <Section
-            title="Needs attention"
-            count={items.length}
-            badge={items.length > 0 ? "bg-rose-50 text-rose-600" : "bg-green-50 text-green-600"}
-            open={openAttn}
-            onToggle={() => setOpenAttn((v) => !v)}
-          >
-            {items.length === 0 ? (
-              <div className="flex items-center gap-3 px-4 py-4 border-t border-[var(--border-primary)]">
-                <CheckCircle size={20} weight="fill" className="text-green-500" />
-                <p className="text-[13px] text-[var(--text-secondary)]"><span className="font-medium text-[var(--text-primary)]">You're all caught up.</span> Run a check-in on a goal to surface new items.</p>
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-3 px-5 py-2.5 border-t border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50/50" style={{ gridTemplateColumns: NEEDS_COLS }}>
-                  <HeaderCell icon={Lightbulb} label="Recommendation" />
-                  <HeaderCell icon={Target} label="Goal" />
-                  <HeaderCell icon={Eye} label="Watching" />
-                  <HeaderCell icon={Clock} label="When" />
-                  <span />
+      {/* Dashboards-style frame: grey-50 padded area with the page in a white panel */}
+      <div className="flex-1 min-h-0 p-4 bg-pv-neutral-grey-50 overflow-hidden">
+        <div className="flex flex-col w-full h-full bg-white rounded-xl border border-[var(--pv-neutral-grey-150)] overflow-hidden">
+          {tab === "goals" ? (
+            <div className="w-full h-full overflow-y-auto">
+              <div className="flex flex-col w-full p-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  {insights.map((ins) => <InsightCard key={ins.kind} {...ins} />)}
                 </div>
-                <AnimatePresence initial={false}>
-                  {items.map((it) => <AttentionRow key={it.recId} item={it} onOpen={openGoal} />)}
-                </AnimatePresence>
-              </>
-            )}
-          </Section>
 
-          {/* ── Your goals ── */}
-          <Section
-            title="Your goals"
-            count={goals.length}
-            open={openGoals}
-            onToggle={() => setOpenGoals((v) => !v)}
-            headerRight={
-              <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)]">
-                <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500" />{onTrack} on track</span>
-                <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500" />{attentionGoals} need attention</span>
-              </div>
-            }
-          >
-            {goals.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-14 border-t border-[var(--border-primary)] text-center">
-                <Target size={24} className="text-[var(--text-muted)]" />
-                <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Create one to start tracking.</p>
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-3 px-5 py-2.5 border-t border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50/50" style={{ gridTemplateColumns: GOALS_COLS }}>
-                  <HeaderCell icon={Target} label="Goal" />
-                  <HeaderCell icon={Pulse} label="Status" />
-                  <HeaderCell icon={Flag} label="Target" />
-                  <HeaderCell icon={Lightning} label="Action" />
-                  <HeaderCell icon={ClockCounterClockwise} label="Last check-in" />
-                  <span />
+                {/* ── Your goals (floaty table, no card / no collapse) ── */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
+                    <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)]">
+                    <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500" />{onTrack} on track</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500" />{attentionGoals} act now</span>
+                  </div>
                 </div>
-                {goals.map((g) => <GoalRow key={g.id} goal={g} onOpen={openGoal} onFull={(gid) => navigate(`/goals/${gid}`)} />)}
-              </>
-            )}
-          </Section>
-          </div>
+
+                {goals.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-14 border border-[var(--border-primary)] rounded-lg text-center">
+                    <Target size={24} className="text-[var(--text-muted)]" />
+                    <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Create one to start tracking.</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col w-full">
+                    <div className="grid px-3 py-2 w-full" style={{ gridTemplateColumns: GOALS_COLS }}>
+                      <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
+                      <HeaderCell label="Goal" />
+                      <HeaderCell label="Status" />
+                      <HeaderCell label="Target" />
+                      <HeaderCell label="Action" />
+                      <HeaderCell label="Last check-in" />
+                      <span />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {goals.map((g, i) => <GoalRow key={g.id} goal={g} index={i + 1} onOpen={openGoal} onFull={(gid) => navigate(`/goals/${gid}`)} />)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <RecommendationsPanel onOpenGoal={openGoal} />
+          )}
         </div>
       </div>
 
       {showConfig && <ConfigModal onClose={() => setShowConfig(false)} />}
-      {quickId && <GoalQuickView id={quickId} onClose={() => setQuickId(null)} onFull={(gid) => { setQuickId(null); navigate(`/goals/${gid}`); }} />}
     </div>
   );
 }
