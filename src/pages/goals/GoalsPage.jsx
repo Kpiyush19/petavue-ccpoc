@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   X, Target, CheckCircle, ClockCounterClockwise, Play, CircleNotch, CaretRight, CaretDown, Lightning, Sliders,
-  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass,
+  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass, Plus,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
@@ -85,12 +85,12 @@ function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: Foo
   const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
   return (
     <div className="flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg px-4 py-3.5">
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
+      <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={20} weight="fill" className={c.txt} />}
-        <span className="text-[26px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
+        <span className="text-[24px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
       </div>
-      <p className="text-[13px] text-[var(--text-secondary)] leading-snug min-h-[34px]">{desc}</p>
+      <p className="text-[14px] text-[var(--text-secondary)] leading-snug">{desc}</p>
       <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-[var(--pv-neutral-grey-100)]">
         {FootIcon && <FootIcon size={13} className="text-[var(--text-muted)] shrink-0" />}
         <span className="text-[12px] text-[var(--text-muted)] truncate">{foot}</span>
@@ -115,7 +115,7 @@ function Section({ title, icon: Icon, iconClass, count, badge, open, onToggle, h
       <div className="flex items-center justify-between px-5 py-4 cursor-pointer select-none hover:bg-pv-neutral-grey-50/60 transition-colors" onClick={onToggle}>
         <div className="flex items-center gap-2.5">
           {Icon && <Icon size={18} weight="fill" className={cn("shrink-0", iconClass || "text-[var(--text-muted)]")} />}
-          <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
+          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
           {typeof count === "number" && (
             <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", badge || "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{count}</span>
           )}
@@ -245,17 +245,16 @@ function ConfigModal({ onClose }) {
         <div className="shrink-0 flex items-start justify-between gap-3 px-5 py-4 border-b border-[var(--border-primary)]">
           <div>
             <h3 className="text-[18px] font-semibold text-[var(--text-primary)] m-0">Configure</h3>
-            <p className="text-[13px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">Shared context every goal calibration and run uses to ground its recommendations.</p>
+            <p className="text-[12px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">Shared context every goal calibration and run uses to ground its recommendations.</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[12px] text-[var(--text-muted)] whitespace-nowrap">Context {Math.round((filled / 4) * 100)}%</span>
             <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={onClose} />
           </div>
         </div>
         <div className="flex flex-col gap-4 px-5 py-5 overflow-y-auto">
           {FIELDS.map((f) => (
             <div key={f.k} className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[var(--text-primary)]">{f.label}</label>
+              <label className="text-[12px] font-semibold text-[var(--text-primary)]">{f.label}</label>
               <textarea value={value[f.k] || ""} onChange={(e) => set(f.k, e.target.value)} rows={3} placeholder={f.placeholder}
                 className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
             </div>
@@ -387,7 +386,7 @@ export default function GoalsPage() {
         <span className="text-[16px] leading-[24px] font-medium">Goals</span>
         <div className="flex items-center gap-2">
           <PvButton variant="secondary" size="md" label="Configure" icon={Sliders} onClick={() => setShowConfig(true)} />
-          <PvButton variant="primary" size="md" label="New Goal" icon={Target} onClick={() => navigate("/goals/new")} />
+          <PvButton variant="primary" size="md" label="New Goal" icon={Plus} onClick={() => navigate("/goals/new")} />
         </div>
       </div>
 
@@ -425,7 +424,7 @@ export default function GoalsPage() {
                 {/* ── Your goals (floaty table, no card / no collapse) ── */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5">
-                    <h2 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
+                    <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
                     <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
                   </div>
                   <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)]">

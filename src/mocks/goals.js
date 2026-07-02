@@ -11,6 +11,11 @@ export const GOAL_WORKFLOWS = [
   { id: "wf-hubspot-gap", name: "HubSpot Data Gap Audit Dashboard", schedule: "Custom schedule", lastRun: "last run 18d ago" },
   { id: "wf-row-count", name: "HubSpot Table Row Count Comparison — Weekly", schedule: "On data sync", lastRun: "last run 5d ago" },
   { id: "wf-pipeline-health", name: "Sales Pipeline Health", schedule: "On data sync", lastRun: "last run 21d ago" },
+  { id: "wf-rev-snapshot", name: "Daily Revenue Snapshot", schedule: "Daily · 6:00 AM", lastRun: "last run 3h ago" },
+  { id: "wf-cpl-monitor", name: "Paid Media CPL Monitor", schedule: "Weekly · Mon", lastRun: "last run 2d ago" },
+  { id: "wf-churn-signals", name: "Account Churn Signals", schedule: "On data sync", lastRun: "last run 6h ago" },
+  { id: "wf-ssl-expiry", name: "Expiring SSL Certificates", schedule: "Daily · 9:00 AM", lastRun: "last run 11h ago" },
+  { id: "wf-deal-hygiene", name: "Pipeline Hygiene — Stale Deals", schedule: "Custom schedule", lastRun: "last run 4d ago" },
 ];
 
 // Calibration checklist (right rail). The driver advances `progress` through these.

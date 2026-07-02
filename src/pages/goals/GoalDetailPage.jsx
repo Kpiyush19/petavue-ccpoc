@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
-  CaretRight, X, ClockCounterClockwise, Play, ChartBar, WaveSine, Pulse, XCircle, PencilSimple, NotePencil,
+  CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, XCircle, PencilSimple, NotePencil,
   Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt,
 } from "@phosphor-icons/react";
 
@@ -18,63 +18,45 @@ import RecommendationDrawer from "./RecommendationDrawer";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
-// The wizard journey. Loading → your decisions → we build (targets, conditions
-// & moves folded into one step, since none need interaction) → review.
+// The wizard journey, as a linear "verify & publish"-style progress line shown
+// in the footer. Loading → your decisions → we build (targets, conditions &
+// moves folded into one step, since none need interaction) → review.
 const CALIBRATION_STEPS = [
-  "Loaded your workflows",
-  "A couple of decisions",
-  "Building your goal",
-  "Ready for your review",
+  "Read your data",
+  "Your decisions",
+  "Build the goal",
+  "Review & save",
 ];
 
-/* ───────── Wizard shell: left stepper · right content · sticky footer ───────── */
-const STEP_NOTES = {
-  "Loaded your workflows": "Read your workflows & history",
-  "A couple of decisions": "Answer a few grounded questions",
-  "Building your goal": "Drafting targets, conditions & moves",
-  "Ready for your review": "Confirm and activate",
-};
+/* ───────── Wizard shell: titled content panel · sticky footer step line ───────── */
 
-// Left vertical progress tracker (connecting lines, filled checks, active step).
-// `current` is the active step index; `spinning` shows a spinner on it (during
-// live calibration). `activeLabel`/`activeNote` override the active step's text
-// (e.g. "Read your history" → "Waiting for your answers" during decisions).
-function WizardStepper({ current, spinning, activeLabel, activeNote }) {
+// Horizontal progress line for the footer (Figma "verify & publish" pattern):
+// filled checks for done steps, an active dot with a label, connectors between.
+function WizardSteps({ current }) {
   return (
-    <aside className="w-[224px] shrink-0 self-start sticky top-0">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-4">What we're doing</p>
-      <div className="flex flex-col">
-        {CALIBRATION_STEPS.map((label, i) => {
-          const done = i < current;
-          const active = i === current;
-          const last = i === CALIBRATION_STEPS.length - 1;
-          const text = active && activeLabel ? activeLabel : label;
-          const note = active && activeLabel ? activeNote : STEP_NOTES[label];
-          return (
-            <div key={label} className="flex gap-3">
-              <div className="flex flex-col items-center self-stretch">
-                {done ? (
-                  <CheckCircle size={20} weight="fill" className="text-pv-primary-primary-600 shrink-0" />
-                ) : active && spinning ? (
-                  <Spinner size={20} className="text-pv-primary-primary-500 shrink-0" />
-                ) : active ? (
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-pv-primary-primary-500 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                  </span>
-                ) : (
-                  <span className="w-5 h-5 rounded-full border-2 border-[var(--border-primary)] shrink-0" />
-                )}
-                {!last && <span className={cn("w-[2px] flex-1 my-1 rounded-full min-h-[20px]", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
-              </div>
-              <div className={cn("pb-4 px-2.5 py-1 -mt-1 rounded-lg", active && "bg-pv-primary-primary-50")}>
-                <p className={cn("text-[13px] font-semibold", active ? "text-pv-primary-primary-600" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{text}</p>
-                {note && <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">{note}</p>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </aside>
+    <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+      {CALIBRATION_STEPS.map((label, i) => {
+        const done = i < current;
+        const active = i === current;
+        return (
+          <div key={label} className="flex items-center gap-2 shrink-0">
+            {i > 0 && <span className={cn("w-5 h-[2px] rounded-full", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
+            <span className="flex items-center gap-1.5">
+              {done ? (
+                <CheckCircle size={16} weight="fill" className="text-pv-primary-primary-600 shrink-0" />
+              ) : active ? (
+                <span className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-pv-primary-primary-500 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-pv-primary-primary-500" />
+                </span>
+              ) : (
+                <span className="w-4 h-4 rounded-full border-2 border-[var(--border-primary)] shrink-0" />
+              )}
+              <span className={cn("text-[13px] whitespace-nowrap", active ? "text-pv-primary-primary-600 font-medium" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{label}</span>
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -95,21 +77,14 @@ function WizardFooter({ left, right }) {
   return slot ? createPortal(bar, slot) : bar;
 }
 
-// Unified panel: bordered stepper rail on the left, titled content, footer pinned.
-function WizardScaffold({ current, spinning, activeLabel, activeNote, title, subtitle, children, footer }) {
+// Unified panel: titled content, footer pinned (progress now lives in the footer).
+function WizardScaffold({ title, subtitle, children, footer }) {
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
-        {/* Left rail: stepper */}
-        <div className="shrink-0 border-r border-[var(--pv-neutral-grey-150)] px-4 py-5 overflow-y-auto">
-          <WizardStepper current={current} spinning={spinning} activeLabel={activeLabel} activeNote={activeNote} />
-        </div>
-        {/* Content */}
-        <div className="flex-1 min-w-0 overflow-y-auto px-6 py-5">
-          <h1 className="text-[22px] font-semibold text-[var(--text-primary)]">{title}</h1>
-          <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
-          {children}
-        </div>
+      <div className="flex-1 min-h-0 overflow-y-auto bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl px-6 py-5">
+        <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">{title}</h1>
+        <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
+        {children}
       </div>
       {footer}
     </div>
@@ -120,13 +95,11 @@ function WizardScaffold({ current, spinning, activeLabel, activeNote, title, sub
 function Calibrating({ goal, onCancel }) {
   return (
     <WizardScaffold
-      current={0}
-      spinning
       title="Calibrating your goal"
       subtitle="We're reading your workflows and history before asking you a couple of quick decisions."
       footer={
         <WizardFooter
-          left={<><Spinner size={14} className="text-pv-primary-primary-500" /> This usually takes a minute — you can leave and come back.</>}
+          left={<WizardSteps current={0} />}
           right={<PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />}
         />
       }
@@ -152,18 +125,16 @@ function Building({ goal, onCancel }) {
   const p = goal.buildProgress || 0;
   return (
     <WizardScaffold
-      current={2}
-      spinning
       title="Building your goal"
       subtitle="Using your answers to draft the targets, conditions and moves for this goal."
       footer={
         <WizardFooter
-          left={<><Spinner size={14} className="text-pv-primary-primary-500" /> Building — this only takes a moment.</>}
+          left={<WizardSteps current={2} />}
           right={<PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />}
         />
       }
     >
-      <div className="bg-white border border-[var(--border-primary)] rounded-xl p-5 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         {BUILD_STEPS.map((s, i) => {
           const done = i < p;
           const active = i === p;
@@ -206,12 +177,11 @@ function Decisions({ goal, refetch, onCancel }) {
 
   return (
     <WizardScaffold
-      current={1}
       title="A couple of decisions"
       subtitle="Your answers shape the targets — every option is grounded in your real numbers."
       footer={
         <WizardFooter
-          left={<span>Question <span className="font-semibold text-[var(--text-primary)]">{idx + 1}</span> of {total}</span>}
+          left={<WizardSteps current={1} />}
           right={
             <>
               <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
@@ -241,10 +211,10 @@ function Decisions({ goal, refetch, onCancel }) {
         </div>
       )}
 
-      <p className="text-[13px] font-semibold text-pv-primary-primary-600 mb-2">Question {idx + 1} of {total}</p>
-      <p className="text-[16px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
+      <p className="text-[12px] font-semibold text-pv-primary-primary-600 mb-2">Question {idx + 1} of {total}</p>
+      <p className="text-[14px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
       <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-pv-primary-primary-50 border border-pv-primary-primary-100">
-        <ChartBar size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+        <Question size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
         <p className="text-[12px] text-[var(--text-secondary)]"><span className="font-semibold text-[var(--text-primary)]">What we found:</span> {q.found}</p>
       </div>
 
@@ -290,7 +260,6 @@ function Review({ goal, refetch, onCancel }) {
   const [whyOpen, setWhyOpen] = useState(false);
   const [chat, setChat] = useState([]);
   const [draft, setDraft] = useState("");
-  const [showAdjust, setShowAdjust] = useState(true);
 
   const adjust = useMutation({
     mutationFn: (text) => apiPost(`/api/goals/${goal.id}/adjust`, { text }),
@@ -312,14 +281,9 @@ function Review({ goal, refetch, onCancel }) {
   return (
     <>
       <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
-        {/* Left rail: progress stepper */}
-        <div className="shrink-0 border-r border-[var(--pv-neutral-grey-150)] px-4 py-5 overflow-y-auto">
-          <WizardStepper current={3} />
-        </div>
-
-        {/* Middle: titled content */}
+        {/* Left: titled content */}
         <div className="flex-1 min-w-0 overflow-y-auto px-6 py-5">
-          <h1 className="text-[22px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
+          <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
           <div className="flex flex-col gap-7">
             {/* Targets */}
@@ -382,10 +346,9 @@ function Review({ goal, refetch, onCancel }) {
           </div>
         </div>
 
-        {/* Right rail: adjust chat (collapsible) */}
-        {showAdjust ? (
-          <div className="w-[360px] shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
-            <div className="shrink-0 flex items-start justify-between gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
+        {/* Right rail: adjust chat (always open) */}
+        <div className="w-[360px] shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
+            <div className="shrink-0 flex items-start gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
@@ -393,7 +356,6 @@ function Review({ goal, refetch, onCancel }) {
                 </div>
                 <p className="text-[12px] text-[var(--text-secondary)] mt-1 leading-snug">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
               </div>
-              <button onClick={() => setShowAdjust(false)} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer shrink-0" aria-label="Collapse"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
               <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
@@ -418,16 +380,11 @@ function Review({ goal, refetch, onCancel }) {
                 {adjust.isPending ? <Spinner size={16} /> : <PaperPlaneTilt size={16} weight="fill" />}
               </button>
             </div>
-          </div>
-        ) : (
-          <button onClick={() => setShowAdjust(true)} className="w-12 shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex items-start justify-center pt-4 hover:bg-pv-neutral-grey-50 cursor-pointer bg-white border-y-0 border-r-0" title="Want to adjust anything?">
-            <PencilSimple size={16} className="text-pv-primary-primary-500" />
-          </button>
-        )}
+        </div>
       </div>
 
       <WizardFooter
-        left={<span className="min-w-0 truncate"><span className="font-semibold text-[var(--text-primary)]">{summary}</span><span className="hidden sm:inline"> — ready when you are</span></span>}
+        left={<WizardSteps current={3} />}
         right={
           <>
             <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
@@ -578,6 +535,7 @@ function ActiveGoal({ goal, refetch }) {
   const navigate = useNavigate();
   const [note, setNote] = useState("");
   const [recId, setRecId] = useState(null);
+  const [tab, setTab] = useState("overview");
   const lastCheckIn = goal.checkIns[0];
 
   const check = useMutation({
@@ -593,6 +551,7 @@ function ActiveGoal({ goal, refetch }) {
   const actNow = recs.filter((r) => r.severity === "act-now" && r.status === "open").length;
   const watching = recs.filter((r) => r.severity === "watch" && r.status === "open").length;
   const doneCount = recs.filter((r) => r.status === "acted").length;
+  const firingCount = goal.conditions.filter((c) => c.state === "fired").length;
 
   return (
     <>
@@ -607,153 +566,179 @@ function ActiveGoal({ goal, refetch }) {
         </div>
       </div>
 
-      <div className="flex gap-8 items-start mt-6">
-        {/* Left: check-in result + recommendations */}
-        <div className="flex-1 min-w-0 flex flex-col gap-6">
-          {lastCheckIn ? (
-            <div className="p-5 bg-white border border-[var(--border-primary)] rounded-xl">
-              <p className="text-[18px] font-semibold text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
-              <p className="text-[12px] text-[var(--text-muted)] mt-2">Projection is a naive run-rate estimate.</p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
-              <Lightning size={26} className="text-pv-primary-primary-400" />
-              <p className="text-[15px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
-              <p className="text-[13px] text-[var(--text-secondary)] max-w-[440px]">Run a check-in to measure your targets against the latest data and get data-backed recommendations — each with the evidence behind it.</p>
-              <div className="mt-2">
-                <PvButton variant="primary" size="md" label="Run your first check-in" icon={Play} iconPosition="suffix" onClick={() => check.mutate()} />
+      {/* Tab bar — Overview · Recommendations · Monitor */}
+      <div className="flex w-full shrink-0 border-b border-[var(--pv-neutral-grey-150)] mt-5">
+        <div className="flex items-start gap-6">
+          {[
+            { k: "overview", label: "Overview" },
+            { k: "recommendations", label: "Recommendations", badge: actNow || recs.length },
+            { k: "monitor", label: "Monitor", badge: firingCount },
+          ].map((t) => (
+            <button
+              key={t.k}
+              onClick={() => setTab(t.k)}
+              className={cn(
+                "flex items-center gap-2 h-11 px-1 border-b-2 bg-transparent cursor-pointer text-[14px] transition-colors",
+                tab === t.k ? "text-pv-primary-primary-500 font-medium border-pv-primary-primary-500" : "text-[var(--text-primary)] border-transparent hover:text-pv-primary-primary-500"
+              )}
+            >
+              {t.label}
+              {t.badge > 0 && (
+                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-50 text-pv-primary-primary-600" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        {/* ── Overview: how am I doing + targets ── */}
+        {tab === "overview" && (
+          <div className="flex flex-col gap-6">
+            {lastCheckIn ? (
+              <div className="p-5 bg-white border border-[var(--border-primary)] rounded-xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Latest check-in</span>
+                  <span className="text-[11px] text-[var(--text-muted)]">· {lastCheckIn.at}</span>
+                </div>
+                <p className="text-[18px] font-semibold text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
+                <p className="text-[12px] text-[var(--text-muted)] mt-2">Projection is a naive run-rate estimate.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
+                <Lightning size={26} className="text-pv-primary-primary-400" />
+                <p className="text-[15px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
+                <p className="text-[13px] text-[var(--text-secondary)] max-w-[440px]">Run a check-in to measure your targets against the latest data and get data-backed recommendations — each with the evidence behind it.</p>
+                <div className="mt-2">
+                  <PvButton variant="primary" size="md" label="Run your first check-in" icon={Play} iconPosition="suffix" onClick={() => check.mutate()} />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Target size={16} className="text-pv-primary-primary-500" />
+                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Targets</p>
+                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 items-stretch">
+                {goal.targets.map((t) => (
+                  <div key={t.id} className="flex flex-col gap-2 p-4 bg-white border border-[var(--border-primary)] rounded-xl">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
+                      {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
+                    </div>
+                    <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{t.why}</p>
+                    <p className="text-[11px] text-[var(--text-muted)] mt-auto pt-1">Checked every run</p>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
+        {/* ── Recommendations ── */}
+        {tab === "recommendations" && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Recommendations</p>
+              {lastCheckIn ? (
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>
+              ) : <span />}
               <div className="flex items-center gap-3 text-[12px]">
-                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" />{actNow} act now</span>
-                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />{watching} watching</span>
-                <span className="inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" />{doneCount} done</span>
+                <span className="inline-flex items-center gap-1.5"><Lightning size={13} weight="fill" className="text-rose-500" />{actNow} act now</span>
+                <span className="inline-flex items-center gap-1.5"><Eye size={13} className="text-amber-500" />{watching} watching</span>
+                <span className="inline-flex items-center gap-1.5"><CheckCircle size={13} weight="fill" className="text-green-500" />{doneCount} done</span>
               </div>
             </div>
             {recs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-1.5 py-12 border border-dashed border-[var(--border-primary)] rounded-xl text-center">
+              <div className="flex flex-col items-center justify-center gap-1.5 py-16 border border-dashed border-[var(--border-primary)] rounded-xl text-center">
                 <ClockCounterClockwise size={22} className="text-[var(--text-muted)]" />
                 <p className="text-[14px] text-[var(--text-secondary)]">No recommendations yet</p>
                 <p className="text-[12px] text-[var(--text-muted)]">They appear here after your first check-in.</p>
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                {lastCheckIn && <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>}
-                <div className="grid grid-cols-2 gap-4 items-stretch">
-                  {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} onOpen={setRecId} />)}
-                </div>
+              <div className="grid grid-cols-2 gap-4 items-stretch">
+                {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} onOpen={setRecId} />)}
               </div>
             )}
           </div>
+        )}
 
-        </div>
-
-        {/* Right rail — the monitor */}
-        <aside className="w-[320px] shrink-0 self-start sticky top-0 flex flex-col gap-4">
-          {/* Targets */}
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
-              <Target size={16} className="text-pv-primary-primary-500" />
-              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Targets</p>
-            </div>
-            <div className="p-4 flex flex-col gap-3">
-              {goal.targets.map((t) => (
-                <div key={t.id} className="flex flex-col gap-1.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
-                    {t.target && <span className="shrink-0 px-2 py-0.5 text-[12px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
-                  </div>
-                  <p className="text-[11px] text-[var(--text-muted)]">Checked every run</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* What we're watching — status board */}
-          {(() => {
-            const conditions = [...goal.conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
-            const firing = goal.conditions.filter((c) => c.state === "fired").length;
-            const quiet = goal.conditions.length - firing;
-            return (
-              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
-                  <div className="flex items-center gap-2">
-                    <WaveSine size={16} className="text-[var(--text-muted)]" />
-                    <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] font-medium">
-                    <span className={cn("inline-flex items-center gap-1", firing > 0 ? "text-rose-600" : "text-[var(--text-muted)]")}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full", firing > 0 ? "bg-rose-500" : "bg-pv-neutral-grey-300")} />{firing}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[var(--text-muted)]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400" />{quiet}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-2 flex flex-col">
-                  {conditions.map((c) => {
-                    const fired = c.state === "fired";
-                    return (
-                      <div key={c.id} title={c.label} className={cn("flex items-start gap-2.5 px-2.5 py-2.5 rounded-lg", fired && "bg-rose-50/60")}>
-                        <span className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
-                          {fired ? (
-                            <>
-                              <span className="absolute w-2.5 h-2.5 rounded-full bg-rose-400/40 animate-ping" />
-                              <span className="w-2 h-2 rounded-full bg-rose-500" />
-                            </>
-                          ) : (
-                            <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
-                          )}
-                        </span>
-                        <p className={cn("flex-1 text-[12px] leading-snug line-clamp-2", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>
-                        <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
-                          {fired ? (c.count ? `${c.count} fired` : "fired") : "quiet"}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Goal notes — a running log, kept with the goal's context */}
-          <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
-              <NotePencil size={16} className="text-[var(--text-muted)]" />
-              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Notes</p>
-              {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
-            </div>
-            <div className="p-3 flex flex-col gap-2.5">
-              {goal.notes.length > 0 && (
-                <div className="flex flex-col gap-2 max-h-[240px] overflow-y-auto">
-                  {goal.notes.map((n) => (
-                    <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
-                      <p className="text-[12px] text-[var(--text-primary)] leading-snug">{n.text}</p>
-                      <span className="text-[10px] text-[var(--text-muted)]">{n.at}</span>
+        {/* ── Monitor: what we're watching + notes ── */}
+        {tab === "monitor" && (
+          <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+            {/* What we're watching — status board */}
+            {(() => {
+              const conditions = [...goal.conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
+              return (
+                <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
+                    <div className="flex items-center gap-2">
+                      <WaveSine size={16} className="text-[var(--text-muted)]" />
+                      <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
                     </div>
-                  ))}
+                    {firingCount > 0 && <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600">{firingCount} firing</span>}
+                  </div>
+                  <div className="p-2 flex flex-col">
+                    {conditions.map((c) => {
+                      const fired = c.state === "fired";
+                      return (
+                        <div key={c.id} title={c.label} className={cn("flex items-start gap-2.5 px-2.5 py-2.5 rounded-lg", fired && "bg-rose-50/60")}>
+                          <span className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
+                            {fired ? (
+                              <>
+                                <span className="absolute w-2.5 h-2.5 rounded-full bg-rose-400/40 animate-ping" />
+                                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                              </>
+                            ) : (
+                              <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
+                            )}
+                          </span>
+                          <p className={cn("flex-1 text-[12px] leading-snug", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>
+                          <span className={cn("shrink-0 px-1.5 py-0.5 text-[10px] font-semibold rounded", fired ? "bg-rose-100 text-rose-700" : "text-[var(--text-muted)]")}>
+                            {fired ? (c.count ? `${c.count} fired` : "fired") : "quiet"}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
-                  rows={2}
-                  placeholder="Add a note — e.g. “Never pause Brand Search”"
-                  className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
-                />
-                <PvButton variant="secondary" size="sm" label="Add note" icon={NotePencil} disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
+              );
+            })()}
+
+            {/* Goal notes — a running log, kept with the goal's context */}
+            <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
+                <NotePencil size={16} className="text-[var(--text-muted)]" />
+                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Notes</p>
+                {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
+              </div>
+              <div className="p-3 flex flex-col gap-2.5">
+                {goal.notes.length > 0 && (
+                  <div className="flex flex-col gap-2 max-h-[280px] overflow-y-auto">
+                    {goal.notes.map((n) => (
+                      <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
+                        <p className="text-[12px] text-[var(--text-primary)] leading-snug">{n.text}</p>
+                        <span className="text-[10px] text-[var(--text-muted)]">{n.at}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
+                    rows={2}
+                    placeholder="Add a note — e.g. “Never pause Brand Search”"
+                    className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+                  />
+                  <PvButton variant="secondary" size="sm" label="Add note" icon={NotePencil} disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
+                </div>
               </div>
             </div>
           </div>
-        </aside>
+        )}
       </div>
 
       {recId && <RecommendationDrawer goalId={goal.id} recId={recId} onClose={() => setRecId(null)} />}

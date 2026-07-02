@@ -41,7 +41,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
   const actNow = rec.severity === "act-now";
   const done = rec.status !== "open";
   const resolved = {
-    acted: { label: "Marked acted", cls: "text-green-600" },
+    acted: { label: "Done", cls: "text-green-600" },
     rejected: { label: "Dismissed", cls: "text-[var(--text-muted)]" },
     snoozed: { label: rec.snoozeLabel ? `Snoozed · ${rec.snoozeLabel}` : "Snoozed", cls: "text-amber-600" },
   }[rec.status];
@@ -127,18 +127,11 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <PvButton variant="secondary" size="sm" label="Undo" icon={ArrowUUpLeft} onClick={() => act.mutate({ action: "open" })} />
           </div>
         ) : (
-          <>
-            <div className="flex flex-wrap items-center gap-2">
-              <PvButton variant="primary" size="md" label="Mark acted" icon={CheckCircle} disabled={act.isPending} onClick={() => doAct({ action: "acted" }, "Marked acted — monitoring for recovery")} />
-              <PvButton variant="secondary" size="md" label="Snooze 7d" icon={ClockCounterClockwise} disabled={act.isPending} onClick={() => doAct({ action: "snoozed", snooze: "7 days" }, "Snoozed for 7 days")} />
-              <PvButton variant="secondary" size="md" label="Hold" disabled={act.isPending} onClick={() => doAct({ action: "snoozed", snooze: "on hold" }, "Held until lifted")} />
-              <PvButton variant="ghost" size="md" label="Adjust trigger" icon={Sliders} onClick={() => toast.success("Adjust the trigger from the goal's conditions")} />
-              <PvButton variant="ghost" size="md" label="Dismiss" icon={XCircle} disabled={act.isPending} onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} />
-            </div>
-            <p className="text-[11px] text-[var(--text-muted)] mt-2.5 leading-relaxed">
-              <span className="font-medium text-[var(--text-secondary)]">Mark acted</span> → monitoring · <span className="font-medium text-[var(--text-secondary)]">Snooze / Hold</span> → held · <span className="font-medium text-[var(--text-secondary)]">Adjust</span> → changes the trigger · <span className="font-medium text-[var(--text-secondary)]">Dismiss</span> → archived
-            </p>
-          </>
+          <div className="flex items-center gap-2">
+            <PvButton variant="primary" size="md" label="Done" icon={CheckCircle} disabled={act.isPending} onClick={() => doAct({ action: "acted" }, "Marked done — monitoring for recovery")} />
+            <PvButton variant="secondary" size="md" label="Snooze 7d" icon={ClockCounterClockwise} disabled={act.isPending} onClick={() => doAct({ action: "snoozed", snooze: "7 days" }, "Snoozed for 7 days")} />
+            <PvButton variant="ghost" size="md" label="Dismiss" icon={XCircle} disabled={act.isPending} onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} />
+          </div>
         )}
       </div>
 
