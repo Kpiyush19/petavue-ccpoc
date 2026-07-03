@@ -224,7 +224,11 @@ function GoalRow({ goal, onOpen, onFull, index }) {
           ? <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600 whitespace-nowrap">{goal.actNow} act now</span>
           : <span className="text-[12px] font-normal text-[var(--text-muted)]">—</span>}
       </span>
-      <span className="text-[12px] font-normal text-[var(--text-muted)] whitespace-nowrap px-2">{goal.lastCheckIn ? `checked ${goal.lastCheckIn}` : "—"}</span>
+      <span className="px-2">
+        {goal.lastCheckIn
+          ? <span className="inline-flex items-center gap-1.5 text-[12px] font-normal text-[var(--text-muted)] whitespace-nowrap"><ClockCounterClockwise size={12} className="shrink-0" />{goal.lastCheckIn}</span>
+          : <span className="text-[12px] font-normal text-[var(--pv-neutral-grey-400)] whitespace-nowrap">Not run yet</span>}
+      </span>
       <div className="px-2" onClick={(e) => e.stopPropagation()}><RowMenu items={menuItems} /></div>
     </div>
   );
@@ -438,15 +442,9 @@ export default function GoalsPage() {
                 </div>
 
                 {/* ── Your goals (floaty table, no card / no collapse) ── */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
-                    <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)]">
-                    <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500" />{onTrack} on track</span>
-                    <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500" />{attentionGoals} act now</span>
-                  </div>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
+                  <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
                 </div>
 
                 {goals.length === 0 ? (

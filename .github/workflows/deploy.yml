@@ -1,0 +1,38 @@
+name: Deploy to Cloudflare Workers
+
+# Deterministic deploy: on every push to main, build the Vite SPA and
+# `wrangler deploy` it to the Worker named in wrangler.jsonc (petavue-ccpoc).
+# Replaces Cloudflare's native Git integration (which kept opening config-sync
+# branches). Only ONE of the two should be active — disconnect the native
+# Workers Build in the Cloudflare dashboard once this is in place.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {} # lets you trigger a deploy manually from the Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
