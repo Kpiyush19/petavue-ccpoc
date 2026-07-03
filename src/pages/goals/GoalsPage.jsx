@@ -24,7 +24,7 @@ const HEALTH = {
 const SETUP_LABEL = { calibrating: "Calibrating", decisions: "Ready for review", review: "Ready for review" };
 
 const NEEDS_COLS = "minmax(0,1fr) 180px 200px 84px 36px";
-const GOALS_COLS = "32px minmax(0,1fr) 150px 96px 96px 120px 36px";
+const GOALS_COLS = "32px minmax(0,1fr) 150px 96px 120px 36px";
 
 /* ── Row kebab menu (portaled so it escapes section overflow) ── */
 function RowMenu({ items, disabled }) {
@@ -220,11 +220,6 @@ function GoalRow({ goal, onOpen, onFull, index }) {
       <span className={cn("text-[12px] font-normal truncate px-2", h.text)}>{inSetup ? (SETUP_LABEL[goal.status] || "In setup") : h.label}</span>
       <span className="text-[12px] font-normal text-[var(--text-secondary)] whitespace-nowrap px-2">{goal.targetSummary || "—"}</span>
       <span className="px-2">
-        {goal.actNow > 0
-          ? <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600 whitespace-nowrap">{goal.actNow} act now</span>
-          : <span className="text-[12px] font-normal text-[var(--text-muted)]">—</span>}
-      </span>
-      <span className="px-2">
         {goal.lastCheckIn
           ? <span className="inline-flex items-center gap-1.5 text-[12px] font-normal text-[var(--text-muted)] whitespace-nowrap"><ClockCounterClockwise size={12} className="shrink-0" />{goal.lastCheckIn}</span>
           : <span className="text-[12px] font-normal text-[var(--pv-neutral-grey-400)] whitespace-nowrap">Not run yet</span>}
@@ -299,14 +294,14 @@ function RecListItem({ item, selected, onClick }) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full h-[76px] text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
+        "w-full min-h-[76px] text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
         selected
           ? "bg-pv-primary-primary-50 border-pv-primary-primary-500 shadow-[0_4px_4px_rgba(54,97,237,0.08)]"
           : "border-[var(--pv-neutral-grey-200)] hover:bg-pv-primary-primary-50",
         done && "opacity-70"
       )}
     >
-      <div className="flex items-center h-full">
+      <div className="flex items-center min-h-[76px]">
         {/* icon frame */}
         <div className="flex items-center justify-center p-2.5 shrink-0">
           <div
@@ -322,7 +317,7 @@ function RecListItem({ item, selected, onClick }) {
             <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug line-clamp-2 cursor-default">{item.title}</p>
           </Tooltip>
           <div className="flex items-center gap-2">
-            <span className={cn("text-[12px] font-normal uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
+            <span className="text-[12px] font-normal uppercase tracking-wide text-[var(--text-secondary)]">{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
           </div>
         </div>
       </div>
@@ -459,7 +454,6 @@ export default function GoalsPage() {
                       <HeaderCell label="Goal" />
                       <HeaderCell label="Status" />
                       <HeaderCell label="Target" />
-                      <HeaderCell label="Action" />
                       <HeaderCell label="Last check-in" />
                       <span />
                     </div>

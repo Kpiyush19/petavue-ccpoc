@@ -45,6 +45,18 @@ function highValueGoalConfig() {
         target: "$20K",
         why: "Searched 38 history files. raw_deals.csv (497 rows) shows deals above $20K are where revenue concentrates; flagging each keeps them from rotting unworked.",
       },
+      {
+        id: nid("tgt"),
+        label: "No high-value deal sits unowned for more than 48 hours after crossing the bar",
+        target: "48h",
+        why: "Deals with an empty hubspot_owner_id close at under half the rate of owned ones; a 48-hour ownership SLA keeps them from stalling on entry.",
+      },
+      {
+        id: nid("tgt"),
+        label: "Keep open high-value concentration under 40% in any single deal",
+        target: "<40%",
+        why: "The current book has one deal at 82% of open high-value value — a single slip misses the goal. Capping concentration protects the forecast.",
+      },
     ],
     conditions: [
       { id: nid("cnd"), label: "High-value open deal with no owner — count of deals where amount > $20,000, is_closed = 0 and hubspot_owner_id is empty", state: "quiet", count: 0 },
@@ -251,6 +263,28 @@ function seedActiveGoal(name, statement, target, withCheckIn) {
   return goal;
 }
 
+// A lightweight active goal with its own targets but no check-in yet — reads as
+// "on track" and shows its Targets grid without deal-specific recommendations.
+function makeGoal({ name, statement, target, targets = [], conditions = [], status = "active", workflowIds = ["wf-pipeline-health"] }) {
+  return {
+    id: nid("goal"),
+    name,
+    statement,
+    status,
+    workflowIds,
+    progress: CALIBRATION_STEPS.length,
+    targets: targets.map((t) => ({ id: nid("tgt"), ...t })),
+    conditions: conditions.map((c) => ({ id: nid("cnd"), count: 0, state: "quiet", ...c })),
+    moves: [],
+    questions: [],
+    answers: {},
+    checkIns: [],
+    notes: [],
+    target,
+    createdAt: Date.now(),
+  };
+}
+
 const goals = [
   (() => {
     const g = seedActiveGoal("Deal tracking v2", "Flag every high-value deal — amount > $25,000 (each flagged deal is one tracked recommendation to actively work)", "$25K", true);
@@ -261,6 +295,49 @@ const goals = [
     g.name = "Risk deal tracking";
     return g;
   })(),
+  makeGoal({
+    name: "Grow qualified pipeline to $1.5M",
+    statement: "Grow qualified pipeline to $1.5M and hold win rate above 25% by Sep 30",
+    target: "$1.5M",
+    targets: [
+      { label: "Grow qualified pipeline to $1.5M by Sep 30", target: "$1.5M", why: "Qualified pipeline sits at $1.02M; $1.5M gives 3× coverage on the $500K new-ARR target for the quarter." },
+      { label: "Hold win rate at or above 25%", target: "≥25%", why: "Trailing-90-day win rate is 27% — staying above 25% is what converts the $1.5M pipeline into target." },
+      { label: "Keep pipeline coverage at 3× of quarterly target", target: "3×", why: "Below 3× coverage, 4 of the last 5 quarters missed target." },
+    ],
+    conditions: [
+      { label: "Qualified pipeline created this week below the weekly pace to hit $1.5M" },
+      { label: "Win rate on closed deals in the last 30 days dips under 25%" },
+      { label: "Coverage ratio (open pipeline ÷ remaining target) falls under 3×" },
+    ],
+  }),
+  makeGoal({
+    name: "Cut paid CPL below $120",
+    statement: "Bring blended paid cost-per-lead under $120 this quarter without losing lead quality",
+    target: "<$120",
+    targets: [
+      { label: "Bring blended paid cost-per-lead under $120", target: "<$120", why: "Trailing CPL is $146; $120 is the level where paid payback stays under 12 months at current close rates." },
+      { label: "Hold MQL→SQL conversion at or above 40%", target: "≥40%", why: "Cheaper leads only help if they convert — 40% is the trailing-90-day median, so quality can't slip below it." },
+    ],
+    conditions: [
+      { label: "Blended CPL over the last 7 days rises above $120" },
+      { label: "MQL→SQL conversion on recent cohorts falls under 40%" },
+    ],
+  }),
+  makeGoal({
+    name: "Lift net revenue retention above 110%",
+    statement: "Lift net revenue retention above 110% by keeping churn low and growing expansion",
+    target: ">110%",
+    targets: [
+      { label: "Lift net revenue retention above 110%", target: ">110%", why: "NRR is 104%; above 110% the business compounds on the existing base without needing new logos." },
+      { label: "Keep gross monthly churn under 5%", target: "<5%", why: "Churn above 5% caps NRR regardless of how strong expansion is." },
+      { label: "Grow expansion revenue to 8% of base", target: "8%", why: "Expansion is the lever that pushes NRR past 110% — 8% clears the churn drag with headroom." },
+    ],
+    conditions: [
+      { label: "Trailing-30-day gross churn rises above 5%" },
+      { label: "Net revenue retention on the latest cohort dips under 110%" },
+      { label: "Expansion revenue rate falls under 8% of base" },
+    ],
+  }),
   {
     id: nid("goal"),
     name: "Improve our MQL-to-SQL conversion rate to 40%.",
@@ -272,10 +349,16 @@ const goals = [
     questions: [], answers: {}, checkIns: [], notes: [],
     createdAt: Date.now(),
   },
+  makeGoal({
+    name: "Reach 60% activation within 14 days",
+    statement: "Reach 60% new-account activation within 14 days of signup",
+    target: "60%",
+    status: "calibrating",
+  }),
 ];
 
 // Kick the seeded calibrating goal forward so it has somewhere to go.
-startCalibration(goals.find((g) => g.status === "calibrating"));
+goals.filter((g) => g.status === "calibrating").forEach(startCalibration);
 
 // ── API ──
 // Internal live reference (mutations operate on this).

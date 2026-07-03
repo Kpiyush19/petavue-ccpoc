@@ -5,8 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
   CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, Warning, XCircle, PencilSimple, NotePencil,
-  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, ArrowsClockwise,
+  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, ArrowsClockwise, Info,
 } from "@phosphor-icons/react";
+import { Tooltip } from "@/common-components";
 
 // Category icon + accent per recommendation type.
 const REC_ICONS = { stale: Clock, owner: UserCircle, stuck: TrendUp, concentration: ChartPieSlice, threshold: Target };
@@ -260,6 +261,25 @@ function Review({ goal, refetch, onCancel }) {
   const [whyOpen, setWhyOpen] = useState(false);
   const [chat, setChat] = useState([]);
   const [draft, setDraft] = useState("");
+  const [chatWidth, setChatWidth] = useState(360);
+
+  // Drag the left edge of the adjust panel to resize it (300–620px).
+  const startResize = (e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = chatWidth;
+    const onMove = (ev) => setChatWidth(Math.min(620, Math.max(300, startW + (startX - ev.clientX))));
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "col-resize";
+  };
 
   const adjust = useMutation({
     mutationFn: (text) => apiPost(`/api/goals/${goal.id}/adjust`, { text }),
@@ -276,20 +296,19 @@ function Review({ goal, refetch, onCancel }) {
 
   const sendAdjust = () => { if (!draft.trim()) return; adjust.mutate(draft.trim()); setDraft(""); };
 
-  const summary = `${goal.targets.length} target${goal.targets.length !== 1 ? "s" : ""} · ${goal.conditions.length} conditions · ${goal.moves.length} moves`;
 
   return (
     <>
       <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
         {/* Left: titled content */}
-        <div className="flex-1 min-w-0 overflow-y-auto px-6 py-5">
+        <div className="flex-1 min-w-0 overflow-y-auto p-4">
           <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
           <div className="flex flex-col gap-7">
             {/* Targets */}
             <section>
               <div className="flex items-center gap-2 mb-1">
-                <Target size={16} className="text-pv-primary-primary-500" />
+                <Target size={16} className="text-pv-neutral-grey-600" />
                 <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
               </div>
@@ -311,13 +330,13 @@ function Review({ goal, refetch, onCancel }) {
             {/* Conditions we'll watch */}
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <WaveSine size={16} className="text-[var(--text-muted)]" />
+                <WaveSine size={16} className="text-pv-neutral-grey-600" />
                 <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Conditions we'll watch each run</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.conditions.length}</span>
               </div>
-              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+              <div className="flex flex-col">
                 {goal.conditions.map((c, i) => (
-                  <div key={c.id} className={cn("flex items-start gap-2.5 px-4 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                  <div key={c.id} className="flex items-start gap-2.5 py-2">
                     <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
                     <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
                   </div>
@@ -328,16 +347,14 @@ function Review({ goal, refetch, onCancel }) {
             {/* Moves we may recommend */}
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <Lightning size={16} className="text-amber-500" />
+                <Lightning size={16} className="text-pv-neutral-grey-600" />
                 <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.moves.length}</span>
               </div>
-              <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
+              <div className="flex flex-col">
                 {goal.moves.map((m, i) => (
-                  <div key={m.id} className={cn("flex items-start gap-2.5 px-4 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
-                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-amber-50 mt-0.5">
-                      <Lightning size={12} weight="fill" className="text-amber-500" />
-                    </span>
+                  <div key={m.id} className="flex items-start gap-2.5 py-2">
+                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
                     <p className="text-[13px] text-[var(--text-primary)] leading-relaxed">{m.label}</p>
                   </div>
                 ))}
@@ -347,33 +364,39 @@ function Review({ goal, refetch, onCancel }) {
         </div>
 
         {/* Right rail: adjust chat (always open) */}
-        <div className="w-[360px] shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
-            <div className="shrink-0 flex items-start gap-2 px-4 py-3.5 border-b border-[var(--border-primary)]">
+        <div style={{ width: chatWidth }} className="relative shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
+            {/* Drag handle to resize the panel width */}
+            <div
+              onMouseDown={startResize}
+              className="group absolute left-0 top-0 bottom-0 -ml-1 w-2 z-20 cursor-col-resize flex items-center justify-center"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize panel"
+            >
+              <span className="w-[2px] h-full bg-transparent group-hover:bg-pv-primary-primary-300 transition-colors" />
+            </div>
+            <div className="shrink-0 flex items-start gap-2 px-4 py-3.5">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
-                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">Want to adjust anything?</p>
+                  <p className="text-[14px] font-medium text-[var(--text-primary)]">Want to adjust anything?</p>
                 </div>
-                <p className="text-[12px] text-[var(--text-secondary)] mt-1 leading-snug">Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis.</p>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-              <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                Config stands at <span className="font-semibold text-[var(--text-primary)]">{summary}</span>. If you'd like any thresholds or scopes adjusted, just say the word and I'll update them.
-              </p>
               {chat.map((m, i) => (
                 <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white rounded-br-md" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)] rounded-bl-md")}>
                   {m.text}
                 </div>
               ))}
             </div>
-            <div className="shrink-0 p-3 border-t border-[var(--border-primary)] flex items-end gap-2">
+            <div className="shrink-0 p-3 flex items-end gap-2">
               <textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
-                rows={2}
-                placeholder="e.g. Track $1M instead of $1.5M · add a target for new logos"
+                rows={1}
+                placeholder="Tell us what to adjust…"
                 className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
               />
               <button onClick={sendAdjust} disabled={!draft.trim() || adjust.isPending} className="flex items-center justify-center w-9 h-9 rounded-full bg-pv-primary-primary-500 text-white disabled:opacity-40 shrink-0 cursor-pointer border-none transition-opacity" aria-label="Send">
@@ -384,7 +407,14 @@ function Review({ goal, refetch, onCancel }) {
       </div>
 
       <WizardFooter
-        left={<WizardSteps current={3} />}
+        left={
+          <>
+            <WizardSteps current={3} />
+            <Tooltip title="Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis." arrow placement="top">
+              <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0"><Info size={16} /></span>
+            </Tooltip>
+          </>
+        }
         right={
           <>
             <PvButton variant="secondary" size="md" label="Cancel" onClick={onCancel} />
@@ -437,7 +467,7 @@ function SnoozeMenu({ onSnooze, disabled }) {
   return (
     <>
       <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50">
+        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
         <ClockCounterClockwise size={14} /> Snooze <CaretRight size={11} className="rotate-90" />
       </button>
       {open && pos && createPortal(
@@ -520,9 +550,15 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
-            <PvButton variant="secondary" size="sm" label="Done" icon={CheckCircle} onClick={() => act.mutate({ action: "acted" })} />
-            <PvButton variant="ghost" size="sm" label="Dismiss" onClick={() => act.mutate({ action: "rejected" })} />
-            <SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => act.mutate({ action: "snoozed", snooze })} />
+            <button onClick={() => act.mutate({ action: "acted" })} disabled={act.isPending}
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <CheckCircle size={14} /> Acted
+            </button>
+            <button onClick={() => act.mutate({ action: "rejected" })} disabled={act.isPending}
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <XCircle size={14} /> Reject
+            </button>
+            <span className="ml-auto"><SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => act.mutate({ action: "snoozed", snooze })} /></span>
           </div>
         )}
       </div>
@@ -602,7 +638,6 @@ function ActiveGoal({ goal, refetch }) {
                   <span className="text-[11px] text-[var(--text-muted)]">· {lastCheckIn.at}</span>
                 </div>
                 <p className="text-[18px] font-medium text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
-                <p className="text-[12px] text-[var(--text-muted)] mt-2">Projection is a naive run-rate estimate.</p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
@@ -624,12 +659,6 @@ function ActiveGoal({ goal, refetch }) {
               <div className="grid grid-cols-2 gap-4 items-stretch">
                 {goal.targets.map((t) => (
                   <div key={t.id} className="group flex flex-col gap-3 p-4 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] hover:border-pv-primary-primary-200 transition-all">
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-pv-primary-primary-50 shrink-0">
-                        <Target size={16} weight="bold" className="text-pv-primary-primary-600" />
-                      </span>
-                      {t.target && <span className="shrink-0 px-2.5 py-1 text-[14px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
-                    </div>
                     <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">{t.label}</p>
                     <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{t.why}</p>
                     <div className="flex items-center gap-1.5 mt-auto pt-2.5 border-t border-[var(--pv-neutral-grey-100)] text-[11px] font-medium text-[var(--text-muted)]">
@@ -677,9 +706,8 @@ function ActiveGoal({ goal, refetch }) {
               const conditions = [...goal.conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
               return (
                 <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
+                  <div className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <WaveSine size={16} className="text-[var(--text-muted)]" />
                       <p className="text-[14px] font-semibold text-[var(--text-primary)]">What we're watching</p>
                     </div>
                     {firingCount > 0 && <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600">{firingCount} firing</span>}
@@ -691,10 +719,7 @@ function ActiveGoal({ goal, refetch }) {
                         <div key={c.id} title={c.label} className={cn("flex items-start gap-2.5 px-2.5 py-2.5 rounded-lg", fired && "bg-rose-50/60")}>
                           <span className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
                             {fired ? (
-                              <>
-                                <span className="absolute w-2.5 h-2.5 rounded-full bg-rose-400/40 animate-ping" />
-                                <span className="w-2 h-2 rounded-full bg-rose-500" />
-                              </>
+                              <span className="w-2 h-2 rounded-full bg-rose-500" />
                             ) : (
                               <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
                             )}
@@ -714,8 +739,7 @@ function ActiveGoal({ goal, refetch }) {
 
             {/* Goal notes — a running log, kept with the goal's context */}
             <div className="bg-white border border-[var(--border-primary)] rounded-xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)]">
-                <NotePencil size={16} className="text-[var(--text-muted)]" />
+              <div className="flex items-center gap-2 px-4 py-3">
                 <p className="text-[14px] font-semibold text-[var(--text-primary)]">Notes</p>
                 {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
               </div>
@@ -779,7 +803,12 @@ export default function GoalDetailPage() {
 
       <FooterSlot.Provider value={footerEl}>
         <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
-          <div className="flex flex-col min-h-full w-full h-full bg-white rounded-xl p-3">
+          <div className={cn(
+            "flex flex-col min-h-full w-full h-full bg-white rounded-xl",
+            // Padded/bordered card only for the active goal; wizard phases render
+            // their own panels, so they stay unbordered on the grey backdrop.
+            goal && !["calibrating", "decisions", "building", "review"].includes(goal.status) && "border border-[var(--pv-neutral-grey-150)] p-4"
+          )}>
             {isLoading || !goal ? (
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
             ) : goal.status === "calibrating" ? (

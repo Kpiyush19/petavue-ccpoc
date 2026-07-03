@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Bell, ChatCircle, CheckCircle, ClockCounterClockwise, XCircle, Sliders, CircleNotch, ArrowUUpLeft, Question, Path, CaretDown, Target, Lightning, Eye, Clock, Tag } from "@phosphor-icons/react";
+import { X, Bell, ChatCircle, CheckCircle, ClockCounterClockwise, XCircle, Sliders, CircleNotch, ArrowUUpLeft, Question, CaretDown, Target, Lightning, Eye, Clock, Tag } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
@@ -27,7 +27,7 @@ function SnoozeMenu({ onSnooze, disabled }) {
   return (
     <>
       <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
         <ClockCounterClockwise size={16} /> Snooze <CaretDown size={12} />
       </button>
       {open && pos && createPortal(
@@ -100,22 +100,20 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
 
   return (
     <div className="flex flex-col h-full relative overflow-hidden">
+      {/* Scrollable region: header + body scroll together */}
+      <div className="flex-1 overflow-y-auto">
       {/* Header */}
-      <div className="shrink-0 border-b border-[var(--border-primary)] px-5 py-4 flex flex-col gap-2.5">
-        <h2 className="text-[20px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
-        <div className="flex items-center justify-between gap-3">
-          {onOpenGoal && goal?.name ? (
-            <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
-          ) : <span />}
-          {rec.derivation?.length > 0 && (
-            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center gap-1.5 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0 shrink-0">
-              <Question size={14} weight="bold" /> {showDeriv ? "Hide derivation" : "Find out how"}
-            </button>
-          )}
+      <div className="border-b border-[var(--border-primary)] px-5 py-4 flex flex-col gap-2.5">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="flex-1 text-[20px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
+          {onClose && <button onClick={onClose} className="shrink-0 -mt-1 -mr-1 p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
         </div>
+        {onOpenGoal && goal?.name && (
+          <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0 self-start"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
+        )}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
-            <span className={cn("inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide", actNow ? "text-rose-600" : "text-amber-700")}>{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
+            <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-secondary)]">{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
             {rec.age && <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-pv-primary-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
             <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-muted)]"><Tag size={11} weight="bold" />{rec.category}</span>
           </div>
@@ -123,42 +121,41 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <button onClick={() => setShowChat((v) => !v)} className={cn("flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium border cursor-pointer transition-colors", showChat ? "bg-pv-primary-primary-50 border-pv-primary-primary-300 text-pv-primary-primary-600" : "bg-transparent border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]")} aria-label="Comment">
               <ChatCircle size={16} /> Comment{thread.length > 0 && <span className="text-[11px] font-semibold">· {thread.filter((m) => m.role === "user").length}</span>}
             </button>
-            {onClose && <button onClick={onClose} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
           </div>
         </div>
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-5 [&>*]:shrink-0">
+      <div className="px-5 py-4 flex flex-col gap-5 [&>*]:shrink-0">
         {rec.derivation?.length > 0 && (
-          <AnimatePresence initial={false}>
-            {showDeriv && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                <div className="rounded-xl border border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50 px-5 py-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Path size={14} className="text-[var(--text-muted)]" />
-                      <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">How this was derived</p>
-                    </div>
-                    <div className="flex flex-col">
-                      {rec.derivation.map((step, i) => (
-                        <div key={i} className={cn("flex items-start gap-3 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-150)]")}>
-                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-pv-neutral-grey-900 text-white text-[12px] font-semibold shrink-0">{i + 1}</span>
-                          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed pt-0.5">{renderInline(step)}</p>
-                        </div>
-                      ))}
-                    </div>
+          <div className="rounded-lg border border-[var(--pv-neutral-grey-150)] overflow-hidden">
+            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center justify-between w-full px-4 py-3 text-[13px] font-semibold text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">
+              <span className="flex items-center gap-1.5"><Question size={15} weight="bold" /> Find out how</span>
+              <CaretDown size={14} className={cn("transition-transform", showDeriv && "rotate-180")} />
+            </button>
+            <AnimatePresence initial={false}>
+              {showDeriv && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                  <div className="border-t border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50 px-4 py-1">
+                    {rec.derivation.map((step, i) => (
+                      <div key={i} className={cn("flex items-start gap-3 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-150)]")}>
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-pv-neutral-grey-900 text-white text-[12px] font-semibold shrink-0">{i + 1}</span>
+                        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed pt-0.5">{renderInline(step)}</p>
+                      </div>
+                    ))}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
         )}
 
         {rec.metrics?.length > 0 && (
           <div className="border border-[var(--border-primary)] rounded-lg overflow-hidden">
             {rec.metrics.map((m, i) => (
-              <div key={i} className={cn("grid items-baseline gap-3 px-4 py-2.5", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")} style={{ gridTemplateColumns: "120px 1fr" }}>
-                <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{m.label}</span>
-                <span className="text-[12px] text-[var(--text-primary)]"><span className="text-[12px] font-semibold">{m.value}</span>{m.note && <span className="text-[12px] text-[var(--text-muted)]"> · {m.note}</span>}</span>
+              <div key={i} className={cn("flex items-baseline justify-between gap-4 px-4 py-2.5", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
+                <span className="text-[13px] text-[var(--text-secondary)] shrink-0">{m.label}</span>
+                <span className="text-[13px] text-right text-[var(--text-primary)]"><span className="font-medium">{m.value}</span>{m.note && <span className="text-[var(--text-muted)]"> · {m.note}</span>}</span>
               </div>
             ))}
           </div>
@@ -195,6 +192,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
         </div>
 
       </div>
+      </div>
 
       {/* Footer actions */}
       <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3.5">
@@ -205,9 +203,15 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <PvButton variant="primary" size="md" label="Done" icon={CheckCircle} disabled={act.isPending} onClick={() => doAct({ action: "acted" }, "Marked done — monitoring for recovery")} />
-            <PvButton variant="ghost" size="md" label="Dismiss" icon={XCircle} disabled={act.isPending} onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} />
-            <SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => doAct({ action: "snoozed", snooze }, `Snoozed · ${snooze}`)} />
+            <button onClick={() => doAct({ action: "acted" }, "Marked done — monitoring for recovery")} disabled={act.isPending}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <CheckCircle size={16} /> Acted
+            </button>
+            <button onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} disabled={act.isPending}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <XCircle size={16} /> Reject
+            </button>
+            <span className="ml-auto"><SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => doAct({ action: "snoozed", snooze }, `Snoozed · ${snooze}`)} /></span>
           </div>
         )}
       </div>
