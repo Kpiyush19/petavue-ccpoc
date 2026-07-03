@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   X, Target, CheckCircle, ClockCounterClockwise, Play, CircleNotch, CaretRight, CaretDown, Lightning, Sliders,
-  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass, Plus,
+  DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass, Plus, Trash,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Tooltip } from "@/common-components";
 import { Button as PvButton } from "../../petavue";
-import { apiGet, apiPost, apiPut } from "../../api";
+import { apiGet, apiPost, apiPut, apiDelete } from "../../api";
 import { cn } from "../../utils/cn";
 import { RecommendationDetail } from "./RecommendationDrawer";
 
@@ -88,7 +88,7 @@ function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: Foo
     <div className="flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg px-4 py-3.5">
       <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
-        {Icon && <Icon size={20} weight="fill" className={c.txt} />}
+        {Icon && <Icon size={20} className={c.txt} />}
         <span className="text-[24px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
       </div>
       <p className="text-[14px] text-[var(--text-secondary)] leading-snug">{desc}</p>
@@ -185,13 +185,27 @@ function GoalRow({ goal, onOpen, onFull, index }) {
     mutationFn: () => apiPost(`/api/goals/${goal.id}/check-in`, {}),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["goals"] }); qc.invalidateQueries({ queryKey: ["goals-attention"] }); },
   });
+  const del = useMutation({
+    mutationFn: () => apiDelete(`/api/goals/${goal.id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["goals"] });
+      qc.invalidateQueries({ queryKey: ["goals-attention"] });
+      qc.invalidateQueries({ queryKey: ["goals-recommendations"] });
+      toast.success("Goal deleted");
+    },
+    onError: (e) => toast.error("Couldn't delete: " + e.message),
+  });
+  const removeGoal = () => { if (window.confirm(`Delete “${goal.name}”? This can't be undone.`)) del.mutate(); };
 
-  const menuItems = goal.status === "active"
-    ? [
-        { label: check.isPending ? "Checking…" : "Run check-in", icon: check.isPending ? Spinner : Play, onClick: () => check.mutate() },
-        { label: "Open full view", icon: ArrowSquareOut, onClick: () => onFull(goal.id) },
-      ]
-    : [{ label: "Resume setup", icon: CaretRight, onClick: () => onFull(goal.id) }];
+  const menuItems = [
+    ...(goal.status === "active"
+      ? [
+          { label: check.isPending ? "Checking…" : "Run check-in", icon: check.isPending ? Spinner : Play, onClick: () => check.mutate() },
+          { label: "Open full view", icon: ArrowSquareOut, onClick: () => onFull(goal.id) },
+        ]
+      : [{ label: "Resume setup", icon: CaretRight, onClick: () => onFull(goal.id) }]),
+    { label: del.isPending ? "Deleting…" : "Delete goal", icon: Trash, danger: true, onClick: removeGoal },
+  ];
 
   return (
     <div
@@ -281,30 +295,30 @@ function RecListItem({ item, selected, onClick }) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
+        "w-full h-[76px] text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
         selected
           ? "bg-pv-primary-primary-50 border-pv-primary-primary-500 shadow-[0_4px_4px_rgba(54,97,237,0.08)]"
           : "border-[var(--pv-neutral-grey-200)] hover:bg-pv-primary-primary-50",
         done && "opacity-70"
       )}
     >
-      <div className="flex items-center">
+      <div className="flex items-center h-full">
         {/* icon frame */}
         <div className="flex items-center justify-center p-2.5 shrink-0">
           <div
             className={cn("flex items-center justify-center w-9 h-9 rounded-[4px] border border-[var(--pv-neutral-grey-200)]", selected ? "bg-white" : "bg-pv-neutral-grey-50")}
             style={{ boxShadow: "0 4px 4px rgba(122,122,122,0.04)" }}
           >
-            <Icon size={16} weight="fill" className={done ? "text-[var(--text-muted)]" : actNow ? "text-rose-500" : "text-amber-500"} />
+            <Icon size={16} className={done ? "text-[var(--text-muted)]" : actNow ? "text-rose-500" : "text-amber-500"} />
           </div>
         </div>
         {/* content */}
-        <div className="flex-1 min-w-0 flex flex-col gap-1 pr-3 py-2.5">
+        <div className="flex-1 min-w-0 flex flex-col gap-1 pr-3 py-2">
           <Tooltip title={item.title} arrow placement="top">
-            <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug truncate cursor-default">{item.title}</p>
+            <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug line-clamp-2 cursor-default">{item.title}</p>
           </Tooltip>
           <div className="flex items-center gap-2">
-            <span className={cn("text-[12px] font-semibold uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
+            <span className={cn("text-[12px] font-normal uppercase tracking-wide", done ? "text-[var(--text-muted)]" : actNow ? "text-rose-600" : "text-amber-700")}>{done ? "Done" : actNow ? "Act now" : "Watch"}</span>
           </div>
         </div>
       </div>

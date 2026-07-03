@@ -1,13 +1,53 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Bell, ShieldCheck, ChatCircle, CheckCircle, ClockCounterClockwise, XCircle, Sliders, CircleNotch, ArrowUUpLeft, Question, Path, CaretDown, Target, Lightning, Eye, Clock, Tag } from "@phosphor-icons/react";
+import { X, Bell, ChatCircle, CheckCircle, ClockCounterClockwise, XCircle, Sliders, CircleNotch, ArrowUUpLeft, Question, Path, CaretDown, Target, Lightning, Eye, Clock, Tag } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
+
+const SNOOZE_OPTIONS = ["1 day", "3 days", "1 week", "2 weeks", "Until next check-in"];
+
+/* Snooze split-button with a duration dropdown (portaled, opens upward). */
+function SnoozeMenu({ onSnooze, disabled }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
+  const btnRef = useRef(null);
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ bottom: window.innerHeight - r.top + 4, left: r.left });
+    }
+    setOpen((o) => !o);
+  };
+  return (
+    <>
+      <button ref={btnRef} onClick={toggle} disabled={disabled}
+        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+        <ClockCounterClockwise size={16} /> Snooze <CaretDown size={12} />
+      </button>
+      {open && pos && createPortal(
+        <>
+          <div className="fixed inset-0 z-[70]" onClick={() => setOpen(false)} />
+          <div className="fixed z-[71] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ bottom: pos.bottom, left: pos.left }}>
+            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
+            {SNOOZE_OPTIONS.map((label) => (
+              <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">
+                {label}
+              </button>
+            ))}
+          </div>
+        </>,
+        document.body
+      )}
+    </>
+  );
+}
 
 // Render inline `code` chips and **bold** spans inside a derivation step.
 function renderInline(text) {
@@ -61,29 +101,29 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
   return (
     <div className="flex flex-col h-full relative overflow-hidden">
       {/* Header */}
-      <div className="shrink-0 border-b border-[var(--border-primary)]">
-        <div className="flex items-start justify-between gap-3 px-5 pt-4">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-full", actNow ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-700")}>{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
-            {rec.age && <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-pv-primary-primary-50 text-pv-primary-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]"><Tag size={11} weight="bold" />{rec.category}</span>
+      <div className="shrink-0 border-b border-[var(--border-primary)] px-5 py-4 flex flex-col gap-2.5">
+        <h2 className="text-[20px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
+        <div className="flex items-center justify-between gap-3">
+          {onOpenGoal && goal?.name ? (
+            <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
+          ) : <span />}
+          {rec.derivation?.length > 0 && (
+            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center gap-1.5 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0 shrink-0">
+              <Question size={14} weight="bold" /> {showDeriv ? "Hide derivation" : "Find out how"}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={cn("inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide", actNow ? "text-rose-600" : "text-amber-700")}>{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
+            {rec.age && <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-pv-primary-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
+            <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-muted)]"><Tag size={11} weight="bold" />{rec.category}</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={() => setShowChat((v) => !v)} className={cn("flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[12px] font-medium border cursor-pointer transition-colors", showChat ? "bg-pv-primary-primary-50 border-pv-primary-primary-300 text-pv-primary-primary-600" : "bg-transparent border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]")} aria-label="Comment">
-              <ChatCircle size={14} /> Comment{thread.length > 0 && <span className="text-[11px] font-semibold">· {thread.filter((m) => m.role === "user").length}</span>}
+            <button onClick={() => setShowChat((v) => !v)} className={cn("flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium border cursor-pointer transition-colors", showChat ? "bg-pv-primary-primary-50 border-pv-primary-primary-300 text-pv-primary-primary-600" : "bg-transparent border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]")} aria-label="Comment">
+              <ChatCircle size={16} /> Comment{thread.length > 0 && <span className="text-[11px] font-semibold">· {thread.filter((m) => m.role === "user").length}</span>}
             </button>
             {onClose && <button onClick={onClose} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
-          </div>
-        </div>
-        <div className="px-5 pt-2.5 pb-4">
-          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
-          <div className="mt-1.5 flex items-center justify-between gap-3">
-            {onOpenGoal && goal?.name ? (
-              <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
-            ) : <span />}
-            <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] shrink-0">
-              <ShieldCheck size={14} className="text-green-600" /> Verified · defensible on the numbers
-            </div>
           </div>
         </div>
       </div>
@@ -91,15 +131,10 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-5 [&>*]:shrink-0">
         {rec.derivation?.length > 0 && (
-          <div>
-            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center gap-1.5 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0">
-              <Question size={15} weight="bold" />
-              {showDeriv ? "Hide derivation" : "Find out how"}
-            </button>
-            <AnimatePresence initial={false}>
-              {showDeriv && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                  <div className="mt-3 rounded-xl border border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50 px-5 py-4">
+          <AnimatePresence initial={false}>
+            {showDeriv && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                <div className="rounded-xl border border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50 px-5 py-4">
                     <div className="flex items-center gap-2 mb-1">
                       <Path size={14} className="text-[var(--text-muted)]" />
                       <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">How this was derived</p>
@@ -116,11 +151,10 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
         )}
 
         {rec.metrics?.length > 0 && (
-          <div className="border border-[var(--border-primary)] rounded-xl overflow-hidden">
+          <div className="border border-[var(--border-primary)] rounded-lg overflow-hidden">
             {rec.metrics.map((m, i) => (
               <div key={i} className={cn("grid items-baseline gap-3 px-4 py-2.5", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")} style={{ gridTemplateColumns: "120px 1fr" }}>
                 <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{m.label}</span>
@@ -133,14 +167,14 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
         <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{rec.body}</p>
 
         {rec.trigger && (
-          <div className="flex items-start gap-2 px-3.5 py-2.5 rounded-lg bg-pv-neutral-grey-50 border border-[var(--pv-neutral-grey-100)]">
+          <div className="flex items-start gap-2">
             <Bell size={15} className="text-amber-500 shrink-0 mt-0.5" weight="fill" />
             <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{rec.trigger}</p>
           </div>
         )}
 
         <div className="flex flex-col gap-3">
-          <div className="border border-[var(--border-primary)] rounded-xl p-4">
+          <div>
             <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">Action</p>
             <ul className="flex flex-col gap-1.5">
               {(rec.steps || [rec.tldr]).map((s, i) => (
@@ -149,12 +183,12 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             </ul>
           </div>
           {rec.impact && (
-            <div className="rounded-xl p-4 bg-amber-50/60 border border-amber-100">
+            <div>
               <div className="flex items-center gap-1.5 mb-1.5">
                 <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Estimated impact</p>
-                {rec.tier && <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-white text-[var(--text-muted)] border border-[var(--border-primary)]">Tier {rec.tier}</span>}
+                {rec.tier && <span className="px-1.5 py-0.5 text-[12px] font-semibold rounded bg-white text-[var(--text-muted)] border border-[var(--border-primary)]">Tier {rec.tier}</span>}
               </div>
-              <p className="text-[20px] font-semibold text-[var(--text-primary)] leading-none">{rec.impact.value}</p>
+              <p className="text-[18px] font-semibold text-[var(--text-primary)] leading-none">{rec.impact.value}</p>
               <p className="text-[12px] text-[var(--text-secondary)] mt-1.5 leading-snug">{rec.impact.label}{rec.impact.sub ? ` · ${rec.impact.sub}` : ""}</p>
             </div>
           )}
@@ -172,8 +206,8 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
         ) : (
           <div className="flex items-center gap-2">
             <PvButton variant="primary" size="md" label="Done" icon={CheckCircle} disabled={act.isPending} onClick={() => doAct({ action: "acted" }, "Marked done — monitoring for recovery")} />
-            <PvButton variant="secondary" size="md" label="Snooze 7d" icon={ClockCounterClockwise} disabled={act.isPending} onClick={() => doAct({ action: "snoozed", snooze: "7 days" }, "Snoozed for 7 days")} />
             <PvButton variant="ghost" size="md" label="Dismiss" icon={XCircle} disabled={act.isPending} onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} />
+            <SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => doAct({ action: "snoozed", snooze }, `Snoozed · ${snooze}`)} />
           </div>
         )}
       </div>

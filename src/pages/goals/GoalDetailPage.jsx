@@ -601,7 +601,7 @@ function ActiveGoal({ goal, refetch }) {
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Latest check-in</span>
                   <span className="text-[11px] text-[var(--text-muted)]">· {lastCheckIn.at}</span>
                 </div>
-                <p className="text-[18px] font-semibold text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
+                <p className="text-[18px] font-medium text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
                 <p className="text-[12px] text-[var(--text-muted)] mt-2">Projection is a naive run-rate estimate.</p>
               </div>
             ) : (

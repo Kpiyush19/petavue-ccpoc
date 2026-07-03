@@ -262,6 +262,7 @@ const handlers = [
   { method: "GET", pattern: /\/api\/goals$/, handler: () => ({ goals: Goals.listGoals() }) },
   { method: "POST", pattern: /\/api\/goals$/, handler: ({ body }) => ({ goal: Goals.createGoal(body || {}) }) },
   { method: "GET", pattern: /\/api\/goals\/([^/]+)$/, handler: ({ params }) => Goals.getGoal(params[0]) || { detail: "not found" } },
+  { method: "DELETE", pattern: /\/api\/goals\/([^/]+)$/, handler: ({ params }) => Goals.deleteGoal(params[0]) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/answer$/, handler: ({ params, body }) => Goals.answerGoal(params[0], body?.answers || {}) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/adjust$/, handler: ({ params, body }) => Goals.adjustGoal(params[0], body?.text || "") },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/save$/, handler: ({ params, body }) => ({ goal: Goals.saveGoal(params[0], body?.name) }) },

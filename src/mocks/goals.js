@@ -443,6 +443,12 @@ export function saveGoal(id, name) {
   return g;
 }
 
+export function deleteGoal(id) {
+  const i = goals.findIndex((g) => g.id === id);
+  if (i >= 0) goals.splice(i, 1);
+  return { ok: true };
+}
+
 export function runCheckIn(id) {
   const g = find(id);
   if (!g) return null;
