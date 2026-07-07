@@ -631,9 +631,8 @@ function FindingStat({ label, value, sub }) {
   if (!value) return null;
   return (
     <div className="rounded-lg border border-pv-neutral-grey-150/50 bg-pv-neutral-grey-50/50 px-3 py-2.5">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{label}</p>
-      <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug mt-1">{value}</p>
-      {sub && <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">{sub}</p>}
+      <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{label}</p>
+      <p className="text-[16px] font-semibold text-[var(--text-primary)] leading-snug mt-1">{value}</p>
     </div>
   );
 }
@@ -656,7 +655,7 @@ function TopFindingPanel({ rec, onOpen }) {
       <div className="px-4 pb-4 flex flex-col gap-4">
         <div>
           <p className="text-[16px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</p>
-          {rec.body && <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-1.5">{rec.body}</p>}
+          {rec.body && <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mt-1.5">{rec.body}</p>}
         </div>
 
         {/* Impact · Trigger · Signal */}
@@ -859,6 +858,83 @@ function MonitorRow({ condition, defaultOpen, divider, onOpenFinding }) {
   );
 }
 
+/* Feedback tab — everything the customer has told us on this goal: decisions
+   captured on recommendations (Acted / Dismissed / Snoozed + the reason) and
+   comments left via the Comment panel. Read straight from the stored records. */
+function FeedbackTab({ goal }) {
+  const decisions = goal.checkIns.flatMap((ci) => ci.recommendations).filter((r) => r.status !== "open");
+  const comments = goal.notes || [];
+  const meta = {
+    acted: { icon: CheckCircle, cls: "text-green-600", bg: "bg-green-50", label: "Acted" },
+    rejected: { icon: XCircle, cls: "text-rose-600", bg: "bg-rose-50", label: "Dismissed" },
+    snoozed: { icon: ClockCounterClockwise, cls: "text-amber-600", bg: "bg-amber-50", label: "Snoozed" },
+  };
+
+  if (!decisions.length && !comments.length) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
+        <ChatCircle size={26} className="text-[var(--text-muted)]" />
+        <p className="text-[16px] font-medium text-[var(--text-primary)]">No feedback yet</p>
+        <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">When you act on, dismiss, or snooze a recommendation — or leave a comment — it shows up here, and the engine factors it into the next check-in.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      {decisions.length > 0 && (
+        <section>
+          <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Decisions on recommendations · {decisions.length}</p>
+          <div className="flex flex-col gap-2">
+            {decisions.map((r) => {
+              const m = meta[r.status] || meta.acted;
+              const I = m.icon;
+              return (
+                <div key={r.id} className="flex items-start gap-3 p-3 rounded-xl border border-pv-neutral-grey-150/50 bg-white dropshadow-card">
+                  <span className={cn("flex items-center justify-center w-7 h-7 rounded-full shrink-0", m.bg, m.cls)}><I size={15} weight="fill" /></span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("text-[13px] font-semibold shrink-0", m.cls)}>{m.label}{r.status === "snoozed" && r.snoozeLabel ? ` · ${r.snoozeLabel}` : ""}</span>
+                      <span className="text-[12px] text-[var(--text-secondary)] truncate">{r.category}</span>
+                      {r.actedAgo && <span className="ml-auto text-[11px] text-[var(--text-muted)] shrink-0">{r.actedAgo}</span>}
+                    </div>
+                    <p className="text-[13px] text-[var(--text-primary)] leading-snug mt-0.5">{r.title}</p>
+                    {r.reason
+                      ? <p className="text-[13px] text-[var(--text-secondary)] italic leading-snug mt-1.5">“{r.reason}”</p>
+                      : <p className="text-[12px] text-[var(--text-muted)] mt-1.5">No reason captured.</p>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {comments.length > 0 && (
+        <section>
+          <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Comments · {comments.length}</p>
+          <div className="flex flex-col gap-2">
+            {comments.map((n) => (
+              <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl border border-pv-neutral-grey-150/50 bg-white dropshadow-card">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full shrink-0 bg-pv-primary-primary-50 text-pv-primary-primary-600"><ChatCircle size={15} weight="fill" /></span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-semibold text-[var(--text-primary)]">Comment</span>
+                    {n.at && <span className="ml-auto text-[11px] text-[var(--text-muted)] shrink-0">{n.at}</span>}
+                  </div>
+                  <p className="text-[13px] text-[var(--text-secondary)] leading-snug mt-1">{n.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <p className="text-[11px] text-[var(--text-muted)] flex items-start gap-1.5"><Info size={13} className="mt-px shrink-0" /> The engine reads this on the next check-in — dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
+    </div>
+  );
+}
+
 function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -882,6 +958,8 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
   const watching = openRecs.filter((r) => r.severity === "watch").length;
   const doneCount = recs.filter((r) => r.status === "acted").length;
   const firingCount = goal.conditions.filter((c) => c.state === "fired").length;
+  // Feedback = decisions captured on recommendations + comments left on the goal.
+  const feedbackCount = goal.checkIns.flatMap((ci) => ci.recommendations).filter((r) => r.status !== "open").length + (goal.notes?.length || 0);
   // The single highest-priority open finding — drives the Overview "Top finding"
   // panel and the Monitor "Next step" card.
   const leadRec = openRecs.find((r) => r.severity === "act-now") || openRecs[0] || null;
@@ -907,6 +985,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
             { k: "overview", label: "Overview" },
             { k: "recommendations", label: "Recommendations", badge: actNow || recs.length },
             { k: "monitor", label: "Monitor", badge: firingCount },
+            { k: "feedback", label: "Feedback", badge: feedbackCount },
           ].map((t) => (
             <button
               key={t.k}
@@ -928,7 +1007,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
       <div className="mt-6">
         {/* ── Overview: goal-level command summary ── */}
         {tab === "overview" && (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
             {/* 1 — Goal scorecard: are we winning? (leads the page) */}
             <GoalScorecard targets={goal.targets} />
 
@@ -959,23 +1038,20 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                       View all {goal.conditions.length} <ArrowRight size={12} weight="bold" className="group-hover:translate-x-0.5 transition-transform" />
                     </button>
                   </div>
-                  <div className="px-4 pb-3.5 flex flex-col gap-2.5">
+                  <div className="flex flex-col">
                     {firingCount > 0 ? (
                       goal.conditions.filter((c) => c.state === "fired").map((c) => (
-                        <div key={c.id} className="flex items-start gap-2.5">
-                          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0 mt-[7px]" />
+                        <div key={c.id} className="flex items-center gap-3 px-4 py-3 border-t border-[var(--pv-neutral-grey-100)]">
+                          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
                           <div className="min-w-0 flex-1">
-                            <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug truncate">{c.label}</p>
-                            {c.description && <p className="text-[12px] text-[var(--text-secondary)] leading-snug truncate">{c.description}</p>}
+                            <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug truncate">{c.label}</p>
+                            {c.description && <p className="text-[12px] text-[var(--text-secondary)] leading-snug truncate mt-0.5">{c.description}</p>}
                           </div>
-                          <span className="shrink-0 text-[11px] font-semibold text-rose-600 mt-0.5">{c.count ? `${c.count} fired` : "Fired"}</span>
+                          <span className="shrink-0 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-full">{c.count ? `${c.count} fired` : "Fired"}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="text-[13px] text-[var(--text-secondary)]">All {goal.conditions.length} monitors are quiet — nothing tripped this run.</p>
-                    )}
-                    {firingCount > 0 && (goal.conditions.length - firingCount) > 0 && (
-                      <p className="text-[11px] text-[var(--text-muted)] pt-0.5">+ {goal.conditions.length - firingCount} quiet monitor{(goal.conditions.length - firingCount) !== 1 ? "s" : ""} still watching</p>
+                      <p className="text-[13px] text-[var(--text-secondary)] px-4 pb-4">All {goal.conditions.length} monitors are quiet — nothing tripped this run.</p>
                     )}
                   </div>
                 </div>
@@ -1032,12 +1108,12 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <OverviewStat
                   label="Current state" icon={Warning} iconClass="text-rose-500"
-                  num={firingCount} numClass={firingCount > 0 ? "text-rose-600" : "text-green-600"} word="firing"
+                  num={firingCount} numClass="text-[var(--text-primary)]" word="firing"
                   desc={firingCount > 0 ? `${firingCount} sustained pattern${firingCount !== 1 ? "s" : ""} generated findings in the latest check-in.` : "No monitors are firing right now."}
                 />
                 <OverviewStat
                   label="Quiet" icon={CheckCircle} iconClass="text-green-500"
-                  num={quietCount} numClass="text-green-600" word="quiet"
+                  num={quietCount} numClass="text-[var(--text-primary)]" word="quiet"
                   desc={`${quietCount} monitor${quietCount !== 1 ? "s are" : " is"} healthy and still watching.`}
                 />
                 <OverviewStat
@@ -1047,7 +1123,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                 />
                 <OverviewStat
                   label="Reliability" icon={CheckCircle} iconClass="text-green-500"
-                  num={goal.conditions.length} numClass="text-green-600" word={goal.conditions.length === 1 ? "rule run" : "rules run"}
+                  num={goal.conditions.length} numClass="text-[var(--text-primary)]" word={goal.conditions.length === 1 ? "rule run" : "rules run"}
                   desc="All rules ran cleanly this check-in — no gaps or errors."
                 />
               </div>
@@ -1078,6 +1154,9 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
             </div>
           );
         })()}
+
+        {/* ── Feedback: every decision + comment the customer has given ── */}
+        {tab === "feedback" && <FeedbackTab goal={goal} />}
       </div>
 
       {recId && <RecommendationDrawer goalId={goal.id} recId={recId} onClose={() => setRecId(null)} />}
@@ -1175,7 +1254,7 @@ export default function GoalDetailPage() {
               <button
                 onClick={() => setSageOpen(true)}
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium text-white border-none cursor-pointer transition-[filter] hover:brightness-105"
-                style={{ background: SAGE_GRADIENT, boxShadow: "0 4px 12px -3px rgba(72,86,237,0.45)" }}
+                style={{ background: SAGE_GRADIENT }}
               >
                 <Sparkle size={14} weight="fill" /> Ask Sage
               </button>

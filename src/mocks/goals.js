@@ -403,10 +403,26 @@ function pickFindings(...cats) {
   return makeRecommendations().filter((r) => cats.includes(r.category));
 }
 
+// Pre-resolve some findings with captured feedback (action + reason + when), so
+// the Feedback tab is populated on first view. Each entry: { category, action,
+// reason, snooze, hoursAgo }.
+function applyFeedback(recs, entries = []) {
+  for (const e of entries) {
+    const rec = recs.find((r) => r.category === e.category && r.status === "open");
+    if (!rec) continue;
+    rec.status = e.action; // acted | rejected | snoozed
+    if (e.reason) rec.reason = e.reason;
+    if (e.action === "snoozed") rec.snoozeLabel = e.snooze || "until next run";
+    rec.actedAt = checkedAt(e.hoursAgo ?? 4);
+    rec.actedAgo = agoLabel(e.hoursAgo ?? 4);
+  }
+  return recs;
+}
+
 // Build an active goal with its own rules, monitors and (optionally) a check-in
 // carrying a curated set of findings — lets several distinct goals each surface
 // their own act-now work, so the home strip populates realistically.
-function seedGoal({ name, statement, target, targets = [], conditions = [], moves = [], recs = [], checkedAgoHours = 3 }) {
+function seedGoal({ name, statement, target, targets = [], conditions = [], moves = [], recs = [], checkedAgoHours = 3, notes = [] }) {
   const actNowCount = recs.filter((r) => r.severity === "act-now").length;
   return {
     id: nid("goal"),
@@ -430,7 +446,7 @@ function seedGoal({ name, statement, target, targets = [], conditions = [], move
           recommendations: recs,
         }]
       : [],
-    notes: [],
+    notes: notes.map((n) => ({ id: nid("note"), ...n })),
     target,
     createdAt: Date.now(),
   };
@@ -508,8 +524,19 @@ const goals = [
       "Raise the monthly cap on the top-converting Search campaign so it doesn't go dark",
       "Fix or A/B the underperforming landing page",
     ],
-    recs: pickFindings("Wasted spend", "Missed demand", "Conversion leak", "Query waste", "Budget pacing"),
+    recs: applyFeedback(
+      pickFindings("Wasted spend", "Missed demand", "Conversion leak", "Query waste", "Budget pacing"),
+      [
+        { category: "Query waste", action: "acted", hoursAgo: 3,
+          reason: "Added 38 negative keywords across the broad-match ad groups and tightened two to phrase match." },
+        { category: "Conversion leak", action: "rejected", hoursAgo: 6,
+          reason: "The /demo dip was a GA4 tag firing twice that week — a tracking artifact on our side, not a real conversion issue. Don't re-flag." },
+      ],
+    ),
     checkedAgoHours: 2,
+    notes: [
+      { text: "Finance wants us to protect Search efficiency this quarter over scaling Meta — weight recommendations accordingly.", at: "2d ago" },
+    ],
   }),
   // Act-now goal #2 — Meta creative fatigue + brand overlap.
   seedGoal({
@@ -533,7 +560,13 @@ const goals = [
       "Apply a negative mobile bid adjustment until the device gap closes",
       "Add a brand-term exclusion list to PMax so organic keeps capturing brand demand",
     ],
-    recs: pickFindings("Creative fatigue", "Spend overlap", "Scale opportunity", "Device gap"),
+    recs: applyFeedback(
+      pickFindings("Creative fatigue", "Spend overlap", "Scale opportunity", "Device gap"),
+      [
+        { category: "Device gap", action: "snoozed", snooze: "2 weeks", hoursAgo: 20,
+          reason: "New mobile /demo form ships next sprint — revisit after it's live." },
+      ],
+    ),
     checkedAgoHours: 7,
   }),
   // Act-now goal #3 — retargeting re-serving already-converted users.
@@ -1050,6 +1083,9 @@ export function actOnRecommendation(id, recId, action, payload) {
       else if (action === "open") rec.reason = undefined; // cleared on undo
       if (payload?.note) rec.actionNote = payload.note;
       if (action === "snoozed") rec.snoozeLabel = payload?.snooze || "until next run";
+      // Stamp when the decision was made, for the Feedback tab timeline.
+      if (action === "open") { rec.actedAt = undefined; rec.actedAgo = undefined; }
+      else { rec.actedAt = checkedAt(0); rec.actedAgo = "Just now"; }
       break;
     }
   }
