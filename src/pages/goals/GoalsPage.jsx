@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   X, Target, CheckCircle, ClockCounterClockwise, Play, CircleNotch, CaretRight, CaretDown, Lightning, Sliders,
   DotsThree, XCircle, ArrowSquareOut, Lightbulb, Eye, Clock, Flag, Pulse, FlowArrow, MagnifyingGlass, Plus, Trash,
+  Sparkle, PaperPlaneRight, Funnel, Info, Warning,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Tooltip } from "@/common-components";
@@ -13,6 +14,7 @@ import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost, apiPut, apiDelete } from "../../api";
 import { cn } from "../../utils/cn";
 import { RecommendationDetail } from "./RecommendationDrawer";
+import SageWidget from "./SageWidget";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
@@ -24,7 +26,9 @@ const HEALTH = {
 const SETUP_LABEL = { calibrating: "Calibrating", decisions: "Ready for review", review: "Ready for review" };
 
 const NEEDS_COLS = "minmax(0,1fr) 180px 200px 84px 36px";
-const GOALS_COLS = "32px minmax(0,1fr) 150px 96px 120px 36px";
+// Shared column layout for both goal lists: Goal · What we found · Priority ·
+// Activity · Checked · kebab.
+const GOALS_COLS = "minmax(0,1.3fr) minmax(0,1.9fr) 132px 150px 110px 44px";
 
 /* ── Row kebab menu (portaled so it escapes section overflow) ── */
 function RowMenu({ items, disabled }) {
@@ -85,7 +89,7 @@ const INSIGHT_COLOR = {
 function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: FootIcon, onClick }) {
   const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
   return (
-    <div className="flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg px-4 py-3.5">
+    <div className="flex flex-col bg-white border border-pv-neutral-grey-150/50 rounded-lg px-4 py-3.5 dropshadow-card">
       <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={20} className={c.txt} />}
@@ -176,11 +180,89 @@ function AttentionRow({ item, onOpen, onOpenRec }) {
   );
 }
 
-/* ── A goal row (single line, table) ── */
-function GoalRow({ goal, onOpen, onFull, index }) {
+/* One mutually-exclusive bucket per goal — drives the "Your goals" filter tabs
+   so a long list can be narrowed to a subset instead of scrolled. */
+function goalBucket(g) {
+  if (g.health === "setup") return "attention"; // needs setup / your input
+  if (g.actNow > 0) return "actnow";
+  if (g.watching > 0) return "watching";
+  return "ontrack";
+}
+const GOAL_FILTERS = [
+  { k: "all", label: "All" },
+  { k: "actnow", label: "Act now" },
+  { k: "attention", label: "Needs attention" },
+  { k: "ontrack", label: "On track" },
+  { k: "watching", label: "Watching" },
+];
+
+/* Filter for "Your goals" — design-system button trigger + portaled menu of
+   buckets with live counts. */
+function GoalFilterDropdown({ value, onChange, counts, total }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState(null);
+  const ref = useRef(null);
+  const current = GOAL_FILTERS.find((f) => f.k === value) || GOAL_FILTERS[0];
+  const toggle = () => {
+    if (!open && ref.current) {
+      const r = ref.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 6, left: Math.max(8, r.right - 240) });
+    }
+    setOpen((o) => !o);
+  };
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <PvButton variant="secondary" size="md" icon={Funnel} aria-label={`Filter goals — ${current.label}`} onClick={toggle} />
+      {value !== "all" && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pv-primary-primary-500 ring-2 ring-white pointer-events-none" />}
+      {open && pos && createPortal(
+        <>
+          <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
+          <div className="fixed z-[61] w-[240px] bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
+            <p className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filter by</p>
+            {GOAL_FILTERS.map((f) => {
+              const count = f.k === "all" ? total : (counts[f.k] || 0);
+              const active = f.k === value;
+              return (
+                <button
+                  key={f.k}
+                  onClick={() => { onChange(f.k); setOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center justify-between gap-4 px-4 py-3 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50",
+                    active ? "text-pv-primary-primary-600 font-medium" : "text-[var(--text-primary)]"
+                  )}
+                >
+                  <span className="inline-flex items-center gap-2.5">
+                    <span className={cn("flex items-center justify-center w-4 h-4 rounded-full border-2 shrink-0 transition-colors", active ? "border-pv-primary-primary-500" : "border-pv-neutral-grey-300")}>
+                      {active && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+                    </span>
+                    {f.label}
+                  </span>
+                  <span className="text-[12px] text-[var(--text-muted)]">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+/* Priority pill — the first thing a triager reads: what should I do about this
+   goal? Act now → Watch → On track → setup states. */
+function goalPriority(goal) {
+  const b = goalBucket(goal);
+  if (b === "actnow") return { label: "Act now", icon: Lightning, cls: "bg-rose-50 text-rose-600" };
+  if (b === "attention") return { label: "Needs attention", icon: Warning, cls: "bg-amber-50 text-amber-700" };
+  if (b === "watching") return { label: "Watching", icon: Eye, cls: "bg-blue-50 text-blue-700" };
+  return { label: "On track", icon: CheckCircle, cls: "bg-green-50 text-green-600" };
+}
+
+/* Shared row actions (check-in · open · delete) for both the triage cards and
+   the retained single-line table. */
+function useGoalRowMenu(goal, onFull) {
   const qc = useQueryClient();
-  const inSetup = goal.health === "setup";
-  const h = HEALTH[goal.health] || HEALTH.setup;
   const check = useMutation({
     mutationFn: () => apiPost(`/api/goals/${goal.id}/check-in`, {}),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["goals"] }); qc.invalidateQueries({ queryKey: ["goals-attention"] }); },
@@ -196,8 +278,7 @@ function GoalRow({ goal, onOpen, onFull, index }) {
     onError: (e) => toast.error("Couldn't delete: " + e.message),
   });
   const removeGoal = () => { if (window.confirm(`Delete “${goal.name}”? This can't be undone.`)) del.mutate(); };
-
-  const menuItems = [
+  const items = [
     ...(goal.status === "active"
       ? [
           { label: check.isPending ? "Checking…" : "Run check-in", icon: check.isPending ? Spinner : Play, onClick: () => check.mutate() },
@@ -206,25 +287,70 @@ function GoalRow({ goal, onOpen, onFull, index }) {
       : [{ label: "Resume setup", icon: CaretRight, onClick: () => onFull(goal.id) }]),
     { label: del.isPending ? "Deleting…" : "Delete goal", icon: Trash, danger: true, onClick: removeGoal },
   ];
+  return { items, runCheckIn: () => check.mutate(), isChecking: check.isPending };
+}
+
+/* ── Shared column header for both goal lists. ── */
+function GoalListHeader() {
+  return (
+    <div className="grid px-3 py-2 w-full" style={{ gridTemplateColumns: GOALS_COLS }}>
+      <HeaderCell label="Goal" />
+      <HeaderCell label="What we found" />
+      <HeaderCell label="Priority" />
+      <HeaderCell label="Activity" />
+      <HeaderCell label="Checked" />
+      <span />
+    </div>
+  );
+}
+
+/* ── The one goal row, used in BOTH "Where to act first" and "Your goals" so the
+      two read as the same object — same columns, 12px, priority as a bg chip.
+      Goal · Priority · Reason to open · Activity · Checked · menu. ── */
+function GoalRow({ goal, onOpen, onFull }) {
+  const { items: menuItems } = useGoalRowMenu(goal, onFull);
+  const p = goalPriority(goal);
+  const finding = goal.topFinding;
+  const inSetup = goal.health === "setup";
+
+  // Reason to open — the latest finding if there is one, otherwise a state line.
+  const reason = finding
+    ? finding.title
+    : inSetup
+      ? (goal.status === "calibrating" ? "Calibrating — reading your data" : "Ready for review — finish setup to start tracking")
+      : "On track — nothing needs action this check-in";
 
   return (
     <div
-      className="grid items-center w-full px-3 h-[58px] shrink-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all cursor-pointer"
+      className="grid items-center w-full px-3 h-[52px] shrink-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all cursor-pointer"
       style={{ gridTemplateColumns: GOALS_COLS }}
       onClick={() => onOpen(goal)}
     >
-      <span className="text-[12px] font-normal text-[var(--text-muted)] px-2">{index}.</span>
-      <div className="flex items-center gap-2.5 min-w-0 px-2">
-        <span className="text-[12px] font-normal text-[var(--text-primary)] truncate">{goal.name}</span>
-      </div>
-      <span className={cn("text-[12px] font-normal truncate px-2", h.text)}>{inSetup ? (SETUP_LABEL[goal.status] || "In setup") : h.label}</span>
-      <span className="text-[12px] font-normal text-[var(--text-secondary)] whitespace-nowrap px-2">{goal.targetSummary || "—"}</span>
+      {/* Goal */}
+      <span className="text-[12px] font-medium text-[var(--text-primary)] truncate px-2">{goal.name}</span>
+      {/* What we found — secondary text */}
+      <span className="text-[12px] text-[#757A97] truncate px-2">{reason}</span>
+      {/* Priority — bg chip */}
       <span className="px-2">
-        {goal.lastCheckIn
-          ? <span className="inline-flex items-center gap-1.5 text-[12px] font-normal text-[var(--text-muted)] whitespace-nowrap"><ClockCounterClockwise size={12} className="shrink-0" />{goal.lastCheckIn}</span>
-          : <span className="text-[12px] font-normal text-[var(--pv-neutral-grey-400)] whitespace-nowrap">Not run yet</span>}
+        <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap", p.cls)}><p.icon size={10} weight="fill" />{p.label}</span>
       </span>
-      <div className="px-2" onClick={(e) => e.stopPropagation()}><RowMenu items={menuItems} /></div>
+      {/* Activity — parts joined by "|" */}
+      <span className="px-2 flex items-center gap-1.5 min-w-0 text-[12px] text-[var(--text-muted)]">
+        {(() => {
+          const parts = [];
+          if (goal.actNow > 0) parts.push(<span key="act" className="text-[var(--text-primary)] font-semibold whitespace-nowrap">{goal.actNow} to act</span>);
+          if (goal.watching > 0 && goal.actNow === 0) parts.push(<span key="watch" className="whitespace-nowrap">{goal.watching} watching</span>);
+          if (goal.firingCount > 0) parts.push(<span key="fire" className="whitespace-nowrap">{goal.firingCount} firing</span>);
+          if (parts.length === 0) return <span>—</span>;
+          return parts.flatMap((el, i) => i === 0 ? [el] : [<span key={`sep${i}`} className="text-[var(--pv-neutral-grey-300)]">|</span>, el]);
+        })()}
+      </span>
+      {/* Checked */}
+      <span className="text-[12px] text-[var(--text-muted)] whitespace-nowrap truncate px-2">{goal.lastCheckIn || "Not run yet"}</span>
+      {/* Action — kebab (Run check-in / Open full view / Delete live inside it) */}
+      <div className="px-2 flex items-center justify-end" onClick={(e) => e.stopPropagation()}>
+        <RowMenu items={menuItems} />
+      </div>
     </div>
   );
 }
@@ -259,7 +385,7 @@ function ConfigModal({ onClose }) {
         <div className="shrink-0 flex items-start justify-between gap-3 px-5 py-4 border-b border-[var(--border-primary)]">
           <div>
             <h3 className="text-[18px] font-semibold text-[var(--text-primary)] m-0">Configure</h3>
-            <p className="text-[12px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">Shared context every goal calibration and run uses to ground its recommendations.</p>
+            <p className="text-[14px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">The context we ground every goal in — how your business, funnel, and best-fit customers actually work — so the findings fit you, not a generic benchmark.</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={onClose} />
@@ -336,7 +462,7 @@ function RecommendationsPanel({ onOpenGoal }) {
       <div className="flex flex-col items-center justify-center gap-2 h-full text-center px-6">
         <CheckCircle size={26} weight="fill" className="text-green-500" />
         <p className="text-[15px] font-medium text-[var(--text-primary)]">You're all caught up</p>
-        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">Run a check-in on a goal to surface new recommendations.</p>
+        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">No moves to make right now. Run a check-in on a goal and we'll flag anything wasting spend or leaving demand on the table.</p>
       </div>
     );
   }
@@ -363,6 +489,8 @@ export default function GoalsPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("goals");
   const [showConfig, setShowConfig] = useState(false);
+  const [goalFilter, setGoalFilter] = useState("all");
+  const [goalSearch, setGoalSearch] = useState("");
   const { data: recData } = useQuery({ queryKey: ["goals-recommendations"], queryFn: () => apiGet("/api/goals/recommendations"), refetchInterval: 2500 });
   const recCount = (recData?.items || []).filter((r) => r.status === "open").length;
   const { data: goalsData } = useQuery({ queryKey: ["goals"], queryFn: () => apiGet("/api/goals"), refetchInterval: 2500 });
@@ -378,14 +506,14 @@ export default function GoalsPage() {
   const watching = (recData?.items || []).filter((r) => r.severity === "watch" && r.status === "open").length;
   const insights = [
     { kind: "Act now", color: "red", icon: Lightning, value: String(items.length),
-      desc: items.length ? `recommendation${items.length !== 1 ? "s" : ""} need action now` : "nothing needs action right now",
+      desc: items.length ? `move${items.length !== 1 ? "s" : ""} to make before they cost you pipeline` : "nothing needs a decision right now",
       foot: `Across ${goals.length} goal${goals.length !== 1 ? "s" : ""}`, footIcon: Target },
     { kind: "Needs attention", color: "amber", icon: Flag, value: String(attentionGoals),
-      desc: `goal${attentionGoals !== 1 ? "s" : ""} off track this week`, foot: attentionGoals > 0 ? "See below" : "All clear", footIcon: Pulse },
+      desc: `goal${attentionGoals !== 1 ? "s" : ""} drifting off the number this week`, foot: attentionGoals > 0 ? "See below" : "All clear", footIcon: Pulse },
     { kind: "On track", color: "green", icon: CheckCircle, value: String(onTrack),
-      desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on track`, foot: setup > 0 ? `${setup} still calibrating` : "Healthy pace", footIcon: Pulse },
+      desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on pace to hit the number`, foot: setup > 0 ? `${setup} still calibrating` : "Healthy pace", footIcon: Pulse },
     { kind: "Watching", color: "blue", icon: Eye, value: String(watching),
-      desc: `signal${watching !== 1 ? "s" : ""} we're monitoring`, foot: "No action needed yet", footIcon: Pulse },
+      desc: `early signal${watching !== 1 ? "s" : ""} we're watching — no action needed yet`, foot: "No action needed yet", footIcon: Pulse },
   ];
 
   // Every goal opens its full detail page (no overlay).
@@ -436,32 +564,86 @@ export default function GoalsPage() {
                   {insights.map((ins) => <InsightCard key={ins.kind} {...ins} />)}
                 </div>
 
-                {/* ── Your goals (floaty table, no card / no collapse) ── */}
-                <div className="flex items-center gap-2.5 mb-3">
-                  <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
-                  <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
-                </div>
+                {/* ── Where to act first — triage strip (top), same columnar row ── */}
+                {(() => {
+                  // Everything that needs a move: act-now goals and needs-attention (setup) goals.
+                  const actionable = goals.filter((g) => ["actnow", "attention"].includes(goalBucket(g)));
+                  if (actionable.length === 0) return null;
+                  const bucketRank = { actnow: 0, attention: 1 };
+                  const sorted = [...actionable].sort((a, b) => (bucketRank[goalBucket(a)] ?? 9) - (bucketRank[goalBucket(b)] ?? 9));
+                  const shown = sorted.slice(0, 5);
+                  return (
+                    <div className="mb-8">
+                      <div className="flex items-center gap-2 mb-3">
+                        <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Where to act first</h2>
+                        <Tooltip title="The goals bleeding spend or leaving demos on the table — worked top-down, so your next move protects the number." arrow placement="top">
+                          <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><Info size={15} /></span>
+                        </Tooltip>
+                      </div>
+                      <div className="flex flex-col w-full">
+                        <GoalListHeader />
+                        <div className="flex flex-col gap-2">
+                          {shown.map((g) => <GoalRow key={g.id} goal={g} onOpen={openGoal} onFull={(gid) => navigate(`/goals/${gid}`)} />)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
-                {goals.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-2 py-14 border border-[var(--border-primary)] rounded-lg text-center">
-                    <Target size={24} className="text-[var(--text-muted)]" />
-                    <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Create one to start tracking.</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col w-full">
-                    <div className="grid px-3 py-2 w-full" style={{ gridTemplateColumns: GOALS_COLS }}>
-                      <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
-                      <HeaderCell label="Goal" />
-                      <HeaderCell label="Status" />
-                      <HeaderCell label="Target" />
-                      <HeaderCell label="Last check-in" />
-                      <span />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {goals.map((g, i) => <GoalRow key={g.id} goal={g} index={i + 1} onOpen={openGoal} onFull={(gid) => navigate(`/goals/${gid}`)} />)}
-                    </div>
-                  </div>
-                )}
+                {/* ── Your goals — full list (bottom), same columnar row + header ── */}
+                {(() => {
+                  const q = goalSearch.trim().toLowerCase();
+                  const counts = goals.reduce((m, g) => { const b = goalBucket(g); m[b] = (m[b] || 0) + 1; return m; }, {});
+                  const filtered = goals.filter((g) =>
+                    (goalFilter === "all" || goalBucket(g) === goalFilter) &&
+                    (!q || g.name.toLowerCase().includes(q))
+                  );
+                  return (
+                    <>
+                      <div id="your-goals" className="flex items-center gap-3 mb-3 scroll-mt-4 flex-wrap">
+                        <div className="flex items-center gap-2.5">
+                          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
+                          <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
+                        </div>
+                        {goals.length > 0 && (
+                          <div className="flex items-center gap-2 ml-auto">
+                            {/* Search — consistent 320px design-system style */}
+                            <div className="flex items-center gap-2 w-80 h-8 border border-pv-neutral-grey-200 rounded-lg bg-white focus-within:border-brand-ai-100 hover:border-pv-primary-primary-300 px-3 transition-colors">
+                              <MagnifyingGlass size={16} weight="regular" className="text-pv-neutral-grey-500 shrink-0" />
+                              <input
+                                value={goalSearch}
+                                onChange={(e) => setGoalSearch(e.target.value)}
+                                placeholder="Search goals"
+                                className="flex-1 min-w-0 border-none outline-none bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-pv-neutral-grey-500 p-0"
+                              />
+                            </div>
+                            {/* Filter — 32×32 icon-only secondary button, after the search */}
+                            <GoalFilterDropdown value={goalFilter} onChange={setGoalFilter} counts={counts} total={goals.length} />
+                          </div>
+                        )}
+                      </div>
+
+                      {goals.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center gap-2 py-14 border border-[var(--border-primary)] rounded-lg text-center">
+                          <Target size={24} className="text-[var(--text-muted)]" />
+                          <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Set one and we'll watch your paid spend for waste and the demand you're missing — and tell you where the next dollar should go.</p>
+                        </div>
+                      ) : filtered.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center gap-1.5 py-10 border border-dashed border-[var(--border-primary)] rounded-lg text-center">
+                          <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
+                          <p className="text-[13px] text-[var(--text-secondary)]">No goals match{q ? ` “${goalSearch.trim()}”` : " this filter"}.</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col w-full">
+                          <GoalListHeader />
+                          <div className="flex flex-col gap-2">
+                            {filtered.map((g) => <GoalRow key={g.id} goal={g} onOpen={openGoal} onFull={(gid) => navigate(`/goals/${gid}`)} />)}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </div>
           ) : (
@@ -471,6 +653,9 @@ export default function GoalsPage() {
       </div>
 
       {showConfig && <ConfigModal onClose={() => setShowConfig(false)} />}
+
+      {/* Sage — floating assistant */}
+      <SageWidget title="Goals" />
     </div>
   );
 }

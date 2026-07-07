@@ -48,7 +48,7 @@
 .btn--md {
   height: 32px;
   padding: var(--spacing-6) var(--spacing-12);
-  font-size: var(--font-size-body-2);
+  font-size: 12px;
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-body-2);
 }

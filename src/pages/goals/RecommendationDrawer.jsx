@@ -105,7 +105,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
       {/* Header */}
       <div className="border-b border-[var(--border-primary)] px-5 py-4 flex flex-col gap-2.5">
         <div className="flex items-start justify-between gap-3">
-          <h2 className="flex-1 text-[20px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
+          <h2 className="flex-1 text-[16px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
           {onClose && <button onClick={onClose} className="shrink-0 -mt-1 -mr-1 p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
         </div>
         {onOpenGoal && goal?.name && (
@@ -136,10 +136,10 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <AnimatePresence initial={false}>
               {showDeriv && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                  <div className="border-t border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50 px-4 py-1">
+                  <div className="border-t border-[var(--pv-neutral-grey-150)] bg-white px-4 py-1">
                     {rec.derivation.map((step, i) => (
                       <div key={i} className={cn("flex items-start gap-3 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-150)]")}>
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-pv-neutral-grey-900 text-white text-[12px] font-semibold shrink-0">{i + 1}</span>
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-pv-primary-primary-600 border border-pv-primary-primary-300 text-[12px] font-semibold shrink-0">{i + 1}</span>
                         <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed pt-0.5">{renderInline(step)}</p>
                       </div>
                     ))}
@@ -151,7 +151,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
         )}
 
         {rec.metrics?.length > 0 && (
-          <div className="border border-[var(--border-primary)] rounded-lg overflow-hidden">
+          <div className="rounded-lg border border-pv-neutral-grey-150/50 overflow-hidden dropshadow-card">
             {rec.metrics.map((m, i) => (
               <div key={i} className={cn("flex items-baseline justify-between gap-4 px-4 py-2.5", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
                 <span className="text-[13px] text-[var(--text-secondary)] shrink-0">{m.label}</span>

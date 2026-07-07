@@ -26,6 +26,7 @@ export default function ChatOverlay({
   onClose,
   title = "Chat",
   connectionStatus,
+  floating = false,
   children,
 }) {
   const [rightPercent, setRightPercent] = useState(getInitialPercent);
@@ -104,7 +105,7 @@ export default function ChatOverlay({
   );
 
   return (
-    <div className={`chat-overlay ${isDragging ? "chat-overlay--dragging" : ""}`}>
+    <div className={`chat-overlay ${floating ? "chat-overlay--floating" : ""} ${isDragging ? "chat-overlay--dragging" : ""}`}>
       {isDragging && <div className="chat-overlay__fullscreen-shield" />}
       <ClickAwayListener onClickAway={handleClickAway}>
         <div className="chat-overlay__right" style={{ width: `${rightPercent}%` }}>
@@ -116,16 +117,36 @@ export default function ChatOverlay({
           <div className="chat-overlay__panel">
             <div className="chat-overlay__header">
               <div className="flex items-center gap-2 w-full overflow-hidden">
-                <Sparkle weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
+                {floating ? (
+                  <Tooltip title="Close" placement="bottom">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      aria-label="Close Sage"
+                      className="group relative flex items-center justify-center w-[22px] h-[22px] shrink-0 bg-transparent border-none cursor-pointer p-0"
+                    >
+                      <Sparkle weight="fill" size={22} className="absolute text-[var(--pv-primary-500)] transition-opacity group-hover:opacity-0" />
+                      <X size={20} className="absolute text-[var(--pv-text-primary-text)] opacity-0 transition-opacity group-hover:opacity-100" />
+                    </button>
+                  </Tooltip>
+                ) : (
+                  <Sparkle weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
+                )}
                 <span className="font-medium text-[var(--pv-text-primary-text)]">Sage</span>
-                <span className="text-[var(--pv-neutral-grey-600)]">|</span>
-                {renderTitle()}
+                {!floating && (
+                  <>
+                    <span className="text-[var(--pv-neutral-grey-600)]">|</span>
+                    {renderTitle()}
+                  </>
+                )}
               </div>
-              <div className="flex items-center gap-3">
-                <Button btnColor="ghost" btnSize="sm" onClick={onClose} mainBtnClassName="!p-1.5">
-                  <X size={18} />
-                </Button>
-              </div>
+              {!floating && (
+                <div className="flex items-center gap-3">
+                  <Button btnColor="ghost" btnSize="sm" onClick={onClose} mainBtnClassName="!p-1.5">
+                    <X size={18} />
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="chat-overlay__content">

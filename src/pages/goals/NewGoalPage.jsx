@@ -63,7 +63,7 @@ export default function NewGoalPage() {
                   onChange={(e) => setStatement(e.target.value)}
                   rows={3}
                   autoFocus
-                  placeholder="Describe the outcome you want — e.g. “Grow qualified pipeline to $1.5M and hold win rate above 25% by Sep 30”"
+                  placeholder="Describe the outcome you want — e.g. “Cut blended cost-per-demo under $180 without losing demo volume”"
                   className="w-full text-[15px] px-4 py-3.5 rounded-xl border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
                 />
               </div>

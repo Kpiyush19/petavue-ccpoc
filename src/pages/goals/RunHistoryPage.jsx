@@ -151,8 +151,8 @@ export default function RunHistoryPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50">
-        <div className="w-full px-8 py-8">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
+        <div className="flex flex-col min-h-full w-full bg-white rounded-xl border border-[var(--pv-neutral-grey-150)] p-4">
           <h1 className="text-[24px] font-semibold text-[var(--text-primary)]">Run history</h1>
           <p className="text-[14px] text-[var(--text-secondary)] mb-6">Every check-in, its cost per agent, and the full transcripts behind it.</p>
 

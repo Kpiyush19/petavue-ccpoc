@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Reusable subtle card elevation — replaces the 1px border on cards. */
+@utility dropshadow-card {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
 @theme {
   --font-size-1xs: 0.625rem;
 

@@ -119,7 +119,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-8);
-  width: 326px;
+  width: 320px;
   height: 32px;
   padding: var(--spacing-6) var(--spacing-12);
   border: var(--border-default) solid var(--color-neutral-200);

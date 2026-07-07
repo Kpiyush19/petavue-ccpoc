@@ -421,6 +421,46 @@
   }
 }
 
+/* ── Floating variant: detached card inset 16px, emerging from the
+      bottom-right launcher button with a springy scale. ── */
+.chat-overlay--floating {
+  /* Extra bottom padding clears the launcher button (16px inset + 48px
+     button + 12px gap) so the panel ends above it and never overlaps. */
+  padding: 16px 16px 76px;
+}
+
+.chat-overlay--floating .chat-overlay__right {
+  height: 100%;
+  transform-origin: bottom right;
+  animation: sage-emerge 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chat-overlay--floating .chat-overlay__panel {
+  border-radius: 16px;
+  box-shadow: 0 24px 60px -12px rgb(16 24 40 / 0.32), 0 2px 8px rgb(16 24 40 / 0.12);
+}
+
+.chat-overlay--floating .chat-overlay__header {
+  height: 48px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom: none;
+}
+
+@keyframes sage-emerge {
+  from {
+    transform: translate(24px, 24px) scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
 .chat-overlay__header {
   display: flex;
   align-items: center;
@@ -789,7 +829,7 @@
 }
 .btn--md {
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 12px;
 }
 .btn--lg {
   padding: 10px 20px;
