@@ -10,7 +10,7 @@ import "../../components/dashboards/dashboard-viewer-widget/styles.css";
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
 /* ── Floating Sage launcher: round, gradient, bottom-right ── */
-const SAGE_GRADIENT = "linear-gradient(135deg, #3661ed 0%, #6d5ef0 48%, #a855f7 100%)";
+export const SAGE_GRADIENT = "linear-gradient(135deg, #3661ed 0%, #6d5ef0 48%, #a855f7 100%)";
 function SageFab({ open, onClick }) {
   return (
     <button
@@ -35,15 +35,17 @@ function SageFab({ open, onClick }) {
   );
 }
 
-/* ── Sage chat body rendered inside the ChatOverlay panel ── */
-function SageChat() {
-  const [chat, setChat] = useState([
-    { role: "assistant", text: "Hi, I'm Sage. Ask me what's wasting spend, where you're leaving demos on the table, or which goal to open first." },
-  ]);
+/* ── Sage chat body rendered inside the ChatOverlay panel. When `goal` is passed
+      (goal detail page), Sage is scoped to that goal; otherwise it's portfolio-wide. ── */
+function SageChat({ goal }) {
+  const greeting = goal
+    ? `Hi, I'm Sage. Ask me about “${goal.name}” — what's driving it, what to do next, or why a number moved.`
+    : "Hi, I'm Sage. Ask me what's wasting spend, where you're leaving demos on the table, or which goal to open first.";
+  const [chat, setChat] = useState([{ role: "assistant", text: greeting }]);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef(null);
   const ask = useMutation({
-    mutationFn: (text) => apiPost("/api/goals/sage", { text }),
+    mutationFn: (text) => apiPost(goal ? `/api/goals/${goal.id}/sage` : "/api/goals/sage", { text }),
     onSuccess: (res) => setChat((c) => [...c, { role: "assistant", text: res.reply }]),
   });
   const send = () => {
@@ -53,11 +55,23 @@ function SageChat() {
     ask.mutate(text);
     setDraft("");
   };
+  const sendSuggestion = (s) => {
+    if (ask.isPending) return;
+    setChat((c) => [...c, { role: "user", text: s }]);
+    ask.mutate(s);
+  };
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [chat, ask.isPending]);
 
-  const suggestions = ["What's wasting spend?", "Where am I losing demos?", "What should I open first?"];
+  // A pool of things to ask; we surface the ones not asked yet after each reply,
+  // so the conversation keeps offering fresh, relevant follow-ups.
+  const suggestionPool = goal
+    ? ["What should I do next?", "Why did the number move?", "How is this goal tracking?", "Which monitors are firing?", "What's the biggest waste here?", "Am I on pace to hit target?", "What's the cheapest demo source?"]
+    : ["What's wasting spend?", "Where am I losing demos?", "What should I open first?", "How are my goals doing?", "Which goal is most off track?", "Where should my next dollar go?", "What's on track?"];
+  const asked = new Set(chat.filter((m) => m.role === "user").map((m) => m.text));
+  const followups = suggestionPool.filter((s) => !asked.has(s)).slice(0, 4);
+  const lastIsAssistant = chat[chat.length - 1]?.role === "assistant";
 
   return (
     <div className="flex flex-col h-full">
@@ -80,12 +94,12 @@ function SageChat() {
             <Spinner size={14} />
           </div>
         )}
-        {chat.length <= 1 && !ask.isPending && (
+        {lastIsAssistant && !ask.isPending && followups.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-1">
-            {suggestions.map((s) => (
+            {followups.map((s) => (
               <button
                 key={s}
-                onClick={() => { setChat((c) => [...c, { role: "user", text: s }]); ask.mutate(s); }}
+                onClick={() => sendSuggestion(s)}
                 className="text-[12px] px-3 py-1.5 rounded-full border border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400 hover:text-pv-primary-primary-600 cursor-pointer transition-colors"
               >
                 {s}
@@ -100,7 +114,7 @@ function SageChat() {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           rows={1}
-          placeholder="Ask about spend, demos, or what to fix first…"
+          placeholder={goal ? `Ask about ${goal.name}…` : "Ask about spend, demos, or what to fix first…"}
           className="flex-1 text-[13px] px-3 py-1.5 h-8 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
         />
         <PvButton
@@ -119,13 +133,22 @@ function SageChat() {
 
 /* Floating Sage assistant — launcher button + resizable chat overlay. Drop it on
    any page (Goals list, goal detail) to make Sage available there. */
-export default function SageWidget({ title = "Sage", hidden = false }) {
-  const [open, setOpen] = useState(false);
+export default function SageWidget({ title = "Sage", hidden = false, goal = null, open: openProp, onOpenChange, fab = true }) {
+  // Supports both uncontrolled (renders its own FAB) and controlled (open state
+  // owned by the parent, so the launcher can live in a page header instead).
+  const [openState, setOpenState] = useState(false);
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : openState;
+  const setOpen = (v) => {
+    const next = typeof v === "function" ? v(open) : v;
+    if (!isControlled) setOpenState(next);
+    onOpenChange?.(next);
+  };
   return (
     <>
-      {!hidden && <SageFab open={open} onClick={() => setOpen((o) => !o)} />}
-      <ChatOverlay isOpen={open && !hidden} onClose={() => setOpen(false)} title={title} floating>
-        <SageChat />
+      {fab && !hidden && <SageFab open={open} onClick={() => setOpen((o) => !o)} />}
+      <ChatOverlay isOpen={open && !hidden} onClose={() => setOpen(false)} title={goal ? goal.name : title} floating>
+        <SageChat goal={goal} />
       </ChatOverlay>
     </>
   );

@@ -14,7 +14,6 @@ import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost, apiPut, apiDelete } from "../../api";
 import { cn } from "../../utils/cn";
 import { RecommendationDetail } from "./RecommendationDrawer";
-import SageWidget from "./SageWidget";
 
 const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />;
 
@@ -259,14 +258,9 @@ function goalPriority(goal) {
   return { label: "On track", icon: CheckCircle, cls: "bg-green-50 text-green-600" };
 }
 
-/* Shared row actions (check-in · open · delete) for both the triage cards and
-   the retained single-line table. */
+/* Shared row actions (open · delete) for both the triage cards and the table. */
 function useGoalRowMenu(goal, onFull) {
   const qc = useQueryClient();
-  const check = useMutation({
-    mutationFn: () => apiPost(`/api/goals/${goal.id}/check-in`, {}),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["goals"] }); qc.invalidateQueries({ queryKey: ["goals-attention"] }); },
-  });
   const del = useMutation({
     mutationFn: () => apiDelete(`/api/goals/${goal.id}`),
     onSuccess: () => {
@@ -279,15 +273,10 @@ function useGoalRowMenu(goal, onFull) {
   });
   const removeGoal = () => { if (window.confirm(`Delete “${goal.name}”? This can't be undone.`)) del.mutate(); };
   const items = [
-    ...(goal.status === "active"
-      ? [
-          { label: check.isPending ? "Checking…" : "Run check-in", icon: check.isPending ? Spinner : Play, onClick: () => check.mutate() },
-          { label: "Open full view", icon: ArrowSquareOut, onClick: () => onFull(goal.id) },
-        ]
-      : [{ label: "Resume setup", icon: CaretRight, onClick: () => onFull(goal.id) }]),
+    { label: "Open full view", icon: ArrowSquareOut, onClick: () => onFull(goal.id) },
     { label: del.isPending ? "Deleting…" : "Delete goal", icon: Trash, danger: true, onClick: removeGoal },
   ];
-  return { items, runCheckIn: () => check.mutate(), isChecking: check.isPending };
+  return { items };
 }
 
 /* ── Shared column header for both goal lists. ── */
@@ -462,7 +451,7 @@ function RecommendationsPanel({ onOpenGoal }) {
       <div className="flex flex-col items-center justify-center gap-2 h-full text-center px-6">
         <CheckCircle size={26} weight="fill" className="text-green-500" />
         <p className="text-[15px] font-medium text-[var(--text-primary)]">You're all caught up</p>
-        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">No moves to make right now. Run a check-in on a goal and we'll flag anything wasting spend or leaving demand on the table.</p>
+        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">No moves to make right now. We'll flag anything wasting spend or leaving demand on the table the moment it shows up.</p>
       </div>
     );
   }
@@ -527,10 +516,6 @@ export default function GoalsPage() {
       {/* Standard app header bar (consistent with Dashboards / Sessions / Workflows) */}
       <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
         <span className="text-[16px] leading-[24px] font-medium">Goals</span>
-        <div className="flex items-center gap-2">
-          <PvButton variant="secondary" size="md" label="Configure" icon={Sliders} onClick={() => setShowConfig(true)} />
-          <PvButton variant="primary" size="md" label="New Goal" icon={Plus} onClick={() => navigate("/goals/new")} />
-        </div>
       </div>
 
       {/* Sub-tab bar (Goals · Recommendations) */}
@@ -653,9 +638,6 @@ export default function GoalsPage() {
       </div>
 
       {showConfig && <ConfigModal onClose={() => setShowConfig(false)} />}
-
-      {/* Sage — floating assistant */}
-      <SageWidget title="Goals" />
     </div>
   );
 }

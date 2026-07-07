@@ -117,21 +117,7 @@ export default function ChatOverlay({
           <div className="chat-overlay__panel">
             <div className="chat-overlay__header">
               <div className="flex items-center gap-2 w-full overflow-hidden">
-                {floating ? (
-                  <Tooltip title="Close" placement="bottom">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      aria-label="Close Sage"
-                      className="group relative flex items-center justify-center w-[22px] h-[22px] shrink-0 bg-transparent border-none cursor-pointer p-0"
-                    >
-                      <Sparkle weight="fill" size={22} className="absolute text-[var(--pv-primary-500)] transition-opacity group-hover:opacity-0" />
-                      <X size={20} className="absolute text-[var(--pv-text-primary-text)] opacity-0 transition-opacity group-hover:opacity-100" />
-                    </button>
-                  </Tooltip>
-                ) : (
-                  <Sparkle weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
-                )}
+                <Sparkle weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
                 <span className="font-medium text-[var(--pv-text-primary-text)]">Sage</span>
                 {!floating && (
                   <>
@@ -140,7 +126,16 @@ export default function ChatOverlay({
                   </>
                 )}
               </div>
-              {!floating && (
+              {floating ? (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="flex items-center justify-center w-8 h-8 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer transition-colors shrink-0"
+                >
+                  <X size={18} />
+                </button>
+              ) : (
                 <div className="flex items-center gap-3">
                   <Button btnColor="ghost" btnSize="sm" onClick={onClose} mainBtnClassName="!p-1.5">
                     <X size={18} />

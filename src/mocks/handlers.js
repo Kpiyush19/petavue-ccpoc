@@ -265,6 +265,7 @@ const handlers = [
   { method: "DELETE", pattern: /\/api\/goals\/([^/]+)$/, handler: ({ params }) => Goals.deleteGoal(params[0]) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/answer$/, handler: ({ params, body }) => Goals.answerGoal(params[0], body?.answers || {}) },
   { method: "POST", pattern: /\/api\/goals\/sage$/, handler: ({ body }) => Goals.sageChat(body?.text || "") },
+  { method: "POST", pattern: /\/api\/goals\/([^/]+)\/sage$/, handler: ({ params, body }) => Goals.sageChatGoal(params[0], body?.text || "") },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/adjust$/, handler: ({ params, body }) => Goals.adjustGoal(params[0], body?.text || "") },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/save$/, handler: ({ params, body }) => ({ goal: Goals.saveGoal(params[0], body?.name) }) },
   { method: "POST", pattern: /\/api\/goals\/([^/]+)\/check-in$/, handler: ({ params }) => Goals.runCheckIn(params[0]) },

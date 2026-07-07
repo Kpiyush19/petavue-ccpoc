@@ -7,7 +7,7 @@ import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
   CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, Warning, XCircle, PencilSimple, NotePencil,
   Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, ArrowsClockwise, Info,
-  CurrencyDollar, Fire, Funnel, Tag, Code, CaretDown, ChatCircle,
+  CurrencyDollar, Fire, Funnel, Tag, Code, CaretDown, ChatCircle, Sparkle,
 } from "@phosphor-icons/react";
 import { Tooltip } from "@/common-components";
 
@@ -15,10 +15,11 @@ import { Tooltip } from "@/common-components";
 // deal-tracking keys kept as a fallback for any older seeded data.
 const REC_ICONS = {
   spend: CurrencyDollar, headroom: MagnifyingGlass, fatigue: Fire, landing: Funnel, brand: Tag,
+  query: MagnifyingGlass, pacing: Clock, device: Pulse, geo: Target, scale: TrendUp,
   stale: Clock, owner: UserCircle, stuck: TrendUp, concentration: ChartPieSlice, threshold: Target,
 };
 import { toast } from "sonner";
-import SageWidget from "./SageWidget";
+import SageWidget, { SAGE_GRADIENT } from "./SageWidget";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
@@ -459,48 +460,15 @@ function Review({ goal, refetch, onCancel }) {
 /* ───────────────────────── Active dashboard ───────────────────────── */
 const SNOOZE_OPTIONS = ["1 day", "3 days", "1 week", "2 weeks", "Until next check-in"];
 
-/* Snooze split-button with a duration dropdown (portaled). */
-function SnoozeMenu({ onSnooze, disabled }) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState(null);
-  const btnRef = useRef(null);
-  const toggle = () => {
-    if (!open && btnRef.current) {
-      const r = btnRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + 4, left: r.left });
-    }
-    setOpen((o) => !o);
-  };
-  return (
-    <>
-      <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
-        <ClockCounterClockwise size={14} /> Snooze <CaretRight size={11} className="rotate-90" />
-      </button>
-      {open && pos && createPortal(
-        <>
-          <div className="fixed inset-0 z-[70]" onClick={() => setOpen(false)} />
-          <div className="fixed z-[71] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
-            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
-            {SNOOZE_OPTIONS.map((label) => (
-              <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">
-                {label}
-              </button>
-            ))}
-          </div>
-        </>,
-        document.body
-      )}
-    </>
-  );
-}
-
 function RecommendationCard({ goal, rec, refetch, onOpen }) {
   const qc = useQueryClient();
+  // pending = the action awaiting input ({ action }); reason = the note; snoozeFor = the snooze duration.
+  const [pending, setPending] = useState(null);
+  const [reason, setReason] = useState("");
+  const [snoozeFor, setSnoozeFor] = useState("");
   const act = useMutation({
     mutationFn: (body) => apiPost(`/api/goals/${goal.id}/recommendations/${rec.id}/act`, body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["goal", goal.id] }); refetch(); },
+    onSuccess: () => { setPending(null); setReason(""); setSnoozeFor(""); qc.invalidateQueries({ queryKey: ["goal", goal.id] }); refetch(); },
   });
   const done = rec.status !== "open";
   const actNow = rec.severity === "act-now";
@@ -549,23 +517,75 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
       {/* Actions pinned to the bottom so cards align in the grid */}
       <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-3 border-t border-[var(--pv-neutral-grey-100)]">
         {done ? (
-          <div className="flex items-center justify-between">
-            <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
-              {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
-            </span>
-            <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
+                {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
+              </span>
+              <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+            </div>
+            {rec.reason && <p className="text-[11px] text-[var(--text-muted)] italic leading-snug">“{rec.reason}”</p>}
+          </div>
+        ) : pending ? (
+          <div className="flex flex-col gap-2">
+            {pending.action === "snoozed" && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[12px] font-medium text-[var(--text-primary)]">Snooze for</label>
+                <input
+                  value={snoozeFor}
+                  onChange={(e) => setSnoozeFor(e.target.value)}
+                  autoFocus
+                  placeholder="e.g. 2 weeks · until next month · after the launch"
+                  className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none"
+                />
+                <div className="flex flex-wrap gap-1.5">
+                  {SNOOZE_OPTIONS.map((opt) => (
+                    <button key={opt} type="button" onClick={() => setSnoozeFor(opt)}
+                      className={cn("text-[11px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
+                        snoozeFor === opt ? "border-pv-primary-primary-400 text-pv-primary-primary-600 bg-pv-primary-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400")}>
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="text-[12px] font-medium text-[var(--text-primary)]">
+              {pending.action === "rejected" ? "Why are you dismissing this? (optional)"
+                : pending.action === "acted" ? "What did you do? (optional)"
+                : "Anything to note? (optional)"}
+            </p>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={2}
+              autoFocus={pending.action !== "snoozed"}
+              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search — it's our best demo source" : "Add context for the next run…"}
+              className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+            />
+            <div className="flex items-center gap-2">
+              <PvButton
+                variant="primary" size="sm"
+                label={act.isPending ? "Saving…" : "Submit"}
+                disabled={act.isPending || (pending.action === "snoozed" && !snoozeFor.trim())}
+                onClick={() => act.mutate({ action: pending.action, snooze: snoozeFor.trim() || undefined, reason: reason.trim() || undefined })}
+              />
+              <button onClick={() => { setPending(null); setReason(""); setSnoozeFor(""); }} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">Cancel</button>
+            </div>
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
-            <button onClick={() => act.mutate({ action: "acted" })} disabled={act.isPending}
+            <button onClick={() => { setReason(""); setPending({ action: "acted" }); }} disabled={act.isPending}
               className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <CheckCircle size={14} /> Acted
             </button>
-            <button onClick={() => act.mutate({ action: "rejected" })} disabled={act.isPending}
+            <button onClick={() => { setReason(""); setPending({ action: "rejected" }); }} disabled={act.isPending}
               className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <XCircle size={14} /> Reject
             </button>
-            <span className="ml-auto"><SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => act.mutate({ action: "snoozed", snooze })} /></span>
+            <button onClick={() => { setReason(""); setSnoozeFor(""); setPending({ action: "snoozed" }); }} disabled={act.isPending}
+              className="ml-auto inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <ClockCounterClockwise size={14} /> Snooze
+            </button>
           </div>
         )}
       </div>
@@ -878,11 +898,6 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
           <h1 className="text-[18px] font-semibold text-[var(--text-primary)]">{goal.name}</h1>
           <p className="text-[12px] text-[var(--text-secondary)] mt-1">{goal.statement}</p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <PvButton variant="ghost" size="md" label="Comment" icon={ChatCircle} onClick={() => setShowComment(true)} />
-          <PvButton variant="secondary" size="md" label="Run history" icon={ClockCounterClockwise} onClick={() => navigate(`/goals/${goal.id}/runs`)} />
-          <PvButton variant="primary" size="md" label={check.isPending ? "Checking…" : "Run check-in"} icon={check.isPending ? Spinner : Play} iconPosition="suffix" disabled={check.isPending} onClick={() => check.mutate()} />
-        </div>
       </div>
 
       {/* Tab bar — Overview · Recommendations · Monitor */}
@@ -969,10 +984,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
                 <Lightning size={26} className="text-[var(--text-muted)]" />
                 <p className="text-[16px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
-                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">Run a check-in to measure this goal against your latest paid data. You'll see where spend is leaking and where demand is going unanswered — each finding backed by the number behind it.</p>
-                <div className="mt-2">
-                  <PvButton variant="primary" size="md" label="Run your first check-in" icon={Play} iconPosition="suffix" onClick={() => check.mutate()} />
-                </div>
+                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">This goal runs on the next scheduled check-in, measured against your latest paid data. You'll see where spend is leaking and where demand is going unanswered — each finding backed by the number behind it.</p>
               </div>
             )}
           </div>
@@ -999,7 +1011,11 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 items-stretch">
-                {recs.map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} onOpen={setRecId} />)}
+                {/* Active first (act-now, then watch), then acted/rejected/snoozed. */}
+                {[...recs].sort((a, b) => {
+                  const rank = (r) => r.status !== "open" ? 2 : r.severity === "act-now" ? 0 : 1;
+                  return rank(a) - rank(b);
+                }).map((r) => <RecommendationCard key={r.id} goal={goal} rec={r} refetch={refetch} onOpen={setRecId} />)}
               </div>
             )}
           </div>
@@ -1130,6 +1146,11 @@ export default function GoalDetailPage() {
   const crumb = goal?.name || "Goal";
   const [footerEl, setFooterEl] = useState(null);
   const [showComment, setShowComment] = useState(false);
+  const [sageOpen, setSageOpen] = useState(false);
+  // Header actions (Comment / Ask Sage / Last checked) only apply to a live goal,
+  // not the calibrating → review wizard phases.
+  const goalIsActive = goal && !["calibrating", "decisions", "building", "review"].includes(goal.status);
+  const lastCheckIn = goal?.checkIns?.[0] || null;
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -1139,6 +1160,27 @@ export default function GoalDetailPage() {
           <button onClick={() => navigate("/goals")} className="text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0">Goals</button>
           <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
           <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[420px] text-pv-neutral-grey-900">{crumb}</span>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {goalIsActive && lastCheckIn && (
+            <Tooltip title={`Last checked ${lastCheckIn.at}`} arrow placement="bottom">
+              <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] cursor-default">
+                <Clock size={14} /> Last checked
+              </span>
+            </Tooltip>
+          )}
+          {goalIsActive && (
+            <>
+              <PvButton variant="ghost" size="md" label="Comment" icon={ChatCircle} onClick={() => setShowComment(true)} />
+              <button
+                onClick={() => setSageOpen(true)}
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium text-white border-none cursor-pointer transition-[filter] hover:brightness-105"
+                style={{ background: SAGE_GRADIENT, boxShadow: "0 4px 12px -3px rgba(72,86,237,0.45)" }}
+              >
+                <Sparkle size={14} weight="fill" /> Ask Sage
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -1173,8 +1215,15 @@ export default function GoalDetailPage() {
       {/* Page-wide footer slot — wizard phases portal their footer here */}
       <div ref={setFooterEl} className="shrink-0 w-full" />
 
-      {/* Sage — floating assistant */}
-      <SageWidget title={crumb} hidden={showComment} />
+      {/* Sage — launched from the header "Ask Sage" button; overlay only (no FAB) */}
+      <SageWidget
+        title={crumb}
+        hidden={showComment}
+        goal={goal ? { id: goal.id, name: goal.name } : null}
+        open={sageOpen}
+        onOpenChange={setSageOpen}
+        fab={false}
+      />
     </div>
   );
 }

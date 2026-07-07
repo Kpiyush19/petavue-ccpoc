@@ -6,6 +6,26 @@
 let SEQ = 700;
 const nid = (p) => `${p}-${(SEQ++).toString(16)}${Math.floor((SEQ * 97) % 9999).toString(16)}`;
 
+// Format a check-in timestamp in AlaanPay's timezone (Gulf Standard Time, UTC+4)
+// as absolute date · time · tz, so each goal carries its own last-checked moment
+// (computed once at seed time, so it's stable and varied per goal).
+function checkedAt(hoursAgo = 0) {
+  const d = new Date(Date.now() - hoursAgo * 3600000);
+  const s = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Dubai",
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  }).format(d);
+  return `${s} GST`;
+}
+// Compact relative label for list/feed cells (the detail header shows the full
+// absolute `at` in its tooltip instead).
+function agoLabel(hoursAgo = 0) {
+  if (hoursAgo < 1) return "Just now";
+  if (hoursAgo < 24) return `${Math.round(hoursAgo)}h ago`;
+  return `${Math.round(hoursAgo / 24)}d ago`;
+}
+
 // Workflows available to feed a goal (the dashboard flows that refresh daily).
 export const GOAL_WORKFLOWS = [
   { id: "wf-hubspot-gap", name: "HubSpot Data Gap Audit Dashboard", schedule: "Custom schedule", lastRun: "last run 18d ago" },
@@ -253,6 +273,126 @@ function makeRecommendations() {
         "Verified: converters matched on hashed email → CRM `demo_booked`, ruling out false matches.",
       ],
     },
+    {
+      category: "Query waste", iconKey: "query", severity: "watch", tier: 2, age: "Day 2",
+      title: "Broad-match Search is buying $2.3K/mo of off-intent clicks",
+      tldr: "Add negatives — broad match is matching searches that never book a demo.",
+      cause: "Broad-match keywords matched a rising share of queries with no buying intent (free tools, jobs, unrelated brands).",
+      body: "23% of broad-match Search spend this month went to queries with no buying intent — 'free expense tracker', 'accounting jobs', unrelated brand names. That's $2.3K/mo of clicks that never book a demo, and the share is climbing week over week.",
+      evidence: "23% of broad-match spend on zero-intent queries — $2.3K/mo across ~40 query themes.",
+      impact: { label: "Recoverable Search spend / mo", value: "$2.3K", sub: "add negatives" },
+      triggerLabel: "Irrelevant queries", signal: "23% off-intent",
+      metrics: [
+        { label: "Broad-match spend / mo", value: "$10.0K", note: "" },
+        { label: "Off-intent share", value: "23%", note: "no demo intent" },
+        { label: "Recoverable", value: "$2.3K / mo", note: "with negatives" },
+        { label: "Query themes to block", value: "~40", note: "jobs, free tools" },
+      ],
+      trigger: "Fires when over 15% of broad-match spend lands on zero-intent queries in 30 days",
+      steps: ["Add the off-intent query themes as negative keywords", "Tighten broad-match to phrase on the loosest ad groups"],
+      derivation: [
+        "Search queries pulled from `google_ads_search_terms.csv`, matched to spend.",
+        "Off-intent share = spend on no-demo-intent queries ÷ broad-match spend = **23%**.",
+        "Intent labelled from AlaanPay's own `gclid` → demo joins — queries that never convert.",
+        "Verified: excluded branded and clearly-converting terms before counting waste.",
+      ],
+    },
+    {
+      category: "Budget pacing", iconKey: "pacing", severity: "watch", tier: 2, age: "Day 4",
+      title: "Your best Search campaign will run dry 9 days before month-end",
+      tldr: "Lift the monthly cap or smooth pacing — the cheapest demo engine goes dark early.",
+      cause: "Daily spend on the top-converting Search campaign is pacing 41% above plan and will hit its monthly cap early.",
+      body: "Your best-converting Search campaign is pacing to spend its full monthly budget by day 21 — then it goes dark for the last 9 days of the month, exactly when it books your cheapest demos. Demand doesn't stop; only the ads do.",
+      evidence: "Pacing 41% over plan — budget exhausts on day 21 of 30, dark for 9 days.",
+      impact: { label: "Demo-days lost / mo", value: "~9 days", sub: "best campaign dark" },
+      triggerLabel: "Pacing over plan", signal: "41% over pace",
+      metrics: [
+        { label: "Pace vs plan", value: "+41%", note: "over budget curve" },
+        { label: "Budget exhausts", value: "Day 21", note: "of 30" },
+        { label: "Dark days", value: "~9", note: "no delivery" },
+        { label: "Channel", value: "Search", note: "cheapest demos" },
+      ],
+      trigger: "Fires when a campaign paces to exhaust its monthly budget before day 24",
+      steps: ["Raise the monthly cap on the top-converting Search campaign", "Or switch it to standard pacing to spread delivery"],
+      derivation: [
+        "Daily spend pulled from `google_ads_campaigns.csv` against the monthly budget.",
+        "Projected exhaustion = budget ÷ trailing-7-day daily spend = **day 21**.",
+        "Pace = trailing daily spend ÷ even-pacing target = **+41%**.",
+        "Verified: this campaign has the lowest cost-per-demo, so dark days cost real pipeline.",
+      ],
+    },
+    {
+      category: "Device gap", iconKey: "device", severity: "watch", tier: 3, age: "Day 6",
+      title: "Mobile is 61% of paid spend but converts at half the desktop rate",
+      tldr: "Shift bids toward desktop or fix the mobile demo flow — mobile demos cost 2×.",
+      cause: "Mobile cost-per-demo is running roughly double desktop while mobile takes the majority of spend.",
+      body: "Mobile takes 61% of paid spend but books demos at a $310 cost-per-demo — nearly double desktop's $165. The gap is widest on the /demo form, which points at a mobile UX problem, not audience quality.",
+      evidence: "Mobile 61% of spend · $310 cost-per-demo vs $165 on desktop — a 1.9× gap.",
+      impact: { label: "Efficiency gap", value: "1.9×", sub: "mobile vs desktop" },
+      triggerLabel: "Device gap", signal: "$310 vs $165",
+      metrics: [
+        { label: "Mobile spend share", value: "61%", note: "" },
+        { label: "Mobile cost-per-demo", value: "$310", note: "" },
+        { label: "Desktop cost-per-demo", value: "$165", note: "" },
+        { label: "Mobile form completion", value: "2.1%", note: "vs 4.8% desktop" },
+      ],
+      trigger: "Fires when mobile cost-per-demo exceeds desktop by more than 50% at material spend",
+      steps: ["Apply a negative mobile bid adjustment until the gap closes", "Audit the mobile /demo form for friction (length, load, autofill)"],
+      derivation: [
+        "Spend and conversions pulled from `google_ads_campaigns.csv`, split by `device`.",
+        "Cost-per-demo = spend ÷ demos per device = **$310 mobile**, **$165 desktop**.",
+        "Form-completion split from `web_analytics_landing.csv` isolates the /demo step.",
+        "Verified: audience and geo mix hold across devices, isolating UX as the driver.",
+      ],
+    },
+    {
+      category: "Geo waste", iconKey: "geo", severity: "watch", tier: 3, age: "Day 6",
+      title: "18% of paid spend is landing outside your target emirates",
+      tldr: "Tighten geo targeting — nearly a fifth of spend is outside your ICP regions.",
+      cause: "A share of paid impressions served outside AlaanPay's target UAE regions with near-zero demo conversion.",
+      body: "18% of paid spend this month served outside your target emirates — regions where AlaanPay has almost no pipeline. These clicks convert at a fifth of your in-region rate, so the spend is effectively unrecoverable.",
+      evidence: "18% of spend outside target emirates, converting at ~0.2× the in-region rate.",
+      impact: { label: "Recoverable geo spend / mo", value: "~$2.7K", sub: "off-ICP regions" },
+      triggerLabel: "Off-geo spend", signal: "18% out of region",
+      metrics: [
+        { label: "Off-region spend share", value: "18%", note: "" },
+        { label: "In-region cost-per-demo", value: "$185", note: "" },
+        { label: "Off-region cost-per-demo", value: "$920", note: "5× worse" },
+        { label: "Recoverable", value: "~$2.7K / mo", note: "" },
+      ],
+      trigger: "Fires when over 10% of spend serves outside target regions in 30 days",
+      steps: ["Tighten location targeting to the target emirates", "Add off-region locations as exclusions on broad campaigns"],
+      derivation: [
+        "Spend by region pulled from `google_ads_geo.csv`, matched to CRM pipeline by region.",
+        "Off-region share = spend outside target emirates ÷ total = **18%**.",
+        "Off-region cost-per-demo = **$920** vs **$185** in-region — a 5× gap.",
+        "Verified: target-region list matches AlaanPay's serviceable market, not just billing geo.",
+      ],
+    },
+    {
+      category: "Scale opportunity", iconKey: "scale", severity: "watch", tier: 2, age: "New · day 1",
+      title: "A new Meta creative is beating your account average by 2.3×",
+      tldr: "Scale the 'finance team' creative before it fatigues — it's your cheapest Meta demo.",
+      cause: "A recently launched Meta creative is converting well above the account average while still on a small budget.",
+      body: "Your new 'finance team' Meta creative is booking demos at $105 — 2.3× more efficient than the Meta average of $240 — but it's only getting 8% of Meta budget. There's room to scale it before frequency climbs and the edge fades.",
+      evidence: "$105 cost-per-demo vs a $240 Meta average — 2.3× better, on just 8% of budget.",
+      impact: { label: "Efficient demos if scaled / mo", value: "~30", sub: "at $105 each" },
+      triggerLabel: "Scale winner", signal: "$105 cost / demo",
+      metrics: [
+        { label: "Creative cost-per-demo", value: "$105", note: "vs $240 avg" },
+        { label: "Efficiency vs average", value: "2.3×", note: "better" },
+        { label: "Budget share today", value: "8%", note: "room to grow" },
+        { label: "Frequency", value: "1.4", note: "far from fatigue" },
+      ],
+      trigger: "Fires when a creative beats the channel cost-per-demo by 2× on under 15% of budget",
+      steps: ["Shift budget from the fatigued creative into this one", "Build 2–3 variants of the winning concept before it saturates"],
+      derivation: [
+        "Creative-level performance pulled from `meta_ads_creatives.csv` over 14 days.",
+        "Cost-per-demo = spend ÷ demos = **$105** vs a **$240** channel average.",
+        "Budget share = creative spend ÷ total Meta spend = **8%**.",
+        "Verified: frequency is **1.4**, so the efficiency isn't a small-sample fluke or early-fatigue spike.",
+      ],
+    },
   ];
   return base.map((r) => ({ id: nid("rec"), status: "open", groupLabel: r.category, ...r }));
 }
@@ -266,7 +406,7 @@ function pickFindings(...cats) {
 // Build an active goal with its own rules, monitors and (optionally) a check-in
 // carrying a curated set of findings — lets several distinct goals each surface
 // their own act-now work, so the home strip populates realistically.
-function seedGoal({ name, statement, target, targets = [], conditions = [], moves = [], recs = [] }) {
+function seedGoal({ name, statement, target, targets = [], conditions = [], moves = [], recs = [], checkedAgoHours = 3 }) {
   const actNowCount = recs.filter((r) => r.severity === "act-now").length;
   return {
     id: nid("goal"),
@@ -283,7 +423,8 @@ function seedGoal({ name, statement, target, targets = [], conditions = [], move
     checkIns: recs.length
       ? [{
           id: nid("ci"),
-          at: "Just now",
+          at: checkedAt(checkedAgoHours),
+          ago: agoLabel(checkedAgoHours),
           flaggedCount: actNowCount,
           summary: `${recs.length} findings from your latest check-in — ${actNowCount} need action now, the rest are worth watching. Start here: ${recs[0].tldr}`,
           recommendations: recs,
@@ -349,13 +490,26 @@ const goals = [
         creates: "efficiency drift finding",
         rule: "Watch when blended cost per demo over the last 7 days rises above the `$180` target.",
         logic: "cost_per_demo_7d > $180", state: "quiet", count: 0 },
+      { label: "Broad-match Search is matching off-intent queries",
+        description: "A rising share of broad-match Search spend is landing on queries with no demo intent.",
+        creates: "query waste finding", findingCategory: "Query waste",
+        rule: "Watch when over `15%` of broad-match spend lands on zero-intent queries in 30 days.",
+        logic: "broad_match_off_intent_spend_share_30d > 15%", state: "fired", count: 1 },
+      { label: "A top campaign is pacing to exhaust its budget early",
+        description: "The best-converting Search campaign is pacing to spend its monthly budget before month-end.",
+        creates: "budget pacing finding", findingCategory: "Budget pacing",
+        rule: "Watch when a campaign paces to exhaust its monthly budget before day 24.",
+        logic: "projected_budget_exhaustion_day < 24", state: "fired", count: 1 },
     ],
     moves: [
       "Cap or pause a PMax / Demand Gen campaign that's spending without booking demos",
       "Shift the freed budget into capped high-intent Search where impressions are available",
+      "Add negative keywords to stop broad match buying off-intent clicks",
+      "Raise the monthly cap on the top-converting Search campaign so it doesn't go dark",
       "Fix or A/B the underperforming landing page",
     ],
-    recs: pickFindings("Wasted spend", "Missed demand", "Conversion leak"),
+    recs: pickFindings("Wasted spend", "Missed demand", "Conversion leak", "Query waste", "Budget pacing"),
+    checkedAgoHours: 2,
   }),
   // Act-now goal #2 — Meta creative fatigue + brand overlap.
   seedGoal({
@@ -369,13 +523,18 @@ const goals = [
     conditions: [
       { label: "A Meta creative's frequency is past saturation", logic: "meta_frequency_7d > 4.0 AND ctr_trend_21d < 0", state: "fired", count: 1 },
       { label: "Meta cost-per-demo is rising above target", logic: "meta_cost_per_demo_7d > $180", state: "fired", count: 1 },
+      { label: "A new creative is outperforming and worth scaling", logic: "creative_cost_per_demo_14d < 0.5 × channel_cost_per_demo AND budget_share < 15%", state: "fired", count: 1 },
+      { label: "Mobile is converting far below desktop for the spend it takes", logic: "mobile_cost_per_demo_7d > 1.5 × desktop_cost_per_demo_7d", state: "quiet", count: 0 },
       { label: "PMax is overlapping paid spend onto your brand terms", logic: "pmax_brand_query_impressions_7d > 500", state: "quiet", count: 0 },
     ],
     moves: [
       "Rotate in a fresh creative concept and cap frequency on the fatigued one",
+      "Scale the outperforming creative before it fatigues",
+      "Apply a negative mobile bid adjustment until the device gap closes",
       "Add a brand-term exclusion list to PMax so organic keeps capturing brand demand",
     ],
-    recs: pickFindings("Creative fatigue", "Spend overlap"),
+    recs: pickFindings("Creative fatigue", "Spend overlap", "Scale opportunity", "Device gap"),
+    checkedAgoHours: 7,
   }),
   // Act-now goal #3 — retargeting re-serving already-converted users.
   seedGoal({
@@ -389,26 +548,45 @@ const goals = [
     conditions: [
       { label: "Retargeting is serving ads to people who already converted", logic: "retargeting_impressions_to_converted_or_stale_share_30d > 30%", state: "fired", count: 1 },
       { label: "Retargeting cost-per-demo is rising above target", logic: "retargeting_cost_per_demo_7d > $180", state: "fired", count: 1 },
+      { label: "Paid spend is serving outside your target emirates",
+        creates: "geo waste finding", findingCategory: "Geo waste",
+        logic: "off_region_spend_share_30d > 10%", state: "fired", count: 1 },
     ],
     moves: [
       "Add a converters exclusion list to retargeting audiences",
       "Cap the retargeting lookback window at 30 days",
+      "Tighten location targeting to the target emirates",
     ],
-    recs: pickFindings("Retargeting waste"),
+    recs: pickFindings("Retargeting waste", "Geo waste"),
+    checkedAgoHours: 26,
   }),
-  // On-track paid goal — Search efficiency holding, one thing to watch.
-  makeGoal({
+  // On-track paid goal — Search efficiency holding, a couple of things to watch.
+  seedGoal({
     name: "Protect Search headroom",
     statement: "Keep high-intent Search fully funded so it stays the cheapest demo engine",
     target: "≥65%",
     targets: [
-      { label: "Hold Search impression share above 65% on converting terms", target: "≥65%", current: "58%", met: false, why: "Converting Search terms are your cheapest demos at $120 — losing share here means losing the best demand you can buy." },
+      { label: "Hold Search impression share above 65% on converting terms", target: "≥65%", current: "66%", met: true, why: "Converting Search terms are your cheapest demos at $120 — losing share here means losing the best demand you can buy." },
       { label: "Keep Search cost-per-demo under $140", target: "<$140", current: "$120", met: true, why: "Search runs at $120 today; $140 is the ceiling before it stops being the efficient channel." },
     ],
     conditions: [
-      { label: "Search impression share on converting terms dips below 65%" },
-      { label: "Search cost-per-demo rises above $140" },
+      { label: "Broad-match Search is matching off-intent queries",
+        creates: "query waste finding", findingCategory: "Query waste",
+        rule: "Watch when over `15%` of broad-match spend lands on zero-intent queries in 30 days.",
+        logic: "broad_match_off_intent_spend_share_30d > 15%", state: "fired", count: 1 },
+      { label: "A top campaign is pacing to exhaust its budget early",
+        creates: "budget pacing finding", findingCategory: "Budget pacing",
+        rule: "Watch when a campaign paces to exhaust its monthly budget before day 24.",
+        logic: "projected_budget_exhaustion_day < 24", state: "fired", count: 1 },
+      { label: "Search impression share on converting terms dips below 65%", logic: "search_impression_share(converting_terms) < 65%", state: "quiet", count: 0 },
+      { label: "Search cost-per-demo rises above $140", logic: "search_cost_per_demo_7d > $140", state: "quiet", count: 0 },
     ],
+    moves: [
+      "Add negative keywords to stop broad match buying off-intent clicks",
+      "Raise the monthly cap on the top-converting Search campaign so it doesn't go dark",
+    ],
+    recs: pickFindings("Query waste", "Budget pacing"),
+    checkedAgoHours: 5,
   }),
   makeGoal({
     name: "Grow qualified pipeline to $1.5M",
@@ -515,7 +693,7 @@ export function attentionFeed() {
           iconKey: rec.iconKey || null,
           impact: rec.impact || null,
           severity: rec.severity,
-          at: last.at,
+          at: last.ago || last.at,
         });
       }
     }
@@ -533,7 +711,7 @@ export function allRecommendations() {
         goalId: g.id, goalName: g.name, recId: rec.id,
         title: rec.title, tldr: rec.tldr, category: rec.category || rec.groupLabel,
         severity: rec.severity, status: rec.status, impact: rec.impact || null, age: rec.age || null,
-        at: last.at,
+        at: last.ago || last.at,
       });
     }
   }
@@ -573,7 +751,7 @@ function summarize(g) {
     firingCount,
     topFinding: lead ? { title: lead.title, tldr: lead.tldr, severity: lead.severity, impact: lead.impact || null } : null,
     flaggedCount: last?.flaggedCount || 0,
-    lastCheckIn: last?.at || null,
+    lastCheckIn: last?.ago || last?.at || null,
   };
 }
 
@@ -653,6 +831,21 @@ function findFinding(pred) {
   }
   return null;
 }
+// Rough sort weight for a recommendation, so "biggest lever" surfaces the most
+// valuable open item: act-now beats watch, then by the dollar figure in its impact.
+function impactWeight(rec) {
+  let w = rec.severity === "act-now" ? 1_000_000 : 0;
+  const raw = rec.impact?.value || "";
+  const m = raw.replace(/,/g, "").match(/([\d.]+)\s*([km])?/i);
+  if (m) {
+    let n = parseFloat(m[1]) || 0;
+    const unit = (m[2] || "").toLowerCase();
+    if (unit === "k") n *= 1_000;
+    if (unit === "m") n *= 1_000_000;
+    w += n;
+  }
+  return w;
+}
 function findingReply(hit) {
   const { goal, rec } = hit;
   const worth = rec.impact ? ` (${rec.impact.label.toLowerCase()}: ${rec.impact.value})` : "";
@@ -697,6 +890,13 @@ export function sageChat(text) {
   if (/on track|healthy|good|fine|how are we/.test(t)) {
     return { reply: `${onTrack.length} of ${summaries.length} goal${summaries.length !== 1 ? "s are" : " is"} on track${setup.length ? `, and ${setup.length} still in setup.` : "."} ${attention.length ? `${attention.length} still need${attention.length === 1 ? "s" : ""} action.` : ""}`.trim() };
   }
+  // Where to put the next dollar / where to invest.
+  if (/dollar|invest|allocate|scale|double down|next.*spend|where.*put/.test(t)) {
+    const hit = findFinding((r) => r.category === "Missed demand" || /impression share|headroom|search/i.test(r.title));
+    return hit
+      ? { reply: `Your next dollar goes furthest on “${hit.goal.name}”: ${hit.rec.title}. ${hit.rec.tldr} That's demand you're already qualified for and leaving on the table — cheaper than buying new reach.` }
+      : { reply: "Clear the wasted spend first — every goal is efficient right now, so the next dollar is best held until a headroom finding opens up." };
+  }
   if (/how many|count|list|which goals|what goals/.test(t)) {
     return { reply: `You're tracking ${summaries.length} goal${summaries.length !== 1 ? "s" : ""}: ${summaries.map((g) => g.name).join(", ") || "none yet"}.` };
   }
@@ -704,6 +904,60 @@ export function sageChat(text) {
     return { reply: "Use “New Goal” at the top right — tell me the outcome you want (e.g. “cut cost-per-demo under $180”) and I'll calibrate the rules and monitors from your data." };
   }
   return { reply: `You have ${summaries.length} goal${summaries.length !== 1 ? "s" : ""} — ${attention.length} need action, ${onTrack.length} on track. Ask me what's wasting spend, where you're losing demos, or what to open first.` };
+}
+
+// Sage scoped to a single goal (the goal detail page) — answers about this goal
+// specifically, grounded in its own findings, monitors, and target.
+export function sageChatGoal(id, text) {
+  const g = find(id);
+  if (!g) return { reply: "I couldn't find that goal." };
+  const t = (text || "").toLowerCase().trim();
+  const last = g.checkIns[0];
+  const openRecs = last ? last.recommendations.filter((r) => r.status === "open") : [];
+  const actNow = openRecs.filter((r) => r.severity === "act-now");
+  const lead = actNow[0] || openRecs[0] || null;
+  const primary = g.targets?.[0];
+
+  if (!t) {
+    return { reply: `Ask me about “${g.name}” — what's driving it, what to do next, or why a number moved.` };
+  }
+  // Biggest waste / most impactful thing to fix.
+  if (/wast|biggest|most impact|worth|roi|where.*money|save/.test(t)) {
+    const byImpact = [...openRecs].sort((a, b) => (impactWeight(b) - impactWeight(a)));
+    const top = byImpact[0];
+    return top
+      ? { reply: `The biggest lever here is “${top.title}”${top.impact ? ` — ${top.impact.label.toLowerCase()} ${top.impact.value}` : ""}. ${top.tldr} Want me to walk through the evidence?` }
+      : { reply: "Nothing is bleeding budget on this goal right now — spend is tracking efficiently." };
+  }
+  if (/next|do next|action|fix|first|move/.test(t)) {
+    return lead
+      ? { reply: `Start with: ${lead.title}. ${lead.tldr}${actNow.length > 1 ? ` After that, ${actNow.length - 1} more need${actNow.length - 1 === 1 ? "s" : ""} a look.` : ""}` }
+      : { reply: "Nothing needs action on this goal right now — it's on pace. I'll flag the moment a monitor trips." };
+  }
+  if (/why|driv|chang|move|cause|reason/.test(t)) {
+    return lead
+      ? { reply: `${lead.title} — ${lead.cause || lead.evidence || lead.tldr}` }
+      : { reply: "No findings this run — the goal's metrics are holding steady versus last check." };
+  }
+  if (/status|how are we|on track|target|winning|hitting|pace|reach|forecast|hit target/.test(t)) {
+    return primary
+      ? { reply: `${primary.label}: currently ${primary.current ?? "—"} vs target ${primary.target} — ${primary.met ? "on target" : "off target"}. ${actNow.length ? `${actNow.length} finding${actNow.length !== 1 ? "s" : ""} between you and it.` : "Nothing standing in the way right now."}` }
+      : { reply: `“${g.name}” is being tracked against your latest data — no target set yet, so I'm watching for drift.` };
+  }
+  if (/monitor|firing|watch|trigger|alert/.test(t)) {
+    const firing = (g.conditions || []).filter((c) => c.state === "fired");
+    const quiet = (g.conditions || []).filter((c) => c.state !== "fired");
+    return firing.length
+      ? { reply: `${firing.length} monitor${firing.length !== 1 ? "s" : ""} firing: ${firing.map((c) => c.label).join("; ")}.${quiet.length ? ` ${quiet.length} more are quiet.` : ""}` }
+      : { reply: "No monitors are firing — everything's quiet on this goal. I'm still watching all of them each run." };
+  }
+  // Cheapest / best source of demos.
+  if (/cheap|best source|which channel|where.*dollar|invest|allocate|scale|double down/.test(t)) {
+    return { reply: `Brand Search is your cheapest demo source — highest intent, lowest cost-per-demo. Before scaling anything new, that's where an extra dollar pays back fastest.${lead ? ` But first clear “${lead.title}” — it's costing you more than a scale-up would earn.` : ""}` };
+  }
+  return lead
+    ? { reply: `On “${g.name}”: ${actNow.length} to act, ${Math.max(0, openRecs.length - actNow.length)} to watch. Top move — ${lead.tldr} Ask me “why” for the evidence, or “what's on track” for the wins.` }
+    : { reply: `“${g.name}” is on pace — nothing needs action right now. Ask me how it's tracking or which monitors I'm watching.` };
 }
 
 export function saveGoal(id, name) {
@@ -726,7 +980,8 @@ export function runCheckIn(id) {
   const recs = makeRecommendations();
   const ci = {
     id: nid("ci"),
-    at: "Just now",
+    at: checkedAt(0),
+    ago: "Just now",
     flaggedCount: recs.filter((r) => r.severity === "act-now").length,
     summary:
       `${recs.length} recommendations across your high-value pipeline — ${recs.filter((r) => r.severity === "act-now").length} need action now, the rest are worth watching. Start with the stale $250K deal whose close date is 211 days overdue.`,
@@ -791,6 +1046,8 @@ export function actOnRecommendation(id, recId, action, payload) {
     const rec = ci.recommendations.find((r) => r.id === recId);
     if (rec) {
       rec.status = action; // acted | rejected | snoozed
+      if (payload?.reason) rec.reason = payload.reason; // captured feedback, used next run
+      else if (action === "open") rec.reason = undefined; // cleared on undo
       if (payload?.note) rec.actionNote = payload.note;
       if (action === "snoozed") rec.snoozeLabel = payload?.snooze || "until next run";
       break;
