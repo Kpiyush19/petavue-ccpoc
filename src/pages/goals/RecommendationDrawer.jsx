@@ -68,6 +68,10 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
   const [thread, setThread] = useState([]);
   const [showChat, setShowChat] = useState(false);
   const [showDeriv, setShowDeriv] = useState(false);
+  // pending = the action awaiting input ({ action }); reason = the note; snoozeFor = duration.
+  const [pending, setPending] = useState(null);
+  const [reason, setReason] = useState("");
+  const [snoozeFor, setSnoozeFor] = useState("");
   const sendComment = () => {
     const t = comment.trim();
     if (!t) return;
@@ -116,11 +120,6 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-secondary)]">{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
             {rec.age && <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-pv-primary-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
             <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-muted)]"><Tag size={11} weight="bold" />{rec.category}</span>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button onClick={() => setShowChat((v) => !v)} className={cn("flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium border cursor-pointer transition-colors", showChat ? "bg-pv-primary-primary-50 border-pv-primary-primary-300 text-pv-primary-primary-600" : "bg-transparent border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]")} aria-label="Comment">
-              <ChatCircle size={16} /> Comment{thread.length > 0 && <span className="text-[11px] font-semibold">· {thread.filter((m) => m.role === "user").length}</span>}
-            </button>
           </div>
         </div>
       </div>
@@ -201,17 +200,69 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <span className={cn("inline-flex items-center gap-1.5 text-[13px] font-medium", resolved?.cls)}><CheckCircle size={15} weight="fill" /> {resolved?.label}</span>
             <PvButton variant="secondary" size="sm" label="Undo" icon={ArrowUUpLeft} onClick={() => act.mutate({ action: "open" })} />
           </div>
+        ) : pending ? (
+          <div className="flex flex-col gap-2">
+            {pending.action === "snoozed" && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[12px] font-medium text-[var(--text-primary)]">Snooze for</label>
+                <input
+                  value={snoozeFor}
+                  onChange={(e) => setSnoozeFor(e.target.value)}
+                  autoFocus
+                  placeholder="e.g. 2 weeks · until next month · after the launch"
+                  className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none"
+                />
+                <div className="flex flex-wrap gap-1.5">
+                  {SNOOZE_OPTIONS.map((opt) => (
+                    <button key={opt} type="button" onClick={() => setSnoozeFor(opt)}
+                      className={cn("text-[11px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
+                        snoozeFor === opt ? "border-pv-primary-primary-400 text-pv-primary-primary-600 bg-pv-primary-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400")}>
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="text-[12px] font-medium text-[var(--text-primary)]">
+              {pending.action === "rejected" ? "Why are you dismissing this? (optional)"
+                : pending.action === "acted" ? "What did you do? (optional)"
+                : "Anything to note? (optional)"}
+            </p>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={2}
+              autoFocus={pending.action !== "snoozed"}
+              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search — it's our best demo source" : "Add context for the next run…"}
+              className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+            />
+            <div className="flex items-center gap-2">
+              <PvButton
+                variant="primary" size="sm"
+                label={act.isPending ? "Saving…" : "Submit"}
+                disabled={act.isPending || (pending.action === "snoozed" && !snoozeFor.trim())}
+                onClick={() => doAct(
+                  { action: pending.action, snooze: snoozeFor.trim() || undefined, reason: reason.trim() || undefined },
+                  pending.action === "acted" ? "Marked done — monitoring for recovery" : pending.action === "rejected" ? "Dismissed — archived" : `Snoozed · ${snoozeFor.trim()}`
+                )}
+              />
+              <button onClick={() => { setPending(null); setReason(""); setSnoozeFor(""); }} className="text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">Cancel</button>
+            </div>
+          </div>
         ) : (
           <div className="flex items-center gap-2">
-            <button onClick={() => doAct({ action: "acted" }, "Marked done — monitoring for recovery")} disabled={act.isPending}
+            <button onClick={() => { setReason(""); setPending({ action: "acted" }); }} disabled={act.isPending}
               className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <CheckCircle size={16} /> Acted
             </button>
-            <button onClick={() => doAct({ action: "rejected" }, "Dismissed — archived")} disabled={act.isPending}
+            <button onClick={() => { setReason(""); setPending({ action: "rejected" }); }} disabled={act.isPending}
               className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <XCircle size={16} /> Reject
             </button>
-            <span className="ml-auto"><SnoozeMenu disabled={act.isPending} onSnooze={(snooze) => doAct({ action: "snoozed", snooze }, `Snoozed · ${snooze}`)} /></span>
+            <button onClick={() => { setReason(""); setSnoozeFor(""); setPending({ action: "snoozed" }); }} disabled={act.isPending}
+              className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              <ClockCounterClockwise size={16} /> Snooze
+            </button>
           </div>
         )}
       </div>

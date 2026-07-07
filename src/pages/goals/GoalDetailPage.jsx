@@ -486,7 +486,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
   }[rec.status];
 
   return (
-    <div onClick={() => onOpen?.(rec.id)} className={cn("flex flex-col h-full p-4 rounded-xl border border-pv-neutral-grey-150/50 transition-shadow bg-white cursor-pointer dropshadow-card", done ? "opacity-80" : "hover:shadow-md")}>
+    <div onClick={() => onOpen?.(rec.id)} className={cn("flex flex-col h-full p-4 rounded-xl border border-pv-neutral-grey-150/50 transition-colors bg-white cursor-pointer dropshadow-card", done ? "opacity-80" : "hover:border-pv-primary-primary-300 hover:bg-pv-primary-primary-50")}>
       {/* Header: category + severity */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2 min-w-0">
@@ -633,7 +633,7 @@ function FindingStat({ label, value, sub }) {
   return (
     <div className="rounded-lg border border-pv-neutral-grey-150/50 bg-pv-neutral-grey-50/50 px-3 py-2.5">
       <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{label}</p>
-      <p className="text-[16px] font-semibold text-[var(--text-primary)] leading-snug mt-1">{value}</p>
+      <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug mt-1">{value}</p>
     </div>
   );
 }
@@ -680,53 +680,68 @@ function TopFindingPanel({ rec, onOpen }) {
   );
 }
 
-/* Goal scorecard — the "are we winning?" answer, leading the Overview. The
-   primary rule is shown large with its current value vs target; the rest are
-   compact pass/fail rows. Replaces the vanity stat strip + plain rules list. */
-function GoalScorecard({ targets }) {
+// Parse the leading number (with $ / k / m) out of a target/current string.
+function statusNum(s) {
+  if (s == null) return null;
+  const m = String(s).replace(/,/g, "").match(/([\d.]+)\s*([km])?/i);
+  if (!m) return null;
+  let n = parseFloat(m[1]);
+  const u = (m[2] || "").toLowerCase();
+  if (u === "k") n *= 1e3;
+  if (u === "m") n *= 1e6;
+  return n;
+}
+
+/* Goal status — the "am I winning?" reference at the top of the Overview, shown
+   as attainment bars. Each bar reads "closeness to passing" (fuller = closer to
+   winning, whichever direction the rule runs); amber for off, green for met, so
+   it stays quiet under the hero finding. */
+function GoalStatusLine({ targets }) {
   if (!targets?.length) return null;
-  const [primary, ...rest] = targets;
-  const metCount = targets.filter((t) => t.met).length;
+  const onTrack = targets.filter((t) => t.met).length;
   return (
-    <div>
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <p className="text-[14px] font-semibold text-[var(--text-primary)]">Goal scorecard</p>
-        <p className="text-[12px] text-[var(--text-muted)]">{metCount} of {targets.length} rule{targets.length !== 1 ? "s" : ""} on target</p>
+    <div className="flex flex-col gap-3.5">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Goal status</p>
+        <span className="text-[12px] text-[var(--text-muted)]"><span className="font-medium text-[var(--text-primary)]">{onTrack}</span> of {targets.length} on track</span>
       </div>
-
-      {/* Primary — the headline metric vs target */}
-      <div className={cn("rounded-xl border border-pv-neutral-grey-150/50 p-4 mb-3 dropshadow-card", primary.met ? "bg-green-50/40" : "bg-rose-50/40")}>
-        <p className="text-[12px] font-medium text-[var(--text-secondary)] mb-1.5">{primary.label}</p>
-        <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
-          {primary.current != null && <span className={cn("text-[28px] font-semibold leading-none", primary.met ? "text-green-600" : "text-rose-600")}>{primary.current}</span>}
-          <span className="text-[12px] text-[var(--text-secondary)] mb-1">target {primary.target}</span>
-          <span className={cn("ml-auto inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full", primary.met ? "bg-green-100 text-green-700" : "bg-rose-100 text-rose-700")}>
-            {primary.met ? <CheckCircle size={11} weight="fill" /> : <Warning size={11} weight="fill" />}{primary.met ? "On target" : "Off target"}
-          </span>
-        </div>
-        {primary.why && <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mt-2">{primary.why}</p>}
-      </div>
-
-      {/* Secondary rules — compact pass/fail */}
-      {rest.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {rest.map((t) => (
-            <div key={t.id} className="flex items-center justify-between gap-3 rounded-lg border border-pv-neutral-grey-150/50 bg-white px-3.5 py-3 dropshadow-card">
-              <div className="min-w-0">
-                <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug truncate">{t.label}</p>
-                <p className="text-[12px] text-[var(--text-muted)] mt-0.5">
-                  {t.current != null && <span className={cn("font-semibold", t.met ? "text-green-600" : "text-rose-600")}>{t.current}</span>}
-                  {t.current != null ? " · " : ""}target {t.target}
-                </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {targets.map((t) => {
+          const c = statusNum(t.current), tg = statusNum(t.target);
+          // Closeness to passing: 100% when met; otherwise the failing side's
+          // ratio toward the boundary (works for both "higher" and "lower" rules).
+          const closeness = t.met ? 1 : (c != null && tg ? (c < tg ? c / tg : tg / c) : 0.3);
+          const fill = Math.max(5, Math.min(100, closeness * 100));
+          return (
+            <div key={t.id} className="flex flex-col gap-2 min-w-0">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className={cn("text-[16px] font-semibold leading-none", t.met ? "text-green-600" : "text-amber-600")}>{t.current ?? "—"}</span>
+                <span className="text-[12px] text-[var(--text-muted)] tabular-nums">target {t.target}</span>
               </div>
-              <span className={cn("shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full", t.met ? "bg-green-100 text-green-700" : "bg-rose-100 text-rose-700")}>
-                {t.met ? <CheckCircle size={13} weight="fill" /> : <Warning size={13} weight="fill" />}
-              </span>
+              <div className="h-1.5 w-full rounded-full bg-pv-neutral-grey-100 overflow-hidden">
+                <div className={cn("h-full rounded-full transition-[width]", t.met ? "bg-green-500" : "bg-amber-500")} style={{ width: `${fill}%` }} />
+              </div>
+              <span className="text-[12px] text-[var(--text-secondary)] leading-snug line-clamp-2">{t.label}</span>
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
+  );
+}
+
+/* A quiet "door" to a deeper tab — low-contrast, flat. Used in the Overview's
+   third tier so more findings / monitors are reachable without adding weight. */
+function OverviewLink({ icon: Icon, label, sub, onClick }) {
+  return (
+    <button onClick={onClick} className="group flex items-center gap-3 px-3.5 py-3 rounded-lg border border-dashed border-pv-primary-primary-300 bg-pv-primary-primary-50/40 hover:bg-pv-primary-primary-50 hover:border-pv-primary-primary-400 text-left cursor-pointer transition-colors w-full">
+      <Icon size={17} weight="fill" className="text-pv-primary-primary-500 shrink-0" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">{label}</p>
+        {sub && <p className="text-[12px] text-[var(--text-muted)] mt-0.5">{sub}</p>}
+      </div>
+      <ArrowRight size={15} weight="bold" className="shrink-0 text-pv-primary-primary-500 group-hover:translate-x-0.5 transition-transform" />
+    </button>
   );
 }
 
@@ -811,35 +826,32 @@ function MonitorDetail({ label, children }) {
   );
 }
 
-function MonitorRow({ condition, defaultOpen, divider, onOpenFinding }) {
+function MonitorRow({ condition, defaultOpen, onOpenFinding }) {
   const [open, setOpen] = useState(!!defaultOpen);
   const fired = condition.state === "fired";
   const rule = condition.rule || condition.logic;
   return (
-    <div className={cn(divider && "border-t border-[var(--pv-neutral-grey-100)]")}>
+    <div>
       {/* Header — clickable, chevron on the right */}
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2.5 w-full px-4 py-3 bg-transparent border-none cursor-pointer text-left hover:bg-pv-neutral-grey-50/60 transition-colors">
-        <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-          {fired ? <span className="w-2 h-2 rounded-full bg-rose-500" /> : <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />}
-        </span>
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2.5 w-full px-4 py-3 bg-transparent border-none cursor-pointer text-left hover:bg-pv-neutral-grey-50 transition-colors">
+        {fired
+          ? <Warning size={16} className="shrink-0 text-rose-500" />
+          : <Eye size={16} className="shrink-0 text-[var(--text-muted)]" />}
         <span className="flex-1 min-w-0 text-[14px] font-medium text-[var(--text-primary)] truncate">{condition.label}</span>
-        <span className={cn("shrink-0 text-[10px] font-semibold", fired ? "text-rose-600" : "text-[var(--text-muted)]")}>
-          {fired ? (condition.count ? `${condition.count} fired` : "fired") : "quiet"}
-        </span>
-        <CaretDown size={14} className={cn("shrink-0 text-[var(--text-muted)] transition-transform", open && "rotate-180")} />
+        <CaretDown size={16} className={cn("shrink-0 text-[var(--text-muted)] transition-transform duration-200", open && "rotate-180")} />
       </button>
 
       {/* Body — animated, tree-indented details */}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="pl-[26px] pr-4 pb-3.5 flex flex-col">
-              {condition.description && <p className="text-[12px] text-[var(--text-secondary)] leading-snug mb-1">{condition.description}</p>}
+            <div className="pl-[42px] pr-4 pb-4 flex flex-col gap-1">
+              {condition.description && <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mb-1">{condition.description}</p>}
               {condition.creates && (
                 <MonitorDetail label="Creates">
                   {condition.findingCategory ? (
                     <button onClick={() => onOpenFinding?.(condition)} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700 text-[12px] font-medium border-none cursor-pointer hover:bg-pv-primary-primary-100 transition-colors">
-                      {condition.creates} <ArrowRight size={11} weight="bold" />
+                      {condition.creates} <ArrowRight size={12} weight="bold" />
                     </button>
                   ) : (
                     <span className="text-[var(--text-secondary)]">{condition.creates}</span>
@@ -848,7 +860,7 @@ function MonitorRow({ condition, defaultOpen, divider, onOpenFinding }) {
               )}
               {rule && (
                 <MonitorDetail label="Rule">
-                  {condition.rule ? renderRuleText(condition.rule) : <code className="px-1.5 py-0.5 rounded bg-pv-neutral-grey-100 text-[11px] font-mono text-[var(--text-primary)]">{condition.logic}</code>}
+                  {condition.rule ? renderRuleText(condition.rule) : <code className="px-1.5 py-0.5 rounded bg-pv-neutral-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{condition.logic}</code>}
                 </MonitorDetail>
               )}
             </div>
@@ -881,57 +893,51 @@ function FeedbackTab({ goal }) {
     );
   }
 
+  // Unify decisions + comments into one readable activity timeline.
+  const items = [
+    ...decisions.map((r) => {
+      const m = meta[r.status] || meta.acted;
+      return {
+        id: r.id, Icon: m.icon, cls: m.cls, bg: m.bg,
+        label: m.label + (r.status === "snoozed" && r.snoozeLabel ? ` · ${r.snoozeLabel}` : ""),
+        context: r.category, time: r.actedAgo, title: r.title,
+        reason: r.reason, needsReason: true,
+      };
+    }),
+    ...comments.map((n) => ({
+      id: n.id, Icon: ChatCircle, cls: "text-pv-primary-primary-600", bg: "bg-pv-primary-primary-50",
+      label: "Comment", context: null, time: n.at, title: null,
+      reason: n.text, needsReason: false,
+    })),
+  ];
+
   return (
-    <div className="flex flex-col gap-5">
-      {decisions.length > 0 && (
-        <section>
-          <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Decisions on recommendations · {decisions.length}</p>
-          <div className="flex flex-col gap-2">
-            {decisions.map((r) => {
-              const m = meta[r.status] || meta.acted;
-              const I = m.icon;
-              return (
-                <div key={r.id} className="flex items-start gap-3 p-3 rounded-xl border border-pv-neutral-grey-150/50 bg-white dropshadow-card">
-                  <span className={cn("flex items-center justify-center w-7 h-7 rounded-full shrink-0", m.bg, m.cls)}><I size={15} weight="fill" /></span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={cn("text-[13px] font-semibold shrink-0", m.cls)}>{m.label}{r.status === "snoozed" && r.snoozeLabel ? ` · ${r.snoozeLabel}` : ""}</span>
-                      <span className="text-[12px] text-[var(--text-secondary)] truncate">{r.category}</span>
-                      {r.actedAgo && <span className="ml-auto text-[11px] text-[var(--text-muted)] shrink-0">{r.actedAgo}</span>}
-                    </div>
-                    <p className="text-[13px] text-[var(--text-primary)] leading-snug mt-0.5">{r.title}</p>
-                    {r.reason
-                      ? <p className="text-[13px] text-[var(--text-secondary)] italic leading-snug mt-1.5">“{r.reason}”</p>
-                      : <p className="text-[12px] text-[var(--text-muted)] mt-1.5">No reason captured.</p>}
-                  </div>
+    <div className="flex flex-col gap-4">
+      <ol className="flex flex-col">
+        {items.map((it, i) => {
+          const last = i === items.length - 1;
+          const { Icon } = it;
+          return (
+            <li key={it.id} className="relative flex gap-3 pb-5 last:pb-0">
+              {/* connector rail */}
+              {!last && <span aria-hidden className="absolute left-[13.5px] top-8 -bottom-1 w-px bg-[var(--pv-neutral-grey-150)]" />}
+              <span className={cn("relative z-10 flex items-center justify-center w-7 h-7 rounded-full shrink-0 ring-4 ring-[#fcfcfc]", it.bg, it.cls)}><Icon size={15} weight="fill" /></span>
+              <div className="min-w-0 flex-1 pt-0.5">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className={cn("text-[13px] font-semibold", it.cls)}>{it.label}</span>
+                  {it.context && <span className="text-[12px] text-[var(--text-muted)]">· {it.context}</span>}
+                  {it.time && <span className="ml-auto text-[12px] text-[var(--text-muted)] shrink-0">{it.time}</span>}
                 </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {comments.length > 0 && (
-        <section>
-          <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Comments · {comments.length}</p>
-          <div className="flex flex-col gap-2">
-            {comments.map((n) => (
-              <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl border border-pv-neutral-grey-150/50 bg-white dropshadow-card">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full shrink-0 bg-pv-primary-primary-50 text-pv-primary-primary-600"><ChatCircle size={15} weight="fill" /></span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-semibold text-[var(--text-primary)]">Comment</span>
-                    {n.at && <span className="ml-auto text-[11px] text-[var(--text-muted)] shrink-0">{n.at}</span>}
-                  </div>
-                  <p className="text-[13px] text-[var(--text-secondary)] leading-snug mt-1">{n.text}</p>
-                </div>
+                {it.title && <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug mt-1">{it.title}</p>}
+                {it.reason
+                  ? <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-1">{it.reason}</p>
+                  : it.needsReason && <p className="text-[12px] text-[var(--text-muted)] mt-1">No reason captured.</p>}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <p className="text-[11px] text-[var(--text-muted)] flex items-start gap-1.5"><Info size={13} className="mt-px shrink-0" /> The engine reads this on the next check-in — dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="text-[12px] text-[var(--text-muted)] flex items-start gap-1.5 pt-3 border-t border-[var(--pv-neutral-grey-100)]"><Info size={14} className="mt-px shrink-0" /> The engine reads this on the next check-in — dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
     </div>
   );
 }
@@ -985,7 +991,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-[18px] font-semibold text-[var(--text-primary)]">{goal.name}</h1>
-          <p className="text-[12px] text-[var(--text-secondary)] mt-1">{goal.statement}</p>
+          <p className="text-[14px] text-[var(--text-secondary)] mt-1">{goal.statement}</p>
         </div>
       </div>
 
@@ -1002,13 +1008,20 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               key={t.k}
               onClick={() => setTab(t.k)}
               className={cn(
-                "flex items-center gap-2 h-11 px-1 border-b-2 bg-transparent cursor-pointer text-[14px] transition-colors",
-                tab === t.k ? "text-pv-primary-primary-500 font-medium border-pv-primary-primary-500" : "text-[var(--text-primary)] border-transparent hover:text-pv-primary-primary-500"
+                "relative flex items-center gap-2 h-11 px-1 bg-transparent border-none cursor-pointer text-[14px] transition-colors",
+                tab === t.k ? "text-pv-primary-primary-500 font-medium" : "text-[var(--text-primary)] hover:text-pv-primary-primary-500"
               )}
             >
               {t.label}
               {t.badge > 0 && (
                 <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-500 text-white" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
+              )}
+              {tab === t.k && (
+                <motion.span
+                  layoutId="goalTabUnderline"
+                  className="absolute left-0 right-0 -bottom-px h-[2px] rounded-full bg-pv-primary-primary-500"
+                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                />
               )}
             </button>
           ))}
@@ -1018,54 +1031,36 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
       <div className="mt-6">
         {/* ── Overview: goal-level command summary ── */}
         {tab === "overview" && (
-          <div className="flex flex-col gap-3">
-            {/* 1 — Goal scorecard: are we winning? (leads the page) */}
-            <GoalScorecard targets={goal.targets} />
+          <div className="flex flex-col gap-5">
+            {/* Tier 1 — status: are we winning? (quiet, flat, never competes) */}
+            <GoalStatusLine targets={goal.targets} />
 
             {lastCheckIn ? (
               <>
-                {/* 2 — Latest check-in synthesis: summary leads, timestamp as caption */}
-                <div className="flex items-start gap-2.5 rounded-xl border border-[var(--pv-neutral-grey-150)] bg-pv-neutral-grey-50/60 px-4 py-3.5 dropshadow-card">
-                  <ClockCounterClockwise size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
-                    <p className="text-[12px] text-[var(--text-muted)] mt-1.5">Latest check-in · {lastCheckIn.at}</p>
-                  </div>
-                </div>
-
-                {/* 3 — Top finding: the one move to make */}
+                {/* Tier 2 — the one move to make (the only elevated block) */}
                 {leadRec && <TopFindingPanel rec={leadRec} onOpen={setRecId} />}
 
-                {/* Monitors — which are firing + a line each; full detail on the Monitor tab */}
-                <div className="rounded-xl border border-pv-neutral-grey-150/50 bg-white overflow-hidden dropshadow-card">
-                  <div className="flex items-center justify-between gap-3 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <p className="text-[14px] font-semibold text-[var(--text-primary)]">Monitors</p>
-                      {firingCount > 0
-                        ? <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600">{firingCount} firing</span>
-                        : <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-green-50 text-green-600">all quiet</span>}
+                {/* Tier 3 — also happening: quiet doors to the deeper tabs */}
+                {(() => {
+                  const more = Math.max(0, openRecs.length - (leadRec ? 1 : 0));
+                  const quietCount = goal.conditions.length - firingCount;
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <OverviewLink
+                        icon={Lightning}
+                        label={more > 0 ? `${more} more open finding${more !== 1 ? "s" : ""}` : "No other open findings"}
+                        sub="See all recommendations"
+                        onClick={() => setTab("recommendations")}
+                      />
+                      <OverviewLink
+                        icon={Pulse}
+                        label={firingCount > 0 ? `${firingCount} monitor${firingCount !== 1 ? "s" : ""} firing · ${quietCount} quiet` : `All ${goal.conditions.length} monitors quiet`}
+                        sub="Open the Monitor tab"
+                        onClick={() => setTab("monitor")}
+                      />
                     </div>
-                    <button onClick={() => setTab("monitor")} className="group inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0">
-                      View all {goal.conditions.length} <ArrowRight size={12} weight="bold" className="group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-                  <div className="flex flex-col">
-                    {firingCount > 0 ? (
-                      goal.conditions.filter((c) => c.state === "fired").map((c) => (
-                        <div key={c.id} className="flex items-center gap-3 px-4 py-3 border-t border-[var(--pv-neutral-grey-100)]">
-                          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug truncate">{c.label}</p>
-                            {c.description && <p className="text-[12px] text-[var(--text-secondary)] leading-snug truncate mt-0.5">{c.description}</p>}
-                          </div>
-                          <span className="shrink-0 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-full">{c.count ? `${c.count} fired` : "Fired"}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-[13px] text-[var(--text-secondary)] px-4 pb-4">All {goal.conditions.length} monitors are quiet — nothing tripped this run.</p>
-                    )}
-                  </div>
-                </div>
+                  );
+                })()}
               </>
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
@@ -1139,29 +1134,39 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                 />
               </div>
 
-              {/* What we're watching — full width; firing (expanded) then quiet (collapsed) */}
-              <div className="bg-white border border-pv-neutral-grey-150/50 rounded-xl overflow-hidden dropshadow-card">
-                  <div className="flex items-center justify-between gap-3 px-4 py-3">
-                    <div className="min-w-0">
-                      <p className="text-[14px] font-semibold text-[var(--text-primary)]">What we're watching</p>
-                      <p className="text-[12px] text-[var(--text-muted)] mt-0.5">All monitors checked every run</p>
-                    </div>
-                    {firingCount > 0 && <span className="shrink-0 px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-rose-50 text-rose-600">{firingCount} firing</span>}
-                  </div>
-
-                  {fired.length > 0 && (
-                    <>
-                      <div className="px-4 py-1.5 bg-rose-50/40 border-b border-[var(--pv-neutral-grey-100)] text-[10px] font-semibold uppercase tracking-wider text-rose-600">Firing · {fired.length}</div>
-                      {fired.map((c, i) => <MonitorRow key={c.id} condition={c} defaultOpen divider={i > 0} onOpenFinding={openFinding} />)}
-                    </>
-                  )}
-                  {quietList.length > 0 && (
-                    <>
-                      <div className="px-4 py-1.5 bg-pv-neutral-grey-50 border-y border-[var(--pv-neutral-grey-100)] text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Quiet · {quietList.length}</div>
-                      {quietList.map((c, i) => <MonitorRow key={c.id} condition={c} divider={i > 0} onOpenFinding={openFinding} />)}
-                    </>
-                  )}
+              {/* What we're watching — flat, grouped: firing (expanded) then quiet (collapsed) */}
+              <div className="flex flex-col">
+                <div className="min-w-0">
+                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">What we're watching</p>
+                  <p className="text-[12px] text-[var(--text-muted)] mt-0.5">All {goal.conditions.length} monitors run on every check-in</p>
                 </div>
+
+                {fired.length > 0 && (
+                  <div className="mt-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Warning size={14} weight="fill" className="text-rose-500 shrink-0" />
+                      <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Firing</span>
+                      <span className="text-[12px] tabular-nums text-[var(--text-muted)]">{fired.length}</span>
+                    </div>
+                    <div className="rounded-lg border border-pv-neutral-grey-150/70 bg-white overflow-hidden divide-y divide-[var(--pv-neutral-grey-100)]">
+                      {fired.map((c) => <MonitorRow key={c.id} condition={c} defaultOpen onOpenFinding={openFinding} />)}
+                    </div>
+                  </div>
+                )}
+
+                {quietList.length > 0 && (
+                  <div className="mt-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Eye size={14} className="text-[var(--text-muted)] shrink-0" />
+                      <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Quiet</span>
+                      <span className="text-[12px] tabular-nums text-[var(--text-muted)]">{quietList.length}</span>
+                    </div>
+                    <div className="rounded-lg border border-pv-neutral-grey-150/70 bg-white overflow-hidden divide-y divide-[var(--pv-neutral-grey-100)]">
+                      {quietList.map((c) => <MonitorRow key={c.id} condition={c} onOpenFinding={openFinding} />)}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })()}
@@ -1173,7 +1178,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
       {recId && <RecommendationDrawer goalId={goal.id} recId={recId} onClose={() => setRecId(null)} />}
 
       {/* Comment panel — same right-side drawer chrome as Sage, for consistency */}
-      <ChatOverlay isOpen={showComment} onClose={() => setShowComment(false)} floating heading="Comments" headerIcon={ChatCircle}>
+      <ChatOverlay isOpen={showComment} onClose={() => setShowComment(false)} floating heading="Comments" headerIcon={ChatCircle} headerIconWeight="regular">
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
             {goal.notes.length === 0 ? (
@@ -1246,7 +1251,7 @@ export default function GoalDetailPage() {
           )}
           {goalIsActive && (
             <>
-              <PvButton variant="ghost" size="md" label="Comment" icon={ChatCircle} onClick={() => setShowComment(true)} />
+              <PvButton variant="ghost" size="md" label="Add Comment" icon={ChatCircle} iconWeight="regular" onClick={() => setShowComment(true)} />
               <button
                 onClick={() => setSageOpen(true)}
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium text-white border-none cursor-pointer transition-[filter] hover:brightness-105"
@@ -1265,10 +1270,10 @@ export default function GoalDetailPage() {
             // The active goal grows to contain all its content (Goal rules included)
             // and the outer area scrolls; the wizard phases keep h-full so their own
             // panels can scroll internally.
-            "flex flex-col min-h-full w-full bg-white rounded-xl",
+            "flex flex-col min-h-full w-full bg-[#fcfcfc] rounded-xl",
             goal && ["calibrating", "decisions", "building", "review"].includes(goal.status)
               ? "h-full"
-              : "border border-[var(--pv-neutral-grey-150)] p-4"
+              : "border border-[var(--pv-neutral-grey-150)] p-3"
           )}>
             {isLoading || !goal ? (
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>
