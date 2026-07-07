@@ -44,6 +44,16 @@ function SageChat({ goal }) {
   const [chat, setChat] = useState([{ role: "assistant", text: greeting }]);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef(null);
+  const taRef = useRef(null);
+  // Auto-grow the input up to 3 lines, then let it scroll internally.
+  const MAX_INPUT_H = 76;
+  useEffect(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, MAX_INPUT_H)}px`;
+    el.style.overflowY = el.scrollHeight > MAX_INPUT_H ? "auto" : "hidden";
+  }, [draft]);
   const ask = useMutation({
     mutationFn: (text) => apiPost(goal ? `/api/goals/${goal.id}/sage` : "/api/goals/sage", { text }),
     onSuccess: (res) => setChat((c) => [...c, { role: "assistant", text: res.reply }]),
@@ -110,12 +120,14 @@ function SageChat({ goal }) {
       </div>
       <div className="shrink-0 p-3 flex items-end gap-2">
         <textarea
+          ref={taRef}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           rows={1}
           placeholder={goal ? `Ask about ${goal.name}…` : "Ask about spend, demos, or what to fix first…"}
-          className="flex-1 text-[13px] px-3 py-1.5 h-8 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+          style={{ minHeight: "32px", maxHeight: `${MAX_INPUT_H}px` }}
+          className="flex-1 text-[13px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
         />
         <PvButton
           variant="primary"

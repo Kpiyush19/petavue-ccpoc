@@ -1,4 +1,4 @@
-import { useState, useRef, createContext, useContext } from "react";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft, ArrowRight, CircleNotch, CheckCircle, Target, Eye, Lightning, MagnifyingGlass,
   CaretRight, X, ClockCounterClockwise, Play, Question, WaveSine, Pulse, Warning, XCircle, PencilSimple, NotePencil,
-  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, ArrowsClockwise, Info,
+  Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, PaperPlaneRight, ArrowsClockwise, Info,
   CurrencyDollar, Fire, Funnel, Tag, Code, CaretDown, ChatCircle, Sparkle,
 } from "@phosphor-icons/react";
 import { Tooltip } from "@/common-components";
@@ -20,6 +20,7 @@ const REC_ICONS = {
 };
 import { toast } from "sonner";
 import SageWidget, { SAGE_GRADIENT } from "./SageWidget";
+import { ChatOverlay } from "../../components/dashboards/dashboard-viewer-widget";
 import { Button as PvButton } from "../../petavue";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
@@ -942,6 +943,16 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
   const [recId, setRecId] = useState(null);
   const [tab, setTab] = useState("overview");
   const lastCheckIn = goal.checkIns[0];
+  // Auto-grow the comment input up to 3 lines, then scroll (same as Sage's).
+  const commentRef = useRef(null);
+  const MAX_COMMENT_H = 80;
+  useEffect(() => {
+    const el = commentRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, MAX_COMMENT_H)}px`;
+    el.style.overflowY = el.scrollHeight > MAX_COMMENT_H ? "auto" : "hidden";
+  }, [note, showComment]);
 
   const check = useMutation({
     mutationFn: () => apiPost(`/api/goals/${goal.id}/check-in`, {}),
@@ -1161,52 +1172,37 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
 
       {recId && <RecommendationDrawer goalId={goal.id} recId={recId} onClose={() => setRecId(null)} />}
 
-      {/* Comment overlay — slides in from the right; notes live here now */}
-      <AnimatePresence>
-        {showComment && (
-          <>
-            <div className="fixed inset-0 z-[39]" onClick={() => setShowComment(false)} />
-            <motion.div
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed top-[60px] right-0 bottom-0 w-[340px] max-w-[88%] bg-white border-l border-[var(--border-primary)] shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.18)] flex flex-col z-[40]"
-            >
-              <div className="shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-primary)]">
-                <div className="flex items-center gap-1.5">
-                  <ChatCircle size={16} className="text-pv-primary-primary-500" />
-                  <p className="text-[13px] font-semibold text-[var(--text-primary)]">Comments</p>
-                  {goal.notes.length > 0 && <span className="text-[11px] text-[var(--text-muted)]">{goal.notes.length}</span>}
+      {/* Comment panel — same right-side drawer chrome as Sage, for consistency */}
+      <ChatOverlay isOpen={showComment} onClose={() => setShowComment(false)} floating heading="Comments" headerIcon={ChatCircle}>
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
+            {goal.notes.length === 0 ? (
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal — it stays attached to its monitors and carries into future check-ins.</p>
+            ) : (
+              goal.notes.map((n) => (
+                <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
+                  <p className="text-[13px] text-[var(--text-primary)] leading-snug">{n.text}</p>
+                  <span className="text-[11px] text-[var(--text-muted)]">{n.at}</span>
                 </div>
-                <button onClick={() => setShowComment(false)} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close comments"><X size={16} /></button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
-                {goal.notes.length === 0 ? (
-                  <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal — it stays attached to its monitors and carries into future check-ins.</p>
-                ) : (
-                  goal.notes.map((n) => (
-                    <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
-                      <p className="text-[12px] text-[var(--text-primary)] leading-snug">{n.text}</p>
-                      <span className="text-[10px] text-[var(--text-muted)]">{n.at}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="shrink-0 p-3 border-t border-[var(--border-primary)] flex items-end gap-2">
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && note.trim()) addNote.mutate(); }}
-                  rows={2}
-                  autoFocus
-                  placeholder="Add a comment — e.g. “Never pause Brand Search”"
-                  className="flex-1 text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
-                />
-                <PvButton variant="primary" size="md" label="Add" disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} />
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              ))
+            )}
+          </div>
+          <div className="shrink-0 p-3 flex items-end gap-2">
+            <textarea
+              ref={commentRef}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (note.trim()) addNote.mutate(); } }}
+              rows={1}
+              autoFocus
+              placeholder="Add a comment — e.g. “Never pause Brand Search”"
+              style={{ minHeight: "36px", maxHeight: `${MAX_COMMENT_H}px` }}
+              className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+            />
+            <PvButton variant="primary" size="md" icon={PaperPlaneRight} disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} aria-label="Send" className="shrink-0" />
+          </div>
+        </div>
+      </ChatOverlay>
     </>
   );
 }

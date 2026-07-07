@@ -424,8 +424,8 @@
 /* ── Floating variant: detached card inset 16px, emerging from the
       bottom-right launcher button with a springy scale. ── */
 .chat-overlay--floating {
-  /* Sage now launches from the header (no floating FAB below), so the panel
-     can use a symmetric 16px inset and run nearly full-height. */
+  /* Floaty rounded card with a symmetric 16px inset — floats over the whole
+     viewport (app header included). Shared chrome for Sage and Comments. */
   padding: 16px;
 }
 

@@ -27,6 +27,8 @@ export default function ChatOverlay({
   title = "Chat",
   connectionStatus,
   floating = false,
+  heading = "Sage",
+  headerIcon: HeaderIcon = Sparkle,
   children,
 }) {
   const [rightPercent, setRightPercent] = useState(getInitialPercent);
@@ -117,8 +119,8 @@ export default function ChatOverlay({
           <div className="chat-overlay__panel">
             <div className="chat-overlay__header">
               <div className="flex items-center gap-2 w-full overflow-hidden">
-                <Sparkle weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
-                <span className="font-medium text-[var(--pv-text-primary-text)]">Sage</span>
+                <HeaderIcon weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
+                <span className="font-medium text-[var(--pv-text-primary-text)]">{heading}</span>
                 {!floating && (
                   <>
                     <span className="text-[var(--pv-neutral-grey-600)]">|</span>
