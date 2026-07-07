@@ -88,14 +88,14 @@ const INSIGHT_COLOR = {
 function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: FootIcon, onClick }) {
   const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
   return (
-    <div className="flex flex-col bg-white border border-pv-neutral-grey-150/50 rounded-lg px-4 py-3.5 dropshadow-card">
+    <div className="flex flex-col h-full bg-white border border-pv-neutral-grey-150/50 rounded-lg px-4 py-3.5 dropshadow-card">
       <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={20} className={c.txt} />}
         <span className="text-[24px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
       </div>
-      <p className="text-[14px] text-[var(--text-secondary)] leading-snug">{desc}</p>
-      <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-[var(--pv-neutral-grey-100)]">
+      <p className="text-[14px] text-[var(--text-secondary)] leading-snug mb-3">{desc}</p>
+      <div className="flex items-center gap-1.5 mt-auto pt-2.5 border-t border-[var(--pv-neutral-grey-100)]">
         {FootIcon && <FootIcon size={13} className="text-[var(--text-muted)] shrink-0" />}
         <span className="text-[12px] text-[var(--text-muted)] truncate">{foot}</span>
       </div>
