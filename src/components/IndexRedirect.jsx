@@ -7,9 +7,9 @@ import { MOCK_ENABLED } from "../mocks";
 const ExplorePage = lazy(() => import("../pages/ExplorePage"));
 
 export default function IndexRedirect() {
-  // Frontend-only mode: land on the skill-library Home.
+  // Frontend-only mode: land on the Create-New page.
   if (MOCK_ENABLED) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/new" replace />;
   }
 
   const homeEnabled = useFeatureFlagEnabled("ccpoc-home");
@@ -19,7 +19,7 @@ export default function IndexRedirect() {
   }
 
   if (homeEnabled === true) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/new" replace />;
   }
 
   return (

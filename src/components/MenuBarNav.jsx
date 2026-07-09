@@ -8,25 +8,24 @@ import { MOCK_ENABLED } from "../mocks";
 // buttons never shift position between pages. Sage + live Dashboard open the
 // live app; the rest open the Petavue design-system pages.
 export const NAV_ITEMS = [
-  { id: "home", label: "Home", icon: "home" },
+  { id: "skills", label: "Skills", icon: "skills" },
   { id: "chats", label: "Workbook", icon: "chats" },
   { id: "workflows", label: "Workflows", icon: "workflows" },
   { id: "goals", label: "Goals", icon: "goals" },
   { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
   { id: "reports", label: "Reports", icon: "reports" },
   { id: "data-hub", label: "Data Hub", icon: "data-hub" },
-  { id: "skills", label: "Skills", icon: "skills" },
   { id: "project", label: "Projects", icon: "project" },
 ];
 
 export const NAV_ROUTES = {
-  home: "/home",
+  new: "/new",
   chats: "/petavue/workbooks",
   "dashboard-live": "/dashboards",
   "dashboards-pv": "/petavue/dashboards",
   reports: "/petavue/reports",
   "data-hub": "/petavue/data-hub",
-  skills: "/petavue/skills",
+  skills: "/skills",
   goals: "/goals",
   project: "/petavue/projects",
   workflows: "/workflows",
@@ -55,15 +54,18 @@ export default function MenuBarNav() {
   };
 
   // Highlight the section matching the current path. Chat routes (Sage
-  // sessions) are reached from Home, so keep Home active while in a chat.
+  // Chat sessions and the Create-New page are reached from the "Create New"
+  // button, so no nav item is highlighted there.
   const { pathname } = location;
   const isChatRoute = pathname.startsWith("/sage") || pathname.startsWith("/session");
+  // Prefer the longest matching route so nested paths (e.g. /skills/:id)
+  // highlight the deeper item (Skills). The bare /new page matches nothing → no
+  // highlight, which is what we want for the Create-New page.
   const activeId = isChatRoute
-    ? "home"
-    : NAV_ITEMS.find((item) => {
-        const route = NAV_ROUTES[item.id];
-        return route && pathname.startsWith(route);
-      })?.id || null;
+    ? null
+    : NAV_ITEMS
+        .filter((item) => { const r = NAV_ROUTES[item.id]; return r && pathname.startsWith(r); })
+        .sort((a, b) => NAV_ROUTES[b.id].length - NAV_ROUTES[a.id].length)[0]?.id || null;
 
   // Only the first (real) chat opens the live session; the rest are display-only.
   const historyGroups = MOCK_ENABLED
@@ -109,7 +111,7 @@ export default function MenuBarNav() {
         onHistoryItemClick={handleHistoryClick}
         historyGroups={historyGroups}
         user={user}
-        onNewChat={() => navigate("/home")}
+        onNewChat={() => navigate("/new")}
         onProfile={() => navigate("/petavue/profile")}
         onSettings={() => navigate("/petavue/settings")}
         defaultOpen={false}

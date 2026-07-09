@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { ArrowLeft, ArrowRight, LayoutDashboard, FileText, Plug, CheckCircle2, Loader2, Search, X } from "lucide-react";
+import { ChevronRight, ChevronDown, Check, LayoutDashboard, FileText, Plug, CheckCircle2, Search, X, Info } from "lucide-react";
 import { Play, CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../../petavue";
@@ -30,10 +30,13 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }
 });
 
+// One consistent label treatment — 12px uppercase, AA-contrast secondary color.
+const LABEL = "text-[12px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]";
+
 function Section({ title, lead, children, delay }) {
   return (
     <motion.section {...fadeUp(delay)} className="flex flex-col gap-3 pt-6 mt-6 border-t border-neutral-200">
-      <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">{title}</h2>
+      <h2 className={LABEL}>{title}</h2>
       {lead && <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">{lead}</p>}
       {children}
     </motion.section>
@@ -46,6 +49,9 @@ export default function SkillDetailPage() {
   const { session } = useSessionContext();
   const [running, setRunning] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [switcherQuery, setSwitcherQuery] = useState("");
+  const switcherRef = useRef(null);
 
   // Close the full-screen preview on Escape.
   useEffect(() => {
@@ -55,13 +61,23 @@ export default function SkillDetailPage() {
     return () => document.removeEventListener("keydown", onKey);
   }, [previewOpen]);
 
+  // Close the skill switcher on outside-click / Escape.
+  useEffect(() => {
+    if (!switcherOpen) return undefined;
+    const onDown = (e) => { if (switcherRef.current && !switcherRef.current.contains(e.target)) setSwitcherOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setSwitcherOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [switcherOpen]);
+
   const skill = SKILLS_CATALOG.find((s) => s.slug === id);
 
   if (!skill) {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full gap-4 bg-pv-neutral-grey-50">
         <p className="text-[15px] text-[var(--text-secondary)]">Skill not found.</p>
-        <PvButton variant="primary" size="md" label="Back to Home" onClick={() => navigate("/home")} />
+        <PvButton variant="primary" size="md" label="Back to skills" onClick={() => navigate("/skills")} />
       </div>
     );
   }
@@ -69,6 +85,12 @@ export default function SkillDetailPage() {
   const isMemo = skill.output_type === "memo" || skill.type === "memo";
   const OutputIcon = isMemo ? FileText : LayoutDashboard;
   const outputImg = SKILL_OUTPUT_BY_SLUG[skill.slug] || null;
+
+  // Skills the switcher offers, filtered by its search box.
+  const switcherList = SKILLS_CATALOG.filter((s) => {
+    const q = switcherQuery.trim().toLowerCase();
+    return !q || s.name.toLowerCase().includes(q);
+  });
 
   const runSkill = async () => {
     if (running) return;
@@ -86,43 +108,123 @@ export default function SkillDetailPage() {
   };
 
   return (
-    <div className="flex h-full w-full overflow-x-auto scrollbar-hide">
-      <div className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-pv-neutral-grey-50">
-        <div className="flex flex-col w-full max-w-[1180px] mx-auto px-8 py-8">
-          {/* Back */}
-          <motion.button
-            {...fadeUp(0)}
-            onClick={() => navigate("/home")}
-            className="flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer transition-colors self-start mb-5 p-0"
-          >
-            <ArrowLeft size={14} /> All skills
-          </motion.button>
+    <div className="flex flex-col w-full h-full overflow-x-auto scrollbar-hide">
+      <div className="flex flex-col w-full h-full min-w-[900px]">
 
-          {/* Hero — full width */}
-          <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2.5 mb-8">
-            <h1 className="text-[28px] font-semibold text-[var(--text-primary)]">{skill.name}</h1>
-            <p className="text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-[760px]">{skill.description}</p>
-          </motion.div>
+        {/* Standard app header — 60px, consistent with Dashboards / Goals */}
+        <div className="flex w-full px-6 items-center justify-between gap-4 h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+              <div className="flex items-center gap-2 min-w-0">
+                <button
+                  onClick={() => navigate("/skills")}
+                  className="shrink-0 text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
+                >
+                  Skills
+                </button>
+                <ChevronRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
 
-          {/* Docs layout: main content (left) + details sidebar (right) */}
-          <div className="flex gap-10 items-start">
+                {/* Current skill — click to switch to another analysis */}
+                <div className="relative min-w-0" ref={switcherRef}>
+                  <button
+                    onClick={() => setSwitcherOpen((o) => !o)}
+                    aria-haspopup="listbox"
+                    aria-expanded={switcherOpen}
+                    className="flex items-center gap-1.5 min-w-0 max-w-[440px] bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    <span className="block truncate text-[16px] leading-[24px] font-medium text-pv-neutral-grey-900">{skill.name}</span>
+                    <ChevronDown size={16} className={cn("shrink-0 text-[var(--text-muted)] transition-transform duration-200", switcherOpen && "rotate-180")} />
+                  </button>
+
+                  {switcherOpen && (
+                    <div
+                      role="listbox"
+                      className="absolute top-full left-0 mt-1 bg-white flex flex-col rounded-lg border border-pv-neutral-grey-200 z-50 min-w-[300px] max-w-[350px] overflow-hidden"
+                    >
+                      <div className="flex items-center gap-2 h-10 px-3 border-b border-pv-neutral-grey-100 shrink-0">
+                        <Search size={15} className="text-[var(--text-muted)] shrink-0" />
+                        <input
+                          autoFocus
+                          value={switcherQuery}
+                          onChange={(e) => setSwitcherQuery(e.target.value)}
+                          placeholder="Switch analysis…"
+                          className="flex-1 min-w-0 text-[13px] bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
+                        />
+                      </div>
+                      <div className="max-h-[320px] overflow-y-auto py-1">
+                        {switcherList.length === 0 ? (
+                          <p className="px-3 py-4 text-[13px] text-[var(--text-muted)] text-center">No analyses match.</p>
+                        ) : (
+                          switcherList.map((s) => {
+                            const active = s.slug === skill.slug;
+                            return (
+                              <button
+                                key={s.slug}
+                                role="option"
+                                aria-selected={active}
+                                onClick={() => { setSwitcherOpen(false); setSwitcherQuery(""); if (!active) navigate(`/skills/${s.slug}`); }}
+                                className={cn(
+                                  "flex items-center gap-2 w-full px-3 py-2 text-left bg-transparent border-none cursor-pointer transition-colors hover:bg-pv-primary-primary-50",
+                                  active && "bg-pv-primary-primary-50/60"
+                                )}
+                              >
+                                <span className={cn("flex-1 min-w-0 truncate text-[13px]", active ? "text-pv-primary-primary-700 font-medium" : "text-[var(--text-primary)]")}>{s.name}</span>
+                                {active && <Check size={14} className="text-pv-primary-primary-600 shrink-0" />}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <PvButton
+                variant="primary"
+                size="md"
+                label={running ? "Activating…" : "Activate this skill"}
+                icon={running ? SpinnerIcon : Play}
+                iconWeight="fill"
+                disabled={running}
+                onClick={runSkill}
+                className="shrink-0"
+              />
+            </div>
+
+        {/* Grey-framed scroll area with white content card */}
+        <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
+          <div className="flex flex-col min-h-full w-full bg-white border border-pv-neutral-grey-150/50 rounded-xl p-4">
+
+              {/* Description */}
+              <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2 mb-8">
+                <span className={LABEL}>Description</span>
+                <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">{skill.description}</p>
+              </motion.div>
+
+              {/* Docs layout: main content (left) + details sidebar (right) */}
+              <div className="flex gap-10 items-start">
             {/* LEFT — content + output space */}
             <main className="flex-1 min-w-0 flex flex-col">
-              {/* Output preview — shown only when a screenshot exists for this skill */}
+              {/* Output preview — a Petavue-built SAMPLE, not the user's live data */}
               {outputImg && (
-                <motion.button
-                  {...fadeUp(0.06)}
-                  type="button"
-                  onClick={() => setPreviewOpen(true)}
-                  className="group relative block w-full h-[460px] overflow-hidden rounded-xl border border-[var(--border-primary)] bg-white cursor-zoom-in p-0"
-                >
-                  <img src={outputImg} alt={`${skill.name} output`} className="w-full block align-top" />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/95 text-[13px] font-medium text-[var(--text-primary)] shadow-lg">
-                      <Search size={14} /> Click to preview
+                <motion.div {...fadeUp(0.06)} className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewOpen(true)}
+                    className="group relative block w-full h-[460px] overflow-hidden rounded-xl border border-[var(--border-primary)] bg-white cursor-zoom-in p-0"
+                  >
+                    <img src={outputImg} alt={`${skill.name} sample output`} className="w-full block align-top" />
+                    <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pv-neutral-grey-900/80 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                      <Info size={12} /> Sample output
                     </span>
-                  </div>
-                </motion.button>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors">
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/95 text-[13px] font-medium text-[var(--text-primary)] shadow-lg">
+                        <Search size={14} /> Click to preview
+                      </span>
+                    </div>
+                  </button>
+                  <p className="text-[12px] leading-snug text-[var(--text-muted)]">
+                    A sample built by Petavue to show what you'll get — not your live data. Activate the skill to build a prototype on your own data.
+                  </p>
+                </motion.div>
               )}
 
               {/* Overview */}
@@ -178,19 +280,17 @@ export default function SkillDetailPage() {
                 </Section>
               )}
 
-              {/* Example prompts */}
+              {/* Example prompts — illustrative, not interactive */}
               {skill.prompts?.length > 0 && (
-                <Section title="Example prompts" lead="Ask Sage any of these in natural language." delay={0.18}>
+                <Section title="Example prompts" lead="Once it's running, you can ask Sage in natural language — for example:" delay={0.18}>
                   <div className="flex flex-col gap-2">
                     {skill.prompts.map((p, i) => (
-                      <button
+                      <div
                         key={i}
-                        onClick={runSkill}
-                        className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-[var(--border-primary)] rounded-lg text-left hover:border-pv-primary-primary-300 cursor-pointer transition-colors group"
+                        className="border-l-2 border-pv-primary-primary-200 bg-pv-neutral-grey-50 rounded-r-md px-3.5 py-2.5"
                       >
-                        <span className="text-[13px] text-[var(--text-primary)]">{p}</span>
-                        <ArrowRight size={14} className="text-[var(--text-muted)] group-hover:text-pv-primary-primary-500 shrink-0" />
-                      </button>
+                        <span className="text-[13px] text-[var(--text-secondary)]">{p}</span>
+                      </div>
                     ))}
                   </div>
                 </Section>
@@ -199,10 +299,31 @@ export default function SkillDetailPage() {
               <div className="h-10" />
             </main>
 
-            {/* RIGHT — sticky details panel */}
-            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Output type</span>
+            {/* RIGHT — sticky details panel, grounded as a card under the Run CTA */}
+            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-5 p-5 bg-pv-neutral-grey-50 border border-pv-neutral-grey-150/70 rounded-xl">
+                {/* What happens when you activate — prototype first, final after chat */}
+                <div className="flex flex-col gap-2.5">
+                  <span className={LABEL}>When you activate</span>
+                  <ol className="flex flex-col gap-2">
+                    {[
+                      "Confirm a few quick inputs",
+                      `We build a prototype ${isMemo ? "memo" : "dashboard"} on your data`,
+                      "Verify it in chat, then publish the final version",
+                    ].map((t, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-[13px] leading-snug text-[var(--text-secondary)]">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white border border-[var(--border-primary)] text-[11px] font-semibold text-pv-primary-primary-600 shrink-0">{i + 1}</span>
+                        <span className="mt-0.5">{t}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="flex items-start gap-1.5 text-[12px] leading-snug text-[var(--text-muted)]">
+                    <Info size={13} className="shrink-0 mt-px text-pv-primary-primary-500" />
+                    <span>The first {isMemo ? "memo" : "dashboard"} is a <span className="font-medium text-[var(--text-secondary)]">prototype</span> — the numbers aren't final until you verify &amp; publish it in chat.</span>
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
+                  <span className={LABEL}>Output type</span>
                   <span
                     className={cn(
                       "inline-flex items-center gap-1.5 self-start px-2 py-0.5 text-[12px] font-medium rounded border",
@@ -216,14 +337,14 @@ export default function SkillDetailPage() {
 
                 {skill.time && (
                   <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Build time</span>
+                    <span className={LABEL}>Build time</span>
                     <span className="text-[14px] font-medium text-[var(--text-primary)]">{skill.time}</span>
                   </div>
                 )}
 
                 {skill.integrations?.length > 0 && (
                   <div className="flex flex-col gap-2.5 pt-4 border-t border-[var(--border-primary)]">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    <span className={LABEL}>
                       Integrations ({skill.integrations.length})
                     </span>
                     <div className="flex flex-col gap-2.5">
@@ -243,28 +364,20 @@ export default function SkillDetailPage() {
                     </div>
                   </div>
                 )}
-            </motion.aside>
-          </div>
-        </div>
 
-        {/* Footer — full-width sticky bar */}
-        <div className="sticky bottom-0 z-10 w-full bg-white border-t border-pv-neutral-grey-200 px-8 py-4 shadow-[0_-8px_24px_-10px_rgba(16,24,40,0.18)]">
-          <div className="w-full max-w-[1180px] mx-auto flex items-center justify-between gap-4">
-            <p className="text-[14px] text-pv-neutral-grey-600">
-              {skill.inputs?.length || "A few"} quick inputs, then Sage builds your {skill.name.toLowerCase()} in {skill.time || "minutes"}.
-            </p>
-            <PvButton
-              variant="primary"
-              size="lg"
-              label={running ? "Starting…" : "Run this skill"}
-              icon={running ? SpinnerIcon : Play}
-              iconWeight="fill"
-              disabled={running}
-              onClick={runSkill}
-            />
+                {/* Honest note: pre-loaded skill, no self-serve edit */}
+                <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
+                  <span className={cn("inline-flex items-center gap-1.5", LABEL)}><Info size={12} /> Pre-loaded analysis</span>
+                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                    Creating and editing your own skills is coming soon. For now, activate a pre-built one and shape the result in chat — need a custom analysis today?{" "}
+                    <a href="mailto:support@petavue.com" className="font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline">Contact Petavue support</a>.
+                  </p>
+                </div>
+            </motion.aside>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Full-screen output preview */}
       {previewOpen && outputImg && (

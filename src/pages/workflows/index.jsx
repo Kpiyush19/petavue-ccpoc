@@ -154,13 +154,13 @@ export default function WorkflowsPage() {
   return (
     <div className="flex flex-col w-full h-full overflow-x-auto">
       <div className="flex flex-col w-full h-full min-w-[800px]">
-        <div className="flex w-full px-6 items-center justify-between h-[64px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
           <span className="text-[16px] leading-[24px] font-medium">Workflows</span>
         </div>
 
         <div
           className="w-full p-4 flex overflow-x-auto bg-[var(--pv-neutral-grey-50)]"
-          style={{ height: 'calc(100% - 64px)' }}
+          style={{ height: 'calc(100% - 60px)' }}
         >
           <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden min-w-[800px]">
             <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)]">

@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import { toast } from 'sonner';
-import { installMockAdapter } from '../mocks';
+import { installMockAdapter, MOCK_ENABLED } from '../mocks';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -24,7 +24,7 @@ apiAxios.interceptors.response.use(
     if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
       return Promise.reject(error);
     }
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !MOCK_ENABLED) {
       localStorage.clear();
       window.location.href = '/login';
       return Promise.reject(error);

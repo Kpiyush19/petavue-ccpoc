@@ -3,8 +3,9 @@
 // (/petavue/<page>) so each screen is linkable. Self-contained — each Petavue
 // page renders its own MenuBar, so this mounts OUTSIDE the app's layout.
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { WorkbookHome } from "./petavue/pages/workbook_home";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
+// WorkbookHome (the petavue home screen) is archived — the Create-New page (/new)
+// is the single home now. Kept in the tree but no longer rendered/routed.
 import { WorkbookList } from "./petavue/pages/workbook_list";
 import { WorkbookChat } from "./petavue/pages/workbook_chat";
 import { DashboardList } from "./petavue/pages/dashboard_list";
@@ -46,14 +47,16 @@ export default function PetavueRoutes() {
   const go = (segment) => navigate(`${PREFIX}/${segment}`);
   const handleNavigate = (id) => {
     // App-level entries jump out of the Petavue section.
-    if (id === "home") return navigate("/home");
+    if (id === "home") return navigate("/new");
+    if (id === "skills") return navigate("/skills");
     if (id === "dashboard-live") return navigate("/dashboards");
     if (id === "workflows") return navigate("/workflows");
     if (id === "goals") return navigate("/goals");
-    go(NAV_TO_SEGMENT[id] || "home");
+    go(NAV_TO_SEGMENT[id] || "skills");
   };
 
-  const menuProps = { user, onNavigate: handleNavigate, menuOpen, onMenuToggle: setMenuOpen };
+  // Create New always jumps to the main-app Create-New page (/new).
+  const menuProps = { user, onNavigate: handleNavigate, onNewChat: () => navigate("/new"), menuOpen, onMenuToggle: setMenuOpen };
 
   const renderPage = () => {
     switch (page) {
@@ -85,14 +88,16 @@ export default function PetavueRoutes() {
       case "reports":
         return <ReportList {...menuProps} />;
       case "skills":
-        return <SkillsPage {...menuProps} />;
+        // The petavue skills page is retired — use the top-level /skills catalog.
+        return <Navigate to="/skills" replace />;
       case "settings":
         return <SettingsPage {...menuProps} />;
       case "profile":
         return <ProfilePage {...menuProps} />;
       case "home":
       default:
-        return <WorkbookHome {...menuProps} page={page} onSubmit={(q) => { setChatQuery(q); go("chat"); }} />;
+        // Petavue home is archived — bounce to the main Create-New page.
+        return <Navigate to="/new" replace />;
     }
   };
 

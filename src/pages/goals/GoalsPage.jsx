@@ -119,7 +119,7 @@ function Section({ title, icon: Icon, iconClass, count, badge, open, onToggle, h
       <div className="flex items-center justify-between px-5 py-4 cursor-pointer select-none hover:bg-pv-neutral-grey-50/60 transition-colors" onClick={onToggle}>
         <div className="flex items-center gap-2.5">
           {Icon && <Icon size={18} weight="fill" className={cn("shrink-0", iconClass || "text-[var(--text-muted)]")} />}
-          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
+          <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
           {typeof count === "number" && (
             <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", badge || "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{count}</span>
           )}
@@ -560,7 +560,7 @@ export default function GoalsPage() {
                   return (
                     <div className="mb-8">
                       <div className="flex items-center gap-2 mb-3">
-                        <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Where to act first</h2>
+                        <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">Where to act first</h2>
                         <Tooltip title="The goals bleeding spend or leaving demos on the table — worked top-down, so your next move protects the number." arrow placement="top">
                           <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><Info size={15} /></span>
                         </Tooltip>
@@ -587,7 +587,7 @@ export default function GoalsPage() {
                     <>
                       <div id="your-goals" className="flex items-center gap-3 mb-3 scroll-mt-4 flex-wrap">
                         <div className="flex items-center gap-2.5">
-                          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
+                          <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
                           <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
                         </div>
                         {goals.length > 0 && (

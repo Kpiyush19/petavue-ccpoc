@@ -71,6 +71,7 @@ const RunHistoryPage = lazy(() => import("./pages/goals/RunHistoryPage"));
 const GoalDetailPage = lazy(() => import("./pages/goals/GoalDetailPage"));
 const HomePage = lazy(() => import("./pages/home/TempHome/HomePage"));
 const SkillDetailPage = lazy(() => import("./pages/home/TempHome/SkillDetailPage"));
+const SkillsLibraryPage = lazy(() => import("./pages/home/TempHome/SkillsLibraryPage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const SessionsPage = lazy(() => import("./pages/SessionsPage"));
 const WorkspacePage = lazy(() => import("./pages/WorkspacePage"));
@@ -120,8 +121,9 @@ export const router = createBrowserRouter([
     errorElement: <BubbleError />
   },
   {
+    // Frontend-only mode has no auth — /login just bounces into the app.
     path: "/login",
-    element: <LoginPage />,
+    element: MOCK_ENABLED ? <Navigate to="/" replace /> : <LoginPage />,
     errorElement: <BubbleError />
   },
   {
@@ -317,11 +319,14 @@ export const router = createBrowserRouter([
               }
             ]
           },
-          // Frontend-only mode: /home is the skill-library home (greeting +
-          // search + skills), no flag gate. Otherwise it's gated by HomeGuard.
+          // Legacy /home links now land on the Create-New page (/new).
+          { path: "home", element: <Navigate to="/new" replace /> },
+          { path: "home/skills", element: <Navigate to="/skills" replace /> },
+          // Frontend-only mode: /new is the Create-New home (greeting + composer
+          // + skills), no flag gate. Otherwise it's gated by HomeGuard.
           MOCK_ENABLED
             ? {
-                path: "home",
+                path: "new",
                 element: (
                   <SuspenseWrapper>
                     <HomeLayout />
@@ -336,17 +341,11 @@ export const router = createBrowserRouter([
                       </SuspenseWrapper>
                     )
                   },
-                  { path: "workstreams", element: <Navigate to="/home" replace /> },
-                  { path: "workstreams/:workstreamId", element: <Navigate to="/home" replace /> },
-                  { path: "skill", element: <Navigate to="/home" replace /> },
-                  {
-                    path: "skill/:id",
-                    element: (
-                      <SuspenseWrapper>
-                        <SkillDetailPage />
-                      </SuspenseWrapper>
-                    )
-                  }
+                  { path: "workstreams", element: <Navigate to="/new" replace /> },
+                  { path: "workstreams/:workstreamId", element: <Navigate to="/new" replace /> },
+                  { path: "skill", element: <Navigate to="/new" replace /> },
+                  // Legacy — the skills catalog + detail now live at top-level /skills.
+                  { path: "skills", element: <Navigate to="/skills" replace /> }
                 ]
               }
             : {
@@ -368,9 +367,9 @@ export const router = createBrowserRouter([
                           </SuspenseWrapper>
                         )
                       },
-                      { path: "workstreams", element: <Navigate to="/home" replace /> },
-                      { path: "workstreams/:workstreamId", element: <Navigate to="/home" replace /> },
-                      { path: "skill", element: <Navigate to="/home" replace /> },
+                      { path: "workstreams", element: <Navigate to="/new" replace /> },
+                      { path: "workstreams/:workstreamId", element: <Navigate to="/new" replace /> },
+                      { path: "skill", element: <Navigate to="/new" replace /> },
                       {
                         path: "skill/:id",
                         element: (
@@ -448,9 +447,27 @@ export const router = createBrowserRouter([
                 path: "skills",
                 element: (
                   <SuspenseWrapper>
-                    <SkillsPage />
+                    <HomeLayout />
                   </SuspenseWrapper>
-                )
+                ),
+                children: [
+                  {
+                    index: true,
+                    element: (
+                      <SuspenseWrapper>
+                        <SkillsLibraryPage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  {
+                    path: ":id",
+                    element: (
+                      <SuspenseWrapper>
+                        <SkillDetailPage />
+                      </SuspenseWrapper>
+                    )
+                  }
+                ]
               },
               {
                 path: "skills-v2",

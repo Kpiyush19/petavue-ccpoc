@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { getAuthToken, clearAuthToken, fetchAndStoreCurrentUser } from "../../api";
 import PetavueSplash from "../../components/PetavueSplash";
+import { MOCK_ENABLED } from "../../mocks";
 
 export default function AuthGuard() {
   const location = useLocation();
-  const [authState, setAuthState] = useState(() => (getAuthToken() ? "checking" : "unauthenticated"));
+  // Frontend-only mode has no real auth — always render the app, never redirect to login.
+  const [authState, setAuthState] = useState(() =>
+    MOCK_ENABLED ? "authenticated" : getAuthToken() ? "checking" : "unauthenticated"
+  );
 
   useEffect(() => {
+    if (MOCK_ENABLED) return;
     if (!getAuthToken()) {
       setAuthState("unauthenticated");
       return;
