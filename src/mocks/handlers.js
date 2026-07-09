@@ -10,7 +10,7 @@ import {
 import { DASHBOARD_MANIFEST } from "./dashboardAssets";
 import { makeFakeJwt } from "./jwt";
 import { emit } from "./pusherBus";
-import { startRun, executeRun, discardRun, getProgress, getPlanSummary } from "./skillRun";
+import { startRun, executeRun, discardRun, getProgress, getPlanSummary, listActiveRuns, submitClarification } from "./skillRun";
 import * as Goals from "./goals";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
@@ -279,7 +279,7 @@ const handlers = [
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/execute$/, handler: ({ params }) => { executeRun(params[0]); return { ok: true }; } },
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/discard$/, handler: ({ params }) => { discardRun(params[0]); return { ok: true }; } },
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/handoff$/, handler: () => ({ ok: true }) },
-  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/clarify$/, handler: () => ({ ok: true }) },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/clarify$/, handler: ({ params, body }) => { submitClarification(params[0], body?.answers); return { ok: true }; } },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/history$/, handler: ({ params }) => ({ messages: db.history[params[0]] || [] }) },
   // Grounded follow-up chips for the latest turn (shown under the last message).
   // Slight delay so the "Related" loading skeleton renders before they resolve.
@@ -556,7 +556,7 @@ const handlers = [
   // ── Skills ─────────────────────────────────────────────────────────
   { method: "GET", pattern: /\/api\/skills$/, handler: () => ({ skills: db.skills }) },
   { method: "GET", pattern: /\/api\/skills\/([^/]+)$/, handler: ({ params }) => db.skills.find((s) => s.id === params[0]) || db.skills[0] },
-  { method: "GET", pattern: /\/api\/skill-runs\/active$/, handler: () => ({ sessions: [] }) },
+  { method: "GET", pattern: /\/api\/skill-runs\/active$/, handler: () => ({ active_runs: listActiveRuns() }) },
 
   // ── Schedules ──────────────────────────────────────────────────────
   { method: "GET", pattern: /\/api\/schedules$/, handler: () => ({ schedules: db.schedules }) },

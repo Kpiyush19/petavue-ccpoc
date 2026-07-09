@@ -1363,7 +1363,7 @@ export const SKILLS_CATALOG = [
   {
     "slug": "closed-won-journey-retrospective",
     "name": "Closed-Won Journey Retrospective",
-    "description": "See what a winning deal actually looks like — the touches, the sequence, the timing, and the content that closes revenue in your business.",
+    "description": "See the exact path your winning deals travel — the moves, timing, and content that actually close revenue — so your team can repeat what works on every deal.",
     "type": "memo",
     "time": "~14 min",
     "workstream": "funnel",
@@ -1376,10 +1376,10 @@ export const SKILLS_CATALOG = [
     "overview": "This Skill builds a memo grounded in your connected GTM data, with 5 sections that answer the questions below. Build time on typical data: ~14 min.",
     "whatYoullGet": "Sage assembles a memo in roughly ~14 min covering 5 distinct sections. Every value is source-linked back to 4 integrations and computed using your team's canonical definitions.",
     "questions": [
-      "What does the median winning journey look like, end to end?",
-      "Which touches and content assets reliably appear in won deals?",
-      "How does winning sequence differ by segment?",
-      "What's the typical time-to-close and where does it stretch?"
+      "What does a typical winning deal look like, start to finish?",
+      "Which emails, calls, and content show up again and again in deals we win?",
+      "How does the winning path change for big deals vs. small, or by region?",
+      "How long does a winning deal usually take — and where does it stall?"
     ],
     "beforeWeRun": "Sage proposes a complete plan and asks you to confirm 3 inputs before any query executes. Defaults are applied if you accept the plan as-is — you can override any of them or set the override as your new canonical.",
     "howItWorksLead": "A 4-step flow from your connected data to a verified, source-linked output.",
@@ -1406,16 +1406,15 @@ export const SKILLS_CATALOG = [
       }
     ],
     "inputs": [
-      "Cohort — closed-won in the last 90 days, last 4 quarters, or custom?",
-      "Segment — by deal size, region, or persona?",
-      "Touches to include — marketing only, or marketing + sales sequencing?"
+      "Which deals to look at — won in the last 90 days, last 4 quarters, or a range you pick?",
+      "How to group them — by deal size, region, or buyer type?",
+      "Which activity to include — marketing only, or marketing + sales outreach?"
     ],
     "prompts": [
-      "Run Closed-Won Journey Retrospective for the last quarter.",
-      "What does the median winning journey look like, end to end?",
-      "Which touches and content assets reliably appear in won deals?",
-      "How does winning sequence differ by segment?",
-      "What's the typical time-to-close and where does it stretch?"
+      "Show me what a typical winning deal looks like, start to finish.",
+      "Which emails, calls, and content show up most in the deals we win?",
+      "How does the winning path differ for enterprise vs. mid-market?",
+      "How long do winning deals take, and where do they slow down?"
     ],
     "integrations": [
       {

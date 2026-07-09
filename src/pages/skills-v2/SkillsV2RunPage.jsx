@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
-  FlaskConical, Loader2, AlertCircle,
+  Loader2, AlertCircle, Info,
   X,
 } from 'lucide-react'
 import { useSkillRun } from './useSkillRun'
@@ -23,6 +23,17 @@ import { apiPost } from '../../api'
 const CANCELLABLE_PHASES = new Set([
   'PLANNING', 'AWAITING_CONFIRMATION', 'EXECUTING', 'VERIFYING', 'FIXING',
 ])
+
+
+// Long, hands-off phases where the run is actively working and the user
+// may be tempted to wait or cancel. Here we reassure them the run is
+// resumable and that it hands off to an editable chat on completion.
+const RUNNING_PHASES = new Set(['EXECUTING', 'VERIFYING', 'FIXING'])
+
+// Phases where numbers exist on screen — building through done. This is the
+// moment "the numbers look off" happens, so we mark the output a prototype
+// (verify & publish in chat to finalize) exactly where it counts.
+const PROTOTYPE_PHASES = new Set(['EXECUTING', 'VERIFYING', 'FIXING', 'COMPLETE', 'OPEN_CHAT'])
 
 
 // Build the artifact descriptor consumed by WorkspacePage on handoff —
@@ -413,8 +424,7 @@ export default function SkillsV2RunPage() {
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-6 py-3 border-b border-[var(--border-primary)] shrink-0">
-        <div className="flex items-center gap-3">
-          <FlaskConical size={18} className="text-[var(--accent)]" />
+        <div className="flex items-center gap-2 min-w-0">
           <div className="flex-1 min-w-0">
             <h1 className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
               {resolveRunTitle({ planSummary, session })}
@@ -438,6 +448,18 @@ export default function SkillsV2RunPage() {
               </p>
             )}
           </div>
+          {PROTOTYPE_PHASES.has(state.phase) ? (
+            // Prototype marker — sits with the output, not on the marketing
+            // page. Tells the user this is a draft on their data and the
+            // trusted version comes from verify & publish in chat.
+            <span
+              title="This is a prototype built on your data. Verify & publish it in chat to finalize — that's the version you can trust and share."
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/25 shrink-0"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+              Prototype · verify to finalize
+            </span>
+          ) : null}
           {state.phase === 'BLOCKED' ? (
             // Header stays empty on BLOCKED. The progress bar already
             // shows the blocked state (red exclamation on the failing
@@ -480,6 +502,22 @@ export default function SkillsV2RunPage() {
         onCancel={cancelPlan}
         clarificationCount={state.clarifications.length}
       />
+
+      {/* Resumability + hand-off reassurance — shown only during the long,
+          hands-off build phases. Tells the user leaving is safe (the run
+          keeps going and is resumable) and that completion hands off to an
+          editable chat, so neither the wait nor the transition surprises
+          them. */}
+      {RUNNING_PHASES.has(state.phase) && (
+        <div className="px-6 py-2 shrink-0 border-b border-[var(--border-primary)] bg-[var(--bg-tertiary)]">
+          <p className="flex items-start gap-2 text-[12px] leading-snug text-[var(--text-secondary)]">
+            <Info size={14} className="shrink-0 mt-0.5 text-[var(--accent)]" />
+            <span>
+              This can take a few minutes — <span className="font-medium text-[var(--text-primary)]">you can leave this page and it keeps running</span>; pick it back up anytime from your sessions. When it finishes, it opens as a chat where you can edit the result and ask follow-ups.
+            </span>
+          </p>
+        </div>
+      )}
 
       {/* Body */}
       <div className="flex-1 flex flex-col overflow-hidden">

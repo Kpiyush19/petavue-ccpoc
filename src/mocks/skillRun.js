@@ -21,8 +21,54 @@ const DEFAULT_STEPS = [
   { id: "verify_values", title: "Verify every value is source-linked", type: "verify", tool: null },
 ];
 
+// One plain-language clarification the planner asks before drafting — kept
+// deliberately jargon-free (a marketer should read it without help). Drives
+// the "Input needed" step in the left pane after "Reviewing data".
+const PERIOD_CLARIFICATION = {
+  id: "period",
+  question: "What time period should we look at?",
+  help_text: "Just the window for this analysis — you can change it later in chat without rebuilding.",
+  answer_type: "single_select",
+  required: true,
+  default: "last_quarter",
+  surfaced_reason: null,
+  allow_custom: true,
+  options: [
+    { value: "last_90", label: "Last 90 days" },
+    { value: "last_quarter", label: "Last quarter" },
+    { value: "last_4q", label: "Last 4 quarters" },
+    { value: "ytd", label: "Year to date" },
+    { value: "__custom__", label: "Other (please specify)" },
+  ],
+};
+const PERIOD_LABEL = {
+  last_90: "Last 90 days",
+  last_quarter: "Last quarter",
+  last_4q: "Last 4 quarters",
+  ytd: "Year to date",
+};
+
 export function getRun(sid) {
   return runs[sid];
+}
+
+// Feed for the global runs dock. The real backend's /skill-runs/active
+// returns only resumable (non-terminal) runs; here we ALSO surface
+// COMPLETE ones so the dock can show a "Ready" entry the user opens or
+// dismisses (real backends would learn of completion via the sessions
+// list). CANCELLED runs are dropped so discarding clears them.
+export function listActiveRuns() {
+  return Object.values(runs)
+    .filter((r) => r.session && r.session.phase !== "CANCELLED")
+    .map((r) => ({
+      session_id: r.sessionId,
+      skill_id: r.skill?.slug || r.skill?.name || null,
+      skill_title: r.planSummary?.title || "Skill run",
+      output_type: r.planSummary?.output_type || "dashboard",
+      phase: r.session.phase,
+      created_at: r.createdAt,
+      last_active_at: r.createdAt,
+    }));
 }
 
 // Build the /skill/progress snapshot from the live run record.
@@ -31,7 +77,7 @@ export function getProgress(sid) {
   if (!run) return null;
   return {
     step_statuses: run.step_statuses,
-    clarifications_pending: [],
+    clarifications_pending: run.awaiting ? [run.clarification] : [],
     verification_round: run.verification_round,
     finding_count: run.finding_count,
     disclosure_summary: null,
@@ -57,6 +103,9 @@ export function startRun(session, skillId) {
     sessionId: sid,
     session,
     skill,
+    createdAt: session.created_at,
+    clarification: PERIOD_CLARIFICATION,
+    awaiting: false,
     step_statuses: {},
     verification_round: 0,
     finding_count: 0,
@@ -80,12 +129,43 @@ export function startRun(session, skillId) {
 
   const after = (ms, fn) => run.timers.push(setTimeout(fn, ms));
 
-  // ── PLANNING choreography (delayed ~1s so the client subscribes first) ──
+  // ── PLANNING choreography (delayed ~1s so the client subscribes first).
+  // Reviews the data, then PAUSES on a plain clarification ("Input needed").
+  // The rest of the plan (verify → draft → review → approval) resumes in
+  // submitClarification once the user answers. ──
   after(900, () => { ev(sid, { type: "setup-stage", stage: "reviewing_data" }); ev(sid, { type: "tool_call", tool: "query_athena" }); });
-  after(1800, () => { ev(sid, { type: "tool_call", tool: "execute_code" }); ev(sid, { type: "setup-stage", stage: "verifying_answers" }); });
-  after(2700, () => { ev(sid, { type: "setup-stage", stage: "drafting_plan" }); ev(sid, { type: "tool_call", tool: "start_plan" }); });
-  after(3400, () => { ev(sid, { type: "tool_call", tool: "finalize_plan" }); ev(sid, { type: "setup-stage", stage: "reviewing_plan" }); ev(sid, { type: "self-review-running" }); });
-  after(4300, () => {
+  after(1800, () => { ev(sid, { type: "tool_call", tool: "execute_code" }); });
+  after(2600, () => {
+    run.awaiting = true;
+    session.setup_stage = "awaiting_input";
+    ev(sid, { type: "setup-stage", stage: "awaiting_input" });
+    ev(sid, { type: "clarification-requested", clarification: run.clarification });
+  });
+}
+
+// User answered the clarification → resume the plan and land on approval.
+export function submitClarification(sid, answers) {
+  const run = runs[sid];
+  if (!run || !run.awaiting) return;
+  run.awaiting = false;
+
+  // Record the chosen period as a key choice so the plan + "Running with"
+  // summary reflect what the user picked.
+  const entry = Array.isArray(answers) ? answers[0] : answers;
+  const raw = entry?.answer ?? entry?.value ?? entry;
+  const label = PERIOD_LABEL[raw] || (typeof raw === "string" && raw ? raw : "Last quarter");
+  run.planSummary.key_choices = [
+    { label: "Period", value: label },
+    ...run.planSummary.key_choices.filter((c) => c.label !== "Period"),
+  ];
+
+  const { session } = run;
+  const after = (ms, fn) => run.timers.push(setTimeout(fn, ms));
+  session.setup_stage = "verifying_answers";
+  ev(sid, { type: "setup-stage", stage: "verifying_answers" });
+  after(1000, () => { ev(sid, { type: "setup-stage", stage: "drafting_plan" }); ev(sid, { type: "tool_call", tool: "start_plan" }); });
+  after(1900, () => { ev(sid, { type: "tool_call", tool: "finalize_plan" }); ev(sid, { type: "setup-stage", stage: "reviewing_plan" }); ev(sid, { type: "self-review-running" }); });
+  after(2800, () => {
     ev(sid, { type: "self-review-complete", status: "complete" });
     session.phase = "AWAITING_CONFIRMATION";
     ev(sid, { type: "skill-phase", phase: "AWAITING_CONFIRMATION" });

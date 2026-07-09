@@ -6,6 +6,7 @@ import Sidebar from "../components/Sidebar";
 import MenuBarNav from "../components/MenuBarNav";
 import { MOCK_ENABLED } from "../mocks";
 import ImpersonationBanner from "../components/ImpersonationBanner";
+import RunsDock from "../components/runs/RunsDock";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 export default function RootLayout() {
@@ -19,6 +20,7 @@ export default function RootLayout() {
           <ImpersonationBanner />
           <Outlet />
         </main>
+        <RunsDock />
         <Toaster
           position="bottom-left"
           toastOptions={{

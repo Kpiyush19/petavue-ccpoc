@@ -193,10 +193,15 @@ export default function SkillDetailPage() {
         <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
           <div className="flex flex-col min-h-full w-full bg-white border border-pv-neutral-grey-150/50 rounded-xl p-4">
 
-              {/* Description */}
+              {/* Description + a quiet expectation line. The strong prototype
+                  signal lives on the run/output page (a "Prototype · verify to
+                  finalize" chip) — the moment the numbers actually appear. */}
               <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2 mb-8">
                 <span className={LABEL}>Description</span>
                 <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">{skill.description}</p>
+                <p className="text-[12px] leading-snug text-[var(--text-muted)]">
+                  Activating builds a quick preview on your data — verify &amp; publish it in chat to finalize the numbers you can trust and share.
+                </p>
               </motion.div>
 
               {/* Docs layout: main content (left) + details sidebar (right) */}
@@ -227,56 +232,47 @@ export default function SkillDetailPage() {
                 </motion.div>
               )}
 
-              {/* Overview */}
-              {skill.overview && <Section title="Overview" lead={skill.overview} delay={0.08} />}
-
               {/* What you'll get */}
               {skill.whatYoullGet && <Section title="What you'll get" lead={skill.whatYoullGet} delay={0.1} />}
 
-              {/* Questions answered */}
+              {/* Once it's live, you can ask Sage — plain, traceable answers */}
               {skill.questions?.length > 0 && (
-                <Section title="Questions answered" delay={0.12}>
-                  <ul className="flex flex-col gap-2">
+                <Section title="Once it's live, you can ask Sage" lead="Every one of these has a single answer you can trace back to source." delay={0.12}>
+                  <div className="flex flex-col gap-2 mt-1">
                     {skill.questions.map((q, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[14px] text-[var(--text-primary)]">
-                        <CheckCircle2 size={16} className="text-pv-primary-primary-500 mt-0.5 shrink-0" />
-                        <span>{q}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Section>
-              )}
-
-              {/* How it works */}
-              {skill.steps?.length > 0 && (
-                <Section title="How it works" lead={skill.howItWorksLead} delay={0.14}>
-                  <div className="flex flex-col gap-3 mt-1">
-                    {skill.steps.map((step) => (
-                      <div key={step.num} className="flex gap-3 p-4 bg-white border border-[var(--border-primary)] rounded-lg">
-                        <span className="text-[13px] font-semibold text-pv-primary-primary-500 shrink-0">{step.num}</span>
-                        <div className="flex flex-col gap-1">
-                          <p className="text-[14px] font-medium text-[var(--text-primary)]">{step.title}</p>
-                          <p className="text-[13px] leading-relaxed text-[var(--text-secondary)]">{step.body}</p>
-                        </div>
+                      <div key={i} className="flex items-start gap-2.5 px-4 py-3 bg-pv-neutral-grey-50 border border-pv-neutral-grey-100 rounded-lg">
+                        <CheckCircle2 size={15} className="text-pv-primary-primary-500 mt-0.5 shrink-0" />
+                        <span className="text-[14px] leading-snug text-[var(--text-primary)]">{q}</span>
                       </div>
                     ))}
                   </div>
                 </Section>
               )}
 
-              {/* Inputs required */}
+              {/* Before we run — plain preview of the clarification questions,
+                  worded exactly how the run itself asks them */}
               {skill.inputs?.length > 0 && (
-                <Section title="Inputs required" delay={0.16}>
-                  <ul className="flex flex-col gap-2">
+                <Section
+                  title="Before we run"
+                  lead="Before it builds, Sage asks a few quick questions about your data — like which time period to use, or how you define a qualified lead. We pre-fill what we can detect; you just confirm or change it."
+                  delay={0.16}
+                >
+                  <div className="flex flex-col divide-y divide-pv-neutral-grey-100 border border-pv-neutral-grey-100 rounded-lg overflow-hidden mt-1">
                     {skill.inputs.map((inp, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-[14px] text-[var(--text-primary)]">
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pv-neutral-grey-100 text-[11px] font-medium text-[var(--text-secondary)] shrink-0 mt-0.5">
-                          {i + 1}
+                      <div key={i} className="flex items-start gap-3 px-4 py-3 bg-white">
+                        <span className="text-[12px] font-semibold text-pv-primary-primary-500 tabular-nums shrink-0 mt-0.5">
+                          {String(i + 1).padStart(2, "0")}
                         </span>
-                        <span>{inp}</span>
-                      </li>
+                        <span className="text-[14px] leading-snug text-[var(--text-primary)]">{inp}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
+                  <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-pv-primary-primary-50/60 border border-pv-primary-primary-100">
+                    <Info size={14} className="shrink-0 mt-0.5 text-pv-primary-primary-500" />
+                    <p className="text-[12px] leading-snug text-[var(--text-secondary)]">
+                      Nothing runs until you approve. Confirm the pre-filled answers or tweak any of them, then Sage builds it.
+                    </p>
+                  </div>
                 </Section>
               )}
 
@@ -287,9 +283,9 @@ export default function SkillDetailPage() {
                     {skill.prompts.map((p, i) => (
                       <div
                         key={i}
-                        className="border-l-2 border-pv-primary-primary-200 bg-pv-neutral-grey-50 rounded-r-md px-3.5 py-2.5"
+                        className="bg-pv-neutral-grey-50 border border-pv-neutral-grey-100 rounded-md px-3.5 py-2.5"
                       >
-                        <span className="text-[13px] text-[var(--text-secondary)]">{p}</span>
+                        <span className="text-[14px] text-[var(--text-secondary)]">{p}</span>
                       </div>
                     ))}
                   </div>
@@ -312,14 +308,10 @@ export default function SkillDetailPage() {
                     ].map((t, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-[13px] leading-snug text-[var(--text-secondary)]">
                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white border border-[var(--border-primary)] text-[11px] font-semibold text-pv-primary-primary-600 shrink-0">{i + 1}</span>
-                        <span className="mt-0.5">{t}</span>
+                        <span className="mt-0.5 text-[12px]">{t}</span>
                       </li>
                     ))}
                   </ol>
-                  <p className="flex items-start gap-1.5 text-[12px] leading-snug text-[var(--text-muted)]">
-                    <Info size={13} className="shrink-0 mt-px text-pv-primary-primary-500" />
-                    <span>The first {isMemo ? "memo" : "dashboard"} is a <span className="font-medium text-[var(--text-secondary)]">prototype</span> — the numbers aren't final until you verify &amp; publish it in chat.</span>
-                  </p>
                 </div>
 
                 <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
@@ -338,7 +330,7 @@ export default function SkillDetailPage() {
                 {skill.time && (
                   <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
                     <span className={LABEL}>Build time</span>
-                    <span className="text-[14px] font-medium text-[var(--text-primary)]">{skill.time}</span>
+                    <span className="text-[12px] font-medium text-[var(--text-primary)]">{skill.time}</span>
                   </div>
                 )}
 
@@ -357,7 +349,7 @@ export default function SkillDetailPage() {
                             ) : (
                               <Plug size={16} className="text-pv-primary-primary-500 shrink-0" />
                             )}
-                            <span className="text-[13px] text-[var(--text-primary)] truncate">{it.name}</span>
+                            <span className="text-[12px] text-[var(--text-primary)] truncate">{it.name}</span>
                           </div>
                         );
                       })}
@@ -368,7 +360,7 @@ export default function SkillDetailPage() {
                 {/* Honest note: pre-loaded skill, no self-serve edit */}
                 <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
                   <span className={cn("inline-flex items-center gap-1.5", LABEL)}><Info size={12} /> Pre-loaded analysis</span>
-                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                  <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">
                     Creating and editing your own skills is coming soon. For now, activate a pre-built one and shape the result in chat — need a custom analysis today?{" "}
                     <a href="mailto:support@petavue.com" className="font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline">Contact Petavue support</a>.
                   </p>

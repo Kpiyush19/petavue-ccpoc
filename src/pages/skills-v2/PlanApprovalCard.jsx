@@ -200,8 +200,11 @@ export default function PlanApprovalCard({
       {/* Sticky footer — Proceed only. Always visible regardless of how
           long the plan is. Per design: the Running-with summary stays
           inside the plan body, the footer is action-only. */}
-      <div className="px-6 py-3 border-t border-[var(--border-primary)] shrink-0 flex items-center justify-end bg-[var(--bg-tertiary)]">
-        <Button onClick={onApprove} size="md" disabled={approving || discarding}>
+      <div className="px-6 py-3 border-t border-[var(--border-primary)] shrink-0 flex items-center justify-between gap-4 bg-[var(--bg-tertiary)]">
+        <p className="text-[12px] text-[var(--text-muted)] leading-snug min-w-0">
+          Nothing runs until you press Proceed. Go with the defaults above, or adjust any input first — once it's built, you can change things in chat without re-running.
+        </p>
+        <Button onClick={onApprove} size="md" disabled={approving || discarding} className="shrink-0">
           {approving ? (
             <>
               <Loader2 size={14} className="animate-spin mr-1.5" />
