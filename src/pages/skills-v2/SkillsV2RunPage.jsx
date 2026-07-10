@@ -95,8 +95,8 @@ function resolveSkillDescription({ planSummary, session }) {
 const SETUP_STEP_LABELS = {
   workspace_ready: 'Setting up workspace',
   reviewing_data: 'Reviewing data',
-  awaiting_input: 'Input needed',
-  followup_question: 'Input needed',
+  awaiting_input: 'A few questions',
+  followup_question: 'A few questions',
   verifying_answers: 'Verifying answers',
   drafting_plan: 'Drafting the plan',
   reviewing_plan: 'Final review of the plan',

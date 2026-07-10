@@ -21,7 +21,7 @@ const STAGES = [
   {
     key: 'setup',
     label: 'Plan',
-    tooltip: 'Reviews the data and drafts the plan for the dashboard or memo: what to compute, what to show, and what to leave out. The plan is presented for approval before anything is built. Usually 8–12 minutes (excluding time spent answering clarifications).',
+    tooltip: 'Reviews the data and drafts the plan for the dashboard or memo: what to compute, what to show, and what to leave out. The plan is presented for approval before anything is built. Usually 8–12 minutes (excluding time spent answering questions).',
   },
   {
     key: 'approve',

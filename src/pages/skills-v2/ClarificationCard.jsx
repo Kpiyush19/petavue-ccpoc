@@ -70,7 +70,7 @@ function SurfacedTag({ reason }) {
     ? `Detected: ${reason.slice('detection:'.length)}`
     : reason
   const tooltip = isAlways
-    ? 'Confirmed fresh each run to prevent stale configurations.'
+    ? 'Confirmed fresh each run so it never uses stale answers.'
     : undefined
   return (
     <span

@@ -25,15 +25,15 @@ const STEP_DEFS = [
   },
   {
     key: 'awaiting_input',
-    label: 'Input needed',
+    label: 'A few questions',
     // Always shown (not conditional) so the step is stable in place and
-    // doesn't pop into the list mid-run when a clarification appears.
-    tooltip: 'Waiting for input on configuration choices before continuing.',
+    // doesn't pop into the list mid-run when a question appears.
+    tooltip: 'Sage needs a few answers from you before it can continue.',
   },
   {
     key: 'verifying_answers',
     label: 'Verifying answers',
-    tooltip: 'Runs a quick sanity check on the configuration from the previous step. Usually 1–2 minutes.',
+    tooltip: 'Runs a quick sanity check on your answers from the previous step. Usually 1–2 minutes.',
   },
   {
     key: 'drafting_plan',
