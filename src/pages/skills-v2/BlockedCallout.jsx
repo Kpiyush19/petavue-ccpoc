@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { AlertOctagon, Lightbulb, ShieldOff } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
-import { PaperPlaneRight, ArrowsClockwise, CircleNotch } from '@phosphor-icons/react'
-
-const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />
+import { PaperPlaneRight, ArrowsClockwise } from '@phosphor-icons/react'
+import { Spinner } from '../../components/ui/Spinner'
 
 
 // Actions for a blocked run. When `onCorrect` is provided, the primary path

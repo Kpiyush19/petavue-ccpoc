@@ -1,10 +1,11 @@
 import { useMemo, useState, Fragment } from 'react'
 import { toast } from 'sonner'
 import {
-  CheckCircle2, Loader2, Circle, AlertCircle,
-  Wrench, Sparkles, ShieldCheck, Check, LayoutDashboard, FileText, Calculator, X,
+  CheckCircle2, Circle, AlertCircle, AlertOctagon,
+  Sparkles, Check, LayoutDashboard, FileText, Calculator, X,
 } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
+import { Spinner } from '../../components/ui/Spinner'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
@@ -221,7 +222,7 @@ function BuildTile({ widget, status }) {
         {status === 'done' ? (
           <CheckCircle2 size={13} className="text-[var(--pv-success-text)] shrink-0" />
         ) : status === 'building' ? (
-          <Loader2 size={13} className="animate-spin text-[var(--accent)] shrink-0" />
+          <Spinner size={13} className="shrink-0" />
         ) : (
           <Circle size={11} className="text-[var(--text-muted)] shrink-0" />
         )}
@@ -277,7 +278,7 @@ function StepResultsPane({ rows }) {
                 {done ? (
                   <CheckCircle2 size={14} className="text-[var(--pv-success-text)] shrink-0" />
                 ) : running ? (
-                  <Loader2 size={14} className="animate-spin text-[var(--accent)] shrink-0" />
+                  <Spinner size={14} className="shrink-0" />
                 ) : (
                   <Circle size={11} className="text-[var(--text-muted)] shrink-0" />
                 )}
@@ -305,13 +306,13 @@ function StepRow({ step, status, title }) {
 
   if (expanded) {
     return (
-      <li className={`rounded-xl border bg-white px-3.5 py-3${status === 'failed' ? 'border-[var(--pv-error-text)]/40' : 'border-[var(--pv-neutral-grey-200)]'}`}>
+      <li className="px-2 py-2">
         <div className="flex items-start gap-2.5">
           <span className="mt-0.5"><StepIndicator status={status} /></span>
           <div className="flex-1 min-w-0">
-            <span className="block text-[13.5px] font-semibold text-[var(--text-primary)]">{title}</span>
+            <span className="block text-[14px] font-semibold text-[var(--color-primary-500)]">{title}</span>
             {step.purpose ? (
-              <p className="text-[12px] text-[var(--text-secondary)] leading-snug mt-1">{step.purpose}</p>
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'failed' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>{step.purpose}</p>
             ) : null}
           </div>
         </div>
@@ -322,7 +323,7 @@ function StepRow({ step, status, title }) {
   return (
     <li className="flex items-center gap-2.5 px-2 py-2" title={step.purpose || title}>
       <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[13px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-muted)]'}`}>
+      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
         {title}
       </span>
     </li>
@@ -341,24 +342,28 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
 
   if (expanded) {
     return (
-      <li className={`rounded-xl border bg-white px-3.5 py-3${status === 'blocked' ? 'border-[var(--pv-error-text)]/40' : 'border-[var(--pv-neutral-grey-200)]'}`}>
-        <div className="flex items-center gap-2.5">
-          <StepIndicator status={status} />
-          <span className="flex-1 min-w-0 text-[13.5px] font-semibold text-[var(--text-primary)]">{label}</span>
-          {status === 'running' && timeHint?.text ? (
-            <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
-              {timeHint.text}
-            </span>
-          ) : null}
-          {status === 'running' && timeHint?.showCancel && onCancel ? (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
-            >
-              Cancel
-            </button>
-          ) : null}
+      <li className="px-2 py-2">
+        <div className="flex items-start gap-2.5">
+          <span className="mt-0.5"><StepIndicator status={status} /></span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--color-primary-500)]">{label}</span>
+              {status === 'running' && timeHint?.text ? (
+                <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
+                  {timeHint.text}
+                </span>
+              ) : null}
+              {status === 'running' && timeHint?.showCancel && onCancel ? (
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
+                >
+                  Cancel
+                </button>
+              ) : null}
+            </div>
+          </div>
         </div>
       </li>
     )
@@ -367,7 +372,7 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
   return (
     <li className="flex items-center gap-2.5 px-2 py-2" title={timeHint?.tooltip || label}>
       <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[13px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-muted)]'}`}>
+      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
         {label}
       </span>
     </li>
@@ -548,25 +553,6 @@ export default function ExecutionProgress({
   const verifyElapsed = useSubStageStopwatch(checkSubStage || '', paused)
   const verifyTimeHint = getInlineTimeHint(checkSubStage || '', verifyElapsed)
 
-  // Header counts. Each visible verify row contributes 1 to the total —
-  // the count grows as Refining and Final check materialize so the
-  // "N / M" matches what the user actually sees in the list. Previously
-  // verify collapsed to a single conceptual step to avoid mid-run jumps,
-  // but that left "16 / 17" stuck even as three verify rows were
-  // rendered below — visually inconsistent.
-  const counts = { success: 0, running: 0, failed: 0, pending: 0 }
-  for (const r of rows) {
-    counts[r._status] = (counts[r._status] || 0) + 1
-  }
-  for (const vr of verifyRows) {
-    // VerifyRow vocabulary is 'success' / 'running' / 'blocked' / 'pending'.
-    // Map 'blocked' onto the 'failed' bucket so counts.failed surfaces it
-    // in the "· N failed" tail.
-    const bucket = vr.status === 'blocked' ? 'failed' : vr.status
-    counts[bucket] = (counts[bucket] || 0) + 1
-  }
-  const total = rows.length + verifyRows.length
-
   // Header label tracks the phase. Short and Ops-friendly. Positive
   // copy for the quality-check phases — no "applying fixes" alarm.
   // OPEN_CHAT is post-handoff: the run is done, session_type is now
@@ -587,7 +573,6 @@ export default function ExecutionProgress({
   // yet loaded) is treated as off so we don't briefly show then hide it
   // during the PostHog bootstrap.
   const disclosureEnabled = useFeatureFlagEnabled('skills-v2-disclosure-summary')
-  const HeadingIcon = isFixing ? Wrench : isComplete ? CheckCircle2 : Sparkles
   const headingLabel = isFixing
     ? 'Refining the result'
     : isVerifying && verificationRound >= 2
@@ -635,20 +620,18 @@ export default function ExecutionProgress({
   return (
     <div className="flex-1 flex min-h-0 h-full">
       {/* ── Left pane: step list ── */}
-      <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between h-12 px-4 shrink-0">
+      <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+        <div className="flex items-center h-12 px-4 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
-            <HeadingIcon size={15} className="text-[var(--accent)] shrink-0" />
+            {isBlocked ? (
+              <AlertOctagon size={15} className="text-[var(--pv-error-text)] shrink-0" />
+            ) : null}
             <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
               {headingLabel}
             </h2>
           </div>
-          <div className="text-[11px] text-[var(--text-muted)] shrink-0 tabular-nums">
-            {counts.success} / {total}
-            {counts.failed > 0 ? ` · ${counts.failed} failed` : ''}
-          </div>
         </div>
-        <ul className="flex-1 overflow-y-auto p-2.5 space-y-1">
+        <ul className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
           {rows.map((step, i) => {
             // Emit a phase header whenever the kind changes, so the flat list
             // reads as a few recognizable phases rather than 20+ ops.
@@ -671,31 +654,22 @@ export default function ExecutionProgress({
             />
           ))}
         </ul>
-        {/* Trust line — Petavue's core promise, made visible right where the
-            numbers are being built. */}
-        <div className="flex items-start gap-1.5 px-3.5 py-2.5 shrink-0 border-t border-[var(--pv-neutral-grey-150)]">
-          <ShieldCheck size={12} className="text-[var(--accent)] mt-0.5 shrink-0" />
-          <span className="text-[10.5px] leading-snug text-[var(--text-muted)]">
-            Every value is source-linked to your data and computed with your team&apos;s definitions.
-          </span>
-        </div>
       </div>
 
       {/* ── Right pane: blocked callout | final artifact | plan summary ──
-          Structure changed: outer wrapper is now a flex column so the
-          disclosure callout can sit ABOVE the artifact card as a
-          free-standing banner rather than embedded inside the artifact
-          chrome. The artifact card preserves its own bg/border/rounded
-          styling; the disclosure brings its own. `gap-3` gives the two
-          visual separation. */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-0 gap-3">
+          A single card joined to the left step-list (rounded-r-2xl), matching
+          the Plan step's two-pane so the two read as one seamless unit. The
+          disclosure callout (when enabled) rides at the top of the card as a
+          shrink-0 banner rather than a free-standing card above it. */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
         {disclosureEnabled && disclosureSummary && !isBlocked ? (
-          <DisclosureCallout
-            summary={disclosureSummary}
-            onUseFollowup={onUseDisclosureFollowup}
-          />
+          <div className="shrink-0">
+            <DisclosureCallout
+              summary={disclosureSummary}
+              onUseFollowup={onUseDisclosureFollowup}
+            />
+          </div>
         ) : null}
-        <div className="flex-1 min-h-0 flex flex-col bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
         {isBlocked ? (
           <>
             <div className="flex items-center gap-2 px-4 py-2 bg-[var(--pv-error-bg)] border-b border-[var(--pv-error-text)]/30 text-[12px] text-[var(--pv-error-text)] shrink-0">
@@ -715,27 +689,19 @@ export default function ExecutionProgress({
           </>
         ) : showFinalArtifact ? (
           <>
-            {/* Slim one-line status. The primary "Verify & refine in chat" is in
-                the run-page footer; Review & save answers is a quiet secondary
-                link here. (Publish stays parked behind SHOW_PUBLISH_BUTTON — the
-                onVerifyPublish plumbing is intact via the artifact panel menu.) */}
-            <div className="flex items-center justify-between gap-3 px-4 py-2 bg-[var(--pv-success-bg)] border-b border-[var(--pv-success-text)]/30 shrink-0">
-              <div className="flex items-center gap-2 min-w-0 text-[12px] text-[var(--pv-success-text)]">
-                <CheckCircle2 size={14} className="shrink-0" />
-                <span className="truncate">
-                  <span className="font-semibold">{outputType === 'memo' ? 'Draft memo built' : 'Draft dashboard built'}.</span>{' '}
-                  <span className="text-[var(--pv-success-text)]/80">Not final until you verify it in chat.</span>
-                </span>
-              </div>
-              {planSummary?.saveableAnswers?.length ? (
-                <button
-                  type="button"
-                  onClick={() => setSaveOpen(true)}
-                  className="shrink-0 text-[12px] font-medium text-[var(--pv-success-text)] hover:underline bg-transparent border-none cursor-pointer whitespace-nowrap"
-                >
-                  Review &amp; save answers
-                </button>
-              ) : null}
+            {/* Completion status header — a clean white bar matching the app's
+                other pane headers, with a soft green success chip instead of a
+                loud full-green band. The primary "Verify & refine in chat" and
+                secondary "Review & save answers" live in the run-page footer.
+                (Publish stays parked behind SHOW_PUBLISH_BUTTON.) */}
+            <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--pv-neutral-grey-150)] bg-white shrink-0">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--pv-success-bg)] shrink-0">
+                <Check size={13} className="text-[var(--pv-success-text)]" strokeWidth={3} />
+              </span>
+              <span className="min-w-0 truncate text-[12.5px] leading-tight">
+                <span className="font-semibold text-[var(--text-primary)]">{outputType === 'memo' ? 'Draft memo built' : 'Draft dashboard built'}.</span>{' '}
+                <span className="text-[var(--text-muted)]">Not final until you verify it in chat.</span>
+              </span>
             </div>
             <div className="flex-1 min-h-0 bg-white">
               <FinalArtifactPane
@@ -771,7 +737,6 @@ export default function ExecutionProgress({
             <PlanSummaryPane summary={planSummary} />
           </div>
         )}
-        </div>
       </div>
 
       {saveOpen && planSummary?.saveableAnswers?.length ? (

@@ -1,9 +1,9 @@
-import { Check, Loader2, Sparkles, AlertOctagon, Database, ShieldCheck, PenLine, SearchCheck } from 'lucide-react'
+import { Check, Sparkles, AlertOctagon, Database, ShieldCheck, PenLine, SearchCheck } from 'lucide-react'
 import { CheckCircle, Circle } from '@phosphor-icons/react'
+import { Spinner } from '../../components/ui/Spinner'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
-  severityTextClass,
 } from './subStageTime'
 
 
@@ -70,7 +70,7 @@ export function StepIndicator({ status }) {
     return <CheckCircle size={16} weight="fill" className="text-[var(--accent)] shrink-0" />
   }
   if (status === 'active' || status === 'running') {
-    return <Loader2 size={16} className="animate-spin text-[var(--accent)] shrink-0" strokeWidth={2.5} />
+    return <Spinner size={16} className="shrink-0" />
   }
   if (status === 'blocked' || status === 'failed') {
     return (
@@ -97,14 +97,9 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
           <span className="mt-0.5"><StepIndicator status={status} /></span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--text-primary)]">
+              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--color-primary-500)]">
                 {label}
               </span>
-              {status === 'active' && timeHint?.text ? (
-                <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
-                  {timeHint.text}
-                </span>
-              ) : null}
               {status === 'active' && timeHint?.showCancel && onCancel ? (
                 <button
                   type="button"

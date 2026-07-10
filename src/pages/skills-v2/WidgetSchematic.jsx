@@ -92,6 +92,22 @@ export const PREVIEW_BY_ID = {
   summary: MiniText, findings: MiniStats, drivers: MiniBars, actions: MiniList, method: MiniText,
 }
 
+// Human-readable widget/section type per id — surfaced as a chip in the
+// plan-review detail so the reviewer knows what shape each one takes. `kind`
+// keys into an icon map on the consuming side.
+export const WIDGET_TYPE_BY_ID = {
+  headline: { label: 'Scorecard', kind: 'stats' },
+  trend:    { label: 'Line chart', kind: 'line' },
+  segment:  { label: 'Bar chart', kind: 'bars' },
+  risk:     { label: 'List', kind: 'list' },
+  table:    { label: 'Table', kind: 'table' },
+  summary:  { label: 'Narrative', kind: 'text' },
+  findings: { label: 'Key numbers', kind: 'stats' },
+  drivers:  { label: 'Bar chart', kind: 'bars' },
+  actions:  { label: 'List', kind: 'list' },
+  method:   { label: 'Narrative', kind: 'text' },
+}
+
 // Just the schematic body for a widget id (no card chrome).
 export function SchematicBody({ id }) {
   const Body = PREVIEW_BY_ID[id] || MiniStats

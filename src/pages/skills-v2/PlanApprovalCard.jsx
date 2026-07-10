@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Check, Loader2, Sparkles, AlertCircle, Calculator, X, MessageSquare, Send } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
+import { Check, Sparkles, AlertCircle, Calculator, X, MessageSquare, Lock, BarChart3, LineChart, Table2, List, LayoutGrid, AlignLeft } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
-import { PaperPlaneRight, CircleNotch } from '@phosphor-icons/react'
-import { WidgetPreview } from './WidgetSchematic'
+import { PaperPlaneRight, CheckCircle, XCircle, ArrowUUpLeft, PencilSimple } from '@phosphor-icons/react'
+import { Spinner } from '../../components/ui/Spinner'
+import { WidgetPreview, WIDGET_TYPE_BY_ID } from './WidgetSchematic'
 
-const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />
+// Widget-type chip icon per schematic kind (see WIDGET_TYPE_BY_ID).
+const TYPE_ICON = { stats: LayoutGrid, line: LineChart, bars: BarChart3, list: List, table: Table2, text: AlignLeft }
 
 
 // Translate an axios error from `/skill/plan-summary` into something a
@@ -149,8 +150,11 @@ export default function PlanApprovalCard({
   const [widgetNotes, setWidgetNotes] = useState({})
   const [dropped, setDropped] = useState(() => new Set())
   const [approved, setApproved] = useState(() => new Set())
-  // Which widget row is shown in the detail pane (null = default to first).
+  // Which widget row is shown in the detail pane (null = default to the
+  // current step in the sequential review).
   const [selectedId, setSelectedId] = useState(null)
+  // "Request a change" drawer — slides in from the right, hidden by default.
+  const [changePanelOpen, setChangePanelOpen] = useState(false)
 
   // Review completeness — computed BEFORE the early returns so the effect
   // below is always called (hooks can't run conditionally). `summary?` guards
@@ -169,7 +173,7 @@ export default function PlanApprovalCard({
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto mt-8 p-6 text-center text-sm text-[var(--text-muted)]">
-        <Loader2 size={20} className="inline animate-spin mr-2" />
+        <Spinner size={20} className="mr-2 align-[-4px]" />
         Loading plan…
       </div>
     )
@@ -194,11 +198,26 @@ export default function PlanApprovalCard({
   if (!summary) return null
 
   const isMemo = summary.output_type === 'memo'
-  // The widget shown in the detail pane — defaults to the first so the pane
-  // is never empty.
-  const selected = widgets.find((w) => w.id === selectedId) || widgets[0] || null
-  const changeCount = widgets.filter((w) => dropped.has(w.id) || (widgetNotes[w.id] || '').trim()).length
+  const isReviewed = (w) => approved.has(w.id) || dropped.has(w.id)
+  // Sequential review — one widget at a time. The "current" step is the first
+  // unreviewed widget; everything after it is locked until it's handled. When
+  // all are reviewed, the last is current (nothing is locked).
+  const firstUnreviewedIndex = widgets.findIndex((w) => !isReviewed(w))
+  const currentIndex = firstUnreviewedIndex === -1 ? widgets.length - 1 : firstUnreviewedIndex
+  const isUnlocked = (i) => i <= currentIndex
+  // The widget shown in the detail pane — the selected one if it's unlocked,
+  // otherwise the current step. Never lands on a locked row.
+  const selIdx = widgets.findIndex((w) => w.id === selectedId)
+  const selected = widgets[selIdx !== -1 && isUnlocked(selIdx) ? selIdx : currentIndex] || null
+  // After reviewing the current widget, jump to the next unreviewed one so the
+  // flow stays one-by-one without the user hunting for what's next.
+  const advanceFrom = (id) => {
+    const idx = widgets.findIndex((w) => w.id === id)
+    const next = widgets.find((w, i) => i > idx && !isReviewed(w))
+    if (next) setSelectedId(next.id)
+  }
   const toggleDropped = (id) => {
+    const willReview = !dropped.has(id)
     setDropped((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id); else next.add(id)
@@ -206,14 +225,17 @@ export default function PlanApprovalCard({
     })
     // Dropping and approving are mutually exclusive.
     setApproved((prev) => { const next = new Set(prev); next.delete(id); return next })
+    if (willReview) advanceFrom(id)
   }
   const toggleApproved = (id) => {
+    const willReview = !approved.has(id)
     setApproved((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id); else next.add(id)
       return next
     })
     setDropped((prev) => { const next = new Set(prev); next.delete(id); return next })
+    if (willReview) advanceFrom(id)
   }
   const approveAll = () => setApproved(new Set(widgets.filter((w) => !dropped.has(w.id)).map((w) => w.id)))
   // Roll the per-widget notes + drops into one message for Request changes.
@@ -234,209 +256,254 @@ export default function PlanApprovalCard({
     setFeedbackOpen(true)
   }
 
-  return (
-    <div className="w-full bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
-      {/* Sticky header — title + outcome stay in view as the user
-          scrolls through the INCLUDES / WON'T INCLUDE / KEY FORMULAS
-          body. Tight bottom padding so the next section sits close. */}
-      <div className="px-6 pt-4 pb-4 border-b border-[var(--border-primary)] shrink-0">
-        <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-2">Review the plan</div>
-        <OutcomeHero
-          title={summary.title}
-          outcome={summary.plan_outcome}
-        />
-        {widgets.length > 0 && (
-          <p className="text-[12px] text-[var(--text-muted)] leading-relaxed mt-2">
-            Pick a {isMemo ? 'section' : 'widget'} on the left to see it and adjust or drop it, then build. Nothing runs until you do.
-          </p>
-        )}
-      </div>
+  // Two-pane review that mirrors the PLANNING screen: a widget checklist on
+  // the left (like the setup step list) and the selected widget's detail on
+  // the right. No full-width hero band — the plan title rides the run header;
+  // the plan's assumptions sit on a slim strip under the right-pane header.
+  if (widgets.length > 0) {
+    return (
+      <div className="flex-1 flex min-h-0 h-full relative overflow-hidden">
+        {/* LEFT — widget checklist, matching the setup step list */}
+        <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+          <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0">
+            <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
+              What we&apos;ll build
+            </h2>
+            {allReviewed ? (
+              <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--pv-success-text)] shrink-0">
+                <Check size={12} strokeWidth={3} />All reviewed
+              </span>
+            ) : (
+              <PvButton
+                onClick={approveAll}
+                size="md"
+                variant="secondary"
+                label="Approve all"
+                className="shrink-0 !text-[var(--accent)] !border-[var(--accent)] !bg-white"
+              />
+            )}
+          </div>
+          <ul className="flex-1 overflow-y-auto p-2.5 space-y-1">
+            {widgets.map((w, i) => {
+              const sel = selected?.id === w.id
+              const isDropped = dropped.has(w.id)
+              const isApproved = approved.has(w.id)
+              const reviewed = isApproved || isDropped
+              const locked = !isUnlocked(i)
+              const hasNote = (widgetNotes[w.id] || '').trim()
+              return (
+                <li key={w.id}>
+                  <button
+                    type="button"
+                    disabled={locked}
+                    onClick={() => setSelectedId(w.id)}
+                    title={locked ? 'Review the earlier steps first' : undefined}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg text-left border transition-colors ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${sel ? 'bg-[var(--accent)]/10 border-[var(--accent)]/40' : 'border-transparent hover:bg-[var(--bg-hover)]'}`}
+                  >
+                    {reviewed ? (
+                      <span className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${isApproved ? 'bg-[var(--pv-success-text)]' : 'bg-[var(--pv-neutral-grey-300)]'}`}>
+                        {isApproved ? <Check size={12} className="text-white" strokeWidth={3} /> : <X size={12} className="text-white" strokeWidth={3} />}
+                      </span>
+                    ) : (
+                      <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0 tabular-nums ${sel ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>{i + 1}</span>
+                    )}
+                    <span className={`flex-1 min-w-0 truncate text-[12.5px] ${isDropped ? 'line-through text-[var(--text-muted)]' : sel ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>{w.name}</span>
+                    {reviewed ? (
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${isApproved ? 'bg-[var(--pv-success-bg)] text-[var(--pv-success-text)]' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>
+                        <Check size={9} strokeWidth={3} />{isApproved ? 'Done' : 'Removed'}
+                      </span>
+                    ) : locked ? (
+                      <Lock size={11} className="text-[var(--text-muted)] shrink-0" />
+                    ) : hasNote ? (
+                      <MessageSquare size={11} className="text-[var(--accent)] shrink-0" />
+                    ) : null}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
 
-      {/* Body — assumptions strip on top, then a 2-pane review: the ordered
-          widget list (left) and the selected widget's detail + sample layout
-          (right) so you can see what you're reviewing. Build it lives in the
-          run-page footer, so the card carries no action bar of its own. */}
-      {widgets.length > 0 ? (
-        <div className="flex-1 min-h-0 flex flex-col">
-          {/* Assumptions — the definitions an operator most needs to check */}
-          {summary.key_choices?.length ? (
-            <div className="px-6 py-3 shrink-0 border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-                <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Assumptions</span>
-                {summary.key_choices.map((c, i) => (
-                  <span key={i} className="text-[12px]">
-                    <span className="text-[var(--text-muted)]">{c.label}: </span>
-                    <span className="font-medium text-[var(--text-primary)]">{c.value}</span>
+        {/* RIGHT — selected widget detail + sample layout */}
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+          <div className="flex items-center h-12 px-4 shrink-0">
+            <span className={`text-[16px] font-semibold truncate ${selected && dropped.has(selected.id) ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
+              {selected ? selected.name : 'Review the plan'}
+            </span>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
+            {selected ? (
+              <div className="flex flex-col gap-5">
+                {/* Meta row — where you are in the review + what shape this one
+                    takes, so the reviewer has context before the preview. */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    {isMemo ? 'Section' : 'Widget'} {widgets.findIndex((x) => x.id === selected.id) + 1} of {widgets.length}
                   </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <div className="flex-1 min-h-0 flex">
-            {/* LEFT — ordered widget list + Ask Sage */}
-            <div className="w-[264px] shrink-0 flex flex-col min-h-0 border-r border-[var(--border-primary)]">
-              <div className="px-4 pt-3 pb-2 shrink-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[12px] font-semibold text-[var(--text-primary)]">What we&apos;ll build</h3>
-                  {!allReviewed ? (
-                    <button
-                      type="button"
-                      onClick={approveAll}
-                      className="text-[11px] font-medium text-[var(--accent)] hover:underline bg-transparent border-none cursor-pointer shrink-0"
-                    >
-                      Approve all
-                    </button>
+                  {WIDGET_TYPE_BY_ID[selected.id] ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-medium bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
+                      {(() => { const I = TYPE_ICON[WIDGET_TYPE_BY_ID[selected.id].kind]; return I ? <I size={11} className="text-[var(--text-muted)]" /> : null })()}
+                      {WIDGET_TYPE_BY_ID[selected.id].label}
+                    </span>
                   ) : null}
                 </div>
-                <div className="text-[10.5px] mt-0.5 tabular-nums flex items-center gap-1">
-                  {allReviewed ? (
-                    <span className="inline-flex items-center gap-1 text-[var(--pv-success-text)] font-medium"><Check size={11} strokeWidth={3} />All reviewed</span>
-                  ) : (
-                    <span className="text-[var(--text-muted)]">{reviewedCount} of {widgets.length} reviewed</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2 flex flex-col gap-0.5">
-                {widgets.map((w, i) => {
-                  const sel = selected?.id === w.id
-                  const isDropped = dropped.has(w.id)
-                  const isApproved = approved.has(w.id)
-                  const hasNote = (widgetNotes[w.id] || '').trim()
-                  return (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() => setSelectedId(w.id)}
-                      className={`flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg text-left border transition-colors cursor-pointer ${sel ? 'bg-[var(--accent)]/10 border-[var(--accent)]/40' : 'border-transparent hover:bg-[var(--bg-hover)]'}`}
-                    >
-                      {isApproved ? (
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--pv-success-text)] shrink-0"><Check size={12} className="text-white" strokeWidth={3} /></span>
-                      ) : (
-                        <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0 tabular-nums ${sel ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>{i + 1}</span>
-                      )}
-                      <span className={`flex-1 min-w-0 truncate text-[12.5px] ${isDropped ? 'line-through text-[var(--text-muted)]' : sel ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>{w.name}</span>
-                      {isDropped ? (
-                        <span className="text-[9px] uppercase tracking-wide text-[var(--text-muted)] shrink-0">dropped</span>
-                      ) : hasNote ? (
-                        <MessageSquare size={11} className="text-[var(--accent)] shrink-0" />
-                      ) : null}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
 
-            {/* RIGHT — selected widget detail + sample layout */}
-            <div className="flex-1 min-w-0 overflow-y-auto">
-              {selected ? (
-                <div className="px-6 py-5 flex flex-col gap-5 max-w-2xl">
-                  <div>
-                    <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-1">
-                      {isMemo ? 'Section' : 'Widget'} {widgets.findIndex((x) => x.id === selected.id) + 1} of {widgets.length}
-                    </div>
-                    <h2 className={`text-[17px] font-semibold leading-tight ${dropped.has(selected.id) ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>{selected.name}</h2>
-                    {selected.desc ? <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-1.5">{selected.desc}</p> : null}
-                  </div>
+                {selected.desc ? (
+                  <p className="text-[13.5px] text-[var(--text-secondary)] leading-relaxed max-w-2xl">{selected.desc}</p>
+                ) : null}
 
-                  <div>
-                    <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Sample layout</div>
+                <div>
+                  <div className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Sample layout</div>
+                  <div className="max-w-2xl">
                     <WidgetPreview widget={selected} />
-                    <p className="text-[11px] text-[var(--text-muted)] mt-1.5">Layout only — your real numbers fill in when it&apos;s built.</p>
                   </div>
-
-                  <div className="pt-3 border-t border-[var(--border-primary)] flex flex-col gap-3">
-                    {/* Per-widget actions — Approve (reviewed & OK) or Drop it */}
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => toggleApproved(selected.id)}
-                        size="sm"
-                        variant={approved.has(selected.id) ? 'success' : 'primary'}
-                      >
-                        <Check size={14} className="mr-1.5" />
-                        {approved.has(selected.id) ? 'Approved' : 'Approve'}
-                      </Button>
-                      <Button
-                        onClick={() => toggleDropped(selected.id)}
-                        size="sm"
-                        variant={dropped.has(selected.id) ? 'secondary' : 'danger-ghost'}
-                      >
-                        {dropped.has(selected.id) ? (
-                          <><Check size={14} className="mr-1.5" />Keep it</>
-                        ) : (
-                          <><X size={14} className="mr-1.5" />Drop it</>
-                        )}
-                      </Button>
-                    </div>
-
-                    {/* Change input for this widget */}
-                    <div>
-                      <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1.5">
-                        Request a change to this {isMemo ? 'section' : 'widget'}
-                      </label>
-                      <textarea
-                        value={widgetNotes[selected.id] || ''}
-                        onChange={(e) => setWidgetNotes((m) => ({ ...m, [selected.id]: e.target.value }))}
-                        rows={3}
-                        placeholder={`e.g. break "${selected.name}" down by channel, or use a different metric…`}
-                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-none"
-                      />
-                      {(widgetNotes[selected.id] || '').trim() ? (
-                        <p className="flex items-start gap-1.5 text-[11.5px] text-[var(--text-secondary)] mt-2">
-                          <Sparkles size={12} className="mt-0.5 shrink-0 text-[var(--accent)]" />
-                          <span>Saved. Send it with the button on the left to have Sage revise the plan before building.</span>
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
+                  <p className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] mt-1.5">
+                    <Sparkles size={11} className="shrink-0 text-[var(--text-muted)]" />
+                    Layout only. Your real numbers fill in when it&apos;s built.
+                  </p>
                 </div>
-              ) : (
-                <div className="h-full flex items-center justify-center text-center text-[12px] text-[var(--text-muted)] px-6">
-                  Select a {isMemo ? 'section' : 'widget'} on the left to review it.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* No widget breakdown — plain plan summary (assumptions + includes). */
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-          <div className="max-w-3xl mx-auto flex flex-col gap-6">
-            {summary.key_choices?.length ? (
-              <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] divide-y divide-[var(--border-primary)]">
-                {summary.key_choices.map((c, i) => (
-                  <div key={i} className="flex items-center justify-between gap-4 px-3.5 py-2.5">
-                    <span className="text-[12px] text-[var(--text-muted)] shrink-0">{c.label}</span>
-                    <span className="text-[12.5px] font-medium text-[var(--text-primary)] text-right">{c.value}</span>
+
+                <div className="pt-3 border-t border-[var(--border-primary)] flex flex-col gap-2">
+                  {/* Per-widget actions — confirm the widget (approve) or exclude
+                      it (remove), plus "Request a change" which opens the drawer.
+                      Petavue design-system buttons only: primary + blueGhost
+                      (both collision-free; the system has no red/green). */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <PvButton
+                      onClick={() => toggleApproved(selected.id)}
+                      size="md"
+                      variant={approved.has(selected.id) ? 'blueGhost' : 'primary'}
+                      icon={CheckCircle}
+                      iconWeight={approved.has(selected.id) ? 'fill' : 'regular'}
+                      label={approved.has(selected.id) ? 'Kept' : 'Keep'}
+                    />
+                    <PvButton
+                      onClick={() => toggleDropped(selected.id)}
+                      size="md"
+                      variant="blueGhost"
+                      icon={dropped.has(selected.id) ? ArrowUUpLeft : XCircle}
+                      label={dropped.has(selected.id) ? 'Restore' : 'Remove'}
+                    />
+                    <PvButton
+                      onClick={() => setChangePanelOpen(true)}
+                      size="md"
+                      variant="blueGhost"
+                      icon={PencilSimple}
+                      label="Suggest a change"
+                    />
                   </div>
-                ))}
+                  {(widgetNotes[selected.id] || '').trim() ? (
+                    <p className="flex items-start gap-1.5 text-[11.5px] text-[var(--text-secondary)]">
+                      <Sparkles size={12} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+                      <span>Change saved. Sage will apply it when it revises the plan.</span>
+                    </p>
+                  ) : null}
+                </div>
               </div>
-            ) : null}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <DeliverList icon={Check} iconColor="text-[var(--pv-success-text)]" title="Includes" items={summary.plan_will_deliver} emptyText="(nothing listed)" />
-              <DeliverList icon={X} iconColor="text-[var(--text-muted)]" title="Won't include" items={summary.plan_wont_deliver} emptyText="(nothing flagged)" />
-            </div>
-            <KeyFormulasList formulas={summary.plan_key_formulas} />
-            {onRequestChanges ? (
-              feedbackOpen ? (
-                <div className="rounded-xl border border-[var(--accent)]/40 bg-[var(--accent)]/[0.03] p-3.5 flex flex-col gap-2">
-                  <div className="text-[12.5px] font-medium text-[var(--text-primary)]">What should Sage change?</div>
-                  <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} autoFocus placeholder="e.g. Use W-shaped attribution, not last-touch." className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y" />
-                  <div className="flex items-center justify-end gap-2">
-                    <PvButton onClick={() => setFeedbackOpen(false)} size="sm" variant="ghost" disabled={requesting} label="Cancel" />
-                    <PvButton onClick={() => onRequestChanges(note.trim())} size="sm" variant="primary" disabled={!note.trim() || requesting} label={requesting ? 'Sending…' : 'Send to Sage'} icon={requesting ? Spinner : PaperPlaneRight} />
-                  </div>
-                </div>
-              ) : (
-                <button type="button" onClick={openRequestChanges} className="w-full flex items-center gap-2.5 px-3.5 py-3 rounded-xl border border-dashed border-[var(--border-primary)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] bg-transparent cursor-pointer transition-colors">
-                  <Sparkles size={15} className="text-[var(--accent)] shrink-0" />
-                  <span className="text-[12.5px] font-medium">Ask Sage to change the plan</span>
-                </button>
-              )
-            ) : null}
+            ) : (
+              <div className="h-full flex items-center justify-center text-center text-[12px] text-[var(--text-muted)]">
+                Select a {isMemo ? 'section' : 'widget'} on the left to review it.
+              </div>
+            )}
           </div>
         </div>
-      )}
+
+        {/* "Request a change" drawer — slides in from the right, hidden by
+            default. Bound to the selected widget's note; closing keeps the
+            note (Sage applies it when it revises the plan). */}
+        <div
+          className={`absolute inset-0 z-[65] bg-black/20 transition-opacity duration-200 ${changePanelOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          onClick={() => setChangePanelOpen(false)}
+        />
+        <aside
+          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--pv-neutral-grey-150)] shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)] rounded-r-2xl transition-transform duration-200 ${changePanelOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          aria-hidden={!changePanelOpen}
+        >
+          <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0 border-b border-[var(--pv-neutral-grey-150)]">
+            <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">Request a change</span>
+            <button
+              type="button"
+              onClick={() => setChangePanelOpen(false)}
+              aria-label="Close"
+              className="flex items-center justify-center w-7 h-7 rounded-md text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer transition-colors shrink-0"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
+            <div>
+              <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-1">{isMemo ? 'Section' : 'Widget'}</div>
+              <div className="text-[13px] font-medium text-[var(--text-primary)]">{selected?.name}</div>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1.5">What should change?</label>
+              <textarea
+                value={selected ? (widgetNotes[selected.id] || '') : ''}
+                onChange={(e) => selected && setWidgetNotes((m) => ({ ...m, [selected.id]: e.target.value }))}
+                rows={6}
+                placeholder={selected ? `e.g. break "${selected.name}" down by channel, or use a different metric…` : ''}
+                className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-none"
+              />
+              <p className="flex items-start gap-1.5 text-[11.5px] text-[var(--text-secondary)] mt-2">
+                <Sparkles size={12} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+                <span>Sage applies this when it revises the plan, before anything is built.</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 p-3 border-t border-[var(--pv-neutral-grey-150)] shrink-0">
+            <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="blueGhost" label="Cancel" />
+            <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="primary" label="Save change" />
+          </div>
+        </aside>
+      </div>
+    )
+  }
+
+  // No widget breakdown — a single clean card with the plan title/outcome
+  // header and the prose summary (assumptions + includes + formulas).
+  return (
+    <div className="w-full bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
+      <div className="px-6 pt-4 pb-4 border-b border-[var(--border-primary)] shrink-0">
+        <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-2">Review the plan</div>
+        <OutcomeHero title={summary.title} outcome={summary.plan_outcome} />
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
+        <div className="max-w-3xl mx-auto flex flex-col gap-6">
+          {summary.key_choices?.length ? (
+            <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] divide-y divide-[var(--border-primary)]">
+              {summary.key_choices.map((c, i) => (
+                <div key={i} className="flex items-center justify-between gap-4 px-3.5 py-2.5">
+                  <span className="text-[12px] text-[var(--text-muted)] shrink-0">{c.label}</span>
+                  <span className="text-[12.5px] font-medium text-[var(--text-primary)] text-right">{c.value}</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <DeliverList icon={Check} iconColor="text-[var(--pv-success-text)]" title="Includes" items={summary.plan_will_deliver} emptyText="(nothing listed)" />
+            <DeliverList icon={X} iconColor="text-[var(--text-muted)]" title="Won't include" items={summary.plan_wont_deliver} emptyText="(nothing flagged)" />
+          </div>
+          <KeyFormulasList formulas={summary.plan_key_formulas} />
+          {onRequestChanges ? (
+            feedbackOpen ? (
+              <div className="rounded-xl border border-[var(--accent)]/40 bg-[var(--accent)]/[0.03] p-3.5 flex flex-col gap-2">
+                <div className="text-[12.5px] font-medium text-[var(--text-primary)]">What should Sage change?</div>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} autoFocus placeholder="e.g. Use W-shaped attribution, not last-touch." className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y" />
+                <div className="flex items-center justify-end gap-2">
+                  <PvButton onClick={() => setFeedbackOpen(false)} size="sm" variant="ghost" disabled={requesting} label="Cancel" />
+                  <PvButton onClick={() => onRequestChanges(note.trim())} size="sm" variant="primary" disabled={!note.trim() || requesting} label={requesting ? 'Sending…' : 'Send to Sage'} icon={requesting ? Spinner : PaperPlaneRight} />
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={openRequestChanges} className="w-full flex items-center gap-2.5 px-3.5 py-3 rounded-xl border border-dashed border-[var(--border-primary)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] bg-transparent cursor-pointer transition-colors">
+                <Sparkles size={15} className="text-[var(--accent)] shrink-0" />
+                <span className="text-[12.5px] font-medium">Ask Sage to change the plan</span>
+              </button>
+            )
+          ) : null}
+        </div>
+      </div>
     </div>
   )
 }

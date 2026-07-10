@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
-  Loader2, AlertCircle, Info,
+  AlertCircle, Info,
   ChevronRight, X, Sparkles,
 } from 'lucide-react'
 import RunSageOverlay from './RunSageOverlay'
@@ -15,14 +15,12 @@ import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
 import { Button } from '../../components/ui/Button'
 import { Button as PvButton } from '../../petavue'
-import { Sparkle, CircleNotch } from '@phosphor-icons/react'
+import { Sparkle } from '@phosphor-icons/react'
+import { Spinner } from '../../components/ui/Spinner'
 import { Dialog, DialogHeader, DialogContent, DialogFooter } from '../../components/ui/Dialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { apiPost } from '../../api'
 import { SKILLS_CATALOG } from '../../skills/skillsCatalog'
-
-// Phosphor spinner for PvButton loading states (matches the detail page).
-const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />
 
 
 // Phases where Cancel is a meaningful action — the run is in motion (or
@@ -203,7 +201,7 @@ function PhaseContent({
             </span>
           </div>
           {current ? (
-            <div className="flex-1 min-h-0 overflow-y-auto p-4">
+            <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
               <ClarificationCard
                 key={current.id}
                 clarification={current}
@@ -291,7 +289,7 @@ function PhaseContent({
     case undefined:
       return (
         <div className="text-center mt-16 text-sm text-[var(--text-muted)]">
-          <Loader2 size={20} className="inline animate-spin mr-2" />
+          <Spinner size={20} className="mr-2 align-[-4px]" />
           Loading session…
         </div>
       )
@@ -597,7 +595,7 @@ export default function SkillsV2RunPage() {
             (see useSkillRun.js) so a hung endpoint won't strand us. */}
         {(isLoading || !state.progressHydrated) && !isError && (
           <div className="flex-1 flex items-center justify-center">
-            <Loader2 size={24} className="animate-spin text-[var(--accent)]" />
+            <Spinner size={24} />
           </div>
         )}
         {isError && (
@@ -687,6 +685,15 @@ export default function SkillsV2RunPage() {
                 // collides with petavue's and greys this out; force the blue.
                 className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
               />
+            ) : (state.phase === 'COMPLETE' || state.phase === 'OPEN_CHAT') ? (
+              // Secondary action for the finished run. No action wired yet.
+              <PvButton
+                onClick={() => {}}
+                size="md"
+                variant="secondary"
+                label="Review & save answers"
+                className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
+              />
             ) : null}
           </div>
           <div className="flex-1 min-w-0 flex items-center justify-center gap-0.5 overflow-x-auto">
@@ -750,7 +757,7 @@ export default function SkillsV2RunPage() {
       {redirectingTo ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[6px]">
           <div className="max-w-sm mx-4 px-6 py-5 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-primary)] shadow-float text-center">
-            <Loader2 size={28} className="animate-spin text-[var(--accent)] mx-auto mb-3" />
+            <Spinner size={28} className="mx-auto mb-3" />
             <h3 className="text-[14px] font-semibold text-[var(--text-primary)] mb-1">
               {redirectingTo.title}
             </h3>
@@ -794,7 +801,7 @@ export default function SkillsV2RunPage() {
           >
             {discarding ? (
               <>
-                <Loader2 size={13} className="animate-spin mr-1" />
+                <Spinner size={13} className="mr-1 align-[-2px]" />
                 Cancelling…
               </>
             ) : (

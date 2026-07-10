@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
-import { Loader2 } from 'lucide-react'
 import {
   NumberCircleOne, NumberCircleTwo, NumberCircleThree, NumberCircleFour,
   CheckCircle, WarningCircle,
 } from '@phosphor-icons/react'
+import { Spinner } from '../../components/ui/Spinner'
 
 // Numbered-circle glyph per stage index — the "number icon then step name"
 // treatment used by the verify-&-publish step nav.
@@ -82,7 +82,7 @@ function StageSegment({ stage, state, index, isLast, userGated }) {
   if (isDone) {
     icon = <CheckCircle weight="fill" size={18} className="shrink-0 text-[var(--accent)]" />
   } else if (isActive) {
-    icon = <Loader2 size={16} className="shrink-0 animate-spin text-[var(--accent)]" />
+    icon = <Spinner size={16} className="shrink-0" />
   } else if (isBlocked) {
     icon = <WarningCircle weight="fill" size={18} className="shrink-0 text-[var(--pv-error-text)]" />
   } else {

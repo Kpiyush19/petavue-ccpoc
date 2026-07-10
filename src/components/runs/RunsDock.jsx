@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiGet } from '../../api'
 import { Button } from '../ui/Button'
+import { Spinner } from '../ui/Spinner'
 import { PHASE_LABEL } from '../../pages/skills-v2/statusMap'
 
 // A global, always-mounted dock (RootLayout) that surfaces every skill run
@@ -102,13 +103,13 @@ export default function RunsDock() {
           className={`flex items-center gap-2 w-full h-11 px-3.5 shrink-0 text-left bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] border-none cursor-pointer transition-colors ${expanded ? 'border-b border-[var(--border-primary)]' : ''}`}
         >
           {runningCount > 0 ? (
-            <Loader2 size={15} className="shrink-0 text-[var(--accent)] animate-spin" />
+            <Spinner size={15} className="shrink-0" />
           ) : (
             <CheckCircle2 size={15} className="shrink-0 text-[var(--pv-success-text,#16a34a)]" />
           )}
-          <span className="flex-1 min-w-0 text-[12.5px] font-medium text-[var(--text-primary)] truncate">
+          <span className="flex-1 min-w-0 text-[14px] font-medium text-[var(--text-primary)] truncate">
             {runningCount > 0
-              ? `${runningCount} run${runningCount === 1 ? '' : 's'} in progress`
+              ? `Working on ${runningCount} run${runningCount === 1 ? '' : 's'}`
               : `${readyCount} ready`}
           </span>
           {runningCount > 0 && readyCount > 0 && (
@@ -141,10 +142,10 @@ export default function RunsDock() {
                   className="group flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-[var(--bg-hover)] transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12.5px] font-medium text-[var(--text-primary)] truncate leading-tight">
+                    <div className="text-[12px] font-medium text-[var(--text-primary)] truncate leading-tight">
                       {r.skill_title || 'Skill run'}
                     </div>
-                    <div className="text-[10.5px] text-[var(--text-muted)] mt-0.5 leading-tight truncate">
+                    <div className="text-[12px] uppercase tracking-wide text-[var(--text-muted)] mt-0.5 leading-tight truncate">
                       {ready ? 'Draft ready' : PHASE_LABEL[r.phase] || r.phase}
                       {relTime(r.created_at) ? ` · ${relTime(r.created_at)}` : ''}
                     </div>

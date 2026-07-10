@@ -1,0 +1,125 @@
+/* Shared app spinner — fading multi-dot orbit tinted petavue primary #3661ed.
+   The .pv-spinner element is a tiny 1em hub; the eight dots are box-shadows
+   orbiting it, so the visual footprint (~6.2em) is centered on the .pv-spinner-box.
+   Scale via `--pv-size` (font-size = 10 * --pv-size); box = 62 * --pv-size. */
+.pv-spinner-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pv-spinner {
+  --pv-color-1: #3661ed;
+  --pv-color-2: rgba(54, 97, 237, 0.2);
+  --pv-color-3: rgba(54, 97, 237, 0.5);
+  --pv-color-4: rgba(54, 97, 237, 0.7);
+  --pv-size: 0.32px;
+
+  font-size: calc(10 * var(--pv-size));
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  position: relative;
+  text-indent: -9999em;
+  animation: pvSpinnerSpin 1.1s infinite ease;
+  transform: translateZ(0);
+}
+
+@keyframes pvSpinnerSpin {
+  0%,
+  100% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-1),
+      1.8em -1.8em 0 0em var(--pv-color-2),
+      2.5em 0em 0 0em var(--pv-color-2),
+      1.75em 1.75em 0 0em var(--pv-color-2),
+      0em 2.5em 0 0em var(--pv-color-2),
+      -1.8em 1.8em 0 0em var(--pv-color-2),
+      -2.6em 0em 0 0em var(--pv-color-3),
+      -1.8em -1.8em 0 0em var(--pv-color-4);
+  }
+  12.5% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-4),
+      1.8em -1.8em 0 0em var(--pv-color-1),
+      2.5em 0em 0 0em var(--pv-color-2),
+      1.75em 1.75em 0 0em var(--pv-color-2),
+      0em 2.5em 0 0em var(--pv-color-2),
+      -1.8em 1.8em 0 0em var(--pv-color-2),
+      -2.6em 0em 0 0em var(--pv-color-2),
+      -1.8em -1.8em 0 0em var(--pv-color-3);
+  }
+  25% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-3),
+      1.8em -1.8em 0 0em var(--pv-color-4),
+      2.5em 0em 0 0em var(--pv-color-1),
+      1.75em 1.75em 0 0em var(--pv-color-2),
+      0em 2.5em 0 0em var(--pv-color-2),
+      -1.8em 1.8em 0 0em var(--pv-color-2),
+      -2.6em 0em 0 0em var(--pv-color-2),
+      -1.8em -1.8em 0 0em var(--pv-color-2);
+  }
+  37.5% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-2),
+      1.8em -1.8em 0 0em var(--pv-color-3),
+      2.5em 0em 0 0em var(--pv-color-4),
+      1.75em 1.75em 0 0em var(--pv-color-1),
+      0em 2.5em 0 0em var(--pv-color-2),
+      -1.8em 1.8em 0 0em var(--pv-color-2),
+      -2.6em 0em 0 0em var(--pv-color-2),
+      -1.8em -1.8em 0 0em var(--pv-color-2);
+  }
+  50% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-2),
+      1.8em -1.8em 0 0em var(--pv-color-2),
+      2.5em 0em 0 0em var(--pv-color-3),
+      1.75em 1.75em 0 0em var(--pv-color-4),
+      0em 2.5em 0 0em var(--pv-color-1),
+      -1.8em 1.8em 0 0em var(--pv-color-2),
+      -2.6em 0em 0 0em var(--pv-color-2),
+      -1.8em -1.8em 0 0em var(--pv-color-2);
+  }
+  62.5% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-2),
+      1.8em -1.8em 0 0em var(--pv-color-2),
+      2.5em 0em 0 0em var(--pv-color-2),
+      1.75em 1.75em 0 0em var(--pv-color-3),
+      0em 2.5em 0 0em var(--pv-color-4),
+      -1.8em 1.8em 0 0em var(--pv-color-1),
+      -2.6em 0em 0 0em var(--pv-color-2),
+      -1.8em -1.8em 0 0em var(--pv-color-2);
+  }
+  75% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-2),
+      1.8em -1.8em 0 0em var(--pv-color-2),
+      2.5em 0em 0 0em var(--pv-color-2),
+      1.75em 1.75em 0 0em var(--pv-color-2),
+      0em 2.5em 0 0em var(--pv-color-3),
+      -1.8em 1.8em 0 0em var(--pv-color-4),
+      -2.6em 0em 0 0em var(--pv-color-1),
+      -1.8em -1.8em 0 0em var(--pv-color-2);
+  }
+  87.5% {
+    box-shadow:
+      0em -2.6em 0em 0em var(--pv-color-2),
+      1.8em -1.8em 0 0em var(--pv-color-2),
+      2.5em 0em 0 0em var(--pv-color-2),
+      1.75em 1.75em 0 0em var(--pv-color-2),
+      0em 2.5em 0 0em var(--pv-color-2),
+      -1.8em 1.8em 0 0em var(--pv-color-3),
+      -2.6em 0em 0 0em var(--pv-color-4),
+      -1.8em -1.8em 0 0em var(--pv-color-1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-spinner {
+    animation-duration: 2.2s;
+  }
+}
