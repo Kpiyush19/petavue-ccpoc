@@ -1,6 +1,10 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { PaperPlaneRight } from '@phosphor-icons/react'
 import { ChatOverlay } from '../../components/dashboards/dashboard-viewer-widget'
+// The overlay's positioning (position:fixed, z-index, floating card) lives in
+// this stylesheet. The widget index doesn't bundle it, so without this import
+// the panel renders in normal flow — below the footer instead of over the page.
+import '../../components/dashboards/dashboard-viewer-widget/styles.css'
 import { Button as PvButton } from '../../petavue'
 import { cn } from '../../utils/cn'
 
