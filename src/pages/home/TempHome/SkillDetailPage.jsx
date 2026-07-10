@@ -128,6 +128,9 @@ export default function SkillDetailPage() {
       const res = await apiPost("/api/sessions", { skill_id: skill.slug });
       const sid = res?.session?.session_id;
       if (!sid) throw new Error("No session id returned");
+      // Confirm it started and point to where it lives — it keeps running even
+      // if the user leaves, tracked from the menu's runs activity.
+      toast.success(`Building "${skill.name}". It keeps running even if you leave; track it anytime from the menu.`);
       navigate(`/skills/run/${sid}`);
     } catch (e) {
       toast.error("Failed to start: " + e.message);

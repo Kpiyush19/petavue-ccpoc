@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  ChevronLeft, ChevronRight, Info, X, Plus, ArrowUp, ArrowDown, Pencil, Check, Target,
+  ChevronLeft, ChevronRight, Info, X, Plus, ArrowUp, ArrowDown, Pencil, Check, HelpCircle,
 } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
@@ -138,7 +138,6 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
               <label className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer">
                 <input type="radio" className="sr-only" checked={selected} onChange={() => selectOption(opt.value)} />
                 <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">{opt.label}</span>
-                {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
               </label>
               {customMode && (
                 <div className="px-2.5 pb-2.5">
@@ -690,7 +689,7 @@ export default function ClarificationCard({
           see what their answer actually changes. */}
       {affects ? (
         <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-[var(--accent)]/8 border border-[var(--accent)]/20 text-[12px] text-[var(--text-secondary)] leading-snug">
-          <Target size={13} className="shrink-0 mt-0.5 text-[var(--accent)]" />
+          <HelpCircle size={13} className="shrink-0 mt-0.5 text-[var(--accent)]" />
           <span><span className="font-medium text-[var(--text-primary)]">What this shapes:</span> {affects}</span>
         </div>
       ) : null}
@@ -705,9 +704,12 @@ export default function ClarificationCard({
             onClick={() => onPrevious({ id, answer: value })}
             disabled={submitting}
             size="md"
-            variant="ghost"
+            variant="secondary"
             label="Previous"
             icon={CaretLeft}
+            // .btn--secondary collides with the design-system CSS; force the
+            // petavue blue outline.
+            className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
           />
         ) : (
           <span />

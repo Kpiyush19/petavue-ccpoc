@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { MenuBar } from "./menubar";
+import RunsActivity from "./runs/RunsActivity";
 import { getCurrentUser } from "../api";
 import { MOCK_ENABLED } from "../mocks";
 
@@ -109,6 +110,7 @@ export default function MenuBarNav() {
         onProfile={() => navigate("/petavue/profile")}
         onSettings={() => navigate("/petavue/settings")}
         defaultOpen={false}
+        beforeFooter={(isOpen) => <RunsActivity expanded={isOpen} />}
       />
     </div>
   );

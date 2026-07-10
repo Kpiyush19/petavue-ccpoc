@@ -83,50 +83,61 @@ export function StepIndicator({ status }) {
 }
 
 
+// Single structure for every state so the row *morphs* between compact and
+// expanded rather than swapping (which would be instant). The active/blocked
+// step reveals its description via a grid-rows 0fr→1fr transition — an
+// interruptible CSS transition with a strong ease-out (Emil's framework:
+// occasional state change, <300ms, custom curve), and it snaps under
+// prefers-reduced-motion.
+const STEP_EASE = 'cubic-bezier(0.23,1,0.32,1)'
+
 function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
-  // The active (or blocked) step lifts into a bordered white sub-card that
-  // shows its description inline; completed / pending rows stay compact with
-  // just the circle + label (description on the `title` tooltip).
   const expanded = status === 'active' || status === 'blocked'
   const inlineDesc = timeHint?.tooltip || tooltip
+  const showDesc = expanded && !!inlineDesc
 
-  if (expanded) {
-    return (
-      <li className="px-2 py-2">
-        <div className="flex items-start gap-2.5">
-          <span className="mt-0.5"><StepIndicator status={status} /></span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--color-primary-500)]">
-                {label}
-              </span>
-              {status === 'active' && timeHint?.showCancel && onCancel ? (
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
-                >
-                  Cancel
-                </button>
-              ) : null}
-            </div>
-            {inlineDesc ? (
+  return (
+    <li
+      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'active' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      title={expanded ? undefined : tooltip}
+    >
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5"><StepIndicator status={status} /></span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span
+              className={`flex-1 min-w-0 text-[14px] transition-colors duration-200 ${
+                expanded
+                  ? 'font-semibold text-[var(--color-primary-500)]'
+                  : status === 'completed'
+                  ? 'font-medium text-[var(--text-primary)] truncate'
+                  : 'text-[var(--color-text-disabled)] truncate'
+              }`}
+            >
+              {label}
+            </span>
+            {status === 'active' && timeHint?.showCancel && onCancel ? (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
+          <div
+            className="grid transition-[grid-template-rows,opacity] duration-200 motion-reduce:transition-none"
+            style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
+          >
+            <div className="overflow-hidden">
               <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
                 {inlineDesc}
               </p>
-            ) : null}
+            </div>
           </div>
         </div>
-      </li>
-    )
-  }
-
-  return (
-    <li className="flex items-center gap-2.5 px-2 py-2" title={tooltip}>
-      <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'completed' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
-        {label}
-      </span>
+      </div>
     </li>
   )
 }

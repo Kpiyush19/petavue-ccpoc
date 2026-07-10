@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Check, Sparkles, AlertCircle, Calculator, X, MessageSquare, Lock, BarChart3, LineChart, Table2, List, LayoutGrid, AlignLeft } from 'lucide-react'
+import { Check, Sparkles, AlertCircle, Calculator, X, MessageSquare, Info, BarChart3, LineChart, Table2, List, LayoutGrid, AlignLeft } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
 import { PaperPlaneRight, CheckCircle, XCircle, ArrowUUpLeft, PencilSimple } from '@phosphor-icons/react'
 import { Spinner } from '../../components/ui/Spinner'
@@ -270,7 +270,7 @@ export default function PlanApprovalCard({
               What we&apos;ll build
             </h2>
             {allReviewed ? (
-              <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--pv-success-text)] shrink-0">
+              <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--accent)] shrink-0">
                 <Check size={12} strokeWidth={3} />All reviewed
               </span>
             ) : (
@@ -283,12 +283,11 @@ export default function PlanApprovalCard({
               />
             )}
           </div>
-          <ul className="flex-1 overflow-y-auto p-2.5 space-y-1">
+          <ul className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
             {widgets.map((w, i) => {
               const sel = selected?.id === w.id
               const isDropped = dropped.has(w.id)
               const isApproved = approved.has(w.id)
-              const reviewed = isApproved || isDropped
               const locked = !isUnlocked(i)
               const hasNote = (widgetNotes[w.id] || '').trim()
               return (
@@ -298,24 +297,16 @@ export default function PlanApprovalCard({
                     disabled={locked}
                     onClick={() => setSelectedId(w.id)}
                     title={locked ? 'Review the earlier steps first' : undefined}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg text-left border transition-colors ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${sel ? 'bg-[var(--accent)]/10 border-[var(--accent)]/40' : 'border-transparent hover:bg-[var(--bg-hover)]'}`}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-colors ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${sel ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--bg-hover)]'}`}
                   >
-                    {reviewed ? (
-                      <span className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${isApproved ? 'bg-[var(--pv-success-text)]' : 'bg-[var(--pv-neutral-grey-300)]'}`}>
-                        {isApproved ? <Check size={12} className="text-white" strokeWidth={3} /> : <X size={12} className="text-white" strokeWidth={3} />}
-                      </span>
+                    {isApproved ? (
+                      <CheckCircle size={16} weight="fill" className="text-[var(--accent)] shrink-0" />
                     ) : (
-                      <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0 tabular-nums ${sel ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>{i + 1}</span>
+                      <span className={`flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-semibold shrink-0 tabular-nums ${sel ? 'bg-[var(--color-primary-50)] text-[var(--accent)]' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>{i + 1}</span>
                     )}
-                    <span className={`flex-1 min-w-0 truncate text-[12.5px] ${isDropped ? 'line-through text-[var(--text-muted)]' : sel ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>{w.name}</span>
-                    {reviewed ? (
-                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${isApproved ? 'bg-[var(--pv-success-bg)] text-[var(--pv-success-text)]' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>
-                        <Check size={9} strokeWidth={3} />{isApproved ? 'Done' : 'Removed'}
-                      </span>
-                    ) : locked ? (
-                      <Lock size={11} className="text-[var(--text-muted)] shrink-0" />
-                    ) : hasNote ? (
-                      <MessageSquare size={11} className="text-[var(--accent)] shrink-0" />
+                    <span className={`flex-1 min-w-0 truncate text-[14px] ${isDropped ? 'line-through text-[var(--text-muted)]' : sel ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>{w.name}</span>
+                    {!locked && hasNote ? (
+                      <MessageSquare size={12} className="text-[var(--accent)] shrink-0" />
                     ) : null}
                   </button>
                 </li>
@@ -338,7 +329,7 @@ export default function PlanApprovalCard({
                 {/* Meta row — where you are in the review + what shape this one
                     takes, so the reviewer has context before the preview. */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                     {isMemo ? 'Section' : 'Widget'} {widgets.findIndex((x) => x.id === selected.id) + 1} of {widgets.length}
                   </span>
                   {WIDGET_TYPE_BY_ID[selected.id] ? (
@@ -350,16 +341,16 @@ export default function PlanApprovalCard({
                 </div>
 
                 {selected.desc ? (
-                  <p className="text-[13.5px] text-[var(--text-secondary)] leading-relaxed max-w-2xl">{selected.desc}</p>
+                  <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed max-w-2xl">{selected.desc}</p>
                 ) : null}
 
                 <div>
-                  <div className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Sample layout</div>
+                  <div className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Sample layout</div>
                   <div className="max-w-2xl">
                     <WidgetPreview widget={selected} />
                   </div>
-                  <p className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] mt-1.5">
-                    <Sparkles size={11} className="shrink-0 text-[var(--text-muted)]" />
+                  <p className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] mt-1.5">
+                    <Info size={11} className="shrink-0 text-[var(--text-muted)]" />
                     Layout only. Your real numbers fill in when it&apos;s built.
                   </p>
                 </div>
@@ -370,28 +361,35 @@ export default function PlanApprovalCard({
                       Petavue design-system buttons only: primary + blueGhost
                       (both collision-free; the system has no red/green). */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <PvButton
-                      onClick={() => toggleApproved(selected.id)}
-                      size="md"
-                      variant={approved.has(selected.id) ? 'blueGhost' : 'primary'}
-                      icon={CheckCircle}
-                      iconWeight={approved.has(selected.id) ? 'fill' : 'regular'}
-                      label={approved.has(selected.id) ? 'Kept' : 'Keep'}
-                    />
-                    <PvButton
-                      onClick={() => toggleDropped(selected.id)}
-                      size="md"
-                      variant="blueGhost"
-                      icon={dropped.has(selected.id) ? ArrowUUpLeft : XCircle}
-                      label={dropped.has(selected.id) ? 'Restore' : 'Remove'}
-                    />
+                    {/* Suggest a change — left; Remove + Keep pushed to the far
+                        right, Keep rightmost as the primary confirm. */}
                     <PvButton
                       onClick={() => setChangePanelOpen(true)}
                       size="md"
-                      variant="blueGhost"
+                      variant="ghost"
                       icon={PencilSimple}
                       label="Suggest a change"
                     />
+                    <div className="ml-auto flex items-center gap-2">
+                      <PvButton
+                        onClick={() => toggleDropped(selected.id)}
+                        size="md"
+                        variant="secondary"
+                        icon={dropped.has(selected.id) ? ArrowUUpLeft : XCircle}
+                        label={dropped.has(selected.id) ? 'Restore' : 'Remove'}
+                        // .btn--secondary collides with the design-system CSS and
+                        // greys out; force the petavue blue outline.
+                        className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
+                      />
+                      <PvButton
+                        onClick={() => toggleApproved(selected.id)}
+                        size="md"
+                        variant="primary"
+                        icon={CheckCircle}
+                        iconWeight={approved.has(selected.id) ? 'fill' : 'regular'}
+                        label="Keep"
+                      />
+                    </div>
                   </div>
                   {(widgetNotes[selected.id] || '').trim() ? (
                     <p className="flex items-start gap-1.5 text-[11.5px] text-[var(--text-secondary)]">
@@ -417,7 +415,7 @@ export default function PlanApprovalCard({
           onClick={() => setChangePanelOpen(false)}
         />
         <aside
-          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--pv-neutral-grey-150)] shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)] rounded-r-2xl transition-transform duration-200 ${changePanelOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--pv-neutral-grey-150)] transition-transform duration-200 ${changePanelOpen ? 'translate-x-0 shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)]' : 'translate-x-full'}`}
           aria-hidden={!changePanelOpen}
         >
           <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0 border-b border-[var(--pv-neutral-grey-150)]">
@@ -433,7 +431,7 @@ export default function PlanApprovalCard({
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
             <div>
-              <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-1">{isMemo ? 'Section' : 'Widget'}</div>
+              <div className="text-[14px] uppercase tracking-wider text-[var(--text-muted)] mb-1">{isMemo ? 'Section' : 'Widget'}</div>
               <div className="text-[13px] font-medium text-[var(--text-primary)]">{selected?.name}</div>
             </div>
             <div>
@@ -445,7 +443,7 @@ export default function PlanApprovalCard({
                 placeholder={selected ? `e.g. break "${selected.name}" down by channel, or use a different metric…` : ''}
                 className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-none"
               />
-              <p className="flex items-start gap-1.5 text-[11.5px] text-[var(--text-secondary)] mt-2">
+              <p className="flex items-start gap-1.5 text-[12px] text-[var(--text-secondary)] mt-2">
                 <Sparkles size={12} className="mt-0.5 shrink-0 text-[var(--accent)]" />
                 <span>Sage applies this when it revises the plan, before anything is built.</span>
               </p>

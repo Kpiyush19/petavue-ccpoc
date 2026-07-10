@@ -364,6 +364,13 @@
   margin-top: auto;
 }
 
+/* When the runs slot precedes the footer, it owns the auto-margin (pinning the
+   slot + footer together at the bottom) so the footer sits directly beneath it
+   instead of the free space landing between them. */
+.runs-activity-slot + .menubar__footer {
+  margin-top: 0;
+}
+
 .user-profile {
   display: flex;
   align-items: center;

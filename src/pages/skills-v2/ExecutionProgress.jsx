@@ -1,11 +1,12 @@
-import { useMemo, useState, Fragment } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
   CheckCircle2, Circle, AlertCircle, AlertOctagon,
-  Sparkles, Check, LayoutDashboard, FileText, Calculator, X,
+  Sparkles, Check, LayoutDashboard, FileText, Calculator, X, ChevronDown, Pencil, Eye,
 } from 'lucide-react'
 import { Button as PvButton } from '../../petavue'
 import { Spinner } from '../../components/ui/Spinner'
+import MarkdownRenderer from '../../common-utils/MarkdownRenderer'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
@@ -36,25 +37,6 @@ function getDisplayTitle(step) {
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
-
-// Human-readable phase names for the build step groups. The raw steps are
-// engine operations (query / transform / widget); grouping them under these
-// headers turns a wall of 20+ technical rows into a few phases an operator
-// recognizes.
-const GROUP_LABEL = {
-  query: 'Pull your data',
-  transform: 'Apply your definitions',
-  widget: 'Build the widgets',
-  verify: 'Quality check',
-}
-
-function GroupHeader({ kind }) {
-  return (
-    <li className="px-2 pt-3 pb-1 first:pt-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-      {GROUP_LABEL[kind] || kind}
-    </li>
-  )
-}
 
 // ─── Verify section (multi-row) ───────────────────────────────────────
 // The verify section is UI-only — no corresponding plan steps. Rather
@@ -144,9 +126,24 @@ function activeKeyForBlocked({ round }) {
 // produced; the user picks which to save so future runs reuse them.
 function SaveAnswersModal({ answers, onClose }) {
   const [selected, setSelected] = useState(() => new Set(answers.map((a) => a.id)))
+  // Which row is expanded into its edit form (accordion — one at a time).
+  const [expandedId, setExpandedId] = useState(null)
+  // Editable per-answer drafts (title / description / markdown content).
+  const [drafts, setDrafts] = useState(() =>
+    Object.fromEntries(answers.map((a) => [a.id, { title: a.title, description: a.description || '', content: a.content || '' }]))
+  )
+  // Which rows are showing the rendered markdown preview vs the editor.
+  const [previewIds, setPreviewIds] = useState(() => new Set())
+
   const toggle = (id) => setSelected((prev) => {
     const next = new Set(prev)
     if (next.has(id)) next.delete(id); else next.add(id)
+    return next
+  })
+  const updateDraft = (id, field, val) => setDrafts((d) => ({ ...d, [id]: { ...d[id], [field]: val } }))
+  const setPreview = (id, on) => setPreviewIds((prev) => {
+    const next = new Set(prev)
+    if (on) next.add(id); else next.delete(id)
     return next
   })
   const count = selected.size
@@ -157,7 +154,7 @@ function SaveAnswersModal({ answers, onClose }) {
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="w-full max-w-[440px] max-h-[80vh] flex flex-col bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl shadow-[0_24px_60px_-12px_rgba(16,24,40,0.4)] overflow-hidden"
+        className="w-full max-w-[560px] max-h-[85vh] flex flex-col bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl shadow-[0_24px_60px_-12px_rgba(16,24,40,0.4)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 h-12 shrink-0 border-b border-[var(--border-primary)]">
@@ -172,29 +169,94 @@ function SaveAnswersModal({ answers, onClose }) {
 
         <div className="flex-1 min-h-0 overflow-y-auto p-3 flex flex-col gap-2">
           <p className="text-[12px] text-[var(--text-secondary)] leading-snug px-1 mb-1">
-            These are the definitions and settings you confirmed for this run. Save the ones you want future runs to reuse automatically.
+            <span className="font-medium text-[var(--text-primary)]">This is how skills learn your setup.</span> Save the definitions and settings you confirmed here, and future runs reuse them automatically, so you&apos;re not asked again and every skill works from your own definitions. Expand any one to review or edit it.
           </p>
           {answers.map((a) => {
             const on = selected.has(a.id)
             const isKD = a.kind === 'Key Definition'
+            const isExpanded = expandedId === a.id
+            const draft = drafts[a.id]
+            const isPreview = previewIds.has(a.id)
             return (
-              <button
+              <div
                 key={a.id}
-                type="button"
-                onClick={() => toggle(a.id)}
-                className="flex items-start gap-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] px-3 py-2.5 text-left cursor-pointer hover:border-[var(--text-muted)]/40 transition-colors"
+                className={`rounded-lg border transition-colors ${isExpanded ? 'border-[var(--accent)]' : 'border-[var(--border-primary)]'} bg-[var(--bg-primary)] overflow-hidden`}
               >
-                <span className={`mt-0.5 shrink-0 w-8 h-[18px] rounded-full p-0.5 flex items-center transition-colors ${on ? 'bg-[var(--accent)] justify-end' : 'bg-[var(--border-primary)] justify-start'}`}>
-                  <span className="w-[14px] h-[14px] rounded-full bg-white shadow-sm" />
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[12.5px] font-medium text-[var(--text-primary)]">{a.title}</span>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${isKD ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-[var(--bg-hover)] text-[var(--text-muted)]'}`}>{a.kind}</span>
-                  </span>
-                  <span className="block text-[11px] text-[var(--text-muted)] mt-0.5 truncate">{a.target}</span>
-                </span>
-              </button>
+                {/* Header row — toggle (save on/off) + title/target + expander */}
+                <div className="flex items-start gap-3 px-3 py-2.5">
+                  <button
+                    type="button"
+                    onClick={() => toggle(a.id)}
+                    aria-label={on ? 'Do not save this' : 'Save this'}
+                    className={`mt-0.5 shrink-0 w-8 h-[18px] rounded-full p-0.5 flex items-center border-none cursor-pointer transition-colors ${on ? 'bg-[var(--accent)] justify-end' : 'bg-[var(--border-primary)] justify-start'}`}
+                  >
+                    <span className="w-[14px] h-[14px] rounded-full bg-white shadow-sm" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedId(isExpanded ? null : a.id)}
+                    aria-expanded={isExpanded}
+                    className="flex-1 min-w-0 flex items-start gap-2 text-left bg-transparent border-none cursor-pointer p-0"
+                  >
+                    <span className="flex-1 min-w-0">
+                      <span className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[12.5px] font-medium text-[var(--text-primary)]">{draft.title || a.title}</span>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${isKD ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-[var(--bg-hover)] text-[var(--text-muted)]'}`}>{a.kind}</span>
+                      </span>
+                      <span className="block text-[11px] text-[var(--text-muted)] mt-0.5 truncate">{a.target}</span>
+                    </span>
+                    <ChevronDown size={16} className={`shrink-0 mt-0.5 text-[var(--text-muted)] transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+
+                {/* Edit form */}
+                {isExpanded ? (
+                  <div className="px-3 pb-3 pt-1 flex flex-col gap-3 border-t border-[var(--border-primary)] bg-[var(--bg-tertiary)]">
+                    <div>
+                      <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">Title</label>
+                      <input
+                        value={draft.title}
+                        onChange={(e) => updateDraft(a.id, 'title', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">Description</label>
+                      <textarea
+                        value={draft.description}
+                        onChange={(e) => updateDraft(a.id, 'description', e.target.value)}
+                        rows={2}
+                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)] resize-none focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <label className="text-[11px] font-medium text-[var(--text-muted)]">Content (markdown)</label>
+                        <div className="flex items-center gap-0.5 p-0.5 rounded-md bg-[var(--bg-hover)]">
+                          <button type="button" onClick={() => setPreview(a.id, false)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border-none cursor-pointer transition-colors ${!isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
+                            <Pencil size={11} /> Edit
+                          </button>
+                          <button type="button" onClick={() => setPreview(a.id, true)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border-none cursor-pointer transition-colors ${isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
+                            <Eye size={11} /> Preview
+                          </button>
+                        </div>
+                      </div>
+                      {isPreview ? (
+                        <div className="w-full max-h-[240px] overflow-y-auto px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)]">
+                          <MarkdownRenderer content={draft.content || '_Nothing yet._'} />
+                        </div>
+                      ) : (
+                        <textarea
+                          value={draft.content}
+                          onChange={(e) => updateDraft(a.id, 'content', e.target.value)}
+                          rows={7}
+                          className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12px] font-mono leading-relaxed text-[var(--text-primary)] resize-none focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             )
           })}
         </div>
@@ -306,7 +368,7 @@ function StepRow({ step, status, title }) {
 
   if (expanded) {
     return (
-      <li className="px-2 py-2">
+      <li className={`px-2 py-2 rounded-lg ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}>
         <div className="flex items-start gap-2.5">
           <span className="mt-0.5"><StepIndicator status={status} /></span>
           <div className="flex-1 min-w-0">
@@ -342,7 +404,7 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
 
   if (expanded) {
     return (
-      <li className="px-2 py-2">
+      <li className={`px-2 py-2 rounded-lg ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}>
         <div className="flex items-start gap-2.5">
           <span className="mt-0.5"><StepIndicator status={status} /></span>
           <div className="flex-1 min-w-0">
@@ -533,8 +595,12 @@ export default function ExecutionProgress({
   void findingCount
   const [saveOpen, setSaveOpen] = useState(false)
   // Augment each plan step with its display title + a normalized status.
+  // Exclude verify-type steps — the quality-check phase is represented by the
+  // dedicated verify rows below, so keeping a verify StepRow here would make
+  // two "reviewing" rows run at once. The build steps run one by one, then the
+  // verify section takes over.
   const rows = useMemo(() => (
-    (steps || []).map((s) => {
+    (steps || []).filter((s) => s.type !== 'verify').map((s) => {
       let status = stepStatuses?.[s.id] || 'pending'
       if (status === 'done') status = 'success'
       return {
@@ -632,18 +698,9 @@ export default function ExecutionProgress({
           </div>
         </div>
         <ul className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
-          {rows.map((step, i) => {
-            // Emit a phase header whenever the kind changes, so the flat list
-            // reads as a few recognizable phases rather than 20+ ops.
-            const showHeader = i === 0 || rows[i - 1].kind !== step.kind
-            return (
-              <Fragment key={step.id}>
-                {showHeader ? <GroupHeader kind={step.kind} /> : null}
-                <StepRow step={step} status={step._status} title={step._title} />
-              </Fragment>
-            )
-          })}
-          {verifyRows.length > 0 ? <GroupHeader kind="verify" /> : null}
+          {rows.map((step) => (
+            <StepRow key={step.id} step={step} status={step._status} title={step._title} />
+          ))}
           {verifyRows.map((r) => (
             <VerifyRow
               key={r.key}
@@ -689,19 +746,28 @@ export default function ExecutionProgress({
           </>
         ) : showFinalArtifact ? (
           <>
-            {/* Completion status header — a clean white bar matching the app's
-                other pane headers, with a soft green success chip instead of a
-                loud full-green band. The primary "Verify & refine in chat" and
-                secondary "Review & save answers" live in the run-page footer.
-                (Publish stays parked behind SHOW_PUBLISH_BUTTON.) */}
+            {/* Completion status header — a clean white bar with a soft green
+                success chip. The primary "Verify & refine in chat" lives in the
+                run-page footer; "Review & save answers" sits here, next to the
+                finished draft. (Publish stays parked behind SHOW_PUBLISH_BUTTON.) */}
             <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--pv-neutral-grey-150)] bg-white shrink-0">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--pv-success-bg)] shrink-0">
                 <Check size={13} className="text-[var(--pv-success-text)]" strokeWidth={3} />
               </span>
-              <span className="min-w-0 truncate text-[12.5px] leading-tight">
+              <span className="flex-1 min-w-0 truncate text-[12.5px] leading-tight">
                 <span className="font-semibold text-[var(--text-primary)]">{outputType === 'memo' ? 'Draft memo built' : 'Draft dashboard built'}.</span>{' '}
                 <span className="text-[var(--text-muted)]">Not final until you verify it in chat.</span>
               </span>
+              {planSummary?.saveableAnswers?.length ? (
+                <PvButton
+                  onClick={() => setSaveOpen(true)}
+                  size="md"
+                  variant="secondary"
+                  label="Review & save answers"
+                  title="Save the definitions you confirmed this run so future runs reuse them. It's how skills learn your setup."
+                  className="shrink-0 !text-[var(--accent)] !border-[var(--accent)] !bg-white"
+                />
+              ) : null}
             </div>
             <div className="flex-1 min-h-0 bg-white">
               <FinalArtifactPane

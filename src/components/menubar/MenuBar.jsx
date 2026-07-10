@@ -39,6 +39,9 @@ export function MenuBar({
   defaultOpen = true,
   isOpen: controlledOpen,
   onToggle,
+  // Render-prop slot rendered just above the profile footer; receives the
+  // current open state so it can show a compact (rail) vs full (expanded) UI.
+  beforeFooter,
 }) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const isControlled = controlledOpen !== undefined;
@@ -123,6 +126,9 @@ export function MenuBar({
       {isOpen && historyGroups.length > 0 && (
         <HistoryPanel groups={historyGroups} onItemClick={onHistoryItemClick} />
       )}
+
+      {/* Slot above the footer (e.g. skill-run activity) */}
+      {typeof beforeFooter === 'function' ? beforeFooter(isOpen) : beforeFooter}
 
       {/* User profile at bottom */}
       <div className="menubar__footer">

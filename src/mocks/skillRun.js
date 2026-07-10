@@ -55,7 +55,6 @@ const PERIOD_CLARIFICATION = {
     { value: "last_90", label: "Last 90 days" },
     { value: "last_quarter", label: "Last quarter" },
     { value: "last_4q", label: "Last 4 quarters" },
-    { value: "ytd", label: "Year to date" },
     { value: "__custom__", label: "Other (please specify)" },
   ],
 };
@@ -65,6 +64,57 @@ const PERIOD_LABEL = {
   last_4q: "Last 4 quarters",
   ytd: "Year to date",
 };
+
+// How revenue credit is split across the touches on a deal — the defining
+// choice for an attribution analysis, so it's asked first.
+const ATTRIBUTION_CLARIFICATION = {
+  id: "attribution_model",
+  question: "Which attribution model should we use to distribute credit across touches?",
+  help_text: "How revenue credit is split across the touches on a deal. You can change it later in chat without rebuilding.",
+  affects: "How every number is calculated. It sets how much credit each touch (first, middle, last) gets, so the channel and campaign totals all depend on it.",
+  answer_type: "single_select",
+  required: true,
+  default: "u_shaped",
+  surfaced_reason: null,
+  allow_custom: true,
+  options: [
+    { value: "u_shaped", label: "U-shaped (40% first / 20% middle / 40% last)" },
+    { value: "first_touch", label: "First-touch (100% to first)" },
+    { value: "last_touch", label: "Last-touch (100% to last)" },
+    { value: "__custom__", label: "Other (please specify)" },
+  ],
+};
+const ATTRIBUTION_LABEL = {
+  u_shaped: "U-shaped", first_touch: "First-touch", last_touch: "Last-touch",
+  linear: "Linear", w_shaped: "W-shaped", time_decay: "Time-decay",
+};
+
+// The main dimension the dashboard compares performance across.
+const GROUPING_CLARIFICATION = {
+  id: "grouping",
+  question: "How should we break the results down?",
+  help_text: "The main dimension the dashboard compares performance across. You can add more views later in chat.",
+  affects: "The \"Breakdown by segment\" widget and how the charts are sliced. Every comparison is grouped by this.",
+  answer_type: "single_select",
+  required: true,
+  default: "channel",
+  surfaced_reason: null,
+  allow_custom: true,
+  options: [
+    { value: "channel", label: "By channel (Paid Search, Social, Email, …)" },
+    { value: "campaign", label: "By campaign" },
+    { value: "segment", label: "By segment (Enterprise, Mid-market, SMB)" },
+    { value: "__custom__", label: "Other (please specify)" },
+  ],
+};
+const GROUPING_LABEL = {
+  channel: "By channel", campaign: "By campaign", segment: "By segment", region: "By region",
+};
+
+// The batch of questions the planner asks before drafting. Ordered so the
+// most consequential choice (attribution model) comes first. All jargon-free
+// and each carries an `affects` line ("What this shapes").
+const CLARIFICATIONS = [ATTRIBUTION_CLARIFICATION, PERIOD_CLARIFICATION, GROUPING_CLARIFICATION];
 
 // Demo trigger — any skill whose slug is in this set halts at the Plan stage
 // with a GTM-style "your setup is missing data" block, so the blocked-state +
@@ -111,7 +161,7 @@ export function getProgress(sid) {
   if (!run) return null;
   return {
     step_statuses: run.step_statuses,
-    clarifications_pending: run.awaiting ? [run.clarification] : [],
+    clarifications_pending: run.awaiting ? run.clarifications : [],
     verification_round: run.verification_round,
     finding_count: run.finding_count,
     disclosure_summary: null,
@@ -138,7 +188,7 @@ export function startRun(session, skillId) {
     session,
     skill,
     createdAt: session.created_at,
-    clarification: PERIOD_CLARIFICATION,
+    clarifications: CLARIFICATIONS,
     awaiting: false,
     blocked: false,
     blockedSummary: null,
@@ -158,11 +208,21 @@ export function startRun(session, skillId) {
       // The answers/definitions produced during this run, offered for saving as
       // reusable context so future runs reuse them (the "Save answers" popup).
       saveableAnswers: [
-        { id: "period", title: "Time window for this analysis", kind: "Context", target: "cohort-analysis / defaults.md" },
-        { id: "qualified_lead", title: "What counts as a qualified lead", kind: "Key Definition", target: "Tenant key definitions" },
-        { id: "attribution", title: "Attribution model", kind: "Key Definition", target: "Tenant key definitions" },
-        { id: "segments", title: "Default segments for the breakdown", kind: "Context", target: "cohort-analysis / defaults.md" },
-        { id: "targets", title: "Target thresholds", kind: "Key Definition", target: "Tenant key definitions" },
+        { id: "period", title: "Time window for this analysis", kind: "Context", target: "cohort-analysis / defaults.md",
+          description: "The default lookback window skills use when a report doesn't specify one.",
+          content: "## Default time window\n\nUse **Last quarter** as the default reporting window unless the user asks for another range.\n\n- **Anchor:** the most recent complete fiscal quarter.\n- **Comparison:** the prior quarter, for QoQ deltas." },
+        { id: "qualified_lead", title: "What counts as a qualified lead", kind: "Key Definition", target: "Tenant key definitions",
+          description: "The rule that decides which leads count as qualified across every skill.",
+          content: "## Qualified lead\n\nA lead is **qualified** when `lead_status = 'MQL'` and a demo is booked.\n\n- **Source field:** `lead_status` on the Lead object.\n- **Qualifying values:** `MQL`, `SQL`." },
+        { id: "attribution", title: "Attribution model", kind: "Key Definition", target: "Tenant key definitions",
+          description: "How revenue credit is split across touches in multi-touch analyses.",
+          content: "## Attribution model\n\nUse **U-shaped (40/20/40)** as the default multi-touch model.\n\n- 40% to the first touch, 40% to the last, 20% split across the middle." },
+        { id: "segments", title: "Default segments for the breakdown", kind: "Context", target: "cohort-analysis / defaults.md",
+          description: "The segments skills use when slicing performance by default.",
+          content: "## Default segments\n\nBreak results down by **channel** by default: Paid Search, Paid Social, Email, Organic, Events." },
+        { id: "targets", title: "Target thresholds", kind: "Key Definition", target: "Tenant key definitions",
+          description: "The goals skills compare against to flag over- and under-performance.",
+          content: "## Target thresholds\n\n- **Pipeline coverage:** 3.0x is on target; below 2.5x is at risk.\n- **CAC:** within 10% of plan is on target." },
       ],
       plan_wont_deliver: [],
       plan_key_formulas: [],
@@ -206,7 +266,7 @@ export function startRun(session, skillId) {
     run.awaiting = true;
     session.setup_stage = "awaiting_input";
     ev(sid, { type: "setup-stage", stage: "awaiting_input" });
-    ev(sid, { type: "clarification-requested", clarification: run.clarification });
+    ev(sid, { type: "clarification-batch-requested", clarifications: run.clarifications });
   });
 }
 
@@ -216,14 +276,28 @@ export function submitClarification(sid, answers) {
   if (!run || !run.awaiting) return;
   run.awaiting = false;
 
-  // Record the chosen period as a key choice so the plan + "Running with"
-  // summary reflect what the user picked.
-  const entry = Array.isArray(answers) ? answers[0] : answers;
-  const raw = entry?.answer ?? entry?.value ?? entry;
-  const label = PERIOD_LABEL[raw] || (typeof raw === "string" && raw ? raw : "Last quarter");
+  // Record the chosen answers as key choices so the plan + "Running with"
+  // summary reflect what the user picked. The frontend submits the whole
+  // batch at once ([{ clarification_id, answer }, …]).
+  const list = Array.isArray(answers) ? answers : [answers];
+  const byId = {};
+  for (const a of list) {
+    const id = a?.clarification_id ?? a?.id;
+    const val = a?.answer ?? a?.value ?? a;
+    if (id) byId[id] = val;
+  }
+  const attrRaw = byId.attribution_model;
+  const attrLabel = ATTRIBUTION_LABEL[attrRaw] || (typeof attrRaw === "string" && attrRaw ? attrRaw : "U-shaped");
+  const periodRaw = byId.period;
+  const periodLabel = PERIOD_LABEL[periodRaw] || (typeof periodRaw === "string" && periodRaw ? periodRaw : "Last quarter");
+  const groupRaw = byId.grouping;
+  const groupLabel = GROUPING_LABEL[groupRaw] || (typeof groupRaw === "string" && groupRaw ? groupRaw : "By channel");
+  const OWN = ["Attribution model", "Period", "Grouped by"];
   run.planSummary.key_choices = [
-    { label: "Period", value: label },
-    ...run.planSummary.key_choices.filter((c) => c.label !== "Period"),
+    { label: "Attribution model", value: attrLabel },
+    { label: "Period", value: periodLabel },
+    { label: "Grouped by", value: groupLabel },
+    ...run.planSummary.key_choices.filter((c) => !OWN.includes(c.label)),
   ];
 
   const { session } = run;

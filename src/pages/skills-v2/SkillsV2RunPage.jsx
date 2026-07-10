@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   AlertCircle, Info,
-  ChevronRight, X, Sparkles,
+  ChevronRight, X,
 } from 'lucide-react'
 import RunSageOverlay from './RunSageOverlay'
-import { SAGE_GRADIENT } from '../goals/SageWidget'
 import { useSkillRun } from './useSkillRun'
 import ClarificationCard from './ClarificationCard'
 import PlanApprovalCard from './PlanApprovalCard'
@@ -15,7 +14,7 @@ import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
 import { Button } from '../../components/ui/Button'
 import { Button as PvButton } from '../../petavue'
-import { Sparkle } from '@phosphor-icons/react'
+import { Sparkle, ArrowRight, Check } from '@phosphor-icons/react'
 import { Spinner } from '../../components/ui/Spinner'
 import { Dialog, DialogHeader, DialogContent, DialogFooter } from '../../components/ui/Dialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
@@ -41,9 +40,8 @@ const RUNNING_PHASES = new Set(['EXECUTING', 'VERIFYING', 'FIXING'])
 // reassurance shows across all of these — always present until the run is done.
 const IN_PROGRESS_PHASES = new Set(['PLANNING', 'AWAITING_CONFIRMATION', 'EXECUTING', 'VERIFYING', 'FIXING'])
 
-// Phases where numbers exist on screen — building through done. This is the
-// moment "the numbers look off" happens, so we mark the output a prototype
-// (verify & publish in chat to finalize) exactly where it counts.
+// Phases where numbers exist on screen — building through done. Marks the
+// output a draft (verify & publish in chat to finalize) where it counts.
 const PROTOTYPE_PHASES = new Set(['EXECUTING', 'VERIFYING', 'FIXING', 'COMPLETE', 'OPEN_CHAT'])
 
 
@@ -543,25 +541,25 @@ export default function SkillsV2RunPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {PROTOTYPE_PHASES.has(state.phase) ? (
-            // Draft marker — this is a draft on the user's data; the trusted
-            // version comes from verify & publish in chat.
             <span
               title="This is a draft built on your data. Verify & publish it in chat to finalize. That's the version you can trust and share."
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/25"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#757A97]"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+              <Info size={13} className="shrink-0" />
               Draft · verify to publish
             </span>
           ) : null}
-          <button
-            type="button"
+          <PvButton
             onClick={() => setSageOpen(true)}
             aria-label="Ask Sage about this step"
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium text-white border-none cursor-pointer transition-[filter] hover:brightness-105"
-            style={{ background: SAGE_GRADIENT }}
-          >
-            <Sparkles size={13} /> Ask Sage
-          </button>
+            size="md"
+            variant="secondary"
+            icon={Sparkle}
+            iconWeight="fill"
+            label="Ask Sage"
+            // .btn--secondary collides with the design-system CSS; force blue.
+            className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
+          />
         </div>
       </div>
 
@@ -575,7 +573,7 @@ export default function SkillsV2RunPage() {
           <p className="flex items-start gap-2 text-[12px] leading-snug text-[var(--text-secondary)]">
             <Info size={14} className="shrink-0 mt-0.5 text-[var(--accent)]" />
             <span>
-              This can take a few minutes. <span className="font-medium text-[var(--text-primary)]">You can leave this page and it keeps running</span>; resume anytime from your sessions.
+              This usually takes a few minutes. <span className="font-medium text-[var(--text-primary)]">You can leave and it keeps running</span>; pick it up anytime from your sessions. When it&apos;s ready, <span className="font-medium text-[var(--text-primary)]">it opens as a chat</span> where you can edit the result and ask follow-ups.
             </span>
           </p>
         </div>
@@ -685,15 +683,6 @@ export default function SkillsV2RunPage() {
                 // collides with petavue's and greys this out; force the blue.
                 className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
               />
-            ) : (state.phase === 'COMPLETE' || state.phase === 'OPEN_CHAT') ? (
-              // Secondary action for the finished run. No action wired yet.
-              <PvButton
-                onClick={() => {}}
-                size="md"
-                variant="secondary"
-                label="Review & save answers"
-                className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
-              />
             ) : null}
           </div>
           <div className="flex-1 min-w-0 flex items-center justify-center gap-0.5 overflow-x-auto">
@@ -719,8 +708,9 @@ export default function SkillsV2RunPage() {
                 variant="primary"
                 disabled={approving || discarding || buildGated}
                 label={approving ? 'Starting…' : buildGated ? `Approve ${buildRemaining} more` : 'Build it'}
-                icon={approving ? Spinner : buildGated ? null : Sparkle}
-                iconWeight={approving ? 'regular' : 'fill'}
+                icon={approving ? Spinner : buildGated ? null : ArrowRight}
+                iconPosition="suffix"
+                iconWeight={approving ? 'regular' : 'bold'}
               />
             ) : (state.phase === 'COMPLETE' || state.phase === 'OPEN_CHAT') && onFollowUp ? (
               <PvButton
@@ -729,8 +719,9 @@ export default function SkillsV2RunPage() {
                 variant="primary"
                 disabled={handingOff}
                 label={handingOff ? 'Opening…' : 'Verify & refine in chat'}
-                icon={handingOff ? Spinner : Sparkle}
-                iconWeight={handingOff ? 'regular' : 'fill'}
+                icon={handingOff ? Spinner : Check}
+                iconPosition="suffix"
+                iconWeight={handingOff ? 'regular' : 'bold'}
               />
             ) : state.phase === 'PLANNING' ? (
               // Proceed sits in the footer through the whole Plan stage, but
@@ -772,6 +763,7 @@ export default function SkillsV2RunPage() {
 
       {/* Ask Sage — context-aware overlay for the current step. */}
       <RunSageOverlay phase={state.phase} open={sageOpen} onClose={() => setSageOpen(false)} />
+
 
       {/* Cancel-run confirm dialog. Destructive action — discards the
           run and signals every agent to halt at the next safe point. */}
