@@ -360,83 +360,105 @@ function StepResultsPane({ rows }) {
 }
 
 
-function StepRow({ step, status, title }) {
-  // Same vocabulary as the plan steps: the running (or failed) step lifts
-  // into a white sub-card showing its purpose inline; done / pending rows
-  // stay compact with just the circle + label.
-  const expanded = status === 'running' || status === 'failed'
+// Shared easing for the step-row expand/collapse (Emil: strong ease-out).
+const STEP_EASE = 'cubic-bezier(0.23,1,0.32,1)'
 
-  if (expanded) {
-    return (
-      <li className={`px-2 py-2 rounded-lg ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}>
-        <div className="flex items-start gap-2.5">
-          <span className="mt-0.5"><StepIndicator status={status} /></span>
-          <div className="flex-1 min-w-0">
-            <span className="block text-[14px] font-semibold text-[var(--color-primary-500)]">{title}</span>
-            {step.purpose ? (
-              <p className={`text-[12px] leading-snug mt-1 ${status === 'failed' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>{step.purpose}</p>
-            ) : null}
+// One structure for every state so the row *morphs* between compact and
+// running instead of swapping (which would be instant): the purpose reveals
+// via a grid-rows 0fr→1fr transition and the fill/label colours cross-fade,
+// snapping under prefers-reduced-motion. Matches the Plan step's SubStepRow.
+function StepRow({ step, status, title }) {
+  const expanded = status === 'running' || status === 'failed'
+  const showDesc = expanded && !!step.purpose
+  return (
+    <li
+      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      title={expanded ? undefined : (step.purpose || title)}
+    >
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5"><StepIndicator status={status} /></span>
+        <div className="flex-1 min-w-0">
+          <span
+            className={`block text-[14px] transition-colors duration-200 ${
+              expanded
+                ? 'font-semibold text-[var(--color-primary-500)]'
+                : status === 'success'
+                ? 'font-medium text-[var(--text-primary)] truncate'
+                : 'text-[var(--color-text-disabled)] truncate'
+            }`}
+          >
+            {title}
+          </span>
+          <div
+            className="grid transition-[grid-template-rows,opacity] duration-200 motion-reduce:transition-none"
+            style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
+          >
+            <div className="overflow-hidden">
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'failed' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
+                {step.purpose}
+              </p>
+            </div>
           </div>
         </div>
-      </li>
-    )
-  }
-
-  return (
-    <li className="flex items-center gap-2.5 px-2 py-2" title={step.purpose || title}>
-      <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
-        {title}
-      </span>
+      </div>
     </li>
   )
 }
 
 
-// Verify row — one per visible quality-check phase. No sublabel (no
-// finding counts), no error styling on intermediate rows. Status drives
-// the icon (running spinner, success check, blocked alert, pending
-// hollow). Same visual vocabulary as the plan-step rows above.
+// Verify row — one per visible quality-check phase. Same morphing structure
+// as StepRow; its time hint (when present) rides the expanding description.
 function VerifyRow({ label, status, timeHint, onCancel }) {
-  // Quality-check rows share the plan/build vocabulary: the running row lifts
-  // into a white sub-card, the rest stay compact circle + label.
   const expanded = status === 'running' || status === 'blocked'
-
-  if (expanded) {
-    return (
-      <li className={`px-2 py-2 rounded-lg ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}>
-        <div className="flex items-start gap-2.5">
-          <span className="mt-0.5"><StepIndicator status={status} /></span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--color-primary-500)]">{label}</span>
-              {status === 'running' && timeHint?.text ? (
-                <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
-                  {timeHint.text}
-                </span>
-              ) : null}
-              {status === 'running' && timeHint?.showCancel && onCancel ? (
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
-                >
-                  Cancel
-                </button>
-              ) : null}
+  const desc = timeHint?.tooltip
+  const showDesc = expanded && !!desc
+  return (
+    <li
+      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      title={expanded ? undefined : (timeHint?.tooltip || label)}
+    >
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5"><StepIndicator status={status} /></span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span
+              className={`flex-1 min-w-0 text-[14px] transition-colors duration-200 ${
+                expanded
+                  ? 'font-semibold text-[var(--color-primary-500)]'
+                  : status === 'success'
+                  ? 'font-medium text-[var(--text-primary)] truncate'
+                  : 'text-[var(--color-text-disabled)] truncate'
+              }`}
+            >
+              {label}
+            </span>
+            {status === 'running' && timeHint?.text ? (
+              <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
+                {timeHint.text}
+              </span>
+            ) : null}
+            {status === 'running' && timeHint?.showCancel && onCancel ? (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
+          <div
+            className="grid transition-[grid-template-rows,opacity] duration-200 motion-reduce:transition-none"
+            style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
+          >
+            <div className="overflow-hidden">
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
+                {desc}
+              </p>
             </div>
           </div>
         </div>
-      </li>
-    )
-  }
-
-  return (
-    <li className="flex items-center gap-2.5 px-2 py-2" title={timeHint?.tooltip || label}>
-      <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'success' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
-        {label}
-      </span>
+      </div>
     </li>
   )
 }

@@ -1,7 +1,8 @@
 import { useMemo, useCallback, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Flask, CaretRight, X } from '@phosphor-icons/react'
+import { Scroll, CaretRight, X } from '@phosphor-icons/react'
 import { apiGet } from '../../api'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
@@ -122,20 +123,18 @@ export default function RunsActivity({ expanded = false }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        title={summary}
         aria-label={summary}
-        className="group relative w-10 h-10 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+        className="group relative w-8 h-8 shrink-0 rounded-lg border border-pv-neutral-grey-100 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
       >
         {runningCount > 0 ? (
           <Spinner size={16} />
         ) : (
-          <Flask size={16} weight="fill" className="text-[var(--accent)]" />
+          <Scroll size={16} weight="fill" className="text-[var(--accent)]" />
         )}
-        {readyCount > 0 && (
-          <span className="absolute top-1 right-1 inline-flex items-center justify-center min-w-[15px] h-[15px] px-1 rounded-full bg-[var(--accent)] text-white text-[9px] font-semibold leading-none ring-2 ring-[var(--bg-surface)]">
-            {readyCount}
-          </span>
-        )}
+        {/* Hover tooltip — the run summary, in the petavue dark tooltip style. */}
+        <span className="absolute left-full ml-2 px-3 py-1 rounded-md bg-[var(--color-neutral-700)] border border-[var(--color-neutral-100)] shadow-sm text-xs font-normal text-white whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+          {summary}
+        </span>
       </button>
     </div>
   ) : (
@@ -144,12 +143,12 @@ export default function RunsActivity({ expanded = false }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="w-full flex items-center gap-2 px-2.5 h-10 rounded-xl border border-[var(--pv-neutral-grey-150)] text-left bg-white hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
+        className="w-full flex items-center gap-2 px-2.5 h-10 rounded-xl border border-pv-neutral-grey-100 text-left bg-white hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
       >
         {runningCount > 0 ? (
           <Spinner size={13} className="shrink-0" />
         ) : (
-          <Flask size={14} weight="fill" className="text-[var(--accent)] shrink-0" />
+          <Scroll size={14} weight="fill" className="text-[var(--accent)] shrink-0" />
         )}
         <span className="flex-1 min-w-0 truncate text-[12.5px] font-medium text-[var(--text-primary)]">
           {summary}
@@ -162,7 +161,7 @@ export default function RunsActivity({ expanded = false }) {
   return (
     <>
       {trigger}
-      {open ? (
+      {open ? createPortal(
         <>
           <div className="fixed inset-0 z-[55]" onClick={() => setOpen(false)} />
           <div
@@ -205,7 +204,8 @@ export default function RunsActivity({ expanded = false }) {
               })}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       ) : null}
     </>
   )
