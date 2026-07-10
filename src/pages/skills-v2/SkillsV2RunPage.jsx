@@ -15,7 +15,7 @@ import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
 import { Button } from '../../components/ui/Button'
 import { Button as PvButton } from '../../petavue'
-import { X as XMark, Sparkle, CircleNotch } from '@phosphor-icons/react'
+import { Sparkle, CircleNotch } from '@phosphor-icons/react'
 import { Dialog, DialogHeader, DialogContent, DialogFooter } from '../../components/ui/Dialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { apiPost } from '../../api'
@@ -89,6 +89,19 @@ function resolveSkillDescription({ planSummary, session }) {
   if (!id) return ''
   const s = SKILLS_CATALOG.find((x) => x.slug === id || x.name === id)
   return s?.description || ''
+}
+
+
+// Human labels for the plan sub-steps — drives the right-pane "where you
+// are" header during PLANNING.
+const SETUP_STEP_LABELS = {
+  workspace_ready: 'Setting up workspace',
+  reviewing_data: 'Reviewing data',
+  awaiting_input: 'Input needed',
+  followup_question: 'Input needed',
+  verifying_answers: 'Verifying answers',
+  drafting_plan: 'Drafting the plan',
+  reviewing_plan: 'Final review of the plan',
 }
 
 
@@ -175,16 +188,22 @@ function PhaseContent({
   if (phase === 'PLANNING') {
     const current = state.clarifications[state.currentIndex]
     return (
-      <div className="flex-1 flex min-h-0 gap-4 h-full">
+      <div className="flex-1 flex min-h-0 h-full">
         <SetupSubStepList
           setupStage={state.setupStage}
           hadClarifications={state.setupHadClarifications}
           paused={pusherPaused}
           onCancel={onCancelPlan}
         />
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+          {/* Current-step header so you know where you are in the plan. */}
+          <div className="flex items-center h-12 px-4 shrink-0">
+            <span className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
+              {SETUP_STEP_LABELS[state.setupStage] || 'Preparing the plan'}
+            </span>
+          </div>
           {current ? (
-            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4">
               <ClarificationCard
                 key={current.id}
                 clarification={current}
@@ -215,14 +234,14 @@ function PhaseContent({
   // what ran and how far it got — exactly when that context matters most.
   if (phase === 'BLOCKED' && !(planSummary?.steps?.length)) {
     return (
-      <div className="flex-1 flex min-h-0 gap-4 h-full">
+      <div className="flex-1 flex min-h-0 h-full">
         <SetupSubStepList
           setupStage={state.setupStage}
           hadClarifications={state.setupHadClarifications}
           paused
           blocked
         />
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
             <BlockedCallout
               summary={state.blockedSummary}
@@ -323,7 +342,9 @@ export default function SkillsV2RunPage() {
 
   // Browser tab title — reflects the resolved skill name so users with
   // many tabs can find the right one without clicking through.
-  useDocumentTitle(resolveRunTitle({ planSummary, session }))
+  // Keep the browser tab title static — the run stage should never leak into
+  // the page's meta title.
+  useDocumentTitle('Petavue')
 
   // Cancel on the plan-approval card discards the run (CANCELLED phase,
   // dropped from active-runs list) — leaves no orphaned in-progress
@@ -589,7 +610,7 @@ export default function SkillsV2RunPage() {
         )}
         {!isLoading && !isError && state.progressHydrated && (
           bodyIsTwoPane ? (
-            <div className="flex-1 flex flex-col min-h-0 px-6 py-4">
+            <div className="flex-1 flex flex-col min-h-0 p-4">
               <PhaseContent
                 sessionId={sessionId}
                 phase={state.phase}
@@ -657,16 +678,18 @@ export default function SkillsV2RunPage() {
             {showCancelButton ? (
               <PvButton
                 onClick={() => setCancelConfirmOpen(true)}
-                size="lg"
+                size="md"
                 variant="secondary"
                 disabled={discarding}
                 aria-label="Cancel run"
                 label="Cancel run"
-                icon={XMark}
+                // A second global `.btn--secondary` (design-system Button.css)
+                // collides with petavue's and greys this out; force the blue.
+                className="!text-[var(--accent)] !border-[var(--accent)] !bg-white"
               />
             ) : null}
           </div>
-          <div className="flex-1 min-w-0 flex items-center gap-0.5 overflow-x-auto">
+          <div className="flex-1 min-w-0 flex items-center justify-center gap-0.5 overflow-x-auto">
             <RunProgressBar
               bare
               phase={state.phase}
@@ -685,7 +708,7 @@ export default function SkillsV2RunPage() {
             {state.phase === 'AWAITING_CONFIRMATION' && planSummary ? (
               <PvButton
                 onClick={approvePlan}
-                size="lg"
+                size="md"
                 variant="primary"
                 disabled={approving || discarding || buildGated}
                 label={approving ? 'Starting…' : buildGated ? `Approve ${buildRemaining} more` : 'Build it'}
@@ -695,12 +718,24 @@ export default function SkillsV2RunPage() {
             ) : (state.phase === 'COMPLETE' || state.phase === 'OPEN_CHAT') && onFollowUp ? (
               <PvButton
                 onClick={onFollowUp}
-                size="lg"
+                size="md"
                 variant="primary"
                 disabled={handingOff}
                 label={handingOff ? 'Opening…' : 'Verify & refine in chat'}
                 icon={handingOff ? Spinner : Sparkle}
                 iconWeight={handingOff ? 'regular' : 'fill'}
+              />
+            ) : state.phase === 'PLANNING' ? (
+              // Proceed sits in the footer through the whole Plan stage, but
+              // only enables once the plan reaches its final review sub-step.
+              <PvButton
+                onClick={() => {}}
+                size="md"
+                variant="primary"
+                disabled={state.setupStage !== 'reviewing_plan'}
+                label="Proceed"
+                icon={state.setupStage === 'reviewing_plan' ? Sparkle : null}
+                iconWeight="fill"
               />
             ) : null}
           </div>

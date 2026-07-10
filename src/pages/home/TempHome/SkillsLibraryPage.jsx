@@ -87,7 +87,7 @@ export default function SkillsLibraryPage() {
             {/* Panel sub-header: title + count · search · filter · view toggle */}
             <div className="flex items-center justify-between gap-3 h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)] px-4">
               <div className="flex items-center gap-2.5 shrink-0">
-                <span className="font-medium text-[14px] text-[var(--text-primary)]">{filter === "dashboard" ? "Dashboards" : filter === "memo" ? "Memos" : "All skills"}</span>
+                <span className="font-medium text-[14px] text-[var(--text-primary)]">{filter === "dashboard" ? "Dashboards" : filter === "memo" ? "Memos" : "Library"}</span>
                 <span className="text-[11px] text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md tabular-nums">{filtered.length}</span>
               </div>
 
@@ -143,16 +143,16 @@ export default function SkillsLibraryPage() {
                     const OutputIcon = isMemo ? FileText : LayoutDashboard;
                     return (
                       <div key={skill.id} onClick={() => open(skill.id)}
-                        className="group flex flex-col gap-3 h-full p-5 bg-white border border-pv-neutral-grey-150 rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]">
+                        className="group flex flex-col gap-2 h-full p-5 bg-white border border-pv-neutral-grey-150 rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]">
                         <div className="flex items-center justify-between gap-2.5">
                           <span className={cn("flex items-center gap-1 text-[12px] font-medium uppercase", isMemo ? "text-amber-700" : "text-blue-700")}>
                             <OutputIcon size={12} />{isMemo ? "Memo" : "Dashboard"}
                           </span>
                           {skill.time && <span className="text-[12px] font-medium text-[var(--pv-success-text)] whitespace-nowrap">{skill.time}</span>}
                         </div>
-                        <h3 className="text-[18px] font-semibold leading-snug tracking-[-0.2px] text-[var(--text-primary)]">{formatSkillName(skill.name)}</h3>
+                        <h3 className="text-[16px] font-semibold leading-snug tracking-[-0.2px] text-[var(--text-primary)]">{formatSkillName(skill.name)}</h3>
                         <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed line-clamp-3">{skill.description}</p>
-                        <div className="flex items-center justify-between gap-3 mt-auto pt-4 border-t border-[var(--border-primary)]">
+                        <div className="flex items-center justify-between gap-3 mt-auto pt-4">
                           <Connectors tags={skill.tags} />
                           <span className="flex items-center gap-1 text-[12px] font-medium text-[var(--text-muted)] group-hover:text-pv-primary-primary-500 transition-colors whitespace-nowrap shrink-0">
                             Explore <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />

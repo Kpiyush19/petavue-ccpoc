@@ -183,9 +183,11 @@ export function startRun(session, skillId) {
   // Reviews the data, then PAUSES on a plain clarification ("Input needed").
   // The rest of the plan (verify → draft → review → approval) resumes in
   // submitClarification once the user answers. ──
-  after(900, () => { ev(sid, { type: "setup-stage", stage: "reviewing_data" }); ev(sid, { type: "tool_call", tool: "query_athena" }); });
-  after(1800, () => { ev(sid, { type: "tool_call", tool: "execute_code" }); });
-  after(2600, () => {
+  // Hold each early step long enough to read its message: ~3s on "Setting up
+  // workspace", then ~4s on "Reviewing data" before pausing for input.
+  after(3000, () => { ev(sid, { type: "setup-stage", stage: "reviewing_data" }); ev(sid, { type: "tool_call", tool: "query_athena" }); });
+  after(5000, () => { ev(sid, { type: "tool_call", tool: "execute_code" }); });
+  after(7000, () => {
     // Demo trigger: some skills discover the data they need isn't there and
     // halt at the Plan stage — exercises the blocked-state + correction UI.
     if (BLOCK_SKILLS.has(skill?.slug)) {

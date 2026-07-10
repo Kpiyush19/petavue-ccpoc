@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2, CheckCircle2, ChevronDown, ArrowRight } from 'lucide-react'
+import { Loader2, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiGet } from '../../api'
+import { Button } from '../ui/Button'
 import { PHASE_LABEL } from '../../pages/skills-v2/statusMap'
 
 // A global, always-mounted dock (RootLayout) that surfaces every skill run
@@ -115,7 +116,11 @@ export default function RunsDock() {
               {readyCount}
             </span>
           )}
-          <ChevronDown size={16} className={`shrink-0 text-[var(--text-muted)] transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          {expanded ? (
+            <ChevronUp size={16} className="shrink-0 text-[var(--text-muted)]" />
+          ) : (
+            <ChevronDown size={16} className="shrink-0 text-[var(--text-muted)]" />
+          )}
         </button>
         <AnimatePresence initial={false}>
           {expanded && (
@@ -135,8 +140,19 @@ export default function RunsDock() {
                   key={r.session_id}
                   className="group flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-[var(--bg-hover)] transition-colors"
                 >
-                  <button
-                    type="button"
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[12.5px] font-medium text-[var(--text-primary)] truncate leading-tight">
+                      {r.skill_title || 'Skill run'}
+                    </div>
+                    <div className="text-[10.5px] text-[var(--text-muted)] mt-0.5 leading-tight truncate">
+                      {ready ? 'Draft ready' : PHASE_LABEL[r.phase] || r.phase}
+                      {relTime(r.created_at) ? ` · ${relTime(r.created_at)}` : ''}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={ready ? 'primary' : 'secondary'}
+                    className="shrink-0"
                     onClick={() => {
                       setExpanded(false)
                       if (ready) {
@@ -146,33 +162,9 @@ export default function RunsDock() {
                         navigate(`/skills/run/${r.session_id}`)
                       }
                     }}
-                    className="flex-1 min-w-0 flex items-center gap-2.5 text-left bg-transparent border-none p-0 cursor-pointer"
                   >
-                    {ready ? (
-                      <CheckCircle2 size={15} className="shrink-0 text-[var(--pv-success-text,#16a34a)]" />
-                    ) : (
-                      <Loader2 size={14} className="shrink-0 text-[var(--accent)] animate-spin" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12.5px] font-medium text-[var(--text-primary)] truncate leading-tight">
-                        {r.skill_title || 'Skill run'}
-                      </div>
-                      <div className="text-[10.5px] text-[var(--text-muted)] mt-0.5 leading-tight truncate">
-                        {ready ? 'Draft ready' : PHASE_LABEL[r.phase] || r.phase}
-                        {relTime(r.created_at) ? ` · ${relTime(r.created_at)}` : ''}
-                      </div>
-                    </div>
-                    <span
-                      className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded shrink-0 transition-colors ${
-                        ready
-                          ? 'text-white bg-[var(--accent)]'
-                          : 'text-[var(--accent)] border border-[var(--accent)]/30 group-hover:bg-[var(--accent)] group-hover:text-white'
-                      }`}
-                    >
-                      {ready ? 'Open' : 'View'}
-                      <ArrowRight size={11} />
-                    </span>
-                  </button>
+                    {ready ? 'Open' : 'View'}
+                  </Button>
                 </div>
               )
             })}

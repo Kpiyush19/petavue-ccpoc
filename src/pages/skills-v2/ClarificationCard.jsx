@@ -137,7 +137,7 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
             >
               <label className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer">
                 <input type="radio" className="sr-only" checked={selected} onChange={() => selectOption(opt.value)} />
-                <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">{opt.label}</span>
+                <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">{opt.label}</span>
                 {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
               </label>
               {customMode && (
@@ -167,10 +167,12 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
               checked={selected}
               onChange={() => selectOption(opt.value)}
             />
-            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className={`shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[var(--accent)]' : 'border-[var(--pv-neutral-grey-300)]'}`}>
+              {selected && <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />}
+            </span>
+            <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">
               {opt.label}
             </span>
-            {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
           </label>
         )
       })}
@@ -249,7 +251,7 @@ function MultiSelect({ options = [], value = [], onChange, allowCustom = false }
               checked={selected}
               onChange={() => toggleKnown(opt.value)}
             />
-            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">
               {opt.label}
             </span>
             {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
@@ -267,7 +269,7 @@ function MultiSelect({ options = [], value = [], onChange, allowCustom = false }
               checked={customChecked}
               onChange={toggleCustom}
             />
-            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">
               Other (please specify)
             </span>
             {customChecked && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
@@ -666,20 +668,20 @@ export default function ClarificationCard({
   return (
     // Flush content — the card lives in the white plan pane, so no chrome of
     // its own. The question is the hero; everything else supports it.
-    <div className="max-w-2xl mx-auto w-full flex flex-col">
+    <div className="w-full flex flex-col">
       <div className="flex items-center justify-between gap-2 mb-3">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           {total > 1 ? `Question ${index + 1} of ${total}` : 'One quick question'}
         </span>
         <SurfacedTag reason={surfaced_reason} />
       </div>
 
-      <h2 className="text-[18px] font-semibold text-[var(--text-primary)] leading-snug text-balance">
+      <h2 className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug text-balance">
         {question}
       </h2>
 
       {help_text ? (
-        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-2">
+        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mt-2">
           {help_text}
         </p>
       ) : null}
@@ -687,7 +689,7 @@ export default function ClarificationCard({
       {/* Maps the question to the part of the output it shapes, so the user can
           see what their answer actually changes. */}
       {affects ? (
-        <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-[var(--accent)]/8 border border-[var(--accent)]/20 text-[12.5px] text-[var(--text-secondary)] leading-snug">
+        <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-[var(--accent)]/8 border border-[var(--accent)]/20 text-[12px] text-[var(--text-secondary)] leading-snug">
           <Target size={13} className="shrink-0 mt-0.5 text-[var(--accent)]" />
           <span><span className="font-medium text-[var(--text-primary)]">What this shapes:</span> {affects}</span>
         </div>

@@ -235,7 +235,7 @@ export default function PlanApprovalCard({
   }
 
   return (
-    <div className="max-w-6xl mx-auto w-full bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
+    <div className="w-full bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
       {/* Sticky header — title + outcome stay in view as the user
           scrolls through the INCLUDES / WON'T INCLUDE / KEY FORMULAS
           body. Tight bottom padding so the next section sits close. */}
@@ -325,39 +325,6 @@ export default function PlanApprovalCard({
                   )
                 })}
               </div>
-              {/* Plan-level change — Ask Sage. Compiles any per-widget notes/drops. */}
-              {onRequestChanges ? (
-                <div className="px-3 py-3 border-t border-[var(--border-primary)] shrink-0">
-                  {feedbackOpen ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="text-[12px] font-medium text-[var(--text-primary)]">What should Sage change?</div>
-                      <textarea
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        rows={3}
-                        autoFocus
-                        placeholder="e.g. Use W-shaped attribution, not last-touch."
-                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y"
-                      />
-                      <div className="flex items-center justify-end gap-2">
-                        <PvButton onClick={() => setFeedbackOpen(false)} size="sm" variant="ghost" disabled={requesting} label="Cancel" />
-                        <PvButton onClick={() => onRequestChanges(note.trim())} size="sm" variant="primary" disabled={!note.trim() || requesting} label={requesting ? 'Sending…' : 'Send'} icon={requesting ? Spinner : PaperPlaneRight} />
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={openRequestChanges}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-[var(--border-primary)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] bg-transparent cursor-pointer transition-colors"
-                    >
-                      <Sparkles size={14} className="text-[var(--accent)] shrink-0" />
-                      <span className="text-[12px] font-medium truncate">
-                        {changeCount > 0 ? `Send ${changeCount} change${changeCount > 1 ? 's' : ''}` : 'Ask Sage to change'}
-                      </span>
-                    </button>
-                  )}
-                </div>
-              ) : null}
             </div>
 
             {/* RIGHT — selected widget detail + sample layout */}

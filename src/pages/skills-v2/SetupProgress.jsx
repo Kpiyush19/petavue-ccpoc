@@ -1,4 +1,5 @@
-import { Check, CheckCircle2, Loader2, Sparkles, AlertOctagon } from 'lucide-react'
+import { Check, Loader2, Sparkles, AlertOctagon, Database, ShieldCheck, PenLine, SearchCheck } from 'lucide-react'
+import { CheckCircle, Circle } from '@phosphor-icons/react'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
@@ -66,27 +67,19 @@ const STAGE_ORDER = {
 // reads as one clean vertical stepper.
 export function StepIndicator({ status }) {
   if (status === 'completed' || status === 'success') {
-    return (
-      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--accent)] shrink-0">
-        <Check size={12} className="text-white" strokeWidth={3} />
-      </span>
-    )
+    return <CheckCircle size={16} weight="fill" className="text-[var(--accent)] shrink-0" />
   }
   if (status === 'active' || status === 'running') {
-    return (
-      <span className="flex items-center justify-center w-5 h-5 shrink-0">
-        <Loader2 size={17} className="animate-spin text-[var(--accent)]" strokeWidth={2.5} />
-      </span>
-    )
+    return <Loader2 size={16} className="animate-spin text-[var(--accent)] shrink-0" strokeWidth={2.5} />
   }
   if (status === 'blocked' || status === 'failed') {
     return (
-      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--pv-error-bg)] shrink-0">
-        <AlertOctagon size={12} className="text-[var(--pv-error-text)]" strokeWidth={2.5} />
+      <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[var(--pv-error-bg)] shrink-0">
+        <AlertOctagon size={11} className="text-[var(--pv-error-text)]" strokeWidth={2.5} />
       </span>
     )
   }
-  return <span className="w-5 h-5 rounded-full border-[1.5px] border-[var(--pv-neutral-grey-300)] shrink-0" />
+  return <Circle size={16} className="text-[var(--pv-neutral-grey-300)] shrink-0" />
 }
 
 
@@ -99,12 +92,12 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
 
   if (expanded) {
     return (
-      <li className={`rounded-xl border bg-white px-3.5 py-3${status === 'blocked' ? 'border-[var(--pv-error-text)]/40' : 'border-[var(--pv-neutral-grey-200)]'}`}>
+      <li className="px-2 py-2">
         <div className="flex items-start gap-2.5">
           <span className="mt-0.5"><StepIndicator status={status} /></span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="flex-1 min-w-0 text-[13.5px] font-semibold text-[var(--text-primary)]">
+              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--text-primary)]">
                 {label}
               </span>
               {status === 'active' && timeHint?.text ? (
@@ -123,7 +116,7 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
               ) : null}
             </div>
             {inlineDesc ? (
-              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--text-secondary)]'}`}>
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
                 {inlineDesc}
               </p>
             ) : null}
@@ -136,7 +129,7 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
   return (
     <li className="flex items-center gap-2.5 px-2 py-2" title={tooltip}>
       <StepIndicator status={status} />
-      <span className={`flex-1 min-w-0 text-[13px] truncate ${status === 'completed' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-muted)]'}`}>
+      <span className={`flex-1 min-w-0 text-[14px] truncate ${status === 'completed' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--color-text-disabled)]'}`}>
         {label}
       </span>
     </li>
@@ -161,20 +154,15 @@ export function SetupSubStepList({ setupStage, hadClarifications, paused, onCanc
   const activeTimeHint = userGated || blocked ? null : getInlineTimeHint(setupStage, elapsed)
 
   return (
-    <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--pv-neutral-grey-150)] shrink-0">
+    <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+      <div className="flex items-center justify-between h-12 px-4 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {blocked ? (
             <AlertOctagon size={15} className="text-[var(--pv-error-text)] shrink-0" />
-          ) : (
-            <Loader2 size={15} className="text-[var(--accent)] shrink-0 animate-spin" />
-          )}
-          <h2 className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
+          ) : null}
+          <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
             {blocked ? 'Plan halted' : 'Preparing the plan'}
           </h2>
-        </div>
-        <div className="text-[11px] text-[var(--text-muted)] shrink-0 tabular-nums">
-          {completed} / {total}
         </div>
       </div>
       <ul className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
@@ -204,55 +192,32 @@ export function SetupSubStepList({ setupStage, hadClarifications, paused, onCanc
 // Right-pane content for non-clarification states. Returns null when the
 // active sub-state is awaiting_input / followup_question (caller is
 // expected to render the ClarificationCard in that case).
-// Right pane during PLANNING. The left step list owns "what's happening now";
-// this pane owns the DESTINATION — what you'll get and the assumptions being
-// locked in — so the two panes divide labor instead of paraphrasing each other.
-export function SetupRightPaneCopy({ setupStage, keyChoices, questions, outcome }) {
+// Per-stage empty state for the right pane during PLANNING. There's no data
+// to show yet, so we just explain, in one line, what the current step is doing.
+const STAGE_EMPTY = {
+  workspace_ready: { icon: Sparkles, copy: 'Setting up the workspace where this run lives.' },
+  reviewing_data: { icon: Database, copy: 'Looking through your connected data — the tables, schemas, and how your metrics are defined — to shape the right plan.' },
+  verifying_answers: { icon: ShieldCheck, copy: 'Running a quick sanity check on your answers to make sure they return meaningful data before drafting.' },
+  drafting_plan: { icon: PenLine, copy: 'Assembling the plan: which queries to run, how the data gets transformed, and what each part will show.' },
+  reviewing_plan: { icon: SearchCheck, copy: 'Doing a final pass over the plan to catch anything missing or vague before it comes to you for review.' },
+}
+
+// Right pane during PLANNING (when there's no clarification to answer). A
+// simple centered empty state describing the current step.
+export function SetupRightPaneCopy({ setupStage }) {
   if (setupStage === 'awaiting_input' || setupStage === 'followup_question') {
     return null
   }
-  const hasKeyChoices = (keyChoices?.length || 0) > 0
-  const qs = Array.isArray(questions) ? questions.slice(0, 5) : []
+  const content = STAGE_EMPTY[setupStage] || STAGE_EMPTY.workspace_ready
+  const Icon = content.icon
 
   return (
-    <div className="h-full overflow-y-auto px-6 py-8">
-      <div className="max-w-md mx-auto">
-        <div className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
-          <Sparkles size={12} className="text-[var(--accent)]" />
-          While Sage plans this
+    <div className="h-full flex items-center justify-center p-6">
+      <div className="max-w-xs text-center">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] mb-3.5">
+          <Icon size={20} strokeWidth={1.8} />
         </div>
-
-        {outcome ? (
-          <p className="text-[14px] text-[var(--text-primary)] leading-relaxed mb-6">{outcome}</p>
-        ) : null}
-
-        {qs.length ? (
-          <div className="mb-6">
-            <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Questions it&apos;ll answer</div>
-            <ul className="flex flex-col gap-2">
-              {qs.map((q, i) => (
-                <li key={i} className="flex items-start gap-2 text-[12.5px] text-[var(--text-secondary)] leading-snug">
-                  <CheckCircle2 size={14} className="text-[var(--accent)] mt-0.5 shrink-0" />
-                  <span>{q}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        {hasKeyChoices ? (
-          <div className="pt-4 border-t border-[var(--border-primary)]">
-            <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-2">Assumptions so far</div>
-            <div className="flex flex-col gap-1.5">
-              {keyChoices.map((c, i) => (
-                <div key={i} className="flex items-baseline justify-between gap-3 text-[12.5px]">
-                  <span className="text-[var(--text-muted)] shrink-0">{c.label}</span>
-                  <span className="font-medium text-[var(--text-primary)] text-right">{c.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
+        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{content.copy}</p>
       </div>
     </div>
   )

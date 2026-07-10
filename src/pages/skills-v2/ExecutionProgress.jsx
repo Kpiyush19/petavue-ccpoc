@@ -633,13 +633,13 @@ export default function ExecutionProgress({
   }
 
   return (
-    <div className="flex-1 flex min-h-0 gap-4 h-full">
+    <div className="flex-1 flex min-h-0 h-full">
       {/* ── Left pane: step list ── */}
       <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--pv-neutral-grey-150)] shrink-0">
+        <div className="flex items-center justify-between h-12 px-4 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <HeadingIcon size={15} className="text-[var(--accent)] shrink-0" />
-            <h2 className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
+            <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
               {headingLabel}
             </h2>
           </div>

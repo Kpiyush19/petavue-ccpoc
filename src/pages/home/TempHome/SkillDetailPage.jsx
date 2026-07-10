@@ -223,7 +223,7 @@ export default function SkillDetailPage() {
 
               {/* Description — the skill's value prop as readable lead copy
                   (it's a sentence, not a title, so no giant headline). */}
-              <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2 mb-8">
+              <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2 mb-6">
                 <span className={LABEL}>Description</span>
                 <p className="text-[14px] leading-relaxed text-[var(--text-primary)]">{skill.description}</p>
               </motion.div>
@@ -297,25 +297,25 @@ export default function SkillDetailPage() {
             </main>
 
             {/* RIGHT — sticky details panel, grounded as a card under the Run CTA */}
-            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-3 p-4 bg-pv-neutral-grey-50 border border-pv-neutral-grey-150/70 rounded-xl">
+            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-3 p-3 bg-pv-neutral-grey-50 border border-pv-neutral-grey-150/70 rounded-xl">
                 {/* Readiness verdict — the first thing an operator needs: can I
                     run this right now? Sits directly under the Activate CTA. */}
                 {totalIntegrations > 0 && (
                   isReady ? (
-                    <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-lg bg-[var(--pv-success-bg)] border border-[var(--pv-success-text)]/25">
+                    <div className="flex items-start gap-2.5 p-2 rounded-lg bg-[var(--pv-success-bg)] border border-[var(--pv-success-text)]/25">
                       <CheckCircle2 size={16} className="text-[var(--pv-success-text)] shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <div className="text-[13px] font-semibold text-[var(--text-primary)]">You&apos;re ready to run</div>
+                        <div className="text-[12px] font-semibold text-[var(--text-primary)]">You&apos;re ready to run</div>
                         <p className="text-[12px] text-[var(--text-secondary)] leading-snug mt-0.5">
                           All {totalIntegrations} data {totalIntegrations === 1 ? "source" : "sources"} this skill needs {totalIntegrations === 1 ? "is" : "are"} connected.
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-lg bg-amber-50 border border-amber-300">
+                    <div className="flex items-start gap-2.5 p-2 rounded-lg bg-amber-50 border border-amber-300">
                       <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <div className="text-[13px] font-semibold text-[var(--text-primary)]">
+                        <div className="text-[12px] font-semibold text-[var(--text-primary)]">
                           Connect {missingIntegrations.length} {missingIntegrations.length === 1 ? "source" : "sources"} to run
                         </div>
                         <p className="text-[12px] text-[var(--text-secondary)] leading-snug mt-0.5">
@@ -350,25 +350,26 @@ export default function SkillDetailPage() {
                   </ol>
                 </div>
 
-                <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
-                  <span className={LABEL}>Output type</span>
-                  <span
-                    className={cn(
-                      "inline-flex items-center gap-1.5 self-start px-2 py-0.5 text-[12px] font-medium rounded border",
-                      isMemo ? "bg-amber-50 text-amber-700 border-amber-300" : "bg-blue-50 text-blue-700 border-blue-300"
-                    )}
-                  >
-                    <OutputIcon size={12} />
-                    {isMemo ? "Memo" : "Dashboard"}
-                  </span>
-                </div>
-
-                {skill.time && (
-                  <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
-                    <span className={LABEL}>Build time</span>
-                    <span className="text-[12px] font-medium text-[var(--pv-success-text)]">{skill.time}</span>
+                <div className="flex gap-8 pt-4 border-t border-[var(--border-primary)]">
+                  <div className="flex flex-col gap-1.5">
+                    <span className={LABEL}>Output type</span>
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 self-start px-2 py-0.5 text-[12px] font-medium rounded border",
+                        isMemo ? "bg-amber-50 text-amber-700 border-amber-300" : "bg-blue-50 text-blue-700 border-blue-300"
+                      )}
+                    >
+                      <OutputIcon size={12} />
+                      {isMemo ? "Memo" : "Dashboard"}
+                    </span>
                   </div>
-                )}
+                  {skill.time && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className={LABEL}>Build time</span>
+                      <span className="text-[12px] font-medium text-[var(--pv-success-text)]">{skill.time}</span>
+                    </div>
+                  )}
+                </div>
 
                 {skill.integrations?.length > 0 && (
                   <div className="flex flex-col gap-3.5 pt-4 border-t border-[var(--border-primary)]">
