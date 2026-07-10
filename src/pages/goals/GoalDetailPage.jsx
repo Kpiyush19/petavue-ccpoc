@@ -188,7 +188,7 @@ function Decisions({ goal, refetch, onCancel }) {
   return (
     <WizardScaffold
       title="A couple of decisions"
-      subtitle="Your answers shape the targets — every option is grounded in your real numbers."
+      subtitle="Your answers shape the targets; every option is grounded in your real numbers."
       footer={
         <WizardFooter
           left={<WizardSteps current={1} />}
@@ -312,7 +312,7 @@ function Review({ goal, refetch, onCancel }) {
         {/* Left: titled content */}
         <div className="flex-1 min-w-0 overflow-y-auto p-4">
           <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
-          <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it — adjust on the right, then save.</p>
+          <p className="text-[14px] text-[var(--text-secondary)] mb-6">Here's how we'll measure and watch it. Adjust on the right, then save.</p>
           <div className="flex flex-col gap-7">
             {/* Targets */}
             <section>
@@ -321,7 +321,7 @@ function Review({ goal, refetch, onCancel }) {
                 <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
                 <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
               </div>
-              <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal — we check each target every run.</p>
+              <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal: we check each target every run.</p>
               {goal.targets.map((t) => (
                 <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
                   <div className="flex items-start justify-between gap-3">
@@ -419,7 +419,7 @@ function Review({ goal, refetch, onCancel }) {
         left={
           <>
             <WizardSteps current={3} />
-            <Tooltip title="Tell us in plain language — we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis." arrow placement="top">
+            <Tooltip title="Tell us in plain language, and we'll change the setup and tell you what moved. We only adjust the goal here; we won't run analysis." arrow placement="top">
               <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0"><Info size={16} /></span>
             </Tooltip>
           </>
@@ -560,7 +560,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
               onChange={(e) => setReason(e.target.value)}
               rows={2}
               autoFocus={pending.action !== "snoozed"}
-              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search — it's our best demo source" : "Add context for the next run…"}
+              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search, it's our best demo source" : "Add context for the next run…"}
               className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
             />
             <div className="flex items-center gap-2">
@@ -784,7 +784,7 @@ function NextStepCard({ rec, firingCount, onOpen }) {
     return (
       <div className="bg-white border border-[var(--border-primary)] rounded-xl p-4 flex flex-col gap-1.5">
         <div className="flex items-center gap-2"><CheckCircle size={15} weight="fill" className="text-green-500" /><p className="text-[14px] font-semibold text-[var(--text-primary)]">Next step</p></div>
-        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">Monitors are quiet — nothing needs action right now. The moment a rule fires, the next step lands here.</p>
+        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">Monitors are quiet; nothing needs action right now. The moment a rule fires, the next step lands here.</p>
       </div>
     );
   }
@@ -888,7 +888,7 @@ function FeedbackTab({ goal }) {
       <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
         <ChatCircle size={26} className="text-[var(--text-muted)]" />
         <p className="text-[16px] font-medium text-[var(--text-primary)]">No feedback yet</p>
-        <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">When you act on, dismiss, or snooze a recommendation — or leave a comment — it shows up here, and the engine factors it into the next check-in.</p>
+        <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">When you act on, dismiss, or snooze a recommendation (or leave a comment), it shows up here, and the engine factors it into the next check-in.</p>
       </div>
     );
   }
@@ -937,7 +937,7 @@ function FeedbackTab({ goal }) {
           );
         })}
       </ol>
-      <p className="text-[12px] text-[var(--text-muted)] flex items-start gap-1.5 pt-3 border-t border-[var(--pv-neutral-grey-100)]"><Info size={14} className="mt-px shrink-0" /> The engine reads this on the next check-in — dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
+      <p className="text-[12px] text-[var(--text-muted)] flex items-start gap-1.5 pt-3 border-t border-[var(--pv-neutral-grey-100)]"><Info size={14} className="mt-px shrink-0" /> The engine reads this on the next check-in: dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
     </div>
   );
 }
@@ -1066,7 +1066,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
                 <Lightning size={26} className="text-[var(--text-muted)]" />
                 <p className="text-[16px] font-medium text-[var(--text-primary)]">No check-ins yet</p>
-                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">This goal runs on the next scheduled check-in, measured against your latest paid data. You'll see where spend is leaking and where demand is going unanswered — each finding backed by the number behind it.</p>
+                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">This goal runs on the next scheduled check-in, measured against your latest paid data. You'll see where spend is leaking and where demand is going unanswered, each finding backed by the number behind it.</p>
               </div>
             )}
           </div>
@@ -1089,7 +1089,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               <div className="flex flex-col items-center justify-center gap-2 py-16 border border-dashed border-[var(--border-primary)] rounded-xl bg-white text-center">
                 <ClockCounterClockwise size={26} className="text-[var(--text-muted)]" />
                 <p className="text-[16px] font-medium text-[var(--text-primary)]">No recommendations yet</p>
-                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">Your moves show up here after the first check-in — each grounded in the number that triggered it, so you can act with confidence.</p>
+                <p className="text-[12px] text-[var(--text-secondary)] max-w-[440px]">Your moves show up here after the first check-in, each grounded in the number that triggered it, so you can act with confidence.</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 items-stretch">
@@ -1130,7 +1130,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                 <OverviewStat
                   label="Reliability" icon={CheckCircle} iconClass="text-green-500"
                   num={goal.conditions.length} numClass="text-[var(--text-primary)]" word={goal.conditions.length === 1 ? "rule run" : "rules run"}
-                  desc="All rules ran cleanly this check-in — no gaps or errors."
+                  desc="All rules ran cleanly this check-in, no gaps or errors."
                 />
               </div>
 
@@ -1182,7 +1182,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
             {goal.notes.length === 0 ? (
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal — it stays attached to its monitors and carries into future check-ins.</p>
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal. It stays attached to its monitors and carries into future check-ins.</p>
             ) : (
               goal.notes.map((n) => (
                 <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
@@ -1200,7 +1200,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (note.trim()) addNote.mutate(); } }}
               rows={1}
               autoFocus
-              placeholder="Add a comment — e.g. “Never pause Brand Search”"
+              placeholder="Add a comment, e.g. “Never pause Brand Search”"
               style={{ minHeight: "36px", maxHeight: `${MAX_COMMENT_H}px` }}
               className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
             />

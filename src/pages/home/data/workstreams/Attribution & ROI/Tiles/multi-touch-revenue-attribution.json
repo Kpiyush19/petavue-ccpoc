@@ -1,7 +1,7 @@
 {
   "id": "multi-touch-revenue-attribution",
   "name": "Multi-Touch Revenue Attribution",
-  "description": "Know which channels, campaigns, and touchpoints actually drive your pipeline and closed revenue — across five attribution models, all at once.",
+  "description": "Know which channels, campaigns, and touchpoints actually drive your pipeline and closed revenue, across five attribution models, all at once.",
   "renderType": "dashboard",
   "workstream": "Attribution & ROI",
   "dataSources": [

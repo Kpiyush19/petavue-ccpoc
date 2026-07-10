@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Know whether you're engaging the right target accounts with enough depth across the right roles — and exactly where you're at risk.",
+  "description": "Know whether you're engaging the right target accounts with enough depth across the right roles, and exactly where you're at risk.",
   "badges": {
     "ready": true,
     "buildTime": "~11 min",
@@ -20,12 +20,12 @@
     "How does our target-account engagement break down by role and signal?",
     "Which target accounts are at risk because we've only engaged the wrong personas?",
     "Where do the hottest signals concentrate?",
-    "Which accounts are hidden in plain sight — engaged but not yet in pipeline?"
+    "Which accounts are hidden in plain sight: engaged but not yet in pipeline?"
   ],
   "beforeWeRun": [
-    "Target list scope — Tier 1 only or full named-account list?",
-    "Risk thresholds — depth, breadth, or recency?",
-    "Hidden-accounts threshold — minimum engagement, no opp open?"
+    "Target list scope: Tier 1 only or full named-account list?",
+    "Risk thresholds: depth, breadth, or recency?",
+    "Hidden-accounts threshold: minimum engagement, no opp open?"
   ],
   "whatYoullGet": [
     {

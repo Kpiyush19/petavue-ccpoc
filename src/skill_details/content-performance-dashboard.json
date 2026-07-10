@@ -4,7 +4,7 @@
   "workstreamId": "attribution",
   "workstreamName": "Attribution & ROI",
   "renderType": "dashboard",
-  "description": "Know which landing pages and content assets actually convert, influence pipeline, and close revenue — and which are just traffic.",
+  "description": "Know which landing pages and content assets actually convert, influence pipeline, and close revenue, and which are just traffic.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -23,9 +23,9 @@
     "How does content engagement differ by buyer persona?"
   ],
   "beforeWeRun": [
-    "Define \"content asset\" — landing pages only, or include eBooks, blogs, demos?",
-    "Conversion benchmark — form fills, demo requests, or downstream pipeline?",
-    "Window — last 30, 90, or 180 days?"
+    "Define \"content asset\": landing pages only, or include eBooks, blogs, demos?",
+    "Conversion benchmark: form fills, demo requests, or downstream pipeline?",
+    "Window: last 30, 90, or 180 days?"
   ],
   "whatYoullGet": [
     {
@@ -42,7 +42,7 @@
     },
     {
       "name": "Persona engagement matrix",
-      "desc": "Which assets pull which personas — visualized."
+      "desc": "Which assets pull which personas: visualized."
     },
     {
       "name": "Drill-down",

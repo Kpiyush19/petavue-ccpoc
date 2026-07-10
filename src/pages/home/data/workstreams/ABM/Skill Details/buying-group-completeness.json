@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Track whether the right contacts at the right seniority levels are being engaged at target accounts — economic buyer, technical buyer, end user, champion, decision-maker. Replaces the late discovery that a deal stalled because the buying group was incomplete.",
+  "description": "Track whether the right contacts at the right seniority levels are being engaged at target accounts: economic buyer, technical buyer, end user, champion, decision-maker. Replaces the late discovery that a deal stalled because the buying group was incomplete.",
   "badges": {
     "ready": true,
     "buildTime": "~10 min",
@@ -21,9 +21,9 @@
     "Which accounts have thin buying groups and need expansion?"
   ],
   "beforeWeRun": [
-    "Account list — open opportunities, Tier 1 targets, or both?",
-    "Buying-group definition — tenant config or override?",
-    "Engagement window — trailing 8 or 12 weeks?"
+    "Account list: open opportunities, Tier 1 targets, or both?",
+    "Buying-group definition: tenant config or override?",
+    "Engagement window: trailing 8 or 12 weeks?"
   ],
   "whatYoullGet": [
     {
@@ -32,7 +32,7 @@
     },
     {
       "name": "Accounts table",
-      "desc": "Sortable — tier, opp status, completeness, missing roles, unengaged roles, remediation hints."
+      "desc": "Sortable: tier, opp status, completeness, missing roles, unengaged roles, remediation hints."
     },
     {
       "name": "Role coverage distribution",

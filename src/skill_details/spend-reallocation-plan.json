@@ -23,15 +23,15 @@
     "What's the smallest reallocation that lifts blended ROAS by 0.5x?"
   ],
   "beforeWeRun": [
-    "Budget amount to reallocate — required (specify dollar amount)?",
-    "Time window for performance analysis — trailing 60 days, or custom?",
+    "Budget amount to reallocate: required (specify dollar amount)?",
+    "Time window for performance analysis: trailing 60 days, or custom?",
     "Allow channel exclusions (hold or pause specific channels)?",
-    "ROAS variant — pipeline or revenue?"
+    "ROAS variant: pipeline or revenue?"
   ],
   "whatYoullGet": [
     {
       "name": "Situation",
-      "desc": "Current state — total spend, blended ROAS, performance distribution, where the budget amount is currently being spent. 4–6 sentences."
+      "desc": "Current state: total spend, blended ROAS, performance distribution, where the budget amount is currently being spent. 4–6 sentences."
     },
     {
       "name": "Options",

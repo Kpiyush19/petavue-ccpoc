@@ -19,13 +19,13 @@
   "alsoSurfaces": [
     "Which AEs are on track vs. behind for the quarter?",
     "Where is high activity not translating into outcomes?",
-    "Where is low activity producing outsized results — and what are they doing?",
+    "Where is low activity producing outsized results, and what are they doing?",
     "Which behaviors correlate with quota attainment?"
   ],
   "beforeWeRun": [
-    "Performance period — current quarter or rolling 90 days?",
-    "Activity sources — Outreach, Gong, Salesforce tasks?",
-    "Outcome metric — pipeline created, closed-won, or both?"
+    "Performance period: current quarter or rolling 90 days?",
+    "Activity sources: Outreach, Gong, Salesforce tasks?",
+    "Outcome metric: pipeline created, closed-won, or both?"
   ],
   "whatYoullGet": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "name": "Coaching list",
-      "desc": "Reps where activity is high but outcomes are lagging — likely coaching candidates."
+      "desc": "Reps where activity is high but outcomes are lagging: likely coaching candidates."
     },
     {
       "name": "Top performer behaviors",

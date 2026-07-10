@@ -1,7 +1,7 @@
 {
   "id": "deal-prioritization-brief",
   "name": "Deal Prioritization Brief",
-  "description": "A weekly memo telling a rep where to focus this week — which open deals deserve effort, which signals matter, and which deals to consider de-prioritizing. Replaces gut-feel triage with explicit reasoning.",
+  "description": "A weekly memo telling a rep where to focus this week: which open deals deserve effort, which signals matter, and which deals to consider de-prioritizing. Replaces gut-feel triage with explicit reasoning.",
   "renderType": "memo",
   "workstream": "Pipeline Analysis",
   "dataSources": [

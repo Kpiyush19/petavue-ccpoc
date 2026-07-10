@@ -4,7 +4,7 @@
   "workstreamId": "attribution",
   "workstreamName": "Attribution & ROI",
   "renderType": "dashboard",
-  "description": "Know which channels, campaigns, and touchpoints actually drive your pipeline and closed revenue — across five attribution models, all at once.",
+  "description": "Know which channels, campaigns, and touchpoints actually drive your pipeline and closed revenue, across five attribution models, all at once.",
   "badges": {
     "ready": true,
     "buildTime": "~10 min",
@@ -20,13 +20,13 @@
   ],
   "alsoSurfaces": [
     "What percentage of closed revenue can we attribute to marketing?",
-    "Which campaigns are generating pipeline but not closing — and why?",
+    "Which campaigns are generating pipeline but not closing, and why?",
     "How does last-touch credit shift under multi-touch models?",
     "If we cut one channel tomorrow, which would hurt least?"
   ],
   "beforeWeRun": [
-    "Which models — first-touch, last-touch, linear, U-shaped, W-shaped (or all five)?",
-    "What qualifies as a \"touch\" — clicks, form fills, page visits?",
+    "Which models: first-touch, last-touch, linear, U-shaped, W-shaped (or all five)?",
+    "What qualifies as a \"touch\": clicks, form fills, page visits?",
     "Minimum touch threshold per journey?"
   ],
   "whatYoullGet": [

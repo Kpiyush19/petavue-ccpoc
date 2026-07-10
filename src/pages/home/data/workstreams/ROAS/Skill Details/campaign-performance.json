@@ -23,9 +23,9 @@
     "Which campaigns are still in ramp and shouldn't be judged yet?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 30, 60, or 90 days?",
-    "Canonical attribution model — tenant default or override?",
-    "ROAS variant — pipeline or revenue?"
+    "Time window: trailing 30, 60, or 90 days?",
+    "Canonical attribution model: tenant default or override?",
+    "ROAS variant: pipeline or revenue?"
   ],
   "whatYoullGet": [
     {

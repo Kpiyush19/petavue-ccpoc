@@ -10,6 +10,10 @@ const variants = {
     'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]',
   danger:
     'bg-[var(--pv-error-text)] text-white hover:brightness-110',
+  // Destructive, but quiet — outline + red text. For low-frequency destructive
+  // actions (Cancel run, Delete) that shouldn't shout with a solid red fill.
+  'danger-ghost':
+    'bg-transparent text-[var(--pv-error-text)] border border-[var(--pv-error-text)]/40 hover:bg-[var(--pv-error-bg)] hover:border-[var(--pv-error-text)]',
   success:
     'bg-[var(--pv-success-text)] text-white hover:brightness-110',
 }

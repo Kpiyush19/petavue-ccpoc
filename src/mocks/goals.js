@@ -29,13 +29,13 @@ function agoLabel(hoursAgo = 0) {
 // Workflows available to feed a goal (the dashboard flows that refresh daily).
 export const GOAL_WORKFLOWS = [
   { id: "wf-hubspot-gap", name: "HubSpot Data Gap Audit Dashboard", schedule: "Custom schedule", lastRun: "last run 18d ago" },
-  { id: "wf-row-count", name: "HubSpot Table Row Count Comparison — Weekly", schedule: "On data sync", lastRun: "last run 5d ago" },
+  { id: "wf-row-count", name: "HubSpot Table Row Count Comparison: Weekly", schedule: "On data sync", lastRun: "last run 5d ago" },
   { id: "wf-pipeline-health", name: "Sales Pipeline Health", schedule: "On data sync", lastRun: "last run 21d ago" },
   { id: "wf-rev-snapshot", name: "Daily Revenue Snapshot", schedule: "Daily · 6:00 AM", lastRun: "last run 3h ago" },
   { id: "wf-cpl-monitor", name: "Paid Media CPL Monitor", schedule: "Weekly · Mon", lastRun: "last run 2d ago" },
   { id: "wf-churn-signals", name: "Account Churn Signals", schedule: "On data sync", lastRun: "last run 6h ago" },
   { id: "wf-ssl-expiry", name: "Expiring SSL Certificates", schedule: "Daily · 9:00 AM", lastRun: "last run 11h ago" },
-  { id: "wf-deal-hygiene", name: "Pipeline Hygiene — Stale Deals", schedule: "Custom schedule", lastRun: "last run 4d ago" },
+  { id: "wf-deal-hygiene", name: "Pipeline Hygiene: Stale Deals", schedule: "Custom schedule", lastRun: "last run 4d ago" },
 ];
 
 // Calibration checklist (right rail). The driver advances `progress` through these.
@@ -49,7 +49,7 @@ export const CALIBRATION_STEPS = [
 ];
 
 const config = {
-  company: "AlaanPay — B2B fintech (corporate cards + spend management) for finance teams in the UAE. Paid-led acquisition across Google (Search, Performance Max, Demand Gen) and Meta; the north star is efficient, provable demo pipeline.",
+  company: "AlaanPay: B2B fintech (corporate cards + spend management) for finance teams in the UAE. Paid-led acquisition across Google (Search, Performance Max, Demand Gen) and Meta; the north star is efficient, provable demo pipeline.",
   process: "",
   icp: "",
   additional: "",
@@ -72,7 +72,7 @@ function paidEfficiencyGoalConfig() {
         id: nid("tgt"),
         label: "Hold Search impression share above 65% on converting, high-intent terms",
         target: "≥65%", current: "58%", met: false,
-        why: "Your converting Search terms are capped at 58% impression share — you're losing ~34% of the cheapest demos you can buy to budget, not to competitors' bids.",
+        why: "Your converting Search terms are capped at 58% impression share. You're losing ~34% of the cheapest demos you can buy to budget, not to competitors' bids.",
       },
       {
         id: nid("tgt"),
@@ -105,12 +105,12 @@ function defaultQuestions() {
   return [
     {
       id: nid("q"),
-      text: "Your goal targets the MQL→SQL conversion rate (sqls / mqls), defined on hubspot_contacts.lifecyclestage. But the only history copied for the linked 'Sales Pipeline Health' workflow is deal-stage data — there is NO contact/lifecyclestage pool in the copied history to bind this rate to. How should I anchor the target?",
-      found: "Searched all 38 history files: zero matches for lifecyclestage/mql/sql. raw_deals.csv (497 rows) starts at deal stages 'appointmentscheduled'/'qualifiedtobuy' — already past the MQL→SQL marketing handoff.",
+      text: "Your goal targets the MQL→SQL conversion rate (sqls / mqls), defined on hubspot_contacts.lifecyclestage. But the only history copied for the linked 'Sales Pipeline Health' workflow is deal-stage data. There is NO contact/lifecyclestage pool in the copied history to bind this rate to. How should I anchor the target?",
+      found: "Searched all 38 history files: zero matches for lifecyclestage/mql/sql. raw_deals.csv (497 rows) starts at deal stages 'appointmentscheduled'/'qualifiedtobuy', already past the MQL→SQL marketing handoff.",
       options: [
-        { id: "a", label: "Keep the true metric: author MQL→SQL rate = sqls/mqls (lifecyclestage) as an UNVERIFIED custom target at ≥40% — badged unverified until contact lifecycle data is linked.", recommended: true },
-        { id: "b", label: "Re-anchor to a bindable deal-funnel proxy in raw_deals.csv (e.g. share of deals advancing past the earliest stage) — a DIFFERENT metric, not true MQL→SQL.", recommended: false },
-        { id: "c", label: "Hold targets — I plan to link a contacts/lifecyclestage workflow so the rate can bind to real copied history.", recommended: false },
+        { id: "a", label: "Keep the true metric: author MQL→SQL rate = sqls/mqls (lifecyclestage) as an UNVERIFIED custom target at ≥40%, badged unverified until contact lifecycle data is linked.", recommended: true },
+        { id: "b", label: "Re-anchor to a bindable deal-funnel proxy in raw_deals.csv (e.g. share of deals advancing past the earliest stage), a DIFFERENT metric, not true MQL→SQL.", recommended: false },
+        { id: "c", label: "Hold targets. I plan to link a contacts/lifecyclestage workflow so the rate can bind to real copied history.", recommended: false },
       ],
     },
     {
@@ -118,9 +118,9 @@ function defaultQuestions() {
       text: "What time window should we measure the target over?",
       found: "raw_deals.csv spans the last 92 days of activity; the trailing 30 days has the densest, most representative volume (213 of 497 rows).",
       options: [
-        { id: "a", label: "Trailing 30 days — densest, most current signal.", recommended: true },
-        { id: "b", label: "Trailing 90 days — smoother but slower to react.", recommended: false },
-        { id: "c", label: "Quarter-to-date — aligns to the sales quarter.", recommended: false },
+        { id: "a", label: "Trailing 30 days: densest, most current signal.", recommended: true },
+        { id: "b", label: "Trailing 90 days: smoother but slower to react.", recommended: false },
+        { id: "c", label: "Quarter-to-date: aligns to the sales quarter.", recommended: false },
       ],
     },
   ];
@@ -137,7 +137,7 @@ function makeRecommendations() {
       title: "PMax + Demand Gen burned $18.4K for 2 demos in 14 days",
       tldr: "Cap the worst PMax / Demand Gen campaigns and move the budget into capped high-intent Search.",
       cause: "PMax and Demand Gen together spent over $2K in 14 days while booking effectively zero qualified demos.",
-      body: "Performance Max and Demand Gen spent $18,400 over the last 14 days and booked 2 demos — a $9,200 cost-per-demo, 51× your $180 target. 78% of the impressions landed on broad, low-intent placements that don't convert for AlaanPay.",
+      body: "Performance Max and Demand Gen spent $18,400 over the last 14 days and booked 2 demos, a $9,200 cost-per-demo, 51× your $180 target. 78% of the impressions landed on broad, low-intent placements that don't convert for AlaanPay.",
       evidence: "$18.4K spent · 2 demos · $9.2K per demo vs a $180 target. 78% of impressions were broad, low-intent placements.",
       impact: { label: "Recoverable spend / 14 days", value: "$16.8K", sub: "redeployable to Search" },
       triggerLabel: "Spend without demos", signal: "$9.2K cost / demo",
@@ -158,11 +158,11 @@ function makeRecommendations() {
     },
     {
       category: "Missed demand", iconKey: "headroom", severity: "act-now", tier: 1, age: "New · day 1",
-      title: "High-intent Search is capped — you're losing 34% of the demos you could buy",
+      title: "High-intent Search is capped: you're losing 34% of the demos you could buy",
       tldr: "Raise budget on converting Search terms to recover the lost impression share.",
       cause: "Search impression share on converting terms fell below 65% while losing double-digit share to budget.",
-      body: "Your converting Search terms (corporate card, expense management, spend management) run at 58% impression share and lose 34% of impressions to budget — not to competitors' bids. These are your cheapest demos at $120 each, and the demand is going unanswered.",
-      evidence: "58% impression share · 34% lost to budget · $120 cost-per-demo — the cheapest paid demos AlaanPay buys.",
+      body: "Your converting Search terms (corporate card, expense management, spend management) run at 58% impression share and lose 34% of impressions to budget, not to competitors' bids. These are your cheapest demos at $120 each, and the demand is going unanswered.",
+      evidence: "58% impression share · 34% lost to budget · $120 cost-per-demo, the cheapest paid demos AlaanPay buys.",
       impact: { label: "Demos left on the table / mo", value: "~46", sub: "at $120 each · ~$5.5K" },
       triggerLabel: "Search headroom", signal: "58% impression share",
       metrics: [
@@ -176,16 +176,16 @@ function makeRecommendations() {
       derivation: [
         "Search terms and impression-share metrics pulled from `google_ads_search_terms.csv`.",
         "Lost-to-budget = `search_lost_is_budget` = **34%** on the converting term group.",
-        "Converting-term set derived from AlaanPay's own `gclid` → demo joins — no external keyword list.",
+        "Converting-term set derived from AlaanPay's own `gclid` → demo joins, no external keyword list.",
         "Verified: rank-lost share is under 8%, isolating budget (not competitiveness) as the cap.",
       ],
     },
     {
       category: "Creative fatigue", iconKey: "fatigue", severity: "watch", tier: 2, age: "Day 3",
-      title: "Your top Meta creative hit frequency 5.8 — CTR is down 41%",
+      title: "Your top Meta creative hit frequency 5.8: CTR is down 41%",
       tldr: "Refresh the fatigued Meta creative before CPMs climb further.",
       cause: "A Meta creative's 7-day frequency passed 4.0 while its CTR trended down over 21 days.",
-      body: "Your top Meta creative has run to an average frequency of 5.8 over 21 days. CTR has fallen 41% and CPM is up 28% as the same audience sees it repeatedly — textbook creative fatigue. Meta's cost-per-demo has drifted from $165 to $240.",
+      body: "Your top Meta creative has run to an average frequency of 5.8 over 21 days. CTR has fallen 41% and CPM is up 28% as the same audience sees it repeatedly, textbook creative fatigue. Meta's cost-per-demo has drifted from $165 to $240.",
       evidence: "Frequency 5.8 · CTR −41% · CPM +28% over 21 days; Meta cost-per-demo $165 → $240.",
       impact: { label: "Cost-per-demo drift", value: "+$75", sub: "Meta · 21 days" },
       triggerLabel: "Creative fatigue", signal: "5.8 frequency",
@@ -200,17 +200,17 @@ function makeRecommendations() {
       derivation: [
         "Creative-level delivery pulled from `meta_ads_creatives.csv` over a 21-day window.",
         "Frequency = impressions ÷ reach = **5.8** on the top-spend creative.",
-        "CTR and CPM trends are 21-day slopes on the same creative — a like-for-like read.",
+        "CTR and CPM trends are 21-day slopes on the same creative, a like-for-like read.",
         "Verified: audience size steady, so the CPM rise is fatigue, not a targeting change.",
       ],
     },
     {
       category: "Conversion leak", iconKey: "landing", severity: "watch", tier: 2, age: "Day 5",
       title: "The /demo landing page is converting paid traffic at half its usual rate",
-      tldr: "Investigate the /demo page — paid conversion halved this week.",
+      tldr: "Investigate the /demo page: paid conversion halved this week.",
       cause: "Landing-page conversion on paid traffic fell below 60% of its baseline.",
       body: "Paid traffic to /demo converted at 3.9% this week versus a 7.8% baseline. The drop is isolated to paid (organic is steady), which points at message-match or a page issue on the paid experience rather than traffic quality.",
-      evidence: "3.9% paid conversion vs 7.8% baseline — a 50% drop, isolated to paid traffic.",
+      evidence: "3.9% paid conversion vs 7.8% baseline, a 50% drop, isolated to paid traffic.",
       impact: { label: "Conversion vs baseline", value: "−50%", sub: "/demo · paid only" },
       triggerLabel: "Conversion drop", signal: "3.9% vs 7.8%",
       metrics: [
@@ -223,16 +223,16 @@ function makeRecommendations() {
       derivation: [
         "Session and conversion data pulled from `web_analytics_landing.csv`, split by `traffic_source`.",
         "Paid conversion = paid demo forms ÷ paid sessions = **3.9%**, vs a trailing **7.8%** baseline.",
-        "Organic held at 7.6%, isolating the drop to the paid experience — not traffic quality.",
+        "Organic held at 7.6%, isolating the drop to the paid experience, not traffic quality.",
         "Verified: no tracking change deployed this week, ruling out a measurement artifact.",
       ],
     },
     {
       category: "Spend overlap", iconKey: "brand", severity: "watch", tier: 3, age: "Day 5",
-      title: "PMax is bidding on your brand terms — paying for demand you'd get free",
+      title: "PMax is bidding on your brand terms, paying for demand you'd get free",
       tldr: "Exclude brand terms from PMax so you stop paying for organic demand.",
       cause: "PMax served on branded 'alaanpay' queries above the overlap threshold this week.",
-      body: "PMax served on 'alaanpay' brand queries 1,240 times this week — demand that already converts through organic and brand Search at near-zero cost. You're paying PMax rates for traffic you'd capture anyway.",
+      body: "PMax served on 'alaanpay' brand queries 1,240 times this week, demand that already converts through organic and brand Search at near-zero cost. You're paying PMax rates for traffic you'd capture anyway.",
       evidence: "1,240 PMax impressions on brand queries; brand demand already converts near-free via organic.",
       impact: { label: "Avoidable brand spend / mo", value: "~$3.1K", sub: "PMax on brand" },
       triggerLabel: "Brand overlap", signal: "1,240 impressions",
@@ -255,8 +255,8 @@ function makeRecommendations() {
       title: "Retargeting is spending $4.2K/mo on people who already booked",
       tldr: "Exclude converters and 30-day-stale visitors from your retargeting audiences.",
       cause: "Retargeting audiences still include users who already converted or have gone cold.",
-      body: "42% of retargeting impressions this month hit users who already booked a demo or last visited over 30 days ago. That's $4.2K/mo re-serving ads to people who won't convert again — budget that should chase fresh, in-market visitors.",
-      evidence: "42% of retargeting impressions hit already-converted or 30-day-stale users — $4.2K/mo.",
+      body: "42% of retargeting impressions this month hit users who already booked a demo or last visited over 30 days ago. That's $4.2K/mo re-serving ads to people who won't convert again, budget that should chase fresh, in-market visitors.",
+      evidence: "42% of retargeting impressions hit already-converted or 30-day-stale users, $4.2K/mo.",
       impact: { label: "Wasted retargeting / mo", value: "$4.2K", sub: "converters + stale" },
       triggerLabel: "Retargeting waste", signal: "42% wasted",
       metrics: [
@@ -276,10 +276,10 @@ function makeRecommendations() {
     {
       category: "Query waste", iconKey: "query", severity: "watch", tier: 2, age: "Day 2",
       title: "Broad-match Search is buying $2.3K/mo of off-intent clicks",
-      tldr: "Add negatives — broad match is matching searches that never book a demo.",
+      tldr: "Add negatives: broad match is matching searches that never book a demo.",
       cause: "Broad-match keywords matched a rising share of queries with no buying intent (free tools, jobs, unrelated brands).",
-      body: "23% of broad-match Search spend this month went to queries with no buying intent — 'free expense tracker', 'accounting jobs', unrelated brand names. That's $2.3K/mo of clicks that never book a demo, and the share is climbing week over week.",
-      evidence: "23% of broad-match spend on zero-intent queries — $2.3K/mo across ~40 query themes.",
+      body: "23% of broad-match Search spend this month went to queries with no buying intent: 'free expense tracker', 'accounting jobs', unrelated brand names. That's $2.3K/mo of clicks that never book a demo, and the share is climbing week over week.",
+      evidence: "23% of broad-match spend on zero-intent queries, $2.3K/mo across ~40 query themes.",
       impact: { label: "Recoverable Search spend / mo", value: "$2.3K", sub: "add negatives" },
       triggerLabel: "Irrelevant queries", signal: "23% off-intent",
       metrics: [
@@ -293,17 +293,17 @@ function makeRecommendations() {
       derivation: [
         "Search queries pulled from `google_ads_search_terms.csv`, matched to spend.",
         "Off-intent share = spend on no-demo-intent queries ÷ broad-match spend = **23%**.",
-        "Intent labelled from AlaanPay's own `gclid` → demo joins — queries that never convert.",
+        "Intent labelled from AlaanPay's own `gclid` → demo joins, queries that never convert.",
         "Verified: excluded branded and clearly-converting terms before counting waste.",
       ],
     },
     {
       category: "Budget pacing", iconKey: "pacing", severity: "watch", tier: 2, age: "Day 4",
       title: "Your best Search campaign will run dry 9 days before month-end",
-      tldr: "Lift the monthly cap or smooth pacing — the cheapest demo engine goes dark early.",
+      tldr: "Lift the monthly cap or smooth pacing: the cheapest demo engine goes dark early.",
       cause: "Daily spend on the top-converting Search campaign is pacing 41% above plan and will hit its monthly cap early.",
-      body: "Your best-converting Search campaign is pacing to spend its full monthly budget by day 21 — then it goes dark for the last 9 days of the month, exactly when it books your cheapest demos. Demand doesn't stop; only the ads do.",
-      evidence: "Pacing 41% over plan — budget exhausts on day 21 of 30, dark for 9 days.",
+      body: "Your best-converting Search campaign is pacing to spend its full monthly budget by day 21, then it goes dark for the last 9 days of the month, exactly when it books your cheapest demos. Demand doesn't stop; only the ads do.",
+      evidence: "Pacing 41% over plan: budget exhausts on day 21 of 30, dark for 9 days.",
       impact: { label: "Demo-days lost / mo", value: "~9 days", sub: "best campaign dark" },
       triggerLabel: "Pacing over plan", signal: "41% over pace",
       metrics: [
@@ -324,10 +324,10 @@ function makeRecommendations() {
     {
       category: "Device gap", iconKey: "device", severity: "watch", tier: 3, age: "Day 6",
       title: "Mobile is 61% of paid spend but converts at half the desktop rate",
-      tldr: "Shift bids toward desktop or fix the mobile demo flow — mobile demos cost 2×.",
+      tldr: "Shift bids toward desktop or fix the mobile demo flow: mobile demos cost 2×.",
       cause: "Mobile cost-per-demo is running roughly double desktop while mobile takes the majority of spend.",
-      body: "Mobile takes 61% of paid spend but books demos at a $310 cost-per-demo — nearly double desktop's $165. The gap is widest on the /demo form, which points at a mobile UX problem, not audience quality.",
-      evidence: "Mobile 61% of spend · $310 cost-per-demo vs $165 on desktop — a 1.9× gap.",
+      body: "Mobile takes 61% of paid spend but books demos at a $310 cost-per-demo, nearly double desktop's $165. The gap is widest on the /demo form, which points at a mobile UX problem, not audience quality.",
+      evidence: "Mobile 61% of spend · $310 cost-per-demo vs $165 on desktop, a 1.9× gap.",
       impact: { label: "Efficiency gap", value: "1.9×", sub: "mobile vs desktop" },
       triggerLabel: "Device gap", signal: "$310 vs $165",
       metrics: [
@@ -348,9 +348,9 @@ function makeRecommendations() {
     {
       category: "Geo waste", iconKey: "geo", severity: "watch", tier: 3, age: "Day 6",
       title: "18% of paid spend is landing outside your target emirates",
-      tldr: "Tighten geo targeting — nearly a fifth of spend is outside your ICP regions.",
+      tldr: "Tighten geo targeting: nearly a fifth of spend is outside your ICP regions.",
       cause: "A share of paid impressions served outside AlaanPay's target UAE regions with near-zero demo conversion.",
-      body: "18% of paid spend this month served outside your target emirates — regions where AlaanPay has almost no pipeline. These clicks convert at a fifth of your in-region rate, so the spend is effectively unrecoverable.",
+      body: "18% of paid spend this month served outside your target emirates, regions where AlaanPay has almost no pipeline. These clicks convert at a fifth of your in-region rate, so the spend is effectively unrecoverable.",
       evidence: "18% of spend outside target emirates, converting at ~0.2× the in-region rate.",
       impact: { label: "Recoverable geo spend / mo", value: "~$2.7K", sub: "off-ICP regions" },
       triggerLabel: "Off-geo spend", signal: "18% out of region",
@@ -365,17 +365,17 @@ function makeRecommendations() {
       derivation: [
         "Spend by region pulled from `google_ads_geo.csv`, matched to CRM pipeline by region.",
         "Off-region share = spend outside target emirates ÷ total = **18%**.",
-        "Off-region cost-per-demo = **$920** vs **$185** in-region — a 5× gap.",
+        "Off-region cost-per-demo = **$920** vs **$185** in-region, a 5× gap.",
         "Verified: target-region list matches AlaanPay's serviceable market, not just billing geo.",
       ],
     },
     {
       category: "Scale opportunity", iconKey: "scale", severity: "watch", tier: 2, age: "New · day 1",
       title: "A new Meta creative is beating your account average by 2.3×",
-      tldr: "Scale the 'finance team' creative before it fatigues — it's your cheapest Meta demo.",
+      tldr: "Scale the 'finance team' creative before it fatigues: it's your cheapest Meta demo.",
       cause: "A recently launched Meta creative is converting well above the account average while still on a small budget.",
-      body: "Your new 'finance team' Meta creative is booking demos at $105 — 2.3× more efficient than the Meta average of $240 — but it's only getting 8% of Meta budget. There's room to scale it before frequency climbs and the edge fades.",
-      evidence: "$105 cost-per-demo vs a $240 Meta average — 2.3× better, on just 8% of budget.",
+      body: "Your new 'finance team' Meta creative is booking demos at $105 (2.3× more efficient than the Meta average of $240), but it's only getting 8% of Meta budget. There's room to scale it before frequency climbs and the edge fades.",
+      evidence: "$105 cost-per-demo vs a $240 Meta average, 2.3× better, on just 8% of budget.",
       impact: { label: "Efficient demos if scaled / mo", value: "~30", sub: "at $105 each" },
       triggerLabel: "Scale winner", signal: "$105 cost / demo",
       metrics: [
@@ -442,7 +442,7 @@ function seedGoal({ name, statement, target, targets = [], conditions = [], move
           at: checkedAt(checkedAgoHours),
           ago: agoLabel(checkedAgoHours),
           flaggedCount: actNowCount,
-          summary: `${recs.length} findings from your latest check-in — ${actNowCount} need action now, the rest are worth watching. Start here: ${recs[0].tldr}`,
+          summary: `${recs.length} findings from your latest check-in, ${actNowCount} need action now, the rest are worth watching. Start here: ${recs[0].tldr}`,
           recommendations: recs,
         }]
       : [],
@@ -478,12 +478,12 @@ const goals = [
   // Act-now goal #1 — wasted spend + capped Search.
   seedGoal({
     name: "Increase demos booked",
-    statement: "Move wasted PMax and Demand Gen spend into the Search headroom that actually books demos — hold cost-per-demo under $180.",
+    statement: "Move wasted PMax and Demand Gen spend into the Search headroom that actually books demos. Hold cost-per-demo under $180.",
     target: "<$180",
     targets: [
       { label: "Keep blended cost-per-demo under $180", target: "<$180", current: "$214", met: false, why: "Trailing cost-per-demo is $214. $180 keeps paid payback under 9 months at your 11% demo→win rate." },
       { label: "Book at least 240 demos from paid this quarter", target: "240", current: "132", met: false, why: "240 paid demos at an 11% win rate clears the quarter's new-logo target with headroom." },
-      { label: "No campaign type spends over $2K in 14 days with zero demos", target: "$2K · 0 demos", current: "$18.4K · 2 demos", met: false, why: "PMax + Demand Gen burned $18.4K in 14 days for 2 demos — a hard waste ceiling stops that repeating." },
+      { label: "No campaign type spends over $2K in 14 days with zero demos", target: "$2K · 0 demos", current: "$18.4K · 2 demos", met: false, why: "PMax + Demand Gen burned $18.4K in 14 days for 2 demos. A hard waste ceiling stops that repeating." },
     ],
     conditions: [
       { label: "PMax and Demand Gen spend is not booking demos",
@@ -530,12 +530,12 @@ const goals = [
         { category: "Query waste", action: "acted", hoursAgo: 3,
           reason: "Added 38 negative keywords across the broad-match ad groups and tightened two to phrase match." },
         { category: "Conversion leak", action: "rejected", hoursAgo: 6,
-          reason: "The /demo dip was a GA4 tag firing twice that week — a tracking artifact on our side, not a real conversion issue. Don't re-flag." },
+          reason: "The /demo dip was a GA4 tag firing twice that week, a tracking artifact on our side, not a real conversion issue. Don't re-flag." },
       ],
     ),
     checkedAgoHours: 2,
     notes: [
-      { text: "Finance wants us to protect Search efficiency this quarter over scaling Meta — weight recommendations accordingly.", at: "2d ago" },
+      { text: "Finance wants us to protect Search efficiency this quarter over scaling Meta. Weight recommendations accordingly.", at: "2d ago" },
     ],
   }),
   // Act-now goal #2 — Meta creative fatigue + brand overlap.
@@ -545,7 +545,7 @@ const goals = [
     target: "<$180",
     targets: [
       { label: "Keep Meta cost-per-demo under $180", target: "<$180", current: "$240", met: false, why: "Meta cost-per-demo has drifted from $165 to $240 as creatives fatigue; $180 is the payback line." },
-      { label: "Hold top-creative frequency under 4.0", target: "<4.0", current: "5.8", met: false, why: "Above ~4 impressions per person, CTR falls and CPM climbs — the fatigue threshold in your own data." },
+      { label: "Hold top-creative frequency under 4.0", target: "<4.0", current: "5.8", met: false, why: "Above ~4 impressions per person, CTR falls and CPM climbs, the fatigue threshold in your own data." },
     ],
     conditions: [
       { label: "A Meta creative's frequency is past saturation", logic: "meta_frequency_7d > 4.0 AND ctr_trend_21d < 0", state: "fired", count: 1 },
@@ -564,7 +564,7 @@ const goals = [
       pickFindings("Creative fatigue", "Spend overlap", "Scale opportunity", "Device gap"),
       [
         { category: "Device gap", action: "snoozed", snooze: "2 weeks", hoursAgo: 20,
-          reason: "New mobile /demo form ships next sprint — revisit after it's live." },
+          reason: "New mobile /demo form ships next sprint; revisit after it's live." },
       ],
     ),
     checkedAgoHours: 7,
@@ -572,11 +572,11 @@ const goals = [
   // Act-now goal #3 — retargeting re-serving already-converted users.
   seedGoal({
     name: "Cut wasted retargeting spend",
-    statement: "Stop re-serving ads to people who already booked or went cold — put retargeting budget behind fresh, in-market visitors.",
+    statement: "Stop re-serving ads to people who already booked or went cold. Put retargeting budget behind fresh, in-market visitors.",
     target: "<$180",
     targets: [
       { label: "Keep retargeting cost-per-demo under $180", target: "<$180", current: "$260", met: false, why: "Retargeting cost-per-demo is $260 today, dragged up by wasted impressions on converters and stale users." },
-      { label: "Keep wasted retargeting share under 15%", target: "<15%", current: "42%", met: false, why: "42% of retargeting impressions currently hit converted or 30-day-stale users — under 15% is healthy." },
+      { label: "Keep wasted retargeting share under 15%", target: "<15%", current: "42%", met: false, why: "42% of retargeting impressions currently hit converted or 30-day-stale users; under 15% is healthy." },
     ],
     conditions: [
       { label: "Retargeting is serving ads to people who already converted", logic: "retargeting_impressions_to_converted_or_stale_share_30d > 30%", state: "fired", count: 1 },
@@ -599,7 +599,7 @@ const goals = [
     statement: "Keep high-intent Search fully funded so it stays the cheapest demo engine",
     target: "≥65%",
     targets: [
-      { label: "Hold Search impression share above 65% on converting terms", target: "≥65%", current: "66%", met: true, why: "Converting Search terms are your cheapest demos at $120 — losing share here means losing the best demand you can buy." },
+      { label: "Hold Search impression share above 65% on converting terms", target: "≥65%", current: "66%", met: true, why: "Converting Search terms are your cheapest demos at $120; losing share here means losing the best demand you can buy." },
       { label: "Keep Search cost-per-demo under $140", target: "<$140", current: "$120", met: true, why: "Search runs at $120 today; $140 is the ceiling before it stops being the efficient channel." },
     ],
     conditions: [
@@ -627,7 +627,7 @@ const goals = [
     target: "$1.5M",
     targets: [
       { label: "Grow qualified pipeline to $1.5M by Sep 30", target: "$1.5M", current: "$1.02M", met: false, why: "Qualified pipeline sits at $1.02M; $1.5M gives 3× coverage on the $500K new-ARR target for the quarter." },
-      { label: "Hold win rate at or above 25%", target: "≥25%", current: "27%", met: true, why: "Trailing-90-day win rate is 27% — staying above 25% is what converts the $1.5M pipeline into target." },
+      { label: "Hold win rate at or above 25%", target: "≥25%", current: "27%", met: true, why: "Trailing-90-day win rate is 27%; staying above 25% is what converts the $1.5M pipeline into target." },
       { label: "Keep pipeline coverage at 3× of quarterly target", target: "3×", current: "2.4×", met: false, why: "Below 3× coverage, 4 of the last 5 quarters missed target." },
     ],
     conditions: [
@@ -642,7 +642,7 @@ const goals = [
     target: "<$120",
     targets: [
       { label: "Bring blended paid cost-per-lead under $120", target: "<$120", current: "$146", met: false, why: "Trailing CPL is $146; $120 is the level where paid payback stays under 12 months at current close rates." },
-      { label: "Hold MQL→SQL conversion at or above 40%", target: "≥40%", current: "41%", met: true, why: "Cheaper leads only help if they convert — 40% is the trailing-90-day median, so quality can't slip below it." },
+      { label: "Hold MQL→SQL conversion at or above 40%", target: "≥40%", current: "41%", met: true, why: "Cheaper leads only help if they convert; 40% is the trailing-90-day median, so quality can't slip below it." },
     ],
     conditions: [
       { label: "Blended CPL over the last 7 days rises above $120" },
@@ -656,7 +656,7 @@ const goals = [
     targets: [
       { label: "Lift net revenue retention above 110%", target: ">110%", current: "104%", met: false, why: "NRR is 104%; above 110% the business compounds on the existing base without needing new logos." },
       { label: "Keep gross monthly churn under 5%", target: "<5%", current: "4.2%", met: true, why: "Churn above 5% caps NRR regardless of how strong expansion is." },
-      { label: "Grow expansion revenue to 8% of base", target: "8%", current: "6%", met: false, why: "Expansion is the lever that pushes NRR past 110% — 8% clears the churn drag with headroom." },
+      { label: "Grow expansion revenue to 8% of base", target: "8%", current: "6%", met: false, why: "Expansion is the lever that pushes NRR past 110%; 8% clears the churn drag with headroom." },
     ],
     conditions: [
       { label: "Trailing-30-day gross churn rises above 5%" },
@@ -850,7 +850,7 @@ export function adjustGoal(id, text) {
     const removed = g.moves.pop();
     return { goal: g, reply: `Removed "${removed.label}". ${g.moves.length} moves left. Targets and conditions are unchanged.` };
   }
-  return { goal: g, reply: "Got it — noted. Tell me a threshold or scope to change (e.g. “track $1M instead of $1.5M”) and I'll update it." };
+  return { goal: g, reply: "Got it, noted. Tell me a threshold or scope to change (e.g. “track $1M instead of $1.5M”) and I'll update it." };
 }
 
 // Find the first open finding across active goals matching a predicate — lets
@@ -882,7 +882,7 @@ function impactWeight(rec) {
 function findingReply(hit) {
   const { goal, rec } = hit;
   const worth = rec.impact ? ` (${rec.impact.label.toLowerCase()}: ${rec.impact.value})` : "";
-  return `On “${goal.name}”: ${rec.title}${worth}. Next best move — ${rec.tldr} Open the goal to act on it.`;
+  return `On “${goal.name}”: ${rec.title}${worth}. Next best move: ${rec.tldr} Open the goal to act on it.`;
 }
 
 // Sage — portfolio-level assistant on the Goals page. Canned but grounded in the
@@ -911,14 +911,14 @@ export function sageChat(text) {
   if (/first|focus|priorit|open|start with|what should|where do i/.test(t)) {
     if (attention.length && attention[0].topFinding) {
       const g = attention[0];
-      return { reply: `Open “${g.name}” first — ${g.actNow} finding${g.actNow !== 1 ? "s" : ""} need action. Start with: ${g.topFinding.title}. ${g.topFinding.tldr}` };
+      return { reply: `Open “${g.name}” first, ${g.actNow} finding${g.actNow !== 1 ? "s" : ""} need action. Start with: ${g.topFinding.title}. ${g.topFinding.tldr}` };
     }
-    return { reply: "Nothing needs action right now — every active goal is on pace. Worth a glance at whichever goal you last shipped budget behind." };
+    return { reply: "Nothing needs action right now; every active goal is on pace. Worth a glance at whichever goal you last shipped budget behind." };
   }
   if (/attention|act now|urgent|off track|risk|behind|wrong/.test(t)) {
     return attention.length
-      ? { reply: `${attention.length} goal${attention.length !== 1 ? "s" : ""} need attention: ${attention.map((g) => g.name).join(", ")}. Biggest one first — ${attention[0].topFinding?.tldr || "open it to see the findings."}` }
-      : { reply: "Nothing is off track right now — every active goal is on pace." };
+      ? { reply: `${attention.length} goal${attention.length !== 1 ? "s" : ""} need attention: ${attention.map((g) => g.name).join(", ")}. Biggest one first: ${attention[0].topFinding?.tldr || "open it to see the findings."}` }
+      : { reply: "Nothing is off track right now; every active goal is on pace." };
   }
   if (/on track|healthy|good|fine|how are we/.test(t)) {
     return { reply: `${onTrack.length} of ${summaries.length} goal${summaries.length !== 1 ? "s are" : " is"} on track${setup.length ? `, and ${setup.length} still in setup.` : "."} ${attention.length ? `${attention.length} still need${attention.length === 1 ? "s" : ""} action.` : ""}`.trim() };
@@ -927,16 +927,16 @@ export function sageChat(text) {
   if (/dollar|invest|allocate|scale|double down|next.*spend|where.*put/.test(t)) {
     const hit = findFinding((r) => r.category === "Missed demand" || /impression share|headroom|search/i.test(r.title));
     return hit
-      ? { reply: `Your next dollar goes furthest on “${hit.goal.name}”: ${hit.rec.title}. ${hit.rec.tldr} That's demand you're already qualified for and leaving on the table — cheaper than buying new reach.` }
-      : { reply: "Clear the wasted spend first — every goal is efficient right now, so the next dollar is best held until a headroom finding opens up." };
+      ? { reply: `Your next dollar goes furthest on “${hit.goal.name}”: ${hit.rec.title}. ${hit.rec.tldr} That's demand you're already qualified for and leaving on the table, cheaper than buying new reach.` }
+      : { reply: "Clear the wasted spend first; every goal is efficient right now, so the next dollar is best held until a headroom finding opens up." };
   }
   if (/how many|count|list|which goals|what goals/.test(t)) {
     return { reply: `You're tracking ${summaries.length} goal${summaries.length !== 1 ? "s" : ""}: ${summaries.map((g) => g.name).join(", ") || "none yet"}.` };
   }
   if (/new goal|create|add goal/.test(t)) {
-    return { reply: "Use “New Goal” at the top right — tell me the outcome you want (e.g. “cut cost-per-demo under $180”) and I'll calibrate the rules and monitors from your data." };
+    return { reply: "Use “New Goal” at the top right. Tell me the outcome you want (e.g. “cut cost-per-demo under $180”) and I'll calibrate the rules and monitors from your data." };
   }
-  return { reply: `You have ${summaries.length} goal${summaries.length !== 1 ? "s" : ""} — ${attention.length} need action, ${onTrack.length} on track. Ask me what's wasting spend, where you're losing demos, or what to open first.` };
+  return { reply: `You have ${summaries.length} goal${summaries.length !== 1 ? "s" : ""}, ${attention.length} need action, ${onTrack.length} on track. Ask me what's wasting spend, where you're losing demos, or what to open first.` };
 }
 
 // Sage scoped to a single goal (the goal detail page) — answers about this goal
@@ -952,45 +952,45 @@ export function sageChatGoal(id, text) {
   const primary = g.targets?.[0];
 
   if (!t) {
-    return { reply: `Ask me about “${g.name}” — what's driving it, what to do next, or why a number moved.` };
+    return { reply: `Ask me about “${g.name}”: what's driving it, what to do next, or why a number moved.` };
   }
   // Biggest waste / most impactful thing to fix.
   if (/wast|biggest|most impact|worth|roi|where.*money|save/.test(t)) {
     const byImpact = [...openRecs].sort((a, b) => (impactWeight(b) - impactWeight(a)));
     const top = byImpact[0];
     return top
-      ? { reply: `The biggest lever here is “${top.title}”${top.impact ? ` — ${top.impact.label.toLowerCase()} ${top.impact.value}` : ""}. ${top.tldr} Want me to walk through the evidence?` }
-      : { reply: "Nothing is bleeding budget on this goal right now — spend is tracking efficiently." };
+      ? { reply: `The biggest lever here is “${top.title}”${top.impact ? ` (${top.impact.label.toLowerCase()} ${top.impact.value})` : ""}. ${top.tldr} Want me to walk through the evidence?` }
+      : { reply: "Nothing is bleeding budget on this goal right now; spend is tracking efficiently." };
   }
   if (/next|do next|action|fix|first|move/.test(t)) {
     return lead
       ? { reply: `Start with: ${lead.title}. ${lead.tldr}${actNow.length > 1 ? ` After that, ${actNow.length - 1} more need${actNow.length - 1 === 1 ? "s" : ""} a look.` : ""}` }
-      : { reply: "Nothing needs action on this goal right now — it's on pace. I'll flag the moment a monitor trips." };
+      : { reply: "Nothing needs action on this goal right now. It's on pace. I'll flag the moment a monitor trips." };
   }
   if (/why|driv|chang|move|cause|reason/.test(t)) {
     return lead
-      ? { reply: `${lead.title} — ${lead.cause || lead.evidence || lead.tldr}` }
-      : { reply: "No findings this run — the goal's metrics are holding steady versus last check." };
+      ? { reply: `${lead.title}: ${lead.cause || lead.evidence || lead.tldr}` }
+      : { reply: "No findings this run; the goal's metrics are holding steady versus last check." };
   }
   if (/status|how are we|on track|target|winning|hitting|pace|reach|forecast|hit target/.test(t)) {
     return primary
-      ? { reply: `${primary.label}: currently ${primary.current ?? "—"} vs target ${primary.target} — ${primary.met ? "on target" : "off target"}. ${actNow.length ? `${actNow.length} finding${actNow.length !== 1 ? "s" : ""} between you and it.` : "Nothing standing in the way right now."}` }
-      : { reply: `“${g.name}” is being tracked against your latest data — no target set yet, so I'm watching for drift.` };
+      ? { reply: `${primary.label}: currently ${primary.current ?? "—"} vs target ${primary.target}, ${primary.met ? "on target" : "off target"}. ${actNow.length ? `${actNow.length} finding${actNow.length !== 1 ? "s" : ""} between you and it.` : "Nothing standing in the way right now."}` }
+      : { reply: `“${g.name}” is being tracked against your latest data, no target set yet, so I'm watching for drift.` };
   }
   if (/monitor|firing|watch|trigger|alert/.test(t)) {
     const firing = (g.conditions || []).filter((c) => c.state === "fired");
     const quiet = (g.conditions || []).filter((c) => c.state !== "fired");
     return firing.length
       ? { reply: `${firing.length} monitor${firing.length !== 1 ? "s" : ""} firing: ${firing.map((c) => c.label).join("; ")}.${quiet.length ? ` ${quiet.length} more are quiet.` : ""}` }
-      : { reply: "No monitors are firing — everything's quiet on this goal. I'm still watching all of them each run." };
+      : { reply: "No monitors are firing; everything's quiet on this goal. I'm still watching all of them each run." };
   }
   // Cheapest / best source of demos.
   if (/cheap|best source|which channel|where.*dollar|invest|allocate|scale|double down/.test(t)) {
-    return { reply: `Brand Search is your cheapest demo source — highest intent, lowest cost-per-demo. Before scaling anything new, that's where an extra dollar pays back fastest.${lead ? ` But first clear “${lead.title}” — it's costing you more than a scale-up would earn.` : ""}` };
+    return { reply: `Brand Search is your cheapest demo source: highest intent, lowest cost-per-demo. Before scaling anything new, that's where an extra dollar pays back fastest.${lead ? ` But first clear “${lead.title}”; it's costing you more than a scale-up would earn.` : ""}` };
   }
   return lead
-    ? { reply: `On “${g.name}”: ${actNow.length} to act, ${Math.max(0, openRecs.length - actNow.length)} to watch. Top move — ${lead.tldr} Ask me “why” for the evidence, or “what's on track” for the wins.` }
-    : { reply: `“${g.name}” is on pace — nothing needs action right now. Ask me how it's tracking or which monitors I'm watching.` };
+    ? { reply: `On “${g.name}”: ${actNow.length} to act, ${Math.max(0, openRecs.length - actNow.length)} to watch. Top move: ${lead.tldr} Ask me “why” for the evidence, or “what's on track” for the wins.` }
+    : { reply: `“${g.name}” is on pace; nothing needs action right now. Ask me how it's tracking or which monitors I'm watching.` };
 }
 
 export function saveGoal(id, name) {
@@ -1017,7 +1017,7 @@ export function runCheckIn(id) {
     ago: "Just now",
     flaggedCount: recs.filter((r) => r.severity === "act-now").length,
     summary:
-      `${recs.length} recommendations across your high-value pipeline — ${recs.filter((r) => r.severity === "act-now").length} need action now, the rest are worth watching. Start with the stale $250K deal whose close date is 211 days overdue.`,
+      `${recs.length} recommendations across your high-value pipeline, ${recs.filter((r) => r.severity === "act-now").length} need action now, the rest are worth watching. Start with the stale $250K deal whose close date is 211 days overdue.`,
     recommendations: recs,
   };
   // mark a couple of conditions as fired

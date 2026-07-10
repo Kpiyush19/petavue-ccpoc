@@ -4,7 +4,7 @@
   "workstreamId": "pipeline",
   "workstreamName": "Pipeline Analysis",
   "renderType": "dashboard",
-  "description": "Surface stalled opportunities — open deals with no recent activity — sorted by value and prioritized for action. Removes the dead weight inflating coverage and skewing forecasts.",
+  "description": "Surface stalled opportunities (open deals with no recent activity), sorted by value and prioritized for action. Removes the dead weight inflating coverage and skewing forecasts.",
   "badges": {
     "ready": true,
     "buildTime": "~11 min",
@@ -16,13 +16,13 @@
   "alsoSurfaces": [
     "Which open deals have gone silent and need reviving or closing out?",
     "How much of our open pipeline is technically dead?",
-    "Where is stalling concentrated — by stage, by owner, by segment?",
+    "Where is stalling concentrated: by stage, by owner, by segment?",
     "Which stalled deals have positive recent signals worth re-engaging on?"
   ],
   "beforeWeRun": [
-    "Stalled threshold — 14, 21, or 30 days since last activity?",
-    "Which stages to include — all open stages, or exclude Prospecting?",
-    "Activity types that count — calls, emails, meetings, sequence steps, all?"
+    "Stalled threshold: 14, 21, or 30 days since last activity?",
+    "Which stages to include: all open stages, or exclude Prospecting?",
+    "Activity types that count: calls, emails, meetings, sequence steps, all?"
   ],
   "whatYoullGet": [
     {
@@ -35,7 +35,7 @@
     },
     {
       "name": "Stalled deals table",
-      "desc": "Sortable table with action recommendations — revive, downgrade, close-lost."
+      "desc": "Sortable table with action recommendations: revive, downgrade, close-lost."
     },
     {
       "name": "Stall rate by stage",

@@ -4,7 +4,7 @@
   "workstreamId": "attribution",
   "workstreamName": "Attribution & ROI",
   "renderType": "dashboard",
-  "description": "Know which lead source produces qualified pipeline, not just lead volume — and which channels are expensive noise.",
+  "description": "Know which lead source produces qualified pipeline, not just lead volume, and which channels are expensive noise.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -21,9 +21,9 @@
     "Which sources should we feed and which should we starve?"
   ],
   "beforeWeRun": [
-    "Source field — Salesforce Lead Source, HubSpot Original Source, or both?",
-    "Quality threshold — MQL, SQL, or pipeline stage?",
-    "Window — last 90 days or trailing 12 months?"
+    "Source field: Salesforce Lead Source, HubSpot Original Source, or both?",
+    "Quality threshold: MQL, SQL, or pipeline stage?",
+    "Window: last 90 days or trailing 12 months?"
   ],
   "whatYoullGet": [
     {

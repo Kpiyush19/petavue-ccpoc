@@ -1,5 +1,72 @@
-import { AlertOctagon, Lightbulb, ShieldOff, RefreshCw, Loader2 } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
+import { useState } from 'react'
+import { AlertOctagon, Lightbulb, ShieldOff } from 'lucide-react'
+import { Button as PvButton } from '../../petavue'
+import { PaperPlaneRight, ArrowsClockwise, CircleNotch } from '@phosphor-icons/react'
+
+const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />
+
+
+// Actions for a blocked run. When `onCorrect` is provided, the primary path
+// is a correction channel — the user tells Sage where the data actually is
+// (or that it exists), and Sage re-plans in chat instead of the run being a
+// dead-end. "Start a new run" drops to a secondary option. This is the
+// difference between "truly missing" (the tail caveat) and "you can tell me
+// where it is" (this box).
+function BlockedActions({ onCorrect, correcting, onRerun, rerunning, note, setNote }) {
+  if (!onCorrect && !onRerun) return null
+  return (
+    <div className="mt-3 pt-3 border-t border-[var(--border-primary)] flex flex-col gap-2.5">
+      {onCorrect ? (
+        <>
+          <div className="text-[12.5px] font-semibold text-[var(--text-primary)]">
+            Think this is wrong? Tell Sage where the data is.
+          </div>
+          <p className="text-[12px] leading-relaxed text-[var(--text-secondary)]">
+            If the data exists, point Sage to it: the table, the field, or how it&apos;s mapped. It&apos;ll re-plan with your input instead of stopping here.
+          </p>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={2}
+            placeholder="e.g. Stage-change history lives in opportunity_field_history, keyed by opportunity_id."
+            className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y"
+          />
+          <div className="flex items-center gap-2">
+            <PvButton
+              onClick={() => onCorrect(note.trim())}
+              size="sm"
+              variant="primary"
+              disabled={!note.trim() || correcting}
+              label={correcting ? 'Sending…' : 'Send to Sage'}
+              icon={correcting ? Spinner : PaperPlaneRight}
+            />
+            {onRerun && (
+              <PvButton
+                onClick={onRerun}
+                size="sm"
+                variant="ghost"
+                disabled={rerunning}
+                label={rerunning ? 'Starting…' : 'Start a new run'}
+                icon={rerunning ? Spinner : ArrowsClockwise}
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        onRerun && (
+          <PvButton
+            onClick={onRerun}
+            size="sm"
+            variant="primary"
+            disabled={rerunning}
+            label={rerunning ? 'Starting…' : 'Start a new run'}
+            icon={rerunning ? Spinner : ArrowsClockwise}
+          />
+        )
+      )}
+    </div>
+  )
+}
 
 
 // Red callout rendered on BLOCKED phase. The schema is the 4-field structure
@@ -19,7 +86,8 @@ import { Button } from '../../components/ui/Button'
 // Body content (headline, why, action descriptions, tail caveat) uses
 // neutral text colors so the user can actually read what happened. When
 // every line is red, nothing stands out and the body becomes hard to scan.
-export default function BlockedCallout({ summary, fallbackReason, onRerun, rerunning }) {
+export default function BlockedCallout({ summary, fallbackReason, onRerun, rerunning, onCorrect, correcting }) {
+  const [note, setNote] = useState('')
   const hasSummary =
     summary &&
     typeof summary === 'object' &&
@@ -55,6 +123,14 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
             </div>
           </div>
         </div>
+        <BlockedActions
+          onCorrect={onCorrect}
+          correcting={correcting}
+          onRerun={onRerun}
+          rerunning={rerunning}
+          note={note}
+          setNote={setNote}
+        />
       </div>
     )
   }
@@ -118,28 +194,14 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
         </div>
       )}
 
-      {onRerun && (
-        <div className="mt-3">
-          <Button
-            onClick={onRerun}
-            size="sm"
-            variant="primary"
-            disabled={rerunning}
-          >
-            {rerunning ? (
-              <>
-                <Loader2 size={12} className="animate-spin mr-1.5" />
-                Starting…
-              </>
-            ) : (
-              <>
-                <RefreshCw size={12} className="mr-1.5" />
-                Start a new run
-              </>
-            )}
-          </Button>
-        </div>
-      )}
+      <BlockedActions
+        onCorrect={onCorrect}
+        correcting={correcting}
+        onRerun={onRerun}
+        rerunning={rerunning}
+        note={note}
+        setNote={setNote}
+      />
 
       {what_system_cannot_do && (
         <div className="mt-3 pt-3 border-t border-[var(--border-primary)] flex items-start gap-2 text-[11.5px] leading-relaxed text-[var(--text-muted)]">

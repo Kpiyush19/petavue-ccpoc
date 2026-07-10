@@ -21,9 +21,9 @@
     "Which touches put this account on the radar before it became an opp?"
   ],
   "beforeWeRun": [
-    "Which opportunity — by Salesforce ID, opp name, or account name?",
+    "Which opportunity: by Salesforce ID, opp name, or account name?",
     "Include sales activity overlay (calls, emails, meetings)?",
-    "Audience tone — internal CRO/marketing leadership, or customer-facing?"
+    "Audience tone: internal CRO/marketing leadership, or customer-facing?"
   ],
   "whatYoullGet": [
     {
@@ -36,7 +36,7 @@
     },
     {
       "name": "Key inflection points",
-      "desc": "Three to five highlighted events that materially shaped the deal — radar moment, MQL trigger, opp-creation touch, key sales advance, closing event."
+      "desc": "Three to five highlighted events that materially shaped the deal: radar moment, MQL trigger, opp-creation touch, key sales advance, closing event."
     },
     {
       "name": "Credit allocation",

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import {
-  ChevronLeft, ChevronRight, Info, X, Plus, ArrowUp, ArrowDown, Pencil, Check,
+  ChevronLeft, ChevronRight, Info, X, Plus, ArrowUp, ArrowDown, Pencil, Check, Target,
 } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
+import { Button as PvButton } from '../../petavue'
+import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 
 // BE-injected sentinel for the "Other (please specify)" option on
@@ -82,40 +83,6 @@ function SurfacedTag({ reason }) {
 }
 
 
-function WizardStepDots({ index, total }) {
-  if (total <= 1) return null
-  if (total > 15) {
-    const pct = Math.round(((index + 1) / total) * 100)
-    return (
-      <div className="mb-4">
-        <div className="h-1 bg-[var(--bg-hover)] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[var(--accent)] transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </div>
-    )
-  }
-  return (
-    <div className="flex items-center gap-1.5 mb-4" aria-hidden="true">
-      {Array.from({ length: total }).map((_, i) => (
-        <div
-          key={i}
-          className={`h-1.5 rounded-full transition-all ${
-            i < index
-              ? 'w-3 bg-[var(--accent)]'
-              : i === index
-              ? 'w-6 bg-[var(--accent)]'
-              : 'w-3 bg-[var(--bg-hover)]'
-          }`}
-        />
-      ))}
-    </div>
-  )
-}
-
-
 function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
   // Set of known (planner-authored) option values — excludes the BE-injected
   // __custom__ sentinel so we can detect "is the current value custom?" by
@@ -151,40 +118,62 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
   const checkedValue = customMode ? CUSTOM_SENTINEL : value
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {options.map((opt) => {
         // Skip the __custom__ option if the BE didn't enable allow_custom.
         // Defensive — the BE only appends when allow_custom is true, but a
         // future bug shouldn't render an Other radio for vanilla selects.
         if (opt?.value === CUSTOM_SENTINEL && !allowCustom) return null
         const selected = opt.value === checkedValue
+
+        // "Other" — expands to hold its text input inline, so the custom answer
+        // lives inside the option (one connected box) rather than a field
+        // floating below the list.
+        if (opt.value === CUSTOM_SENTINEL) {
+          return (
+            <div
+              key={opt.value}
+              className={`rounded-lg border overflow-hidden transition-colors ${selected ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]/40 hover:bg-[var(--bg-hover)]'}`}
+            >
+              <label className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer">
+                <input type="radio" className="sr-only" checked={selected} onChange={() => selectOption(opt.value)} />
+                <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">{opt.label}</span>
+                {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
+              </label>
+              {customMode && (
+                <div className="px-2.5 pb-2.5">
+                  <input
+                    type="text"
+                    autoFocus
+                    value={typeof value === 'string' ? value : ''}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder="Type your answer…"
+                    className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                  />
+                </div>
+              )}
+            </div>
+          )
+        }
+
         return (
           <label
             key={opt.value}
-            className={`flex items-start gap-2.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${selected ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:bg-[var(--bg-hover)]'}`}
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border cursor-pointer transition-colors ${selected ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]/40 hover:bg-[var(--bg-hover)]'}`}
           >
             <input
               type="radio"
-              className="mt-0.5 accent-[var(--accent)]"
+              className="sr-only"
               checked={selected}
               onChange={() => selectOption(opt.value)}
             />
-            <span className="text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
               {opt.label}
             </span>
+            {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
           </label>
         )
       })}
-      {customMode && (
-        <input
-          type="text"
-          autoFocus
-          value={typeof value === 'string' ? value : ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Type your answer…"
-          className="w-full mt-1 px-3 py-2 rounded-lg border border-[var(--accent)]/40 bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
-        />
-      )}
     </div>
   )
 }
@@ -242,7 +231,7 @@ function MultiSelect({ options = [], value = [], onChange, allowCustom = false }
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {options.map((opt) => {
         // We render the custom checkbox separately below — skip the
         // BE-injected sentinel option in the main list to avoid a
@@ -252,46 +241,50 @@ function MultiSelect({ options = [], value = [], onChange, allowCustom = false }
         return (
           <label
             key={opt.value}
-            className={`flex items-start gap-2.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${selected ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:bg-[var(--bg-hover)]'}`}
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border cursor-pointer transition-colors ${selected ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]/40 hover:bg-[var(--bg-hover)]'}`}
           >
             <input
               type="checkbox"
-              className="mt-0.5 accent-[var(--accent)]"
+              className="sr-only"
               checked={selected}
               onChange={() => toggleKnown(opt.value)}
             />
-            <span className="text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
               {opt.label}
             </span>
+            {selected && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
           </label>
         )
       })}
       {allowCustom && (
-        <>
-          <label
-            className={`flex items-start gap-2.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${customChecked ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:bg-[var(--bg-hover)]'}`}
-          >
+        <div
+          className={`rounded-lg border overflow-hidden transition-colors ${customChecked ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] hover:border-[var(--text-muted)]/40 hover:bg-[var(--bg-hover)]'}`}
+        >
+          <label className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer">
             <input
               type="checkbox"
-              className="mt-0.5 accent-[var(--accent)]"
+              className="sr-only"
               checked={customChecked}
               onChange={toggleCustom}
             />
-            <span className="text-[13px] text-[var(--text-primary)] leading-snug">
+            <span className="flex-1 text-[13px] text-[var(--text-primary)] leading-snug">
               Other (please specify)
             </span>
+            {customChecked && <Check size={15} strokeWidth={2.5} className="shrink-0 text-[var(--accent)]" />}
           </label>
           {customChecked && (
-            <input
-              type="text"
-              autoFocus
-              value={customText}
-              onChange={(e) => onCustomTextChange(e.target.value)}
-              placeholder="Type your custom value…"
-              className="w-full mt-1 px-3 py-2 rounded-lg border border-[var(--accent)]/40 bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
-            />
+            <div className="px-2.5 pb-2.5">
+              <input
+                type="text"
+                autoFocus
+                value={customText}
+                onChange={(e) => onCustomTextChange(e.target.value)}
+                placeholder="Type your custom value…"
+                className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+              />
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )
@@ -563,7 +556,7 @@ function UnknownTypeFallback({ type, value, onChange }) {
       <p className="flex items-start gap-1.5 text-[11px] text-[var(--text-muted)] mb-2">
         <Info size={11} className="shrink-0 mt-0.5" />
         <span>
-          Unrecognized answer type <code className="font-mono">{type || '(missing)'}</code> — falling back to free text.
+          Unrecognized answer type <code className="font-mono">{type || '(missing)'}</code>. Falling back to free text.
         </span>
       </p>
       <FreeText value={value} onChange={onChange} />
@@ -622,7 +615,7 @@ export default function ClarificationCard({
 
   const {
     id, question, help_text, answer_type, options, surfaced_reason,
-    allow_custom, allow_add_custom,
+    allow_custom, allow_add_custom, affects,
   } = clarification
 
   const canSubmit = isAnswered(clarification, value) && !submitting
@@ -671,54 +664,61 @@ export default function ClarificationCard({
   }
 
   return (
-    <div className="max-w-3xl mx-auto bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl p-5">
-      <WizardStepDots index={index} total={total} />
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-          Configuration {index + 1} of {total}
+    // Flush content — the card lives in the white plan pane, so no chrome of
+    // its own. The question is the hero; everything else supports it.
+    <div className="max-w-2xl mx-auto w-full flex flex-col">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          {total > 1 ? `Question ${index + 1} of ${total}` : 'One quick question'}
         </span>
         <SurfacedTag reason={surfaced_reason} />
       </div>
 
-      <h2 className="text-[14px] font-medium text-[var(--text-primary)] leading-snug mb-2">
+      <h2 className="text-[18px] font-semibold text-[var(--text-primary)] leading-snug text-balance">
         {question}
       </h2>
 
       {help_text ? (
-        <p className="flex items-start gap-1.5 text-[12px] text-[var(--text-muted)] mb-3">
-          <Info size={12} className="shrink-0 mt-0.5" />
-          <span>{help_text}</span>
+        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-2">
+          {help_text}
         </p>
-      ) : (
-        <div className="mb-3" />
-      )}
+      ) : null}
 
-      <div className="mb-4">
+      {/* Maps the question to the part of the output it shapes, so the user can
+          see what their answer actually changes. */}
+      {affects ? (
+        <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-[var(--accent)]/8 border border-[var(--accent)]/20 text-[12.5px] text-[var(--text-secondary)] leading-snug">
+          <Target size={13} className="shrink-0 mt-0.5 text-[var(--accent)]" />
+          <span><span className="font-medium text-[var(--text-primary)]">What this shapes:</span> {affects}</span>
+        </div>
+      ) : null}
+
+      <div className="mt-5">
         {input}
       </div>
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 mt-6">
         {!isFirst ? (
-          <Button
+          <PvButton
             onClick={() => onPrevious({ id, answer: value })}
             disabled={submitting}
             size="md"
             variant="ghost"
-          >
-            <ChevronLeft size={14} className="mr-1" />
-            Previous
-          </Button>
+            label="Previous"
+            icon={CaretLeft}
+          />
         ) : (
           <span />
         )}
-        <Button
+        <PvButton
           onClick={() => onNext({ id, answer: value })}
           disabled={!canSubmit}
           size="md"
-        >
-          {isLast ? 'Submit answers' : 'Next'}
-          <ChevronRight size={14} className="ml-1" />
-        </Button>
+          variant="primary"
+          label={isLast ? 'Submit answers' : 'Next'}
+          icon={CaretRight}
+          iconPosition="suffix"
+        />
       </div>
     </div>
   )

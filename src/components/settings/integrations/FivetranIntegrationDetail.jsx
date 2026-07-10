@@ -57,7 +57,7 @@ const REPORTS_SUPPORTED_SERVICES = new Set([
 
 const FIVETRAN_TAB_TOOLTIPS = {
   schema: "Choose which objects Petavue should sync from this source.",
-  reports: "Define custom reports — useful for granular metrics that aren't in the default schema.",
+  reports: "Define custom reports. Useful for granular metrics that aren't in the default schema.",
   settings: "View connection details, test the connection, or disconnect."
 };
 
@@ -297,7 +297,7 @@ export const FivetranIntegrationDetail = ({
           <Lightning size={16} weight="fill" />
           <span>
             <strong>We're getting things ready for you.</strong> Pulling your data
-            for the first time — we'll start the daily sync automatically when it
+            for the first time. We'll start the daily sync automatically when it
             completes.
           </span>
         </div>
@@ -344,8 +344,8 @@ export const FivetranIntegrationDetail = ({
         <div className="px-6 py-5">
           <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg p-6 text-center">
             <p className="text-sm text-[var(--pv-neutral-grey-500)]">
-              We couldn't find this integration. It may not be connected yet —
-              try connecting from the integrations page.
+              We couldn't find this integration. It may not be connected yet.
+              Try connecting from the integrations page.
             </p>
           </div>
         </div>
@@ -730,7 +730,7 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
         ) : schemaQuery.isError ? (
           <div className="p-6 text-center text-xs text-[var(--pv-status-error,#EF4444)]">
             Couldn't load the object list. The connector may still be
-            initializing — try again in a minute.
+            initializing. Try again in a minute.
           </div>
         ) : rows.length === 0 ? (
           <div className="p-6 text-center text-xs text-[var(--pv-neutral-grey-500)]">
@@ -769,7 +769,7 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
                   {t.isCustomReport && (
                     <span
                       className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-[var(--pv-primary-100,#EEF2FF)] text-[var(--pv-primary-700,#3730A3)]"
-                      title="Custom report — auto-created on connect"
+                      title="Custom report, auto-created on connect"
                     >
                       Custom report
                     </span>

@@ -59,7 +59,7 @@ const TYPE_STATUS = {
   'executor-started': () => 'Starting',
   'step-status': (ev) => {
     if (ev.status === 'running') return null  // tool_call covers this
-    if (ev.status === 'failed') return 'Step failed — retrying'
+    if (ev.status === 'failed') return 'Step failed. Retrying'
     return null  // success/pending → silent (row icon handles it)
   },
   'executor-completed': (ev) =>
@@ -71,7 +71,7 @@ const TYPE_STATUS = {
   },
   'verification-complete': (ev) => {
     if (ev.verdict === 'pass') return 'All checks passed'
-    if (ev.verdict === 'retry') return 'Found items to fix — handling them automatically'
+    if (ev.verdict === 'retry') return 'Found items to fix. Handling them automatically'
     return null  // 'block' transitions to BLOCKED screen
   },
   // fixing

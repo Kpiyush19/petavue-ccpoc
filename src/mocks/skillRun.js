@@ -14,11 +14,28 @@ const ev = (sid, payload) => emit(chan(sid), "agent-event", payload);
 
 // Generic plan steps for a dashboard skill. type drives the row icon.
 const DEFAULT_STEPS = [
-  { id: "pull_revenue", title: "Pull revenue by month", type: "query", tool: "query_athena" },
-  { id: "rank_accounts", title: "Rank top accounts", type: "query", tool: "query_athena" },
-  { id: "compute_kpis", title: "Compute headline KPIs", type: "transform", tool: "execute_code" },
-  { id: "build_widgets", title: "Build dashboard widgets", type: "widget", tool: "write_file" },
-  { id: "verify_values", title: "Verify every value is source-linked", type: "verify", tool: null },
+  { id: "pull_revenue", title: "Pull revenue by month", type: "query", tool: "query_athena", purpose: "Pulls the raw numbers this dashboard is built on, straight from your connected data.", result: "Pulled 12,480 rows across 92 days of spend and revenue." },
+  { id: "rank_accounts", title: "Rank top accounts", type: "query", tool: "query_athena", purpose: "Finds which accounts matter most, so the dashboard leads with them.", result: "Ranked 342 accounts by ARR; the top 6 will headline the leaderboard." },
+  { id: "compute_kpis", title: "Compute headline KPIs", type: "transform", tool: "execute_code", purpose: "Turns the raw data into the top-line numbers you'll see in the scorecard.", result: "Computed 8 headline KPIs, including $4.82M revenue and a 27.4% win rate." },
+  { id: "build_widgets", title: "Build dashboard widgets", type: "widget", tool: "write_file", purpose: "Assembles each chart and table you approved into the dashboard.", result: "Built 5 widgets: KPI row, revenue trend, segment split, risk list, and detail table." },
+  { id: "verify_values", title: "Verify every value is source-linked", type: "verify", tool: null, purpose: "Checks that every number traces back to your data, so you can trust it.", result: "Every value is source-linked and reconciled to your data." },
+];
+
+// Planned widgets/sections surfaced in the approval step's per-widget review,
+// so the user can adjust or drop each one before anything is built.
+const DASHBOARD_WIDGETS = [
+  { id: "headline", name: "Headline KPIs", desc: "The top-line numbers for this analysis as a scorecard row." },
+  { id: "trend", name: "Trend over time", desc: "How the key metric moved across the period you picked." },
+  { id: "segment", name: "Breakdown by segment", desc: "The metric split across your main segments, ranked." },
+  { id: "risk", name: "Where you're at risk", desc: "The areas below target, with the size of each gap." },
+  { id: "table", name: "Detail table", desc: "Every value in a sortable table, each one source-linked." },
+];
+const MEMO_SECTIONS = [
+  { id: "summary", name: "Executive summary", desc: "The headline takeaway in two or three sentences." },
+  { id: "findings", name: "What the data shows", desc: "The key findings, with the numbers behind them." },
+  { id: "drivers", name: "Why it's happening", desc: "The drivers behind the pattern, called out plainly." },
+  { id: "actions", name: "What to do next", desc: "The recommended moves, ranked by impact." },
+  { id: "method", name: "How we measured it", desc: "Definitions, sources, and any caveats." },
 ];
 
 // One plain-language clarification the planner asks before drafting — kept
@@ -27,7 +44,8 @@ const DEFAULT_STEPS = [
 const PERIOD_CLARIFICATION = {
   id: "period",
   question: "What time period should we look at?",
-  help_text: "Just the window for this analysis — you can change it later in chat without rebuilding.",
+  help_text: "Just the window for this analysis. You can change it later in chat without rebuilding.",
+  affects: "Every widget in the dashboard. It sets the time window the whole thing is built on, so \"Trend over time\" and the KPIs all use this range.",
   answer_type: "single_select",
   required: true,
   default: "last_quarter",
@@ -47,6 +65,22 @@ const PERIOD_LABEL = {
   last_4q: "Last 4 quarters",
   ytd: "Year to date",
 };
+
+// Demo trigger — any skill whose slug is in this set halts at the Plan stage
+// with a GTM-style "your setup is missing data" block, so the blocked-state +
+// correction UI is reachable in the prototype. Everything else runs normally.
+const BLOCK_SKILLS = new Set(["buyer-journey-analysis"]);
+const blockSummary = (name) => ({
+  headline: `${name || "This skill"} needs a unified touch history your setup doesn't have`,
+  why_blocked:
+    "This skill reconstructs the order of every touch (marketing, ads, and sales) for each opportunity. Your CRM records the current stage and the last stage-change date, but not the full history of transitions between stages. There's also no single stream that puts marketing, ad, and sales touches in time order. Without that sequence, there's no journey to analyze.",
+  what_you_can_do: [
+    "Run a skill that works with your current data: Funnel Conversion Rates (stage-to-stage conversion), Closed-Won Journey Retrospective (winning-deal patterns), or Pipeline Coverage (pipeline by segment).",
+    "If you want this analysis specifically, work with your CRM admin to expose the opportunity stage-history table (the full transition log, not just the last change) and connect a unified activity stream that combines marketing, ad, and sales touches.",
+  ],
+  what_system_cannot_do:
+    "We can't reconstruct stage-change history from a single 'last change' timestamp, and we can't invent data sources that don't exist in your connected systems.",
+});
 
 export function getRun(sid) {
   return runs[sid];
@@ -81,7 +115,7 @@ export function getProgress(sid) {
     verification_round: run.verification_round,
     finding_count: run.finding_count,
     disclosure_summary: null,
-    blocked_summary: null,
+    blocked_summary: run.blocked ? run.blockedSummary : null,
     key_choices: run.planSummary.key_choices,
   };
 }
@@ -106,19 +140,35 @@ export function startRun(session, skillId) {
     createdAt: session.created_at,
     clarification: PERIOD_CLARIFICATION,
     awaiting: false,
+    blocked: false,
+    blockedSummary: null,
     step_statuses: {},
     verification_round: 0,
     finding_count: 0,
     timers: [],
     planSummary: {
       title: skill?.name || "Skill run",
+      // Short catalog blurb for the skill — shown as header context on the
+      // run page so the user always knows what this skill is for.
+      skill_description: skill?.description || "",
       output_type: isMemo ? "memo" : "dashboard",
       plan_outcome: skill?.overview || `Sage will build your ${(skill?.name || "output").toLowerCase()} from your connected data.`,
       plan_will_deliver: (skill?.questions || []).slice(0, 4),
+      widgets: isMemo ? MEMO_SECTIONS : DASHBOARD_WIDGETS,
+      // The answers/definitions produced during this run, offered for saving as
+      // reusable context so future runs reuse them (the "Save answers" popup).
+      saveableAnswers: [
+        { id: "period", title: "Time window for this analysis", kind: "Context", target: "cohort-analysis / defaults.md" },
+        { id: "qualified_lead", title: "What counts as a qualified lead", kind: "Key Definition", target: "Tenant key definitions" },
+        { id: "attribution", title: "Attribution model", kind: "Key Definition", target: "Tenant key definitions" },
+        { id: "segments", title: "Default segments for the breakdown", kind: "Context", target: "cohort-analysis / defaults.md" },
+        { id: "targets", title: "Target thresholds", kind: "Key Definition", target: "Tenant key definitions" },
+      ],
       plan_wont_deliver: [],
       plan_key_formulas: [],
-      key_choices: (skill?.inputs || []).slice(0, 3).map((t) => ({ label: t.split("—")[0].trim(), value: t })),
-      steps: steps.map(({ id, title, type }) => ({ id, title, type })),
+      // Inputs read as "Label: detail?"; take the label before the colon.
+      key_choices: (skill?.inputs || []).slice(0, 3).map((t) => ({ label: t.split(":")[0].trim(), value: t })),
+      steps: steps.map(({ id, title, type, purpose, result }) => ({ id, title, type, purpose, result })),
       memo_path: isMemo ? "output/memo.md" : "",
     },
     steps,
@@ -136,6 +186,21 @@ export function startRun(session, skillId) {
   after(900, () => { ev(sid, { type: "setup-stage", stage: "reviewing_data" }); ev(sid, { type: "tool_call", tool: "query_athena" }); });
   after(1800, () => { ev(sid, { type: "tool_call", tool: "execute_code" }); });
   after(2600, () => {
+    // Demo trigger: some skills discover the data they need isn't there and
+    // halt at the Plan stage — exercises the blocked-state + correction UI.
+    if (BLOCK_SKILLS.has(skill?.slug)) {
+      run.blocked = true;
+      run.blockedSummary = blockSummary(skill?.name);
+      session.phase = "BLOCKED";
+      session.block_reason = run.blockedSummary.why_blocked;
+      ev(sid, {
+        type: "skill-phase",
+        phase: "BLOCKED",
+        block_reason: run.blockedSummary.why_blocked,
+        blocked_summary: run.blockedSummary,
+      });
+      return;
+    }
     run.awaiting = true;
     session.setup_stage = "awaiting_input";
     ev(sid, { type: "setup-stage", stage: "awaiting_input" });

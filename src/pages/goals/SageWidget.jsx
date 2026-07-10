@@ -39,7 +39,7 @@ function SageFab({ open, onClick }) {
       (goal detail page), Sage is scoped to that goal; otherwise it's portfolio-wide. ── */
 function SageChat({ goal }) {
   const greeting = goal
-    ? `Hi, I'm Sage. Ask me about “${goal.name}” — what's driving it, what to do next, or why a number moved.`
+    ? `Hi, I'm Sage. Ask me about “${goal.name}”: what's driving it, what to do next, or why a number moved.`
     : "Hi, I'm Sage. Ask me what's wasting spend, where you're leaving demos on the table, or which goal to open first.";
   const [chat, setChat] = useState([{ role: "assistant", text: greeting }]);
   const [draft, setDraft] = useState("");

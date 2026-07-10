@@ -68,7 +68,7 @@ export default function SlackSettingsPage() {
   const handleConnect = async () => {
     const token = getAuthToken()
     if (!token) {
-      toast.error('Not authenticated — please log in first')
+      toast.error('Not authenticated. Please log in first')
       return
     }
 
@@ -456,7 +456,7 @@ export default function SlackSettingsPage() {
               Available Slack Tools
             </h3>
             <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-0.5">
-              Pre-built tools used by the agent — auth handled internally, never exposed to LLM
+              Pre-built tools used by the agent. Auth handled internally, never exposed to LLM
             </p>
           </div>
 

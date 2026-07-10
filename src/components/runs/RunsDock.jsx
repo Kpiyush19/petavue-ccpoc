@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, CheckCircle2, ChevronDown, X, ArrowRight } from 'lucide-react'
-import { apiGet, apiPost } from '../../api'
+import { motion, AnimatePresence } from 'motion/react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { Loader2, CheckCircle2, ChevronDown, ArrowRight } from 'lucide-react'
+import { apiGet } from '../../api'
 import { PHASE_LABEL } from '../../pages/skills-v2/statusMap'
 
 // A global, always-mounted dock (RootLayout) that surfaces every skill run
@@ -45,7 +46,9 @@ function relTime(value) {
 
 export default function RunsDock() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  // The run page has its own bottom footer bar; lift the dock above it there
+  // so the two don't overlap. Elsewhere it sits in the normal bottom corner.
+  const onRunPage = useLocation().pathname.includes('/skills/run/')
   const [expanded, setExpanded] = useState(false)
   const [dismissed, setDismissed] = useState(loadDismissed)
 
@@ -79,40 +82,52 @@ export default function RunsDock() {
     })
   }, [])
 
-  const discard = useCallback(
-    async (sid) => {
-      dismiss(sid) // optimistic — drop it from the dock immediately
-      try {
-        await apiPost(`/api/sessions/${sid}/skill/discard`, {})
-        queryClient.invalidateQueries({ queryKey: ['skills-v2-active-runs'] })
-      } catch {
-        // axios interceptor surfaces the error toast
-      }
-    },
-    [dismiss, queryClient]
-  )
-
   if (runs.all.length === 0) return null
 
   const runningCount = runs.running.length
   const readyCount = runs.ready.length
 
   return (
-    <div className="fixed bottom-4 right-4 z-[60] flex flex-col items-end gap-2 pointer-events-none">
-      {/* Expanded panel */}
-      {expanded && (
-        <div className="pointer-events-auto w-80 max-h-[60vh] flex flex-col bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl shadow-[0_16px_40px_-8px_rgba(16,24,40,0.28)] overflow-hidden">
-          <div className="flex items-center justify-between px-3.5 h-11 shrink-0 border-b border-[var(--border-primary)]">
-            <span className="text-[12px] font-semibold text-[var(--text-primary)]">Skill runs</span>
-            <button
-              onClick={() => setExpanded(false)}
-              aria-label="Collapse"
-              className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] border-none bg-transparent cursor-pointer transition-colors"
+    <div className={`fixed right-4 z-[60] pointer-events-none ${onRunPage ? 'bottom-[68px]' : 'bottom-4'}`}>
+      {/* One connected card: the summary bar is always visible, and the run
+          list expands out of it upward. The same element grows/shrinks on click. */}
+      <div className="pointer-events-auto w-80 max-w-[calc(100vw-2rem)] flex flex-col bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl shadow-[0_16px_40px_-8px_rgba(16,24,40,0.28)] overflow-hidden">
+        {/* Header — always pinned to the top. Expanding pushes it up, revealing
+            the run list underneath it. */}
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          className={`flex items-center gap-2 w-full h-11 px-3.5 shrink-0 text-left bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] border-none cursor-pointer transition-colors ${expanded ? 'border-b border-[var(--border-primary)]' : ''}`}
+        >
+          {runningCount > 0 ? (
+            <Loader2 size={15} className="shrink-0 text-[var(--accent)] animate-spin" />
+          ) : (
+            <CheckCircle2 size={15} className="shrink-0 text-[var(--pv-success-text,#16a34a)]" />
+          )}
+          <span className="flex-1 min-w-0 text-[12.5px] font-medium text-[var(--text-primary)] truncate">
+            {runningCount > 0
+              ? `${runningCount} run${runningCount === 1 ? '' : 's'} in progress`
+              : `${readyCount} ready`}
+          </span>
+          {runningCount > 0 && readyCount > 0 && (
+            <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-[var(--pv-success-text,#16a34a)] text-white text-[10px] font-semibold leading-none shrink-0">
+              {readyCount}
+            </span>
+          )}
+          <ChevronDown size={16} className={`shrink-0 text-[var(--text-muted)] transition-transform ${expanded ? 'rotate-180' : ''}`} />
+        </button>
+        <AnimatePresence initial={false}>
+          {expanded && (
+            <motion.div
+              key="list"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 38, mass: 0.8 }}
+              className="overflow-hidden"
             >
-              <ChevronDown size={16} />
-            </button>
-          </div>
-          <div className="flex-1 min-h-0 overflow-y-auto py-1" style={{ overscrollBehavior: 'contain' }}>
+              <div className="max-h-[50vh] overflow-y-auto py-1" style={{ overscrollBehavior: 'contain' }}>
             {runs.all.map((r) => {
               const ready = READY_PHASES.has(r.phase)
               return (
@@ -128,7 +143,7 @@ export default function RunsDock() {
                         dismiss(r.session_id)
                         navigate(`/session/${r.session_id}`)
                       } else {
-                        navigate(`/skills-v2/run/${r.session_id}`)
+                        navigate(`/skills/run/${r.session_id}`)
                       }
                     }}
                     className="flex-1 min-w-0 flex items-center gap-2.5 text-left bg-transparent border-none p-0 cursor-pointer"
@@ -143,7 +158,7 @@ export default function RunsDock() {
                         {r.skill_title || 'Skill run'}
                       </div>
                       <div className="text-[10.5px] text-[var(--text-muted)] mt-0.5 leading-tight truncate">
-                        {ready ? 'Prototype ready' : PHASE_LABEL[r.phase] || r.phase}
+                        {ready ? 'Draft ready' : PHASE_LABEL[r.phase] || r.phase}
                         {relTime(r.created_at) ? ` · ${relTime(r.created_at)}` : ''}
                       </div>
                     </div>
@@ -158,45 +173,14 @@ export default function RunsDock() {
                       <ArrowRight size={11} />
                     </span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => (ready ? dismiss(r.session_id) : discard(r.session_id))}
-                    aria-label={ready ? 'Dismiss' : 'Discard run'}
-                    title={ready ? 'Dismiss' : 'Discard — remove this run'}
-                    className="shrink-0 p-1 rounded text-[var(--text-muted)] hover:text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)]/40 border-none bg-transparent cursor-pointer transition-colors"
-                  >
-                    <X size={13} />
-                  </button>
                 </div>
               )
             })}
-          </div>
-        </div>
-      )}
-
-      {/* Collapsed pill */}
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        className="pointer-events-auto inline-flex items-center gap-2 h-10 pl-3 pr-3.5 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border-primary)] shadow-[0_8px_24px_-6px_rgba(16,24,40,0.30)] cursor-pointer hover:border-[var(--accent)]/50 transition-colors"
-      >
-        {runningCount > 0 ? (
-          <Loader2 size={15} className="text-[var(--accent)] animate-spin" />
-        ) : (
-          <CheckCircle2 size={15} className="text-[var(--pv-success-text,#16a34a)]" />
-        )}
-        <span className="text-[12.5px] font-medium text-[var(--text-primary)] whitespace-nowrap">
-          {runningCount > 0
-            ? `${runningCount} run${runningCount === 1 ? '' : 's'} in progress`
-            : `${readyCount} ready`}
-        </span>
-        {runningCount > 0 && readyCount > 0 && (
-          <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-[var(--pv-success-text,#16a34a)] text-white text-[10px] font-semibold leading-none">
-            {readyCount}
-          </span>
-        )}
-        <ChevronDown size={14} className={`text-[var(--text-muted)] transition-transform ${expanded ? '' : 'rotate-180'}`} />
-      </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

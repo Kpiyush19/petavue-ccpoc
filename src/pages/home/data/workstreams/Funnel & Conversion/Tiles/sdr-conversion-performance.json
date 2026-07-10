@@ -1,7 +1,7 @@
 {
   "id": "sdr-conversion-performance",
   "name": "SDR Conversion Performance",
-  "description": "Per-SDR conversion rates, with lead-quality adjustment so the comparison is fair. Surfaces who needs coaching and what kind — execution, lead-quality, or capacity.",
+  "description": "Per-SDR conversion rates, with lead-quality adjustment so the comparison is fair. Surfaces who needs coaching and what kind: execution, lead-quality, or capacity.",
   "renderType": "dashboard",
   "workstream": "Funnel & Conversion",
   "dataSources": [

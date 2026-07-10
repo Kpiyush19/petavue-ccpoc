@@ -1,7 +1,7 @@
 {
   "id": "abm-campaign-account-reach",
   "name": "ABM Campaign Account Reach",
-  "description": "Track which target accounts ABM campaigns actually reach — joins ad-platform reach data with the target account list, surfaces hit rate, untouched accounts, and wasted reach. Replaces the monthly Excel exercise with a live dashboard.",
+  "description": "Track which target accounts ABM campaigns actually reach. Joins ad-platform reach data with the target account list, surfaces hit rate, untouched accounts, and wasted reach. Replaces the monthly Excel exercise with a live dashboard.",
   "renderType": "dashboard",
   "workstream": "Account Intelligence / ABM",
   "dataSources": [

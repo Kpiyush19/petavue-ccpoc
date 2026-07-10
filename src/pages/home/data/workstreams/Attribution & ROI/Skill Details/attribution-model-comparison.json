@@ -23,9 +23,9 @@
     "How confident can we be in the canonical recommendation given our data completeness?"
   ],
   "beforeWeRun": [
-    "Which models — last-touch, first-touch, linear, U/W-shaped, time-decay, custom?",
-    "Time window — last 90 days, last quarter, or custom?",
-    "Anchor metric — SQL opportunity count or pipeline value?"
+    "Which models: last-touch, first-touch, linear, U/W-shaped, time-decay, custom?",
+    "Time window: last 90 days, last quarter, or custom?",
+    "Anchor metric: SQL opportunity count or pipeline value?"
   ],
   "whatYoullGet": [
     {

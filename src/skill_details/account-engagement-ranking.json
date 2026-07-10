@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Give your AEs a ranked list of the hottest accounts right now — and a flag list of the target accounts that have gone quiet.",
+  "description": "Give your AEs a ranked list of the hottest accounts right now, and a flag list of the target accounts that have gone quiet.",
   "badges": {
     "ready": true,
     "buildTime": "~8 min",
@@ -22,8 +22,8 @@
     "How does engagement break down by AE territory?"
   ],
   "beforeWeRun": [
-    "Ranking horizon — last 7, 14, or 30 days?",
-    "Score weighting — recency, frequency, or both?",
+    "Ranking horizon: last 7, 14, or 30 days?",
+    "Score weighting: recency, frequency, or both?",
     "Show by AE territory or aggregate?"
   ],
   "whatYoullGet": [

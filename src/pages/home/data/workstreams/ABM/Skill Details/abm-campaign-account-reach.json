@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Track which target accounts ABM campaigns actually reach — joins ad-platform reach data with the target account list, surfaces hit rate, untouched accounts, and wasted reach. Replaces the monthly Excel exercise with a live dashboard.",
+  "description": "Track which target accounts ABM campaigns actually reach. Joins ad-platform reach data with the target account list, surfaces hit rate, untouched accounts, and wasted reach. Replaces the monthly Excel exercise with a live dashboard.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -22,9 +22,9 @@
     "Where is campaign spend leaking to non-target accounts?"
   ],
   "beforeWeRun": [
-    "Which campaigns — all active ABM campaigns, or specific set?",
-    "Time window — trailing 30, 60, or 90 days?",
-    "Reach intensity threshold — 3, 5, or 10 impressions per individual?"
+    "Which campaigns: all active ABM campaigns, or specific set?",
+    "Time window: trailing 30, 60, or 90 days?",
+    "Reach intensity threshold: 3, 5, or 10 impressions per individual?"
   ],
   "whatYoullGet": [
     {
@@ -33,11 +33,11 @@
     },
     {
       "name": "Campaigns table",
-      "desc": "Sortable — hit rate, reach, spend, wasted reach, intensity per campaign."
+      "desc": "Sortable: hit rate, reach, spend, wasted reach, intensity per campaign."
     },
     {
       "name": "Accounts reach table",
-      "desc": "Sortable — target accounts × total reach, intensity, engagement velocity, classification."
+      "desc": "Sortable: target accounts × total reach, intensity, engagement velocity, classification."
     },
     {
       "name": "Untouched accounts",

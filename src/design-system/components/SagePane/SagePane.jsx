@@ -30,7 +30,7 @@ const DEFAULT_MESSAGES = [
       'The Account Pulse column is a derived health classification based on a composite scoring model defined in this analysis.',
       'It uses four input signals: Health Score from accounts__HealthScore (weighted at 40%), Churn Probability from accounts__ChurnProbability (30%), NPS Response from accounts__NPS_Score__c (15%), and Product Usage over the last 30 days from accounts__UsageIndex_30d (15%).',
       'The composite score maps to three labels. <span class="text-body-1-medium">Fairly Satisfied</span> is a score between 60–100, <span class="text-body-1-medium">Some Risk</span> falls between 35–59, and <span class="text-body-1-medium">Severe Risk</span> is anything from 0–34.',
-      'Of the accounts shown, Datapine ($48,670 ARR) is the only one currently flagged as Severe Risk — worth immediate attention.',
+      'Of the accounts shown, Datapine ($48,670 ARR) is the only one currently flagged as Severe Risk, worth immediate attention.',
     ],
   },
   { type: 'divider', timestamp: 'Jan 21, 2026 at 10:32 AM PST' },
@@ -48,7 +48,7 @@ const DEFAULT_MESSAGES = [
     body: [
       'Accounts with moderate and consistent activity show the highest conversion rates.',
       'Accounts with repeated activity spikes demonstrate lower win rates compared to moderate activity buckets, longer average sales cycles, and higher likelihood of moving into stalled or closed-lost categories.',
-      'The pattern suggests that repeated spikes are often reactive behavior — increased follow-ups due to uncertainty or lack of buyer momentum — rather than a strong buying signal.',
+      'The pattern suggests that repeated spikes are often reactive behavior (increased follow-ups due to uncertainty or lack of buyer momentum) rather than a strong buying signal.',
     ],
   },
 ];
@@ -262,7 +262,7 @@ function SystemMessage() {
         <p className="sage-pane__msg-text">
           <span className="text-body-1-medium">Hi, I&apos;m Sage. </span>
           <span className="text-body-1-regular">
-            I help you understand your dashboards—how they were built, what the
+            I help you understand your dashboards: how they were built, what the
             numbers show, and what&apos;s driving them.
           </span>
         </p>

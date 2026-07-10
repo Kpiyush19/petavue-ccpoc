@@ -21,9 +21,9 @@
     "How does this quarter compare to last on quota attainment?"
   ],
   "beforeWeRun": [
-    "Period — current quarter, last quarter, or YTD?",
-    "Rep scope — full team or a single rep?",
-    "Attribution rule — first-credit, last-credit, or split?"
+    "Period: current quarter, last quarter, or YTD?",
+    "Rep scope: full team or a single rep?",
+    "Attribution rule: first-credit, last-credit, or split?"
   ],
   "whatYoullGet": [
     {

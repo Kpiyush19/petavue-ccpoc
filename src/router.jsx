@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate, useRouteError } from "react-router-dom";
+import { createBrowserRouter, Navigate, useParams, useRouteError } from "react-router-dom";
 
 function BubbleError() {
   throw useRouteError();
@@ -59,7 +59,6 @@ const GoogleAnalyticsCallback = lazy(() => import("./pages/callbacks/GoogleAnaly
 const GoogleAnalyticsRedirect = lazy(() => import("./pages/callbacks/GoogleAnalyticsRedirect"));
 
 const RootLayout = lazy(() => import("./layouts/RootLayout"));
-const SettingsLayout = lazy(() => import("./layouts/SettingsLayout"));
 const DataHubLayout = lazy(() => import("./layouts/DataHubLayout"));
 const WorkflowsLayout = lazy(() => import("./layouts/WorkflowsLayout"));
 const DashboardsLayout = lazy(() => import("./layouts/DashboardsLayout"));
@@ -81,17 +80,19 @@ const DashboardDetailPage = lazy(() => import("./pages/DashboardDetailPage"));
 const SkillsPage = lazy(() => import("./pages/SkillsPage"));
 const SkillsV2ListPage = lazy(() => import("./pages/skills-v2/SkillsV2ListPage"));
 const SkillsV2RunPage = lazy(() => import("./pages/skills-v2/SkillsV2RunPage"));
+
+// A skill run now lives at /skills/run/:id (was /skills-v2/run/:id). Redirect
+// old URLs — bookmarks and in-flight sessions — so they don't 404.
+function LegacyRunRedirect() {
+  const { sessionId } = useParams();
+  return <Navigate to={`/skills/run/${sessionId}`} replace />;
+}
 const WorkflowsPage = lazy(() => import("./pages/workflows"));
 const WorkflowDetailPage = lazy(() => import("./pages/WorkflowDetailPage"));
 const DataHubPage = lazy(() => import("./pages/DataHubPage"));
 const DictionaryPage = lazy(() => import("./pages/data-hub/DictionaryPage"));
 const SyncActivityPage = lazy(() => import("./pages/data-hub/SyncActivityPage"));
 const DictionaryDetailPage = lazy(() => import("./pages/DictionaryDetailPage"));
-const SettingsPage = lazy(() => import("./pages/SettingsPage"));
-const IntegrationsPage = lazy(() => import("./pages/settings/IntegrationsPage"));
-const IntegrationDetailPage = lazy(() => import("./pages/settings/IntegrationDetailPage"));
-const UserManagementPage = lazy(() => import("./pages/settings/UserManagementPage"));
-const GeneralSettingsPage = lazy(() => import("./pages/settings/GeneralSettingsPage"));
 const MyProfilePage = lazy(() => import("./pages/MyProfilePage"));
 const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
@@ -480,12 +481,17 @@ export const router = createBrowserRouter([
             ]
           },
           {
-            path: "skills-v2/run/:sessionId",
+            path: "skills/run/:sessionId",
             element: (
               <SuspenseWrapper>
                 <SkillsV2RunPage />
               </SuspenseWrapper>
             )
+          },
+          {
+            // Legacy path — redirect /skills-v2/run/:id → /skills/run/:id.
+            path: "skills-v2/run/:sessionId",
+            element: <LegacyRunRedirect />
           },
           {
             path: "data-hub",
@@ -532,56 +538,11 @@ export const router = createBrowserRouter([
             ]
           },
           {
-            path: "settings",
-            element: (
-              <SuspenseWrapper>
-                <SettingsLayout />
-              </SuspenseWrapper>
-            ),
-            children: [
-              {
-                element: (
-                  <SuspenseWrapper>
-                    <SettingsPage />
-                  </SuspenseWrapper>
-                ),
-                children: [
-                  { index: true, element: <Navigate to="integrations" replace /> },
-                  {
-                    path: "integrations",
-                    element: (
-                      <SuspenseWrapper>
-                        <IntegrationsPage />
-                      </SuspenseWrapper>
-                    )
-                  },
-                  {
-                    path: "general",
-                    element: (
-                      <SuspenseWrapper>
-                        <GeneralSettingsPage />
-                      </SuspenseWrapper>
-                    )
-                  },
-                  {
-                    path: "users",
-                    element: (
-                      <SuspenseWrapper>
-                        <UserManagementPage />
-                      </SuspenseWrapper>
-                    )
-                  }
-                ]
-              },
-              {
-                path: "integrations/:slug",
-                element: (
-                  <SuspenseWrapper>
-                    <IntegrationDetailPage />
-                  </SuspenseWrapper>
-                )
-              }
-            ]
+            // Settings + integrations now live at /petavue/settings (the
+            // canonical page). The old standalone /settings/* pages are
+            // removed; anything still pointing there redirects to the new home.
+            path: "settings/*",
+            element: <Navigate to="/petavue/settings" replace />,
           },
           {
             path: "my-profile",

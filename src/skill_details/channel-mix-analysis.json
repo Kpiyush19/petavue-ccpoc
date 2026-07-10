@@ -24,14 +24,14 @@
     "Where does the channel taxonomy diverge across our connected sources?"
   ],
   "beforeWeRun": [
-    "Time period coverage — last 4 quarters, 8 quarters, or custom?",
-    "Canonical attribution model — tenant default, or override for this view?",
-    "Refresh schedule — daily, weekly, or on-demand only?"
+    "Time period coverage: last 4 quarters, 8 quarters, or custom?",
+    "Canonical attribution model: tenant default, or override for this view?",
+    "Refresh schedule: daily, weekly, or on-demand only?"
   ],
   "whatYoullGet": [
     {
       "name": "Headline metrics",
-      "desc": "Total spend, attributed pipeline, attributed revenue, blended ROAS, CAC — for current period with QoQ deltas."
+      "desc": "Total spend, attributed pipeline, attributed revenue, blended ROAS, CAC, for current period with QoQ deltas."
     },
     {
       "name": "Channel mix over time",

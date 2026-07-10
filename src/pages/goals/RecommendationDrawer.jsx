@@ -233,7 +233,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
               onChange={(e) => setReason(e.target.value)}
               rows={2}
               autoFocus={pending.action !== "snoozed"}
-              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search — it's our best demo source" : "Add context for the next run…"}
+              placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search, it's our best demo source" : "Add context for the next run…"}
               className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
             />
             <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                 disabled={act.isPending || (pending.action === "snoozed" && !snoozeFor.trim())}
                 onClick={() => doAct(
                   { action: pending.action, snooze: snoozeFor.trim() || undefined, reason: reason.trim() || undefined },
-                  pending.action === "acted" ? "Marked done — monitoring for recovery" : pending.action === "rejected" ? "Dismissed — archived" : `Snoozed · ${snoozeFor.trim()}`
+                  pending.action === "acted" ? "Marked done, monitoring for recovery" : pending.action === "rejected" ? "Dismissed, archived" : `Snoozed · ${snoozeFor.trim()}`
                 )}
               />
               <button onClick={() => { setPending(null); setReason(""); setSnoozeFor(""); }} className="text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">Cancel</button>
@@ -284,7 +284,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
               {thread.length === 0 ? (
-                <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">Leave a comment or an instruction for this recommendation — it's saved to its record and carries into the next run.</p>
+                <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">Leave a comment or an instruction for this recommendation. It's saved to its record and carries into the next run.</p>
               ) : (
                 thread.map((m, i) => (
                   <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[88%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
@@ -300,7 +300,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendComment(); } }}
                 rows={2}
                 autoFocus
-                placeholder="e.g. Never pause Brand Search — hold this one"
+                placeholder="e.g. Never pause Brand Search, hold this one"
                 className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
               />
               <PvButton variant="primary" size="md" label="Send" disabled={!comment.trim()} onClick={sendComment} />

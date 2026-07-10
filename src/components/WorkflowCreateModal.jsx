@@ -596,7 +596,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
         }
 
         const modeOptions = [
-          { value: 'ai', label: 'AI Analysis', icon: BrainCircuit, desc: 'Describe your alert — AI auto-detects whether to use a static template or dynamic analysis' },
+          { value: 'ai', label: 'AI Analysis', icon: BrainCircuit, desc: 'Describe your alert. AI auto-detects whether to use a static template or dynamic analysis' },
           ...(aiBlocks.length > 0
             ? [{ value: 'content_from', label: 'From AI Block', icon: Brain, desc: 'Send another block\'s output directly' }]
             : []),
@@ -643,7 +643,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                 <option value="">Select AI block...</option>
                 {aiBlocks.map(ab => (
                   <option key={ab.id} value={ab.id}>
-                    {ab.label || ab.type} — send output directly
+                    {ab.label || ab.type}: send output directly
                   </option>
                 ))}
               </select>
@@ -713,14 +713,14 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                 <>
                   <FileText size={12} className="text-green-600 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-green-700 leading-relaxed">
-                    <span className="font-semibold">Static template</span> — config saved. Variables like <code className="text-green-800">{'{{ metrics.* }}'}</code> will be resolved at runtime.
+                    <span className="font-semibold">Static template</span>: config saved. Variables like <code className="text-green-800">{'{{ metrics.* }}'}</code> will be resolved at runtime.
                   </p>
                 </>
               ) : (
                 <>
                   <BrainCircuit size={12} className="text-blue-600 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-blue-700 leading-relaxed">
-                    <span className="font-semibold">Dynamic analysis</span> — AI will analyze data and generate the Slack message at runtime. Preview available during verification.
+                    <span className="font-semibold">Dynamic analysis</span>: AI will analyze data and generate the Slack message at runtime. Preview available during verification.
                   </p>
                 </>
               )}

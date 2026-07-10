@@ -4,7 +4,7 @@
   "workstreamId": "funnel",
   "workstreamName": "Funnel & Conversion",
   "renderType": "dashboard",
-  "description": "See where the funnel is leaking volume or velocity, and exactly how far each stage sits from benchmark — across marketing and sales.",
+  "description": "See where the funnel is leaking volume or velocity, and exactly how far each stage sits from benchmark, across marketing and sales.",
   "badges": {
     "ready": true,
     "buildTime": "~10 min",
@@ -21,9 +21,9 @@
     "Which segments have the worst leakage at which stages?"
   ],
   "beforeWeRun": [
-    "Stages — full marketing → sales funnel or sales-only?",
-    "Benchmark — internal trailing 4-quarter, or industry standard?",
-    "Segment slice — by source, persona, or region?"
+    "Stages: full marketing → sales funnel or sales-only?",
+    "Benchmark: internal trailing 4-quarter, or industry standard?",
+    "Segment slice: by source, persona, or region?"
   ],
   "whatYoullGet": [
     {

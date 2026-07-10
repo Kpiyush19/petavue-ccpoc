@@ -352,7 +352,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
   const handleSaveDraft = () => {
     verifySessionIdRef.current = null // prevent cleanup on unmount
     setSavedAsDraft(true)
-    toast.success('Draft saved — you can resume verification later')
+    toast.success('Draft saved. You can resume verification later')
     onClose()
   }
 
@@ -505,7 +505,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
           <div className="mx-5 mt-3 px-3 py-2 rounded-xl bg-[var(--accent)]/6 border border-[var(--accent)]/15 flex items-center gap-2">
             <Pencil size={12} className="text-[var(--accent)] shrink-0" />
             <span className="text-[11px] text-[var(--text-secondary)]">
-              Updating existing dashboard — same URL will be preserved
+              Updating existing dashboard: same URL will be preserved
             </span>
             <button
               onClick={() => setRepublishId(null)}

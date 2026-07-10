@@ -53,7 +53,7 @@ export const SyncStatusPill = ({ state }) => {
 // so users can see every state at a glance. Order = config lifecycle.
 const LEGEND = [
   { state: "DISABLED", desc: "Not selected for sync." },
-  { state: "ENABLED", desc: "Selected for sync — idle." },
+  { state: "ENABLED", desc: "Selected for sync, idle." },
   { state: "IN_PROGRESS", desc: "Part of an active sync run." },
   { state: "COMPLETED", desc: "Finished successfully today." }
 ];

@@ -4,7 +4,7 @@
   "workstreamId": "funnel",
   "workstreamName": "Funnel & Conversion",
   "renderType": "dashboard",
-  "description": "Per-SDR conversion rates, with lead-quality adjustment so the comparison is fair. Surfaces who needs coaching and what kind — execution, lead-quality, or capacity.",
+  "description": "Per-SDR conversion rates, with lead-quality adjustment so the comparison is fair. Surfaces who needs coaching and what kind: execution, lead-quality, or capacity.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -21,9 +21,9 @@
     "Which teams are outperforming on the same lead-quality mix?"
   ],
   "beforeWeRun": [
-    "Time period coverage — trailing 60, 90, or 180 days?",
-    "Conversion metric — MQL→SQL only, or include MQL→Opportunity?",
-    "Lead-quality adjustment — yes (recommended) or raw rates?"
+    "Time period coverage: trailing 60, 90, or 180 days?",
+    "Conversion metric: MQL→SQL only, or include MQL→Opportunity?",
+    "Lead-quality adjustment: yes (recommended) or raw rates?"
   ],
   "whatYoullGet": [
     {
@@ -44,7 +44,7 @@
     },
     {
       "name": "Underperformers with diagnosis",
-      "desc": "Card list naming each underperformer's situation — execution, quality, or capacity."
+      "desc": "Card list naming each underperformer's situation: execution, quality, or capacity."
     },
     {
       "name": "Per-SDR trend",

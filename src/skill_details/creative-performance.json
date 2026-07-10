@@ -23,9 +23,9 @@
     "When should we kill an underperforming creative vs. give it more time?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 30 days, or custom?",
-    "Significance threshold — p < 0.05, p < 0.10, or custom?",
-    "Channels — all platforms with creative-level data, or specific platforms?"
+    "Time window: trailing 30 days, or custom?",
+    "Significance threshold: p < 0.05, p < 0.10, or custom?",
+    "Channels: all platforms with creative-level data, or specific platforms?"
   ],
   "whatYoullGet": [
     {
@@ -34,7 +34,7 @@
     },
     {
       "name": "Creatives table",
-      "desc": "Sortable — metrics, significance flag, fatigue flag, audience-of-best-fit per creative."
+      "desc": "Sortable: metrics, significance flag, fatigue flag, audience-of-best-fit per creative."
     },
     {
       "name": "Top performers",

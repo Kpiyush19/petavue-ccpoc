@@ -4,7 +4,7 @@
   "workstreamId": "attribution",
   "workstreamName": "Attribution & ROI",
   "renderType": "dashboard",
-  "description": "Audit the data quality underlying every attribution number. Trust score, issue counts, top offenders, concrete examples — so you know exactly where the attribution layer is solid and where to invest in fixing.",
+  "description": "Audit the data quality underlying every attribution number. Trust score, issue counts, top offenders, concrete examples, so you know exactly where the attribution layer is solid and where to invest in fixing.",
   "badges": {
     "ready": true,
     "buildTime": "~8 min",
@@ -23,9 +23,9 @@
     "Which campaigns and owners are causing the most hygiene issues?"
   ],
   "beforeWeRun": [
-    "Audit window — last 30, 60, or 90 days?",
-    "Audit scope — comprehensive, or narrow to one category (UTM / lead source / stitching / mapping / source agreement)?",
-    "Refresh schedule — weekly or monthly?"
+    "Audit window: last 30, 60, or 90 days?",
+    "Audit scope: comprehensive, or narrow to one category (UTM / lead source / stitching / mapping / source agreement)?",
+    "Refresh schedule: weekly or monthly?"
   ],
   "whatYoullGet": [
     {
@@ -42,7 +42,7 @@
     },
     {
       "name": "Top offenders",
-      "desc": "Per-category sortable tables — campaigns, owners, and sources causing the most issues."
+      "desc": "Per-category sortable tables: campaigns, owners, and sources causing the most issues."
     },
     {
       "name": "Issue examples",

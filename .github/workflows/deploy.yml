@@ -9,11 +9,29 @@ name: Deploy to Cloudflare Workers
 on:
   push:
     branches: [main]
-  workflow_dispatch: {} # lets you trigger a deploy manually from the Actions tab
+    # Only deploy when something that affects the built app changes — skips
+    # docs/memory-only commits so they don't burn runner minutes or queue time.
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.jsonc"
+      - "vite.config.*"
+      - "index.html"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch: {} # lets you trigger a deploy manually from the Actions tab (bypasses the paths filter)
+
+# A newer push to main cancels an older deploy that's still queued/running, so
+# rapid pushes don't stack up multiple jobs all competing for a hosted runner.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10 # fail fast instead of hanging indefinitely in the runner queue
     steps:
       - name: Checkout
         uses: actions/checkout@v4

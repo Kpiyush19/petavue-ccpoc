@@ -18,12 +18,12 @@
     "Why is coverage below target this quarter?",
     "Is the gap driven by sourcing, velocity, conversion, or compound across many?",
     "Which segments and stages contribute most to the shortfall?",
-    "What specific actions could close the gap — and how much does each one estimate to recover?"
+    "What specific actions could close the gap, and how much does each one estimate to recover?"
   ],
   "beforeWeRun": [
-    "Time horizon — current quarter, or next quarter forward look?",
-    "Coverage target — tenant config, or override for this analysis?",
-    "Hypothesis tree depth — 2, 3, or 4 levels?"
+    "Time horizon: current quarter, or next quarter forward look?",
+    "Coverage target: tenant config, or override for this analysis?",
+    "Hypothesis tree depth: 2, 3, or 4 levels?"
   ],
   "whatYoullGet": [
     {

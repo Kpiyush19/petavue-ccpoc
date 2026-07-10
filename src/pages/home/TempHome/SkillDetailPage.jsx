@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { ChevronRight, ChevronDown, Check, LayoutDashboard, FileText, Plug, CheckCircle2, Search, X, Info } from "lucide-react";
+import { ChevronRight, ChevronDown, Check, LayoutDashboard, FileText, Plug, CheckCircle2, Search, X, Info, AlertTriangle } from "lucide-react";
 import { Play, CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button as PvButton } from "../../../petavue";
@@ -31,7 +31,23 @@ const fadeUp = (delay = 0) => ({
 });
 
 // One consistent label treatment — 12px uppercase, AA-contrast secondary color.
-const LABEL = "text-[12px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]";
+const LABEL = "text-[14px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]";
+
+// Integrations are grouped into these three buckets in this order.
+const INTEGRATION_GROUP_ORDER = [
+  "CRM & Marketing Automation",
+  "Ad Platforms",
+  "Web & First-party Data",
+];
+function integrationGroup(name) {
+  const n = (name || "").toLowerCase();
+  if (/google ads|linkedin ads|meta ads|facebook|microsoft ads|bing|tiktok|display|paid social/.test(n)) return "Ad Platforms";
+  if (/ga4|analytics|segment|6sense|clearbit|website|first-party|snowflake|bigquery|intent/.test(n)) return "Web & First-party Data";
+  return "CRM & Marketing Automation"; // Salesforce, HubSpot, Outreach, Gong, Marketo, LinkedIn Sales Navigator, etc.
+}
+// Mock "already connected" set so the panel reads like the user's own setup —
+// some connected, some not. Spans all three groups so each shows a mix.
+const CONNECTED_INTEGRATIONS = new Set(["Salesforce", "HubSpot", "Google Ads", "GA4"]);
 
 function Section({ title, lead, children, delay }) {
   return (
@@ -92,6 +108,18 @@ export default function SkillDetailPage() {
     return !q || s.name.toLowerCase().includes(q);
   });
 
+  // This skill's integrations, bucketed into the three groups (empty groups dropped).
+  const integrationsByGroup = INTEGRATION_GROUP_ORDER
+    .map((group) => ({ group, items: (skill.integrations || []).filter((it) => integrationGroup(it.name) === group) }))
+    .filter((g) => g.items.length > 0);
+
+  // Readiness verdict — resolve the per-source connected state into a single
+  // "can I run this right now?" answer, so a missing data source surfaces
+  // here (before Activate) instead of as a mid-run block later.
+  const totalIntegrations = skill.integrations?.length || 0;
+  const missingIntegrations = (skill.integrations || []).filter((it) => !CONNECTED_INTEGRATIONS.has(it.name));
+  const isReady = totalIntegrations === 0 || missingIntegrations.length === 0;
+
   const runSkill = async () => {
     if (running) return;
     setRunning(true);
@@ -100,7 +128,7 @@ export default function SkillDetailPage() {
       const res = await apiPost("/api/sessions", { skill_id: skill.slug });
       const sid = res?.session?.session_id;
       if (!sid) throw new Error("No session id returned");
-      navigate(`/skills-v2/run/${sid}`);
+      navigate(`/skills/run/${sid}`);
     } catch (e) {
       toast.error("Failed to start: " + e.message);
       setRunning(false);
@@ -122,7 +150,7 @@ export default function SkillDetailPage() {
                 </button>
                 <ChevronRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
 
-                {/* Current skill — click to switch to another analysis */}
+                {/* Current skill: click to switch to another skill */}
                 <div className="relative min-w-0" ref={switcherRef}>
                   <button
                     onClick={() => setSwitcherOpen((o) => !o)}
@@ -145,13 +173,13 @@ export default function SkillDetailPage() {
                           autoFocus
                           value={switcherQuery}
                           onChange={(e) => setSwitcherQuery(e.target.value)}
-                          placeholder="Switch analysis…"
+                          placeholder="Switch skill…"
                           className="flex-1 min-w-0 text-[13px] bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
                         />
                       </div>
                       <div className="max-h-[320px] overflow-y-auto py-1">
                         {switcherList.length === 0 ? (
-                          <p className="px-3 py-4 text-[13px] text-[var(--text-muted)] text-center">No analyses match.</p>
+                          <p className="px-3 py-4 text-[13px] text-[var(--text-muted)] text-center">No skills match.</p>
                         ) : (
                           switcherList.map((s) => {
                             const active = s.slug === skill.slug;
@@ -193,15 +221,11 @@ export default function SkillDetailPage() {
         <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
           <div className="flex flex-col min-h-full w-full bg-white border border-pv-neutral-grey-150/50 rounded-xl p-4">
 
-              {/* Description + a quiet expectation line. The strong prototype
-                  signal lives on the run/output page (a "Prototype · verify to
-                  finalize" chip) — the moment the numbers actually appear. */}
+              {/* Description — the skill's value prop as readable lead copy
+                  (it's a sentence, not a title, so no giant headline). */}
               <motion.div {...fadeUp(0.04)} className="flex flex-col gap-2 mb-8">
                 <span className={LABEL}>Description</span>
-                <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">{skill.description}</p>
-                <p className="text-[12px] leading-snug text-[var(--text-muted)]">
-                  Activating builds a quick preview on your data — verify &amp; publish it in chat to finalize the numbers you can trust and share.
-                </p>
+                <p className="text-[14px] leading-relaxed text-[var(--text-primary)]">{skill.description}</p>
               </motion.div>
 
               {/* Docs layout: main content (left) + details sidebar (right) */}
@@ -227,17 +251,16 @@ export default function SkillDetailPage() {
                     </div>
                   </button>
                   <p className="text-[12px] leading-snug text-[var(--text-muted)]">
-                    A sample built by Petavue to show what you'll get — not your live data. Activate the skill to build a prototype on your own data.
+                    A sample built by Petavue to show what you'll get, not your live data.
                   </p>
                 </motion.div>
               )}
 
-              {/* What you'll get */}
-              {skill.whatYoullGet && <Section title="What you'll get" lead={skill.whatYoullGet} delay={0.1} />}
-
-              {/* Once it's live, you can ask Sage — plain, traceable answers */}
+              {/* Questions it answers — merges the old "Once it's live" +
+                  "Example prompts" sections: these questions double as the
+                  plain-language prompts you ask Sage, so one section carries both. */}
               {skill.questions?.length > 0 && (
-                <Section title="Once it's live, you can ask Sage" lead="Every one of these has a single answer you can trace back to source." delay={0.12}>
+                <Section title="Questions it answers" lead="Once it's live, ask Sage any of these in plain language. Every one has a single answer you can trace back to source." delay={0.1}>
                   <div className="flex flex-col gap-2 mt-1">
                     {skill.questions.map((q, i) => (
                       <div key={i} className="flex items-start gap-2.5 px-4 py-3 bg-pv-neutral-grey-50 border border-pv-neutral-grey-100 rounded-lg">
@@ -254,7 +277,7 @@ export default function SkillDetailPage() {
               {skill.inputs?.length > 0 && (
                 <Section
                   title="Before we run"
-                  lead="Before it builds, Sage asks a few quick questions about your data — like which time period to use, or how you define a qualified lead. We pre-fill what we can detect; you just confirm or change it."
+                  lead="Before it builds, Sage asks a few quick questions about your data, like which time period to use or how you define a qualified lead. We pre-fill what we can detect; you just confirm or change it."
                   delay={0.16}
                 >
                   <div className="flex flex-col divide-y divide-pv-neutral-grey-100 border border-pv-neutral-grey-100 rounded-lg overflow-hidden mt-1">
@@ -267,28 +290,6 @@ export default function SkillDetailPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-start gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-pv-primary-primary-50/60 border border-pv-primary-primary-100">
-                    <Info size={14} className="shrink-0 mt-0.5 text-pv-primary-primary-500" />
-                    <p className="text-[12px] leading-snug text-[var(--text-secondary)]">
-                      Nothing runs until you approve. Confirm the pre-filled answers or tweak any of them, then Sage builds it.
-                    </p>
-                  </div>
-                </Section>
-              )}
-
-              {/* Example prompts — illustrative, not interactive */}
-              {skill.prompts?.length > 0 && (
-                <Section title="Example prompts" lead="Once it's running, you can ask Sage in natural language — for example:" delay={0.18}>
-                  <div className="flex flex-col gap-2">
-                    {skill.prompts.map((p, i) => (
-                      <div
-                        key={i}
-                        className="bg-pv-neutral-grey-50 border border-pv-neutral-grey-100 rounded-md px-3.5 py-2.5"
-                      >
-                        <span className="text-[14px] text-[var(--text-secondary)]">{p}</span>
-                      </div>
-                    ))}
-                  </div>
                 </Section>
               )}
 
@@ -296,15 +297,50 @@ export default function SkillDetailPage() {
             </main>
 
             {/* RIGHT — sticky details panel, grounded as a card under the Run CTA */}
-            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-5 p-5 bg-pv-neutral-grey-50 border border-pv-neutral-grey-150/70 rounded-xl">
+            <motion.aside {...fadeUp(0.06)} className="w-[300px] shrink-0 self-start sticky top-0 flex flex-col gap-3 p-4 bg-pv-neutral-grey-50 border border-pv-neutral-grey-150/70 rounded-xl">
+                {/* Readiness verdict — the first thing an operator needs: can I
+                    run this right now? Sits directly under the Activate CTA. */}
+                {totalIntegrations > 0 && (
+                  isReady ? (
+                    <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-lg bg-[var(--pv-success-bg)] border border-[var(--pv-success-text)]/25">
+                      <CheckCircle2 size={16} className="text-[var(--pv-success-text)] shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <div className="text-[13px] font-semibold text-[var(--text-primary)]">You&apos;re ready to run</div>
+                        <p className="text-[12px] text-[var(--text-secondary)] leading-snug mt-0.5">
+                          All {totalIntegrations} data {totalIntegrations === 1 ? "source" : "sources"} this skill needs {totalIntegrations === 1 ? "is" : "are"} connected.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-lg bg-amber-50 border border-amber-300">
+                      <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <div className="text-[13px] font-semibold text-[var(--text-primary)]">
+                          Connect {missingIntegrations.length} {missingIntegrations.length === 1 ? "source" : "sources"} to run
+                        </div>
+                        <p className="text-[12px] text-[var(--text-secondary)] leading-snug mt-0.5">
+                          This skill needs {missingIntegrations.map((it) => it.name).join(", ")}. You can activate now, but it can&apos;t build until {missingIntegrations.length === 1 ? "it's" : "they're"} connected.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => navigate("/petavue/settings")}
+                          className="mt-2 text-[12px] font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline bg-transparent border-none p-0 cursor-pointer"
+                        >
+                          Connect sources →
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+
                 {/* What happens when you activate — prototype first, final after chat */}
                 <div className="flex flex-col gap-2.5">
                   <span className={LABEL}>When you activate</span>
                   <ol className="flex flex-col gap-2">
                     {[
-                      "Confirm a few quick inputs",
-                      `We build a prototype ${isMemo ? "memo" : "dashboard"} on your data`,
-                      "Verify it in chat, then publish the final version",
+                      "Confirm a few quick inputs, pre-filled from your data",
+                      `We build a draft ${isMemo ? "memo" : "dashboard"} on your data`,
+                      "Verify it in chat, then publish the final version you can trust and share",
                     ].map((t, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-[13px] leading-snug text-[var(--text-secondary)]">
                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white border border-[var(--border-primary)] text-[11px] font-semibold text-pv-primary-primary-600 shrink-0">{i + 1}</span>
@@ -330,38 +366,57 @@ export default function SkillDetailPage() {
                 {skill.time && (
                   <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
                     <span className={LABEL}>Build time</span>
-                    <span className="text-[12px] font-medium text-[var(--text-primary)]">{skill.time}</span>
+                    <span className="text-[12px] font-medium text-[var(--pv-success-text)]">{skill.time}</span>
                   </div>
                 )}
 
                 {skill.integrations?.length > 0 && (
-                  <div className="flex flex-col gap-2.5 pt-4 border-t border-[var(--border-primary)]">
+                  <div className="flex flex-col gap-3.5 pt-4 border-t border-[var(--border-primary)]">
                     <span className={LABEL}>
-                      Integrations ({skill.integrations.length})
+                      Integrations
                     </span>
-                    <div className="flex flex-col gap-2.5">
-                      {skill.integrations.map((it) => {
-                        const url = connectorIcon(it.name);
-                        return (
-                          <div key={it.name} className="flex items-center gap-2.5" title={it.desc}>
-                            {url ? (
-                              <img src={url} alt="" className="w-5 h-5 object-contain shrink-0" loading="lazy" />
-                            ) : (
-                              <Plug size={16} className="text-pv-primary-primary-500 shrink-0" />
-                            )}
-                            <span className="text-[12px] text-[var(--text-primary)] truncate">{it.name}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {integrationsByGroup.map(({ group, items }) => (
+                      <div key={group} className="flex flex-col gap-2">
+                        <div className="text-[12px] font-medium uppercase tracking-wide text-[var(--text-muted)]">{group}</div>
+                        <div className="flex flex-col gap-2">
+                          {items.map((it) => {
+                            const url = connectorIcon(it.name);
+                            const connected = CONNECTED_INTEGRATIONS.has(it.name);
+                            return (
+                              <div key={it.name} className="flex items-center gap-2.5" title={it.desc}>
+                                {url ? (
+                                  <img src={url} alt="" className={cn("w-5 h-5 object-contain shrink-0", !connected && "opacity-40 grayscale")} loading="lazy" />
+                                ) : (
+                                  <Plug size={16} className={cn("shrink-0", connected ? "text-pv-primary-primary-500" : "text-[var(--text-muted)]")} />
+                                )}
+                                <span className={cn("flex-1 min-w-0 text-[12px] truncate", connected ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{it.name}</span>
+                                {connected ? (
+                                  <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--pv-success-text)] shrink-0">
+                                    <CheckCircle2 size={13} /> Connected
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => navigate("/petavue/settings")}
+                                    className="text-[12px] font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline shrink-0 bg-transparent border-none p-0 cursor-pointer"
+                                  >
+                                    Connect
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {/* Honest note: pre-loaded skill, no self-serve edit */}
                 <div className="flex flex-col gap-1.5 pt-4 border-t border-[var(--border-primary)]">
-                  <span className={cn("inline-flex items-center gap-1.5", LABEL)}><Info size={12} /> Pre-loaded analysis</span>
+                  <span className={cn("inline-flex items-center gap-1.5", LABEL)}><Info size={12} /> Pre-built skill</span>
                   <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">
-                    Creating and editing your own skills is coming soon. For now, activate a pre-built one and shape the result in chat — need a custom analysis today?{" "}
+                    Creating and editing your own skills is coming soon. For now, activate a pre-built one and shape the result in chat. Need a custom skill today?{" "}
                     <a href="mailto:support@petavue.com" className="font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline">Contact Petavue support</a>.
                   </p>
                 </div>

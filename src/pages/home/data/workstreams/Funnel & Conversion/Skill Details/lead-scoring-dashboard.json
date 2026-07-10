@@ -21,9 +21,9 @@
     "Which scoring features matter most for downstream outcomes?"
   ],
   "beforeWeRun": [
-    "Score source — Salesforce, HubSpot, or composite?",
-    "Cohort window — last 30 or 90 days?",
-    "Conversion definition — MQL → SQL or all the way to closed-won?"
+    "Score source: Salesforce, HubSpot, or composite?",
+    "Cohort window: last 30 or 90 days?",
+    "Conversion definition: MQL → SQL or all the way to closed-won?"
   ],
   "whatYoullGet": [
     {

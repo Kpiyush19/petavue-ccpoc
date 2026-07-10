@@ -23,9 +23,9 @@
     "Which audience–channel pairings are most efficient?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 30 days, or custom?",
-    "ROAS variant — pipeline or revenue?",
-    "Channels — all platforms with audience-level data?"
+    "Time window: trailing 30 days, or custom?",
+    "ROAS variant: pipeline or revenue?",
+    "Channels: all platforms with audience-level data?"
   ],
   "whatYoullGet": [
     {
@@ -34,7 +34,7 @@
     },
     {
       "name": "Audience leaderboard",
-      "desc": "Sortable table — audiences as rows, columns for spend, impressions, ROAS, saturation flag, frequency."
+      "desc": "Sortable table: audiences as rows, columns for spend, impressions, ROAS, saturation flag, frequency."
     },
     {
       "name": "Top performers",

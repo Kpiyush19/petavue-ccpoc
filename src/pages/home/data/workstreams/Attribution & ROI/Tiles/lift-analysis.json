@@ -1,7 +1,7 @@
 {
   "id": "lift-analysis",
   "name": "Lift Analysis",
-  "description": "Know whether a campaign, sequence, or content push actually moved the needle above baseline — with statistical confidence, not gut feel.",
+  "description": "Know whether a campaign, sequence, or content push actually moved the needle above baseline, with statistical confidence, not gut feel.",
   "renderType": "memo",
   "workstream": "Attribution & ROI",
   "dataSources": [

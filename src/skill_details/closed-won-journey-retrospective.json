@@ -4,7 +4,7 @@
   "workstreamId": "funnel",
   "workstreamName": "Funnel & Conversion",
   "renderType": "memo",
-  "description": "See what a winning deal actually looks like — the touches, the sequence, the timing, and the content that closes revenue in your business.",
+  "description": "See what a winning deal actually looks like: the touches, the sequence, the timing, and the content that closes revenue in your business.",
   "badges": {
     "ready": true,
     "buildTime": "~14 min",
@@ -23,9 +23,9 @@
     "What's the typical time-to-close and where does it stretch?"
   ],
   "beforeWeRun": [
-    "Cohort — closed-won in the last 90 days, last 4 quarters, or custom?",
-    "Segment — by deal size, region, or persona?",
-    "Touches to include — marketing only, or marketing + sales sequencing?"
+    "Cohort: closed-won in the last 90 days, last 4 quarters, or custom?",
+    "Segment: by deal size, region, or persona?",
+    "Touches to include: marketing only, or marketing + sales sequencing?"
   ],
   "whatYoullGet": [
     {

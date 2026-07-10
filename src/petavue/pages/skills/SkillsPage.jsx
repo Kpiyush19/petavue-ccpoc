@@ -69,7 +69,7 @@ const SKILLS = [
     category: 'performance',
     scope: 'Tenant',
     description:
-      "Analyzes every AE against peer median on quota attainment, win rate, pipeline health, and activity mix — to answer who's on track, who needs coaching, and whose activity volume isn't converting. Includes peer-ratio tiles so 1:1s have numbers instead of vibes.",
+      "Analyzes every AE against peer median on quota attainment, win rate, pipeline health, and activity mix, to answer who's on track, who needs coaching, and whose activity volume isn't converting. Includes peer-ratio tiles so 1:1s have numbers instead of vibes.",
   },
   {
     id: 'buyer-journey-conversion',
@@ -93,7 +93,7 @@ const SKILLS = [
     category: 'marketing',
     scope: 'Tenant',
     description:
-      'Analyzes whether a campaign, sequence, or creative actually moved a metric above baseline — not just got clicks. Compares test vs. prior-period baseline or matched control, with statistical significance shown as plain-English confidence badges.',
+      'Analyzes whether a campaign, sequence, or creative actually moved a metric above baseline, not just got clicks. Compares test vs. prior-period baseline or matched control, with statistical significance shown as plain-English confidence badges.',
   },
   {
     id: 'closed-won-retrospective',
@@ -101,7 +101,7 @@ const SKILLS = [
     category: 'pipeline',
     scope: 'Tenant',
     description:
-      'Analyzes closed-won deals end-to-end — time-in-stage, first-touch channel, meeting cadence, influencing content — to answer: what does a winning deal actually look like, so we can repeat it? Built for QBR retros and replicable play development.',
+      'Analyzes closed-won deals end-to-end (time-in-stage, first-touch channel, meeting cadence, influencing content) to answer: what does a winning deal actually look like, so we can repeat it? Built for QBR retros and replicable play development.',
   },
   {
     id: 'churn-risk-radar',
@@ -141,7 +141,7 @@ const SKILLS = [
     category: 'customer',
     scope: 'Workspace',
     description:
-      'Scans the install base for upsell and cross-sell signals — feature usage thresholds, seat saturation, adjacent-team activity — and ranks expansion-ready accounts by deal-size potential and timing.',
+      'Scans the install base for upsell and cross-sell signals (feature usage thresholds, seat saturation, adjacent-team activity) and ranks expansion-ready accounts by deal-size potential and timing.',
   },
 ];
 

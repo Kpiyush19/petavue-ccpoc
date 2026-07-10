@@ -4,7 +4,7 @@
   "workstreamId": "attribution",
   "workstreamName": "Attribution & ROI",
   "renderType": "memo",
-  "description": "Know whether a campaign, sequence, or content push actually moved the needle above baseline — with statistical confidence, not gut feel.",
+  "description": "Know whether a campaign, sequence, or content push actually moved the needle above baseline, with statistical confidence, not gut feel.",
   "badges": {
     "ready": true,
     "buildTime": "~14 min",
@@ -23,9 +23,9 @@
     "How long should we run before we have a defensible read?"
   ],
   "beforeWeRun": [
-    "Define the campaign or push — name, dates, audience selector?",
-    "Holdout group — statistical match or random sample?",
-    "Confidence threshold — 90%, 95%, or 99%?"
+    "Define the campaign or push: name, dates, audience selector?",
+    "Holdout group: statistical match or random sample?",
+    "Confidence threshold: 90%, 95%, or 99%?"
   ],
   "whatYoullGet": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "name": "Segment breakdown",
-      "desc": "Lift by persona, region, or company size — segments where the effect is concentrated."
+      "desc": "Lift by persona, region, or company size: segments where the effect is concentrated."
     },
     {
       "name": "Recommendation",

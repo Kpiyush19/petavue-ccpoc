@@ -16,15 +16,15 @@
     "Gong"
   ],
   "alsoSurfaces": [
-    "What did sales actually do this quarter — volume, mix, capacity?",
+    "What did sales actually do this quarter: volume, mix, capacity?",
     "Where is the team over- or under-utilized?",
     "What patterns distinguish the top quartile of reps?",
     "Which playbook or capacity changes should we make next quarter?"
   ],
   "beforeWeRun": [
-    "Quarter to review — last completed, or custom?",
-    "Comparison quarter — prior, or year-over-year?",
-    "Audience tone — sales leadership (analytical) or board-ready (concise)?",
+    "Quarter to review: last completed, or custom?",
+    "Comparison quarter: prior, or year-over-year?",
+    "Audience tone: sales leadership (analytical) or board-ready (concise)?",
     "Include sequence-level analysis (if connected)?"
   ],
   "whatYoullGet": [
@@ -34,7 +34,7 @@
     },
     {
       "name": "Activity volume and mix",
-      "desc": "Markdown table — activity types × review-quarter total, comparison-quarter total, delta, per-rep average. Plus narrative."
+      "desc": "Markdown table: activity types × review-quarter total, comparison-quarter total, delta, per-rep average. Plus narrative."
     },
     {
       "name": "Capacity utilization",
@@ -42,7 +42,7 @@
     },
     {
       "name": "What changed",
-      "desc": "3–5 paragraphs on structural changes — playbook, process, team, sequences — with observed impact."
+      "desc": "3–5 paragraphs on structural changes (playbook, process, team, sequences), with observed impact."
     },
     {
       "name": "Top performer patterns",
@@ -50,7 +50,7 @@
     },
     {
       "name": "Next quarter recommendations",
-      "desc": "Playbook adjustments, capacity adjustments, experiments — each tied to specific data."
+      "desc": "Playbook adjustments, capacity adjustments, experiments, each tied to specific data."
     },
     {
       "name": "Sources & definitions",

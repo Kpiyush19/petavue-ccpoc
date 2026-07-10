@@ -19,16 +19,16 @@
     "NetSuite"
   ],
   "alsoSurfaces": [
-    "What did marketing produce this quarter — pipeline, revenue, efficiency?",
+    "What did marketing produce this quarter: pipeline, revenue, efficiency?",
     "Which channels grew, which declined, and by how much?",
     "Where should we scale spend next quarter, and where should we cut?",
     "What's the one-line summary I can defend in front of the CFO?"
   ],
   "beforeWeRun": [
-    "Time window — last completed fiscal quarter, or custom?",
-    "Comparison period — prior quarter, or year-ago quarter?",
-    "Audience tone — financial (CFO-defensible) or operational (marketing-leadership)?",
-    "Which metrics — sourced pipeline, sourced revenue, CAC, ROAS, channel breakdown (or all)?"
+    "Time window: last completed fiscal quarter, or custom?",
+    "Comparison period: prior quarter, or year-ago quarter?",
+    "Audience tone: financial (CFO-defensible) or operational (marketing-leadership)?",
+    "Which metrics: sourced pipeline, sourced revenue, CAC, ROAS, channel breakdown (or all)?"
   ],
   "whatYoullGet": [
     {
@@ -37,7 +37,7 @@
     },
     {
       "name": "Quarter highlights",
-      "desc": "Bulleted list of 4–6 specific developments — channels that grew, channels that declined, efficiency changes, notable campaigns."
+      "desc": "Bulleted list of 4–6 specific developments: channels that grew, channels that declined, efficiency changes, notable campaigns."
     },
     {
       "name": "Channel performance",
@@ -49,7 +49,7 @@
     },
     {
       "name": "Next quarter recommendation",
-      "desc": "Forward-looking — channels to scale, channels to reduce, and one open question for leadership."
+      "desc": "Forward-looking: channels to scale, channels to reduce, and one open question for leadership."
     },
     {
       "name": "Sources & definitions",

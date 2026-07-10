@@ -185,7 +185,7 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
             Custom reports
           </h2>
           <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
-            A custom report is a saved query — you pick the dimensions
+            A custom report is a saved query: you pick the dimensions
             (e.g. date, country, campaign) and the metrics (e.g. sessions,
             users, conversions) you want, and we sync that combination as
             a new table in your warehouse.
@@ -193,8 +193,8 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
           {CUSTOM_REPORTS_SELF_SERVE ? (
             <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1.5">
               Click <span className="font-medium text-[var(--pv-text-primary-text)]">+ Add report</span>
-              {" "}to build one. Toggle below to choose which reports sync —
-              same toggle is also available in the Schema tab.
+              {" "}to build one. Toggle below to choose which reports sync;
+              the same toggle is also available in the Schema tab.
             </p>
           ) : (
             <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1.5">
@@ -389,7 +389,7 @@ const ConfirmDeleteReportModal = ({ reportKey, isDeleting, onCancel, onConfirm }
         </h2>
         <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
           The report <span className="font-medium">{reportKey}</span> will be removed from this connection.
-          Existing data in your warehouse stays — only future syncs stop.
+          Existing data in your warehouse stays; only future syncs stop.
         </p>
       </div>
       <div className="px-5 py-3 flex items-center justify-end gap-2">

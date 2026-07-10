@@ -1,7 +1,7 @@
 {
   "id": "sales-velocity",
   "name": "Sales Velocity",
-  "description": "Track how fast opportunities move through stages — across the org, segments, and individual reps. Bottlenecks get surfaced structurally, not by gut feel in quarterly post-mortems.",
+  "description": "Track how fast opportunities move through stages, across the org, segments, and individual reps. Bottlenecks get surfaced structurally, not by gut feel in quarterly post-mortems.",
   "renderType": "dashboard",
   "workstream": "Pipeline Analysis",
   "dataSources": [

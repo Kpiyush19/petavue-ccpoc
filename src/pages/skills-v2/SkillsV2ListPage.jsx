@@ -297,7 +297,7 @@ function RunSplitButton({
                     onClick={(e) => handleDiscard(e, run.session_id)}
                     disabled={isDiscarding}
                     aria-label="Discard this run"
-                    title="Discard — remove from this list. Can't be undone."
+                    title="Discard. Removes this run from the list. Can't be undone."
                     className="shrink-0 p-1 rounded text-[var(--text-muted)] hover:text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)]/40 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                   >
                     {isDiscarding
@@ -367,7 +367,7 @@ export default function SkillsV2ListPage() {
         setRunningSkillId(null)
         return
       }
-      navigate(`/skills-v2/run/${sessionId}`)
+      navigate(`/skills/run/${sessionId}`)
     },
     onError: () => {
       setRunningSkillId(null)
@@ -490,7 +490,7 @@ export default function SkillsV2ListPage() {
                       runDisabled={needsOutputType}
                       runDisabledReason={needsOutputType ? 'Output type needs to be selected.' : undefined}
                       activeRuns={skillActiveRuns}
-                      onResume={(sid) => navigate(`/skills-v2/run/${sid}`)}
+                      onResume={(sid) => navigate(`/skills/run/${sid}`)}
                       onDiscard={discardRun}
                     />
                   </div>

@@ -1,7 +1,7 @@
 {
   "id": "buying-group-completeness",
   "name": "Buying Group Completeness",
-  "description": "Track whether the right contacts at the right seniority levels are being engaged at target accounts — economic buyer, technical buyer, end user, champion, decision-maker. Replaces the late discovery that a deal stalled because the buying group was incomplete.",
+  "description": "Track whether the right contacts at the right seniority levels are being engaged at target accounts: economic buyer, technical buyer, end user, champion, decision-maker. Replaces the late discovery that a deal stalled because the buying group was incomplete.",
   "renderType": "dashboard",
   "workstream": "Account Intelligence / ABM",
   "dataSources": [

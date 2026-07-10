@@ -1,5 +1,13 @@
 import { useMemo } from 'react'
-import { Check, Circle, AlertCircle, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import {
+  NumberCircleOne, NumberCircleTwo, NumberCircleThree, NumberCircleFour,
+  CheckCircle, WarningCircle,
+} from '@phosphor-icons/react'
+
+// Numbered-circle glyph per stage index — the "number icon then step name"
+// treatment used by the verify-&-publish step nav.
+const NUMBER_ICONS = [NumberCircleOne, NumberCircleTwo, NumberCircleThree, NumberCircleFour]
 
 
 // ─── Stage definitions ────────────────────────────────────────────────
@@ -13,27 +21,22 @@ const STAGES = [
   {
     key: 'setup',
     label: 'Plan',
-    tooltip: 'Reviews the data and drafts the plan for the dashboard or memo — what to compute, what to show, and what to leave out. The plan is presented for approval before anything is built. Usually 8–12 minutes (excluding time spent answering clarifications).',
+    tooltip: 'Reviews the data and drafts the plan for the dashboard or memo: what to compute, what to show, and what to leave out. The plan is presented for approval before anything is built. Usually 8–12 minutes (excluding time spent answering clarifications).',
   },
   {
     key: 'approve',
-    label: 'Approval',
-    tooltip: 'Review the plan and approve to run.',
+    label: 'Review',
+    tooltip: 'Review the plan Sage drafted and build it when it looks right. Nothing runs until you say so.',
   },
   {
     key: 'build',
     label: 'Build',
-    tooltip: 'Runs the queries, transforms the data, and assembles the dashboard or memo. Usually 5–6 minutes.',
-  },
-  {
-    key: 'check',
-    label: 'Quality check',
-    tooltip: 'Reviews the result, refines anything that needs it, then runs a final check. Usually 5–7 minutes; a few extra minutes if a second round of refinement is needed.',
+    tooltip: 'Runs the queries, assembles the dashboard or memo, then quality-checks every value: reviews the result, refines anything that needs it, and runs a final check. Usually 10–13 minutes.',
   },
   {
     key: 'ready',
     label: 'Ready',
-    tooltip: 'The dashboard or memo is ready.',
+    tooltip: 'The draft dashboard or memo is built and ready to take into chat.',
   },
 ]
 
@@ -45,8 +48,8 @@ const USER_GATED_SUBSTAGES = new Set(['awaiting_input', 'followup_question'])
 function activeStageForPhase(phase) {
   if (!phase || phase === 'PLANNING') return 'setup'
   if (phase === 'AWAITING_CONFIRMATION') return 'approve'
-  if (phase === 'EXECUTING') return 'build'
-  if (phase === 'VERIFYING' || phase === 'FIXING') return 'check'
+  // Quality check (VERIFYING/FIXING) is the tail of Build, not its own stage.
+  if (phase === 'EXECUTING' || phase === 'VERIFYING' || phase === 'FIXING') return 'build'
   // OPEN_CHAT is post-handoff; the run is done. Treat it like COMPLETE
   // for progress-bar purposes (all segments green, last segment shown
   // as Ready) so the bar isn't visually broken after auto-handoff.
@@ -61,59 +64,48 @@ function stageIndex(stageKey) {
 
 // ─── Visual primitives ─────────────────────────────────────────────────
 
-function StageSegment({ stage, state, isLast, userGated }) {
-  const baseDot = 'flex items-center justify-center w-5 h-5 rounded-full shrink-0 transition-all'
-  let dot
-  let labelClass = 'text-[12px] leading-tight tracking-wide transition-colors'
+function StageSegment({ stage, state, index, isLast, userGated }) {
+  const isDone = state === 'completed'
+  const isActive = state === 'active'
+  const isBlocked = state === 'blocked'
+  const accent = isDone || isActive
 
-  if (state === 'completed') {
-    dot = (
-      <div className={`${baseDot} bg-[var(--accent)] text-white`}>
-        <Check size={11} strokeWidth={3} />
-      </div>
-    )
-    labelClass += ' text-[var(--text-secondary)]'
-  } else if (state === 'active') {
-    // Loader2 spin for an unambiguous "still working" signal.
-    dot = (
-      <div className={`${baseDot} bg-[var(--accent)] text-white`}>
-        <Loader2 size={12} className="animate-spin" strokeWidth={2.5} />
-      </div>
-    )
-    labelClass += ' text-[var(--text-primary)] font-semibold'
-  } else if (state === 'blocked') {
-    dot = (
-      <div className={`${baseDot} bg-[var(--pv-error-bg)] text-[var(--pv-error-text)] border border-[var(--pv-error-text)]/40`}>
-        <AlertCircle size={11} strokeWidth={2.5} />
-      </div>
-    )
-    labelClass += ' text-[var(--pv-error-text)] font-medium'
+  const color = isBlocked
+    ? 'text-[var(--pv-error-text)]'
+    : accent
+    ? 'text-[var(--accent)]'
+    : 'text-[var(--text-muted)]'
+
+  // Icon: check (done), spinner (active/working), warning (blocked),
+  // numbered circle (pending) — number icon then step name, in a row.
+  let icon
+  if (isDone) {
+    icon = <CheckCircle weight="fill" size={18} className="shrink-0 text-[var(--accent)]" />
+  } else if (isActive) {
+    icon = <Loader2 size={16} className="shrink-0 animate-spin text-[var(--accent)]" />
+  } else if (isBlocked) {
+    icon = <WarningCircle weight="fill" size={18} className="shrink-0 text-[var(--pv-error-text)]" />
   } else {
-    dot = (
-      <div className={`${baseDot} border border-[var(--border-primary)] text-[var(--text-muted)]`}>
-        <Circle size={9} strokeWidth={2} />
-      </div>
-    )
-    labelClass += ' text-[var(--text-muted)]'
+    const NumIcon = NUMBER_ICONS[index] || NumberCircleOne
+    icon = <NumIcon size={18} className="shrink-0 text-[var(--text-muted)]" />
   }
 
-  const connectorBase = 'flex-1 h-px mx-2 transition-colors'
-  const connectorActive = state === 'completed' ? 'bg-[var(--accent)]/60' : 'bg-[var(--border-primary)]'
-  const connectorClass = `${connectorBase} ${connectorActive} ${userGated ? 'border-t border-dashed border-[var(--accent)]/40 bg-transparent' : ''}`
-
   return (
-    <div className="flex items-center flex-1 min-w-0">
-      {/* Native `title` tooltip — hover any stage segment to see its
-          description + typical duration. No cursor-help to avoid the
-          question-mark OS cursor. */}
+    <div className="flex items-center shrink-0">
+      {/* Native `title` tooltip — hover for the stage description + timing. */}
       <div
-        className="flex flex-col items-center gap-1.5 min-w-0"
+        className="flex items-center gap-1.5 px-2.5 py-1.5"
         title={stage.tooltip}
+        aria-current={isActive ? 'step' : undefined}
       >
-        {dot}
-        <span className={labelClass}>{stage.label}</span>
+        {icon}
+        <span className={`text-[12px] whitespace-nowrap transition-colors ${color} ${isActive ? 'font-semibold' : 'font-medium'}`}>
+          {stage.label}
+        </span>
       </div>
-      {!isLast ? <div className={connectorClass} /> : null}
+      {!isLast ? (
+        <div className={`w-6 h-px mx-0.5 shrink-0 ${isDone ? 'bg-[var(--accent)]/50' : 'bg-[var(--border-primary)]'} ${userGated ? 'border-t border-dashed border-[var(--accent)]/50 bg-transparent' : ''}`} />
+      ) : null}
     </div>
   )
 }
@@ -141,6 +133,7 @@ export default function RunProgressBar({
   paused,
   onCancel,
   clarificationCount,
+  bare = false,
 }) {
   // Silence unused-var lint while keeping props in the public API for
   // future revival of bar-level captions.
@@ -151,7 +144,7 @@ export default function RunProgressBar({
   const liveStage = activeStageForPhase(phase)
   const activeStage = useMemo(() => {
     if (!terminal) return liveStage
-    if (checkSubStage) return 'check'
+    if (checkSubStage) return 'build'
     if (setupStage)    return 'setup'
     return liveStage
   }, [terminal, liveStage, setupStage, checkSubStage])
@@ -163,11 +156,9 @@ export default function RunProgressBar({
     || (activeStage === 'setup' && USER_GATED_SUBSTAGES.has(setupStage))
   )
 
-  return (
-    <div className="border-b border-[var(--border-primary)] px-6 py-2 bg-[var(--bg-primary)]">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center">
-          {STAGES.map((stage, i) => {
+  const segments = (
+    <div className="flex items-center">
+      {STAGES.map((stage, i) => {
             let segmentState
             if (phase === 'COMPLETE' || phase === 'OPEN_CHAT') {
               // Run is finished — Ready (and every prior stage) shows
@@ -189,13 +180,21 @@ export default function RunProgressBar({
                 key={stage.key}
                 stage={stage}
                 state={segmentState}
+                index={i}
                 isLast={i === STAGES.length - 1}
                 userGated={userGated && i === activeIdx}
               />
             )
           })}
-        </div>
-      </div>
+    </div>
+  )
+
+  // Bare: just the segments, for embedding in the run-page footer bar.
+  if (bare) return segments
+
+  return (
+    <div className="border-b border-[var(--pv-neutral-grey-150)] px-6 py-2.5 bg-white">
+      <div className="max-w-3xl mx-auto">{segments}</div>
     </div>
   )
 }

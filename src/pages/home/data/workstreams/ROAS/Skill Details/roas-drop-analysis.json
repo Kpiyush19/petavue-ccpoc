@@ -20,12 +20,12 @@
     "Why did ROAS drop this period?",
     "Was it creative fatigue, audience saturation, rising CPMs, or compound across many?",
     "How confident is the diagnosis, and what evidence supports it?",
-    "What specific actions should we take — pause, refresh, shift, raise bids?"
+    "What specific actions should we take: pause, refresh, shift, raise bids?"
   ],
   "beforeWeRun": [
-    "Drop window — last 7 days vs prior 7 days, or custom?",
-    "Significance threshold — 10%, 15%, or 20% relative drop?",
-    "ROAS variant — pipeline or revenue?"
+    "Drop window: last 7 days vs prior 7 days, or custom?",
+    "Significance threshold: 10%, 15%, or 20% relative drop?",
+    "ROAS variant: pipeline or revenue?"
   ],
   "whatYoullGet": [
     {

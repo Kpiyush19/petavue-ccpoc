@@ -541,7 +541,7 @@ export function useSession() {
 
           if (failed.length > 0) {
             for (const f of failed) {
-              addMessage({ type: 'system', text: `Upload failed: ${f.filename} — ${f.error}` })
+              addMessage({ type: 'system', text: `Upload failed: ${f.filename} (${f.error})` })
             }
           }
 

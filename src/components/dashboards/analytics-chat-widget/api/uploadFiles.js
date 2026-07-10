@@ -14,7 +14,7 @@ export function useUploadFiles({ onSuccess, onError, onNotification } = {}) {
         for (const f of failed) {
           onNotification?.({
             type: 'warning',
-            title: `Upload failed: ${f.filename} — ${f.error}`,
+            title: `Upload failed: ${f.filename} (${f.error})`,
           });
         }
       }

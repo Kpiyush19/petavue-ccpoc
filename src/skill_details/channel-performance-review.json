@@ -23,15 +23,15 @@
     "Should we continue, scale, scale-back, or pause?"
   ],
   "beforeWeRun": [
-    "Which channel to review (required input — name)?",
-    "Time window for current performance — trailing 90 days, or custom?",
-    "Comparison period — prior 90 days, or year-over-year?",
-    "Audience tone — CFO/CEO defensible, or marketing-team detailed?"
+    "Which channel to review (required input: name)?",
+    "Time window for current performance: trailing 90 days, or custom?",
+    "Comparison period: prior 90 days, or year-over-year?",
+    "Audience tone: CFO/CEO defensible, or marketing-team detailed?"
   ],
   "whatYoullGet": [
     {
       "name": "Situation",
-      "desc": "Channel's current state — spend, attributed pipeline, ROAS, role in mix. Concrete numbers, no spin."
+      "desc": "Channel's current state: spend, attributed pipeline, ROAS, role in mix. Concrete numbers, no spin."
     },
     {
       "name": "Performance trajectory",
@@ -39,7 +39,7 @@
     },
     {
       "name": "Channel dynamics",
-      "desc": "Two paragraphs on channel-specific characteristics — typical sales cycle, role in multi-touch path, audience or saturation patterns."
+      "desc": "Two paragraphs on channel-specific characteristics: typical sales cycle, role in multi-touch path, audience or saturation patterns."
     },
     {
       "name": "Contribution context",
@@ -47,7 +47,7 @@
     },
     {
       "name": "Recommendation",
-      "desc": "Continue / scale up / scale down / pause — with rationale and confidence rating. Willing to recommend pause if data supports."
+      "desc": "Continue / scale up / scale down / pause, with rationale and confidence rating. Willing to recommend pause if data supports."
     }
   ],
   "callout": "5 quick inputs, then Sage drafts your channel review in ~12 min."

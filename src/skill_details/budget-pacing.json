@@ -23,9 +23,9 @@
     "Which pacing alerts are critical vs. just worth watching?"
   ],
   "beforeWeRun": [
-    "Budget period — current calendar month, fiscal month, or quarter?",
-    "Per-channel breakdown — yes (require channel-level budgets) or blended only?",
-    "Pacing health threshold — ±5%, ±10%, or custom?"
+    "Budget period: current calendar month, fiscal month, or quarter?",
+    "Per-channel breakdown: yes (require channel-level budgets) or blended only?",
+    "Pacing health threshold: ±5%, ±10%, or custom?"
   ],
   "whatYoullGet": [
     {
@@ -46,7 +46,7 @@
     },
     {
       "name": "Channel detail table",
-      "desc": "Sortable — budget, spend, pacing, projection, health per channel."
+      "desc": "Sortable: budget, spend, pacing, projection, health per channel."
     },
     {
       "name": "Accelerating / decelerating channels",

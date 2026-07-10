@@ -248,10 +248,10 @@ export default function WidgetChatPanel({
   const windowExcluded = previewLoaded ? Math.max(0, inSessionN - actualN) : 0
   const dividerLabel =
     compactedTurns > 0 && windowExcluded > 0
-      ? `↑ Older messages — ${compactedTurns} compacted, ${windowExcluded} outside window`
+      ? `↑ Older messages: ${compactedTurns} compacted, ${windowExcluded} outside window`
       : compactedTurns > 0
-        ? `↑ Compacted — not in agent's context`
-        : `↑ Older messages — not sent to the agent`
+        ? `↑ Compacted: not in agent's context`
+        : `↑ Older messages: not sent to the agent`
 
   return (
     <div className="flex flex-col h-full">
@@ -282,7 +282,7 @@ export default function WidgetChatPanel({
           <div className="text-[11px] text-[var(--text-muted)] py-3 leading-relaxed">
             <p className="m-0">
               This is a fresh widget-scoped conversation. Ask a question or
-              request a change — the agent will only see this widget's
+              request a change. The agent will only see this widget's
               lineage and recent edits made here.
             </p>
             <p className="m-0 mt-2 text-[10px] opacity-80">
@@ -319,7 +319,7 @@ export default function WidgetChatPanel({
           <div className="flex items-center gap-2 my-2 select-none" aria-label="all out of context">
             <div className="flex-1 border-t border-dashed border-[var(--border-primary)]" />
             <span className="text-[10px] text-[var(--text-muted)] whitespace-nowrap">
-              {compactedTurns > 0 ? "↑ Compacted — none in agent's context" : "↑ None of the above is in the agent's context"}
+              {compactedTurns > 0 ? "↑ Compacted: none in agent's context" : "↑ None of the above is in the agent's context"}
             </span>
             <div className="flex-1 border-t border-dashed border-[var(--border-primary)]" />
           </div>
@@ -333,7 +333,7 @@ export default function WidgetChatPanel({
             <span className="ml-1">
               {isThisWidgetThinking
                 ? 'Thinking…'
-                : 'Main chat is in progress — widget chat is paused'}
+                : 'Main chat is in progress, widget chat is paused'}
             </span>
           </div>
         )}

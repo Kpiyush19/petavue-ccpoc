@@ -149,7 +149,7 @@ export default function GoalQuickView({ id, onClose, onFull }) {
               <section>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Recommendations</p>
                 {recs.length === 0 ? (
-                  <p className="text-[13px] text-[var(--text-muted)]">No recommendations yet — run a check-in.</p>
+                  <p className="text-[13px] text-[var(--text-muted)]">No recommendations yet. Run a check-in.</p>
                 ) : (
                   <div className="flex flex-col gap-2.5">
                     {recs.map((r) => <QuickRec key={r.id} goalId={id} rec={r} onChanged={invalidate} />)}

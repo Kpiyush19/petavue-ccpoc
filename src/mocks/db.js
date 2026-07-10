@@ -171,7 +171,7 @@ export const db = {
   // session_id -> history messages
   history: {
     [DASH_SESSION_ID]: [
-      { type: "user", text: "Hey — can you build me a dashboard for Q2 revenue? I want to see how we're tracking and which accounts matter most.", timestamp: now - 46 * 60000 },
+      { type: "user", text: "Hey, can you build me a dashboard for Q2 revenue? I want to see how we're tracking and which accounts matter most.", timestamp: now - 46 * 60000 },
       {
         type: "assistant",
         text: "Happy to help. I'll pull monthly revenue and your top accounts from the warehouse, compute a few headline KPIs (total revenue, QoQ growth), and assemble a React dashboard you can publish. Let me start by querying the data.",
@@ -181,10 +181,10 @@ export const db = {
       { type: "tool_call", tool: "query_athena", input_summary: "SELECT account_name, SUM(arr) AS arr, health FROM ns_demo_accounts … ORDER BY arr DESC LIMIT 5" },
       {
         type: "assistant",
-        text: "Revenue is trending up nicely — **$4.82M** for the quarter, **+14.2% QoQ**, with September the strongest month. On the account side, Northwind and Contoso are expanding. A couple of accounts look like they're softening. Do you want me to flag at-risk accounts and add a win-rate metric?",
+        text: "Revenue is trending up nicely: **$4.82M** for the quarter, **+14.2% QoQ**, with September the strongest month. On the account side, Northwind and Contoso are expanding. A couple of accounts look like they're softening. Do you want me to flag at-risk accounts and add a win-rate metric?",
         timestamp: now - 44 * 60000,
       },
-      { type: "user", text: "Yes — flag anything at risk, and add a win-rate KPI to the scoreboard.", timestamp: now - 43 * 60000 },
+      { type: "user", text: "Yes, flag anything at risk, and add a win-rate KPI to the scoreboard.", timestamp: now - 43 * 60000 },
       {
         type: "assistant",
         text: "Got it. I'll add a **win rate** KPI (27.4% this quarter) and a health flag on each account, then build the widgets and assemble the page.",
@@ -196,7 +196,7 @@ export const db = {
       { type: "tool_call", tool: "write_file", input_summary: "output/dashboard/revenue_dashboard.html" },
       {
         type: "assistant",
-        text: "Your **Q2 Revenue Dashboard** is ready. It has a scoreboard (total revenue, new ARR, win rate, avg deal size), a revenue-by-month chart, and a top-accounts table with health flags — Globex and Umbrella are marked **at risk**. It's open in the preview panel on the right. When you're happy with it, use **Verify & Publish** to validate every step and schedule automatic refreshes.",
+        text: "Your **Q2 Revenue Dashboard** is ready. It has a scoreboard (total revenue, new ARR, win rate, avg deal size), a revenue-by-month chart, and a top-accounts table with health flags: Globex and Umbrella are marked **at risk**. It's open in the preview panel on the right. When you're happy with it, use **Verify & Publish** to validate every step and schedule automatic refreshes.",
         timestamp: now - 42 * 60000,
       },
       { type: "outputs", outputs: [{ path: "output/dashboard/revenue_dashboard.html", name: "Q2 Revenue Dashboard", type: "html" }] },
@@ -255,7 +255,7 @@ export const db = {
   linkedWorkflows: [
     {
       workflow_id: "wf-q2-weekly",
-      name: "Q2 Revenue — Weekly",
+      name: "Q2 Revenue, Weekly",
       dashboard_name: "Q2 Revenue Dashboard",
       dashboard_id: "dash-demo-1",
       blocks: [
@@ -267,7 +267,7 @@ export const db = {
     },
     {
       workflow_id: "wf-q2-sync",
-      name: "Q2 Revenue — On data sync",
+      name: "Q2 Revenue, On data sync",
       dashboard_name: "Q2 Revenue Dashboard",
       dashboard_id: "dash-demo-1",
       blocks: [

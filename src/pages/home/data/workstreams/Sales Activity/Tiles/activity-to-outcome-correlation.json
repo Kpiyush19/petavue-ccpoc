@@ -1,7 +1,7 @@
 {
   "id": "activity-to-outcome-correlation",
   "name": "Activity-to-Outcome Correlation",
-  "description": "Compare activity patterns on closed-won vs closed-lost deals to surface which behaviors actually move pipeline. Replaces received-wisdom playbooks with data-grounded correlation analysis — \"this isn't actually working\" findings are surfaced explicitly.",
+  "description": "Compare activity patterns on closed-won vs closed-lost deals to surface which behaviors actually move pipeline. Replaces received-wisdom playbooks with data-grounded correlation analysis. \"This isn't actually working\" findings are surfaced explicitly.",
   "renderType": "memo",
   "workstream": "Sales Activity",
   "dataSources": [

@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Know whether your campaigns are reaching the target accounts that matter — or burning spend on everyone else.",
+  "description": "Know whether your campaigns are reaching the target accounts that matter, or burning spend on everyone else.",
   "badges": {
     "ready": true,
     "buildTime": "~10 min",
@@ -23,9 +23,9 @@
     "How do channels compare on target-list reach?"
   ],
   "beforeWeRun": [
-    "Target list — single ABM list or all named-account lists?",
-    "Campaigns to include — paid only, or all touch types?",
-    "Window — last 30, 60, or 90 days?"
+    "Target list: single ABM list or all named-account lists?",
+    "Campaigns to include: paid only, or all touch types?",
+    "Window: last 30, 60, or 90 days?"
   ],
   "whatYoullGet": [
     {

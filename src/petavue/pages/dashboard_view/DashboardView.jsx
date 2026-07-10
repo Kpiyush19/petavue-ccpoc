@@ -101,7 +101,7 @@ const DASHBOARD_CONFIGS = {
       'health-by-segment': 'Bar chart of average Account Health Score for each Account Segment.',
       'at-risk': 'Accounts identified as "at risk" based on health scores and churn probability.',
       'health-trend': 'Monthly health score trend across segments showing movement over 6 months.',
-      'engagement-metrics': 'Key engagement indicators per account — login frequency, feature adoption, support tickets, and NPS.',
+      'engagement-metrics': 'Key engagement indicators per account: login frequency, feature adoption, support tickets, and NPS.',
     },
   },
 
@@ -221,7 +221,7 @@ const SAGE_MESSAGES = {
       'The Account Pulse column is a derived health classification based on a composite scoring model.',
       'It uses four input signals: <span class="text-body-1-medium">Health Score</span> (weighted at 40%), <span class="text-body-1-medium">Churn Probability</span> (30%), <span class="text-body-1-medium">NPS Response</span> (15%), and <span class="text-body-1-medium">Product Usage</span> over the last 30 days (15%).',
       'The composite score maps to three labels: Fairly Satisfied (60–100), Some Risk (35–59), and Severe Risk (0–34).',
-      'Datapine ($48,670 ARR) is the only account currently flagged as <span class="text-body-1-medium">Severe Risk</span> — worth immediate attention.',
+      'Datapine ($48,670 ARR) is the only account currently flagged as <span class="text-body-1-medium">Severe Risk</span>, worth immediate attention.',
     ]},
     { type: 'divider', timestamp: 'Jan 21, 2026 at 10:32 AM PST' },
     { type: 'user', text: 'Which accounts dropped the most in health score this month?' },
@@ -230,9 +230,9 @@ const SAGE_MESSAGES = {
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
       'Three accounts showed the largest health score declines this month:',
-      '<span class="text-body-1-medium">Rec Technologies</span> dropped 18 points (72 → 54) — driven by a 40% decrease in product usage and two unresolved support tickets.',
-      '<span class="text-body-1-medium">AB Company</span> dropped 12 points (61 → 49) — NPS fell from 7 to 4 after a billing dispute.',
-      '<span class="text-body-1-medium">Datapine</span> dropped 9 points (38 → 29) — churn probability increased to 68% after contract renewal was declined.',
+      '<span class="text-body-1-medium">Rec Technologies</span> dropped 18 points (72 → 54), driven by a 40% decrease in product usage and two unresolved support tickets.',
+      '<span class="text-body-1-medium">AB Company</span> dropped 12 points (61 → 49). NPS fell from 7 to 4 after a billing dispute.',
+      '<span class="text-body-1-medium">Datapine</span> dropped 9 points (38 → 29). Churn probability increased to 68% after contract renewal was declined.',
       'I would recommend scheduling check-ins with all three accounts this week.',
     ]},
   ],
@@ -243,7 +243,7 @@ const SAGE_MESSAGES = {
       { label: "Here's the plan:", loadingLabel: 'Generating the plan', content: ['Analyze average time in Negotiation vs other stages', 'Identify common blockers', 'Compare stalled vs closed deals', 'Check pricing approval bottlenecks'], status: 'done' },
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
-      'Negotiation is currently the longest stage at <span class="text-body-1-medium">14 days on average</span> — up from 9 days last quarter.',
+      'Negotiation is currently the longest stage at <span class="text-body-1-medium">14 days on average</span>, up from 9 days last quarter.',
       'The main bottlenecks are: <span class="text-body-1-medium">Pricing approval delays</span> (42% of stalled deals are waiting on finance sign-off), <span class="text-body-1-medium">Legal review</span> (28% stuck on contract redlines), and <span class="text-body-1-medium">Multi-stakeholder alignment</span> (19% involve 3+ decision makers).',
       'Deals with a single decision maker close in 8 days at this stage. Deals with 3+ stakeholders take 22 days.',
       'Consider pre-approving discount tiers up to 15% so reps can close without waiting on finance.',
@@ -255,9 +255,9 @@ const SAGE_MESSAGES = {
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
       'Here are the top stalled deals with no activity for 14+ days:',
-      '<span class="text-body-1-medium">GlobalTech Solutions</span> — $142K, stuck in Proposal for 23 days. Last activity was an email on Jan 5.',
-      '<span class="text-body-1-medium">Nexus Corp</span> — $89K, stuck in Negotiation for 19 days. Waiting on legal review since Jan 9.',
-      '<span class="text-body-1-medium">Pinnacle Industries</span> — $67K, stuck in Qualification for 18 days. No response to discovery call scheduling.',
+      '<span class="text-body-1-medium">GlobalTech Solutions</span>: $142K, stuck in Proposal for 23 days. Last activity was an email on Jan 5.',
+      '<span class="text-body-1-medium">Nexus Corp</span>: $89K, stuck in Negotiation for 19 days. Waiting on legal review since Jan 9.',
+      '<span class="text-body-1-medium">Pinnacle Industries</span>: $67K, stuck in Qualification for 18 days. No response to discovery call scheduling.',
       'These three deals represent <span class="text-body-1-medium">$298K in at-risk pipeline</span>. I recommend immediate outreach.',
     ]},
   ],
@@ -267,20 +267,20 @@ const SAGE_MESSAGES = {
       { label: 'Found 4 relevant tables', loadingLabel: 'Picking relevant tables', content: 'Channel Spend · Lead Attribution · Revenue Attribution · Campaign ROI', status: 'done' },
       { label: "Here's the plan:", loadingLabel: 'Generating the plan', content: ['Calculate ROI per channel', 'Compare cost-per-lead vs cost-per-customer', 'Factor in lead quality and conversion rates', 'Identify highest-efficiency channels'], status: 'done' },
     ], body: [
-      '<span class="text-body-1-medium">Email Marketing</span> delivers the highest ROI at 520% — for every $1 spent, it generates $5.20 in attributed revenue.',
+      '<span class="text-body-1-medium">Email Marketing</span> delivers the highest ROI at 520%. For every $1 spent, it generates $5.20 in attributed revenue.',
       'Content Marketing comes second at 410% ROI, though it has a longer attribution window (avg 45 days from first touch to conversion).',
       'Paid Search has a strong 320% ROI but the highest cost-per-lead at $52. Events have the lowest ROI at 180% and the highest CPL at $85.',
-      'If budget allows, I would recommend shifting 15–20% of Events budget toward Email and Content — these channels also produce higher-quality leads with a 2.3x better SQL conversion rate.',
+      'If budget allows, I would recommend shifting 15–20% of Events budget toward Email and Content. These channels also produce higher-quality leads with a 2.3x better SQL conversion rate.',
     ]},
     { type: 'user', text: 'How did the Spring Product Launch campaign perform versus target?' },
     { type: 'ai', steps: [
       { label: 'Found 2 relevant tables', loadingLabel: 'Picking relevant tables', content: 'Campaign Performance · Campaign Targets', status: 'done' },
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
-      'The Spring Product Launch generated <span class="text-body-1-medium">892 leads</span> against a target of 750 — that is 119% of goal.',
+      'The Spring Product Launch generated <span class="text-body-1-medium">892 leads</span> against a target of 750, that is 119% of goal.',
       'Revenue attributed is $189,000 on a $45,000 spend, giving a 4.2x return. The target was 3.5x.',
       'However, the conversion rate of 4.2% was slightly below the 5% target. This suggests strong top-of-funnel performance but a nurture gap.',
-      'The LinkedIn Retargeting campaign supporting it had a 3.1% conversion rate — the retargeted audience may need more middle-funnel content before converting.',
+      'The LinkedIn Retargeting campaign supporting it had a 3.1% conversion rate. The retargeted audience may need more middle-funnel content before converting.',
     ]},
   ],
   4: [
@@ -290,8 +290,8 @@ const SAGE_MESSAGES = {
       { label: "Here's the plan:", loadingLabel: 'Generating the plan', content: ['Break down Support costs by category', 'Compare margin vs other product lines', 'Identify cost drivers', 'Suggest optimization paths'], status: 'done' },
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
-      'Premium Support has a <span class="text-body-1-medium">32% gross margin</span> and only <span class="text-body-1-medium">18% net margin</span> — the lowest across all product lines.',
-      'The primary cost drivers are: staffing (62% of COGS — support is the most labor-intensive line), after-hours coverage (adds 18% to labor costs), and escalation handling (avg 3.2 hours per escalation vs 0.8 hours for standard tickets).',
+      'Premium Support has a <span class="text-body-1-medium">32% gross margin</span> and only <span class="text-body-1-medium">18% net margin</span>, the lowest across all product lines.',
+      'The primary cost drivers are: staffing (62% of COGS: support is the most labor-intensive line), after-hours coverage (adds 18% to labor costs), and escalation handling (avg 3.2 hours per escalation vs 0.8 hours for standard tickets).',
       'Enterprise accounts generate 74% of support tickets but only 45% of support revenue. The per-ticket cost for Enterprise is $48 vs $22 for SMB.',
       'Two actionable paths: implement tiered SLAs to align cost with contract value, or invest in self-service (knowledge base and chatbot) which could deflect an estimated 35% of L1 tickets.',
     ]},
@@ -302,15 +302,15 @@ const SAGE_MESSAGES = {
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
       'Month-over-month growth rates for the last 3 months:',
-      '<span class="text-body-1-medium">Platform Suite:</span> +5.2% → +7.1% → +8.3% — accelerating, driven by 12 new Enterprise deals.',
-      '<span class="text-body-1-medium">Analytics Pro:</span> +3.8% → +2.1% → +4.5% — volatile but recovering after Q4 churn.',
-      '<span class="text-body-1-medium">Integration Hub:</span> +1.2% → +3.4% → +6.8% — strong uptick after the API v3 launch.',
-      '<span class="text-body-1-medium">Premium Support:</span> -0.5% → +1.1% → +0.3% — essentially flat, limited by pricing.',
+      '<span class="text-body-1-medium">Platform Suite:</span> +5.2% → +7.1% → +8.3%, accelerating, driven by 12 new Enterprise deals.',
+      '<span class="text-body-1-medium">Analytics Pro:</span> +3.8% → +2.1% → +4.5%, volatile but recovering after Q4 churn.',
+      '<span class="text-body-1-medium">Integration Hub:</span> +1.2% → +3.4% → +6.8%, strong uptick after the API v3 launch.',
+      '<span class="text-body-1-medium">Premium Support:</span> -0.5% → +1.1% → +0.3%, essentially flat, limited by pricing.',
       'Platform Suite and Integration Hub are your growth engines right now. Consider bundling them to accelerate cross-sell.',
     ]},
   ],
   5: [
-    { type: 'user', text: 'Our CAC went up this quarter — what is driving that?' },
+    { type: 'user', text: 'Our CAC went up this quarter. What is driving that?' },
     { type: 'ai', steps: [
       { label: 'Found 4 relevant tables', loadingLabel: 'Picking relevant tables', content: 'Channel Spend · New Customer Attribution · Sales Cycle Data · Marketing Budget', status: 'done' },
       { label: "Here's the plan:", loadingLabel: 'Generating the plan', content: ['Compare CAC by channel vs last quarter', 'Check for spend increases', 'Analyze conversion rate changes', 'Identify channel-specific drivers'], status: 'done' },
@@ -318,7 +318,7 @@ const SAGE_MESSAGES = {
     ], body: [
       'Blended CAC increased <span class="text-body-1-medium">18% quarter-over-quarter</span>, from $198 to $234.',
       'The biggest driver is <span class="text-body-1-medium">Paid Search</span>: CPC increased 32% due to competitor bidding on your brand terms, while conversion rate dropped from 2.8% to 2.1%.',
-      'Social CAC also rose 22% — primarily because the new LinkedIn campaign targeted a broader (colder) audience with lower intent.',
+      'Social CAC also rose 22%, primarily because the new LinkedIn campaign targeted a broader (colder) audience with lower intent.',
       'Bright spots: <span class="text-body-1-medium">Referral</span> CAC actually dropped 12% to $85, and Partner channel CAC fell 8%. These are your most efficient channels this quarter.',
       'Recommendation: reallocate 20% of Paid Search budget to Referral incentives. Each $1 moved generates 2.4x more customers through referrals.',
     ]},
@@ -328,10 +328,10 @@ const SAGE_MESSAGES = {
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
       'Your funnel conversion rates vs B2B SaaS benchmarks:',
-      '<span class="text-body-1-medium">Visitor → Lead:</span> 25% (yours) vs 22% (benchmark) — above average, strong content strategy.',
-      '<span class="text-body-1-medium">Lead → MQL:</span> 40% (yours) vs 35% (benchmark) — good lead scoring and qualification.',
-      '<span class="text-body-1-medium">MQL → SQL:</span> 50% (yours) vs 48% (benchmark) — in line with industry.',
-      '<span class="text-body-1-medium">SQL → Customer:</span> 30% (yours) vs 38% (benchmark) — <span class="text-body-1-medium">this is where you are underperforming</span>.',
+      '<span class="text-body-1-medium">Visitor → Lead:</span> 25% (yours) vs 22% (benchmark), above average, strong content strategy.',
+      '<span class="text-body-1-medium">Lead → MQL:</span> 40% (yours) vs 35% (benchmark), good lead scoring and qualification.',
+      '<span class="text-body-1-medium">MQL → SQL:</span> 50% (yours) vs 48% (benchmark), in line with industry.',
+      '<span class="text-body-1-medium">SQL → Customer:</span> 30% (yours) vs 38% (benchmark), <span class="text-body-1-medium">this is where you are underperforming</span>.',
       'The SQL → Customer gap suggests a sales execution issue, not a lead quality one. The top-of-funnel is healthy. Focus on sales enablement and demo-to-close processes.',
     ]},
   ],
@@ -341,10 +341,10 @@ const SAGE_MESSAGES = {
       { label: 'Found 3 relevant tables', loadingLabel: 'Picking relevant tables', content: 'Active Initiatives · Investment Tracking · Savings Attribution', status: 'done' },
       { label: "Here's the plan:", loadingLabel: 'Generating the plan', content: ['Calculate ROI per initiative', 'Factor in time-to-value', 'Compare completed vs in-progress', 'Rank by efficiency'], status: 'done' },
     ], body: [
-      '<span class="text-body-1-medium">Process Automation</span> is the clear winner — 420% ROI on an $85K investment, already delivering $357K in annualized savings.',
+      '<span class="text-body-1-medium">Process Automation</span> is the clear winner: 420% ROI on an $85K investment, already delivering $357K in annualized savings.',
       'It also had the fastest payback period at just 2.8 months. The automation covers invoice processing, employee onboarding workflows, and weekly reporting.',
       'Cloud Consolidation has the highest absolute savings potential ($700K) but requires $200K investment and won\'t fully pay back until Q3 2026.',
-      'Vendor Renegotiation was a quick win — $15K investment (mostly labor) yielded $28.5K in savings by consolidating 4 SaaS subscriptions. Consider a second round of renegotiations in Q2.',
+      'Vendor Renegotiation was a quick win: $15K investment (mostly labor) yielded $28.5K in savings by consolidating 4 SaaS subscriptions. Consider a second round of renegotiations in Q2.',
     ]},
     { type: 'divider', timestamp: 'Mar 5, 2026 at 11:20 AM PST' },
     { type: 'user', text: 'Are we on track with the projected savings targets for this quarter?' },
@@ -352,10 +352,10 @@ const SAGE_MESSAGES = {
       { label: 'Found 2 relevant tables', loadingLabel: 'Picking relevant tables', content: 'Savings Projections · Actual Savings Tracker', status: 'done' },
       { label: 'Response Generated', loadingLabel: 'Generating response', status: 'done' },
     ], body: [
-      'Through March, actual savings are <span class="text-body-1-medium">$110K vs a projected $115K</span> — you are at 96% of target.',
+      'Through March, actual savings are <span class="text-body-1-medium">$110K vs a projected $115K</span>. You are at 96% of target.',
       'January and February both exceeded projections (+$3K combined). March is currently tracking slightly below (-$8K) due to a delay in the Cloud Consolidation migration.',
       'The migration delay pushed $12K of expected savings into April. Once the final workload transfer completes (estimated April 8), you will be back on track.',
-      'If the remaining initiatives execute on schedule, you are on pace for <span class="text-body-1-medium">$482K in total annual savings</span> — 7% above the $450K target.',
+      'If the remaining initiatives execute on schedule, you are on pace for <span class="text-body-1-medium">$482K in total annual savings</span>, 7% above the $450K target.',
     ]},
   ],
 };
@@ -453,11 +453,11 @@ const PIPELINE_VELOCITY_DATA = [
 ];
 
 const STALLED_DEALS_DATA = [
-  { deal: 'GlobalTech Solutions', rep: 'Sarah K.', stage: 'Proposal', value: '$ 142,000', daysStalled: 23, lastActivity: 'Email — Jan 5' },
-  { deal: 'Nexus Corp', rep: 'James L.', stage: 'Negotiation', value: '$ 89,000', daysStalled: 19, lastActivity: 'Call — Jan 9' },
-  { deal: 'Pinnacle Industries', rep: 'Maria G.', stage: 'Qualification', value: '$ 67,000', daysStalled: 18, lastActivity: 'Meeting — Jan 10' },
-  { deal: 'Orion Systems', rep: 'David P.', stage: 'Proposal', value: '$ 54,500', daysStalled: 16, lastActivity: 'Email — Jan 12' },
-  { deal: 'Vertex Labs', rep: 'Anna T.', stage: 'Negotiation', value: '$ 38,200', daysStalled: 14, lastActivity: 'Call — Jan 14' },
+  { deal: 'GlobalTech Solutions', rep: 'Sarah K.', stage: 'Proposal', value: '$ 142,000', daysStalled: 23, lastActivity: 'Email, Jan 5' },
+  { deal: 'Nexus Corp', rep: 'James L.', stage: 'Negotiation', value: '$ 89,000', daysStalled: 19, lastActivity: 'Call, Jan 9' },
+  { deal: 'Pinnacle Industries', rep: 'Maria G.', stage: 'Qualification', value: '$ 67,000', daysStalled: 18, lastActivity: 'Meeting, Jan 10' },
+  { deal: 'Orion Systems', rep: 'David P.', stage: 'Proposal', value: '$ 54,500', daysStalled: 16, lastActivity: 'Email, Jan 12' },
+  { deal: 'Vertex Labs', rep: 'Anna T.', stage: 'Negotiation', value: '$ 38,200', daysStalled: 14, lastActivity: 'Call, Jan 14' },
 ];
 
 const CLOSE_RATE_TREND_DATA = [

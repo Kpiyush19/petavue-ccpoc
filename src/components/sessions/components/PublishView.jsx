@@ -230,11 +230,11 @@ const PROGRESS_MESSAGES_REFRESH = [
   'How would this pipeline behave with completely fresh data? Let\'s find out',
   'Ensuring your dashboard is self-sustaining, not prompt-dependent',
   'Double-checking that CSVs have the columns your charts expect',
-  'Most AI dashboards break on refresh — yours won\'t',
+  'Most AI dashboards break on refresh. Yours won\'t',
   'Validating that aggregations match the source schema',
   'Making your dashboard production-grade, not demo-grade',
   'Confirming no query references a table that moved',
-  'What\'s hiding in that WHERE clause — a dynamic range or a frozen snapshot?',
+  'What\'s hiding in that WHERE clause: a dynamic range or a frozen snapshot?',
   'Testing the full pipeline: query → transform → render',
   'Catching NULL surprises before your stakeholders do',
   'Ensuring every widget can rebuild itself from scratch',
@@ -242,7 +242,7 @@ const PROGRESS_MESSAGES_REFRESH = [
   'Verifying data flows from source to chart, no gaps',
   'Are those column names stable, or is one schema change away from chaos?',
   'How does a typical AI tool handle this? Hint: it doesn\'t even check',
-  'Typical dashboards need babysitting — this one won\'t',
+  'Typical dashboards need babysitting. This one won\'t',
   'Checking that join keys still match across tables',
   'Preparing your dashboard for scheduled auto-refresh',
   'Validating that no step depends on a one-time upload',
@@ -252,8 +252,8 @@ const PROGRESS_MESSAGES_REFRESH = [
   'Turning a conversation into a repeatable data pipeline',
   'Making sure your insights stay fresh without manual effort',
   'Verifying that transformations handle empty results gracefully',
-  'Your dashboard is graduating from prototype to production',
-  'Turning your conversation into something that runs on autopilot — almost there',
+  'Your dashboard is graduating from draft to production',
+  'Turning your conversation into something that runs on autopilot. Almost there',
 ]
 
 const PROGRESS_MESSAGES_PUBLISH = [
@@ -278,9 +278,9 @@ const PROGRESS_MESSAGES_PUBLISH = [
   'Confirming all data files have the expected structure',
   'Running each step to make sure your dashboard is complete and correct',
   'Catching edge cases before your stakeholders do',
-  'Your dashboard is graduating from prototype to production',
+  'Your dashboard is graduating from draft to production',
   'Verifying that transformations handle edge cases gracefully',
-  'Almost there — confirming everything looks good',
+  'Almost there. Confirming everything looks good',
 ]
 
 export default function PublishView({
@@ -1026,7 +1026,7 @@ export default function PublishView({
   const handleResumeDraft = useCallback(async () => {
     if (!draftInfo) return
     const draftRecipe = draftInfo.recipe
-    if (!draftRecipe) { toast.error('Recipe not available — please start fresh'); return }
+    if (!draftRecipe) { toast.error('Recipe not available. Please start fresh'); return }
 
     const execSid = draftInfo.exec_session_id
     const stepCount = draftRecipe.steps?.length || 0
@@ -1569,7 +1569,7 @@ export default function PublishView({
           if (!aliveRef.current) return
           cleanupPusher()
           setPhase(PHASE.ERROR)
-          setErrorMessage(data?.message || data?.reason || 'Execution blocked — infrastructure error')
+          setErrorMessage(data?.message || data?.reason || 'Execution blocked: infrastructure error')
         })
 
         ch.bind('agent-cancelled', () => {
@@ -2001,7 +2001,7 @@ export default function PublishView({
   const hasExisting = !!(existingWorkflows && existingWorkflows.length)
   const renderWorkflowStep = () => (
     <div className="min-h-full flex flex-col">
-      {stepHeader('New workflow or edit an existing one?', 'A workflow is the automation — your metric, its schedule, and where the results go.')}
+      {stepHeader('New workflow or edit an existing one?', 'A workflow is the automation: your metric, its schedule, and where the results go.')}
       <div className="flex-1 px-6 py-4 bg-[#FCFCFC]">
       <div className="flex gap-3 [&>button]:flex-1 [&>button]:min-w-0">
         <OutputCard
@@ -2028,7 +2028,7 @@ export default function PublishView({
           <input
             value={workflowName}
             onChange={(e) => setWorkflowName(e.target.value)}
-            placeholder="e.g. Q2 Revenue — Weekly"
+            placeholder="e.g. Q2 Revenue, Weekly"
             className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors"
           />
           <p className="text-[12px] text-[var(--text-muted)] mt-1.5">This names the automation, not the dashboard itself.</p>
@@ -2110,7 +2110,7 @@ export default function PublishView({
   // ── STEP 1 — Outputs ──
   const renderOutputsStep = () => (
     <div className="h-full flex flex-col">
-      {stepHeader('What do you want to publish?', 'Toggle on what you want — set each one up right where you turn it on.')}
+      {stepHeader('What do you want to publish?', 'Toggle on what you want. Set each one up right where you turn it on.')}
       <div className="flex-1 min-h-0 flex flex-col gap-4 px-6 py-4 overflow-y-auto [scrollbar-gutter:stable] bg-[#FCFCFC]">
 
         {/* Dashboard — toggle + its name field clubbed together */}
@@ -2139,7 +2139,7 @@ export default function PublishView({
               <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--accent)]/8 flex items-center justify-center"><Sparkle size={18} weight="fill" className={summaryEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} /></div>
               <div className="flex-1 min-w-0">
                 <span className="text-[14px] font-semibold text-[#2D3044] block">Summary</span>
-                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">An AI-written recap of your data — sent to a folder and/or Slack.</span>
+                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">An AI-written recap of your data, sent to a folder and/or Slack.</span>
               </div>
               <Toggle checked={summaryEnabled} onChange={() => !isAgentBusy && setSummaryEnabled(v => !v)} size="lg" />
             </div>
@@ -2254,7 +2254,7 @@ export default function PublishView({
                 )
               })}
             </div>
-            {isReviewRunning && progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] mt-4 animate-fade-in">— {progressQuip}</p>}
+            {isReviewRunning && progressQuip && phase === PHASE.EXECUTING && <p key={progressQuip} className="text-[12px] text-[var(--text-muted)] mt-4 animate-fade-in">{progressQuip}</p>}
 
             {/* Hardening — its own card while preparing for scheduled refresh */}
             {isReviewRunning && phase === PHASE.HARDENING && (
@@ -2262,7 +2262,7 @@ export default function PublishView({
                 <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">Preparing for scheduled refresh</h3>
                 <p className="text-[12px] text-[var(--text-muted)] mt-1.5 mb-3 leading-relaxed">An AI agent is preparing your dashboard to ensure every scheduled refresh runs without issues. This may take a few minutes.</p>
                 <p className="text-[12px] font-semibold text-[var(--accent)] m-0">{hardenedCount} of {totalSteps} steps completed</p>
-                {hardeningQuip && <p className="text-[12px] text-[var(--text-muted)] mt-3 m-0">— {hardeningQuip}</p>}
+                {hardeningQuip && <p className="text-[12px] text-[var(--text-muted)] mt-3 m-0">{hardeningQuip}</p>}
               </div>
             )}
 
@@ -2276,7 +2276,7 @@ export default function PublishView({
                 <p className="text-[12px] text-[var(--text-muted)] mt-1.5 ml-7 mb-0 leading-relaxed">
                   {autoRefresh
                     ? (adjustmentCount > 0
-                        ? `Tested end-to-end and hardened — the agent fixed ${adjustmentCount} issue${adjustmentCount !== 1 ? 's' : ''} so it keeps running reliably on every scheduled refresh.`
+                        ? `Tested end-to-end and hardened. The agent fixed ${adjustmentCount} issue${adjustmentCount !== 1 ? 's' : ''} so it keeps running reliably on every scheduled refresh.`
                         : 'Tested end-to-end. It will keep running reliably on every scheduled refresh.')
                     : 'Tested end-to-end and ready to publish.'}
                 </p>
@@ -2288,7 +2288,7 @@ export default function PublishView({
         ) : draftInfo ? (
           <div className="rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 p-5">
             <p className="text-[14px] font-medium text-[var(--text-primary)] m-0">We found a previous review</p>
-            {draftInfo.stale && <p className="text-[12px] text-amber-600 m-0 mt-1.5 leading-relaxed">You've changed things since this check — resuming won't include your latest edits.</p>}
+            {draftInfo.stale && <p className="text-[12px] text-amber-600 m-0 mt-1.5 leading-relaxed">You've changed things since this check. Resuming won't include your latest edits.</p>}
             <div className="flex items-center gap-4 mt-3">
               <button onClick={handleResumeDraft} className="inline-flex items-center gap-1.5 py-2 px-5 rounded-lg text-[12px] font-medium bg-[var(--accent)] text-white hover:opacity-90 transition-opacity cursor-pointer border-none">
                 <Play size={13} weight="fill" />Resume review
@@ -2557,7 +2557,7 @@ export default function PublishView({
     const lines = accepted.map(s => {
       const title = s.summary?.title || s.name || s.tool || s.id
       const reason = hardeningStatus[s.id]?.reason
-      return reason ? `• ${title} — ${reason}` : `• ${title}`
+      return reason ? `• ${title}: ${reason}` : `• ${title}`
     }).join('\n')
     onSendFeedback(`Apply these reviewed fixes from the agentic review to the dashboard so the main session stays in sync:\n${lines}`)
     syncedAcceptedRef.current = key
@@ -2583,7 +2583,7 @@ export default function PublishView({
     const toApply = unappliedAdjustments.filter(a => unappliedSelected[a.id])
     let appliedNow = false
     if (toApply.length && onSendFeedback) {
-      const lines = toApply.map(a => a.reason ? `• ${a.title} — ${a.reason}` : `• ${a.title}`).join('\n')
+      const lines = toApply.map(a => a.reason ? `• ${a.title}: ${a.reason}` : `• ${a.title}`).join('\n')
       onSendFeedback(`Apply these reviewed fixes from the agentic review to the dashboard so the main session stays in sync:\n${lines}`)
       const ids = new Set(toApply.map(a => a.id))
       const remaining = unappliedAdjustments.filter(a => !ids.has(a.id))
@@ -2658,7 +2658,7 @@ export default function PublishView({
                   onClick={(e) => e.stopPropagation()}
                   onChange={() => setAdjustmentChecked(prev => ({ ...prev, [s.id]: !checked }))}
                   className="w-3 h-3 accent-[var(--accent)] cursor-pointer shrink-0"
-                  title={checked ? 'Adjustment accepted — uncheck to skip' : 'Adjustment skipped — check to accept'}
+                  title={checked ? 'Adjustment accepted. Uncheck to skip' : 'Adjustment skipped. Check to accept'}
                 />
               )
               return (
@@ -2730,8 +2730,8 @@ export default function PublishView({
               </div>
               <p className="text-[12px] text-green-700/90 mt-2 mb-3 leading-relaxed">
                 {unappliedCount > 0
-                  ? `The agent already reviewed this dashboard and nothing's changed since. You still have ${unappliedCount} adjustment${unappliedCount !== 1 ? 's' : ''} you haven't applied — open the review to check ${unappliedCount !== 1 ? 'them' : 'it'}, see the output, and ask or edit before you publish.`
-                  : 'The agent already reviewed this dashboard and nothing has changed since. Open the review to see the adjustments, output and ask or edit — or just publish.'}
+                  ? `The agent already reviewed this dashboard and nothing's changed since. You still have ${unappliedCount} adjustment${unappliedCount !== 1 ? 's' : ''} you haven't applied. Open the review to check ${unappliedCount !== 1 ? 'them' : 'it'}, see the output, and ask or edit before you publish.`
+                  : 'The agent already reviewed this dashboard and nothing has changed since. Open the review to see the adjustments, output and ask or edit, or just publish.'}
               </p>
               <PvButton variant="secondary" size="md" label="View adjustments" icon={Eye} iconWeight="bold" title="See the proposed adjustments, output and ask or edit" onClick={() => { if (execSessionIdRef.current && adjustmentCount > 0) { setReviewSkipped(false); setAdjustmentsRevealed(true) } else { runReviewAgain() } }} />
             </div>
@@ -2808,7 +2808,7 @@ export default function PublishView({
                 </>
               ) : (
                 <p className="text-[12px] text-green-700/90 mt-2 mb-0 leading-relaxed">
-                  Tested end-to-end{autoRefresh ? ' and ready for scheduled refresh' : ' and ready to publish'} — no adjustments were needed.
+                  Tested end-to-end{autoRefresh ? ' and ready for scheduled refresh' : ' and ready to publish'}, no adjustments were needed.
                 </p>
               )}
             </div>

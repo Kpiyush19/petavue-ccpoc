@@ -25,7 +25,7 @@ const FEATURES = [
     flag: "widget_chat_enabled",
     label: "Widget-scoped chat",
     description:
-      "When refining a widget from the lineage drawer, run a focused conversation with only the widget's lineage as context — instead of the full session history.",
+      "When refining a widget from the lineage drawer, run a focused conversation with only the widget's lineage as context, instead of the full session history.",
   },
   {
     flag: "slack_enabled",

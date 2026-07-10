@@ -72,7 +72,7 @@ export function getSessionRowMeta(session) {
     && postHandoffTurns <= 1
   )
   const route = (inFlightSkillRun || completedNoChat)
-    ? `/skills-v2/run/${sessionId}`
+    ? `/skills/run/${sessionId}`
     : `/session/${sessionId}`
 
   // Badge — only for in-flight skill_run rows. Post-handoff (regular) and

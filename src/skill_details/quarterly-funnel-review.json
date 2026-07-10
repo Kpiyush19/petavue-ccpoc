@@ -15,16 +15,16 @@
     "HubSpot"
   ],
   "alsoSurfaces": [
-    "What did the funnel produce this quarter — leads, MQLs, SQLs, won deals?",
+    "What did the funnel produce this quarter: leads, MQLs, SQLs, won deals?",
     "Where did conversion improve, and where did it decline?",
     "How did velocity shift across stages?",
     "What should leadership focus on next quarter?"
   ],
   "beforeWeRun": [
-    "Quarter to review — last completed, or custom?",
-    "Comparison quarter — prior, or year-over-year?",
-    "Audience tone — marketing/revenue leadership (detailed) or board-ready (concise)?",
-    "Include rep/SDR-level detail — yes for internal, no for board?"
+    "Quarter to review: last completed, or custom?",
+    "Comparison quarter: prior, or year-over-year?",
+    "Audience tone: marketing/revenue leadership (detailed) or board-ready (concise)?",
+    "Include rep/SDR-level detail: yes for internal, no for board?"
   ],
   "whatYoullGet": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "name": "Funnel state",
-      "desc": "Markdown table — stage pairs as rows, columns for review-quarter rate, comparison-quarter rate, delta, time-at-stage. Plus headline lead volume."
+      "desc": "Markdown table: stage pairs as rows, columns for review-quarter rate, comparison-quarter rate, delta, time-at-stage. Plus headline lead volume."
     },
     {
       "name": "Conversion trends",

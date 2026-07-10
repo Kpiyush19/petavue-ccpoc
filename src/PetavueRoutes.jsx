@@ -4,17 +4,15 @@
 // page renders its own MenuBar, so this mounts OUTSIDE the app's layout.
 import { useState } from "react";
 import { useNavigate, useParams, Navigate } from "react-router-dom";
-// WorkbookHome (the petavue home screen) is archived — the Create-New page (/new)
-// is the single home now. Kept in the tree but no longer rendered/routed.
-import { WorkbookList } from "./petavue/pages/workbook_list";
+// WorkbookHome, Workbooks, Projects, and Reports are archived: the Create-New
+// page (/new) is the single home now, and these are no longer routed or shown
+// in the nav. Their page files stay in the tree but are not rendered.
 import { WorkbookChat } from "./petavue/pages/workbook_chat";
 import { DashboardList } from "./petavue/pages/dashboard_list";
 import { DashboardView } from "./petavue/pages/dashboard_view";
 import { ProfilePage } from "./petavue/pages/profile";
 import { DataHub } from "./petavue/pages/data_hub";
-import { ProjectList } from "./petavue/pages/projects";
 import { SettingsPage } from "./petavue/pages/settings";
-import { ReportList } from "./petavue/pages/reports";
 import { SkillsPage } from "./petavue/pages/skills";
 
 const PREFIX = "/petavue";
@@ -22,12 +20,9 @@ const DEFAULT_USER = { name: "Ammie Diego", initials: "AD", email: "ammie.diego@
 
 // MenuBar nav id -> URL segment (within /petavue).
 const NAV_TO_SEGMENT = {
-  chats: "workbooks",
   "dashboards-pv": "dashboards",
   dashboard: "dashboards",
   "data-hub": "data-hub",
-  project: "projects",
-  reports: "reports",
   skills: "skills",
   "new-chat": "home",
   profile: "profile",
@@ -60,15 +55,6 @@ export default function PetavueRoutes() {
 
   const renderPage = () => {
     switch (page) {
-      case "workbooks":
-        return (
-          <WorkbookList
-            {...menuProps}
-            page={page}
-            onNewWorkbook={() => go("home")}
-            onSelectWorkbook={() => { setChatQuery(""); go("chat"); }}
-          />
-        );
       case "chat":
         return <WorkbookChat {...menuProps} query={chatQuery} onStop={() => go("home")} />;
       case "dashboards":
@@ -83,10 +69,6 @@ export default function PetavueRoutes() {
         return <DashboardView {...menuProps} dashboardId={activeDashboardId} onBack={() => go("dashboards")} />;
       case "data-hub":
         return <DataHub {...menuProps} />;
-      case "projects":
-        return <ProjectList {...menuProps} />;
-      case "reports":
-        return <ReportList {...menuProps} />;
       case "skills":
         // The petavue skills page is retired — use the top-level /skills catalog.
         return <Navigate to="/skills" replace />;

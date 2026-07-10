@@ -23,9 +23,9 @@
     "Where is most of our spend concentrated relative to ROAS?"
   ],
   "beforeWeRun": [
-    "ROAS variant — pipeline ROAS, revenue ROAS, or both?",
-    "Time window — trailing 30, 60, or 90 days?",
-    "ROAS target — tenant config per channel, or 3.0x blended fallback?"
+    "ROAS variant: pipeline ROAS, revenue ROAS, or both?",
+    "Time window: trailing 30, 60, or 90 days?",
+    "ROAS target: tenant config per channel, or 3.0x blended fallback?"
   ],
   "whatYoullGet": [
     {
@@ -46,7 +46,7 @@
     },
     {
       "name": "Channel detail table",
-      "desc": "Sortable table — spend, attributed pipeline/revenue, ROAS, target, health, deltas."
+      "desc": "Sortable table: spend, attributed pipeline/revenue, ROAS, target, health, deltas."
     }
   ],
   "callout": "4 quick inputs, then Sage builds your channel-ROAS dashboard in ~8 min."

@@ -4,7 +4,7 @@
   "workstreamId": "pipeline",
   "workstreamName": "Pipeline Analysis",
   "renderType": "dashboard",
-  "description": "Coverage ratio across the org, segments, and individual owners — under one governed definition that doesn't change between leadership asks. The single number every executive conversation starts with.",
+  "description": "Coverage ratio across the org, segments, and individual owners, under one governed definition that doesn't change between leadership asks. The single number every executive conversation starts with.",
   "badges": {
     "ready": true,
     "buildTime": "~10 min",
@@ -20,9 +20,9 @@
     "Where in the funnel is the open pipeline concentrated?"
   ],
   "beforeWeRun": [
-    "Time horizon — current quarter, or rolling 90 days?",
-    "Coverage target — 3.0x default, or tenant-configured override?",
-    "Granularity — org-wide only, or include segment + owner breakdown?"
+    "Time horizon: current quarter, or rolling 90 days?",
+    "Coverage target: 3.0x default, or tenant-configured override?",
+    "Granularity: org-wide only, or include segment + owner breakdown?"
   ],
   "whatYoullGet": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "name": "Open pipeline summary",
-      "desc": "Total value, count, weighted value against quota — KPI tile grid."
+      "desc": "Total value, count, weighted value against quota: KPI tile grid."
     },
     {
       "name": "Coverage trend",
@@ -43,7 +43,7 @@
     },
     {
       "name": "Coverage by owner",
-      "desc": "Sortable table — owner, open pipeline, quota, coverage, health."
+      "desc": "Sortable table: owner, open pipeline, quota, coverage, health."
     },
     {
       "name": "Stage breakdown",

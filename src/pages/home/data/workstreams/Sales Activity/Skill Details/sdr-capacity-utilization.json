@@ -20,9 +20,9 @@
     "How does utilization compare across teams?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 4 or 8 weeks?",
-    "Working hours per SDR per week — 40, 35, or tenant-configured?",
-    "Healthy utilization range — 40–80%, or override?"
+    "Time window: trailing 4 or 8 weeks?",
+    "Working hours per SDR per week: 40, 35, or tenant-configured?",
+    "Healthy utilization range: 40–80%, or override?"
   ],
   "whatYoullGet": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "name": "SDR table",
-      "desc": "Sortable — utilization, band, time-by-type, leads handled, output ratio per SDR."
+      "desc": "Sortable: utilization, band, time-by-type, leads handled, output ratio per SDR."
     },
     {
       "name": "Utilization distribution",
@@ -39,7 +39,7 @@
     },
     {
       "name": "Capacity vs output",
-      "desc": "Scatter — utilization (x) vs opportunities created (y), reference line for output expectations."
+      "desc": "Scatter: utilization (x) vs opportunities created (y), reference line for output expectations."
     },
     {
       "name": "Time breakdown",

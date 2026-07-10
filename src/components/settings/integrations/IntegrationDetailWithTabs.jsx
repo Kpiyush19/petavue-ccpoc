@@ -502,7 +502,7 @@ const SyncConfirmModal = ({
           {inProgressObjects.length > 0 && (
             <div>
               <div className="text-[11px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1.5">
-                Already syncing — can't start now ({inProgressObjects.length})
+                Already syncing, can't start now ({inProgressObjects.length})
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {inProgressObjects.map((o) => (

@@ -21,14 +21,14 @@
     "Which event types are repeat performers vs one-hit wonders?"
   ],
   "beforeWeRun": [
-    "Which event source — Splash, Bizzabo, manual list, all of them?",
-    "Define an \"event-attributed\" opp — first-touch only, or any-touch?",
-    "Time window — last quarter, year-to-date, or custom?"
+    "Which event source: Splash, Bizzabo, manual list, all of them?",
+    "Define an \"event-attributed\" opp: first-touch only, or any-touch?",
+    "Time window: last quarter, year-to-date, or custom?"
   ],
   "whatYoullGet": [
     {
       "name": "Event-sourced pipeline KPIs",
-      "desc": "Events run, attendees, MQLs, SQLs, pipeline created, closed-won — with cost overlay."
+      "desc": "Events run, attendees, MQLs, SQLs, pipeline created, closed-won, with cost overlay."
     },
     {
       "name": "Per-event ranking",

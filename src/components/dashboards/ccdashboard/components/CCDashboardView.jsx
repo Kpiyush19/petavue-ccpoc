@@ -808,7 +808,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                       <SpinnerSolid size={20} className="shrink-0 text-[var(--pv-primary-500)]" />
                       <div className="text-[12px] text-[var(--pv-neutral-grey-800)]">
                         <span className="font-semibold">Sync in progress.</span>{" "}
-                        {syncing.map((it) => it.name).join(", ")} {syncing.length > 1 ? "are" : "is"} updating now — figures may change shortly.
+                        {syncing.map((it) => it.name).join(", ")} {syncing.length > 1 ? "are" : "is"} updating now. Figures may change shortly.
                       </div>
                     </div>
                   );

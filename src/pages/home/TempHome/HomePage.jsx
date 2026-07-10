@@ -153,7 +153,7 @@ export default function HomePage() {
               </h1>
             </div>
             <p className="text-[14px] leading-[24px] text-[var(--text-secondary)] whitespace-nowrap">
-              Ask anything about your marketing performance — or start with a ready-made analysis.
+              Ask anything about your marketing performance, or start with a ready-made skill.
             </p>
           </motion.div>
 
@@ -241,7 +241,7 @@ export default function HomePage() {
 
           {/* Suggested skills — pill chips, description on hover, + browse all */}
           <motion.div {...fadeUp(0.12)} className="w-full max-w-[860px] mx-auto mt-6 flex flex-col items-center gap-4">
-            <p className="text-[12px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Ready-made analyses</p>
+            <p className="text-[12px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Ready-made skills</p>
             <div className="flex flex-wrap justify-center gap-2.5 max-w-[700px] mx-auto">
               {SUGGESTED.map(({ slug, hint }) => {
                 const s = skillBySlug[slug];
@@ -265,7 +265,7 @@ export default function HomePage() {
               onClick={() => navigate(NAV_ROUTES.skills)}
               className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-dashed border-pv-primary-primary-300 bg-pv-primary-primary-50/40 text-[12px] font-normal text-pv-primary-primary-600 cursor-pointer transition-colors hover:bg-pv-primary-primary-50 hover:border-pv-primary-primary-400 hover:text-pv-primary-primary-700"
             >
-              Browse all {SKILLS_CATALOG.length} analyses
+              Browse all {SKILLS_CATALOG.length} skills
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
             </button>
           </motion.div>

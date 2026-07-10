@@ -1,7 +1,7 @@
 {
   "id": "rep-activity-mix",
   "name": "Rep Activity Mix",
-  "description": "Per-rep activity volume and composition — calls, emails, meetings, sequence steps, social touches. Replaces Monday-morning squinting at Salesforce activity reports with structured rollups + outlier surfacing.",
+  "description": "Per-rep activity volume and composition: calls, emails, meetings, sequence steps, social touches. Replaces Monday-morning squinting at Salesforce activity reports with structured rollups + outlier surfacing.",
   "renderType": "dashboard",
   "workstream": "Sales Activity",
   "dataSources": [

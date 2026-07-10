@@ -63,7 +63,7 @@ const SessionElement = ({
     : "text-[var(--pv-neutral-grey-500)]";
   const fallbackName = `Session from ${s.last_active_at ? formatDate(s.last_active_at) : "unknown"}`;
   const tooltipTitle = meta.badge?.ariaLabel
-    ? `${s.name || fallbackName} — ${meta.badge.ariaLabel}`
+    ? `${s.name || fallbackName}, ${meta.badge.ariaLabel}`
     : (s.name || fallbackName);
   return (
     <button

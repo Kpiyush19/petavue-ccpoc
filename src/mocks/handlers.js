@@ -131,7 +131,7 @@ const NEXT_FOLLOWUP_QUESTIONS = [
 // not a canned stub. Keyed by the question text (lowercased).
 const FOLLOWUP_REPLIES = {
   "which at-risk accounts have the largest arr exposure?":
-    "Three accounts carry most of the at-risk ARR: Northwind ($420K, renews in 28 days with no exec sponsor), Globex ($310K, usage down 22% QoQ), and Initech ($180K, two open escalations). That's $910K combined — about 12% of the renewing book. Want me to add an at-risk watchlist to the dashboard?",
+    "Three accounts carry most of the at-risk ARR: Northwind ($420K, renews in 28 days with no exec sponsor), Globex ($310K, usage down 22% QoQ), and Initech ($180K, two open escalations). That's $910K combined, about 12% of the renewing book. Want me to add an at-risk watchlist to the dashboard?",
   "what's driving the qoq growth in average deal size?":
     "Average deal size went from $48K to $61K (+27% QoQ). The lift is almost all Enterprise: multi-year contracts grew from 18% to 31% of new bookings, and the Platform add-on attached to 40% of those deals. SMB deal size was roughly flat. Want me to break this out by segment?",
   "summarize the biggest revenue risks for q2.":
@@ -139,9 +139,9 @@ const FOLLOWUP_REPLIES = {
   "break new arr down by segment.":
     "New ARR by segment this quarter: Enterprise $1.9M (54%), Mid-Market $1.1M (31%), SMB $530K (15%). Enterprise grew fastest at +34% QoQ on larger multi-year deals, while SMB was flat. I've added a \"New ARR by Segment\" breakdown to the dashboard.",
   "compare this quarter against q1.":
-    "Q2 vs Q1: revenue $7.4M vs $6.8M (+9%), new ARR $3.5M vs $3.1M (+13%), average deal size $61K vs $52K (+17%) — but NRR dipped to 104% from 109%. Growth is coming from new business and larger deals, slightly offset by softer expansion. I've added a quarter-over-quarter comparison view.",
+    "Q2 vs Q1: revenue $7.4M vs $6.8M (+9%), new ARR $3.5M vs $3.1M (+13%), average deal size $61K vs $52K (+17%), but NRR dipped to 104% from 109%. Growth is coming from new business and larger deals, slightly offset by softer expansion. I've added a quarter-over-quarter comparison view.",
   "add a q3 revenue forecast.":
-    "Added a Q3 forecast widget. Based on current pipeline (2.4x coverage), historical win rates, and committed renewals, Q3 projects to ~$8.1M (range $7.6M–$8.6M). The biggest swing factor is the $910K of at-risk renewals — closing those keeps you near the top of the range.",
+    "Added a Q3 forecast widget. Based on current pipeline (2.4x coverage), historical win rates, and committed renewals, Q3 projects to ~$8.1M (range $7.6M–$8.6M). The biggest swing factor is the $910K of at-risk renewals: closing those keeps you near the top of the range.",
 };
 
 // Per-session "code version" — bumped whenever the user sends a chat message so
@@ -165,11 +165,11 @@ const REVIEW_SYNC_MARKER = /reviewed fixes from the agentic review/i;
 function sageReply(userText) {
   const t = (userText || "").toLowerCase();
   if (/risk|at.?risk|account|churn/.test(t))
-    return "Two accounts are flagged at-risk: Globex Corp ($301K ARR, usage down 22% QoQ) and Umbrella Inc ($198K). That's ~$499K combined — about 10% of the top-5 book. Northwind ($412K) and Contoso ($388K) are both expanding.";
+    return "Two accounts are flagged at-risk: Globex Corp ($301K ARR, usage down 22% QoQ) and Umbrella Inc ($198K). That's ~$499K combined, about 10% of the top-5 book. Northwind ($412K) and Contoso ($388K) are both expanding.";
   if (/grow|qoq|trend|month|revenue/.test(t))
     return "Revenue is up 14.2% QoQ to $4.82M, with the strongest months in June and September. New ARR rose 9.6% to $1.13M, led by Enterprise deals.";
   if (/win.?rate|conversion|deal/.test(t))
-    return "Win rate is 27.4%, down 1.8 pts QoQ — the only headline KPI trending down. Avg deal size is up 5.1% to $38.6K, so deals are getting larger but taking longer to close.";
+    return "Win rate is 27.4%, down 1.8 pts QoQ, the only headline KPI trending down. Avg deal size is up 5.1% to $38.6K, so deals are getting larger but taking longer to close.";
   if (/summary|overview|how.*doing|tl;?dr|highlight/.test(t))
     return "Q2 at a glance: $4.82M revenue (+14.2% QoQ), $1.13M new ARR (+9.6%), win rate 27.4% (down 1.8 pts), avg deal $38.6K. Northwind and Contoso are expanding; Globex and Umbrella are at-risk.";
   return "From this dashboard: total revenue $4.82M (+14.2% QoQ), new ARR $1.13M, win rate 27.4%, avg deal $38.6K. Ask me about revenue trends, at-risk accounts, or win rate and I'll break it down.";
@@ -178,7 +178,7 @@ function sageReply(userText) {
 // Open (or resume) a Sage chat session for a dashboard, seeding a welcome turn.
 function startSageChat(sid) {
   if (!db.history[sid] || db.history[sid].length === 0) {
-    db.history[sid] = [{ type: "assistant", text: "Hi, I'm Sage. Ask me anything about this dashboard — revenue trends, at-risk accounts, win rate, and more.", timestamp: Date.now() }];
+    db.history[sid] = [{ type: "assistant", text: "Hi, I'm Sage. Ask me anything about this dashboard: revenue trends, at-risk accounts, win rate, and more.", timestamp: Date.now() }];
   }
   return { session_id: sid };
 }
@@ -194,9 +194,9 @@ function simulateAgentReply(sessionId, userText) {
   const reply = isSage
     ? sageReply(userText)
     : isReviewSync
-    ? "Done — I've applied the reviewed adjustments to your dashboard so it stays accurate on every scheduled refresh."
+    ? "Done. I've applied the reviewed adjustments to your dashboard so it stays accurate on every scheduled refresh."
     : followupReply ||
-      "Done — I've updated your dashboard and re-ran the queries against the latest data. Let me know if you'd like any other changes.";
+      "Done. I've updated your dashboard and re-ran the queries against the latest data. Let me know if you'd like any other changes.";
   const words = reply.split(" ");
   let i = 0;
   const tick = () => {

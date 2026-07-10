@@ -1,7 +1,7 @@
 {
   "id": "account-engagement-velocity",
   "name": "Account Engagement Velocity",
-  "description": "Surface accounts that are warming up vs. cooling down vs. stalled — the trajectory question that decides where ABM should focus this week. Replaces weekly manual account reviews that can't reach every account.",
+  "description": "Surface accounts that are warming up vs. cooling down vs. stalled: the trajectory question that decides where ABM should focus this week. Replaces weekly manual account reviews that can't reach every account.",
   "renderType": "dashboard",
   "workstream": "Account Intelligence / ABM",
   "dataSources": [

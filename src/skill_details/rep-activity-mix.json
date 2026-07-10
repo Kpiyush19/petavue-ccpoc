@@ -4,7 +4,7 @@
   "workstreamId": "sales-activity",
   "workstreamName": "Sales Activity",
   "renderType": "dashboard",
-  "description": "Per-rep activity volume and composition — calls, emails, meetings, sequence steps, social touches. Replaces Monday-morning squinting at Salesforce activity reports with structured rollups + outlier surfacing.",
+  "description": "Per-rep activity volume and composition: calls, emails, meetings, sequence steps, social touches. Replaces Monday-morning squinting at Salesforce activity reports with structured rollups + outlier surfacing.",
   "badges": {
     "ready": true,
     "buildTime": "~8 min",
@@ -22,9 +22,9 @@
     "Where are activity outliers concentrated by team?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 4 or 8 weeks?",
-    "Rep roles — AEs, SDRs, or both?",
-    "Activity types — full taxonomy or focused subset?"
+    "Time window: trailing 4 or 8 weeks?",
+    "Rep roles: AEs, SDRs, or both?",
+    "Activity types: full taxonomy or focused subset?"
   ],
   "whatYoullGet": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "name": "Rep table",
-      "desc": "Sortable — total volume, type breakdown, utilization, trend, outlier flags per rep."
+      "desc": "Sortable: total volume, type breakdown, utilization, trend, outlier flags per rep."
     },
     {
       "name": "Activity trend",

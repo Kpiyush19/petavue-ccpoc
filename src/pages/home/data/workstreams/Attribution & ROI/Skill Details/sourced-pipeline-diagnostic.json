@@ -23,9 +23,9 @@
     "Which actions should we take to recover, and who should own each?"
   ],
   "beforeWeRun": [
-    "Drop window — current 7 days vs prior 7 days, or custom?",
-    "Significance threshold to investigate — 10%, 15%, or 20% drop?",
-    "Hypothesis tree depth — 2, 3, or 4 levels?"
+    "Drop window: current 7 days vs prior 7 days, or custom?",
+    "Significance threshold to investigate: 10%, 15%, or 20% drop?",
+    "Hypothesis tree depth: 2, 3, or 4 levels?"
   ],
   "whatYoullGet": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "name": "Hypothesis tree summary",
-      "desc": "Branches as rows with contribution to drop, evidence, and depth investigated — what was ruled in vs out."
+      "desc": "Branches as rows with contribution to drop, evidence, and depth investigated: what was ruled in vs out."
     },
     {
       "name": "Recommended actions",

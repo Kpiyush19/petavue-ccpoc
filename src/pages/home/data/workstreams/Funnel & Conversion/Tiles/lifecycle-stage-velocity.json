@@ -1,7 +1,7 @@
 {
   "id": "lifecycle-stage-velocity",
   "name": "Lifecycle Stage Velocity",
-  "description": "Track how long entities spend at each lifecycle stage and surface where velocity is slowing. Most funnel analysis ignores velocity — this skill makes it the headline.",
+  "description": "Track how long entities spend at each lifecycle stage and surface where velocity is slowing. Most funnel analysis ignores velocity. This skill makes it the headline.",
   "renderType": "dashboard",
   "workstream": "Funnel & Conversion",
   "dataSources": [

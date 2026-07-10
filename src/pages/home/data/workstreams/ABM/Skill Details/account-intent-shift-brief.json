@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "memo",
-  "description": "Single-account narrative explaining a meaningful shift in engagement — what changed, who's engaging, what signals surfaced, what action makes sense. Replaces the cross-functional reconstruction meeting where AE / SDR / marketing each share part of the picture.",
+  "description": "Single-account narrative explaining a meaningful shift in engagement: what changed, who's engaging, what signals surfaced, what action makes sense. Replaces the cross-functional reconstruction meeting where AE / SDR / marketing each share part of the picture.",
   "badges": {
     "ready": true,
     "buildTime": "~11 min",
@@ -21,14 +21,14 @@
     "Which contacts should the AE / SDR reach out to next, and how?"
   ],
   "beforeWeRun": [
-    "Which account — by name or Salesforce ID (required)?",
-    "Lookback window — trailing 8 or 12 weeks?",
+    "Which account: by name or Salesforce ID (required)?",
+    "Lookback window: trailing 8 or 12 weeks?",
     "Include third-party intent overlay (if connected)?"
   ],
   "whatYoullGet": [
     {
       "name": "Account summary",
-      "desc": "Account name, industry, size, tier, owner, current opportunity status — the framing snapshot."
+      "desc": "Account name, industry, size, tier, owner, current opportunity status: the framing snapshot."
     },
     {
       "name": "Trajectory shift",
@@ -40,7 +40,7 @@
     },
     {
       "name": "Buying-group composition",
-      "desc": "Markdown table of contacts who engaged in the window — name, title, seniority, signal count, last engagement."
+      "desc": "Markdown table of contacts who engaged in the window: name, title, seniority, signal count, last engagement."
     },
     {
       "name": "Recommended outreach",

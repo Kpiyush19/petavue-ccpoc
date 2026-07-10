@@ -143,8 +143,8 @@ export const AssociationsTab = ({ integrationId }) => {
           </h2>
           <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
             {allSelected
-              ? "Auto mode — Petavue syncs every supported pair, including new ones HubSpot may add later."
-              : "Custom mode — only the ticked pairs sync. Switch back to Auto to also include future pairs."}
+              ? "Auto mode: Petavue syncs every supported pair, including new ones HubSpot may add later."
+              : "Custom mode: only the ticked pairs sync. Switch back to Auto to also include future pairs."}
           </p>
         </div>
         <div className="flex items-center gap-2">

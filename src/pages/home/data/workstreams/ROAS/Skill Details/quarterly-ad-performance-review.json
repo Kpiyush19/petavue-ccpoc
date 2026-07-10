@@ -17,16 +17,16 @@
     "Meta Ads"
   ],
   "alsoSurfaces": [
-    "What did paid produce this quarter — spend, ROAS, pipeline, revenue?",
+    "What did paid produce this quarter: spend, ROAS, pipeline, revenue?",
     "Which channels grew, which declined, and by how much?",
     "Where did efficiency improve or deteriorate?",
-    "What changed structurally — channel adds, pauses, creative refreshes — and how did it land?"
+    "What changed structurally: channel adds, pauses, creative refreshes, and how did it land?"
   ],
   "beforeWeRun": [
-    "Which quarter — last completed, or custom?",
-    "Comparison quarter — prior, or year-over-year?",
-    "ROAS variant — pipeline or revenue?",
-    "Audience tone — marketing leadership (detailed) or board-ready (concise)?"
+    "Which quarter: last completed, or custom?",
+    "Comparison quarter: prior, or year-over-year?",
+    "ROAS variant: pipeline or revenue?",
+    "Audience tone: marketing leadership (detailed) or board-ready (concise)?"
   ],
   "whatYoullGet": [
     {
@@ -39,7 +39,7 @@
     },
     {
       "name": "Channel performance",
-      "desc": "Sortable table — channels as rows, columns for spend, attributed pipeline/revenue, ROAS, CAC, PoP deltas."
+      "desc": "Sortable table: channels as rows, columns for spend, attributed pipeline/revenue, ROAS, CAC, PoP deltas."
     },
     {
       "name": "Efficiency trends",
@@ -51,7 +51,7 @@
     },
     {
       "name": "Next quarter recommendations",
-      "desc": "Channels to scale, channels to reduce, experiments to consider — each tied to specific data."
+      "desc": "Channels to scale, channels to reduce, experiments to consider, each tied to specific data."
     },
     {
       "name": "Sources & definitions",

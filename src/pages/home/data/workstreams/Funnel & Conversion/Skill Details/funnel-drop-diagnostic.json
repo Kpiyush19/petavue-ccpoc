@@ -18,12 +18,12 @@
     "Why did this stage-pair conversion rate drop?",
     "Was it cohort composition, lead quality, time-in-stage, or process?",
     "How confident is the diagnosis, and what evidence supports it?",
-    "Who should do what to recover — and what's the expected gap-closing impact?"
+    "Who should do what to recover, and what's the expected gap-closing impact?"
   ],
   "beforeWeRun": [
-    "Stage pair to investigate — auto-detect the largest recent drop, or specify?",
-    "Drop window — most recent completed cohort vs prior 3 averaged, or custom?",
-    "Hypothesis tree depth — 2, 3, or 4 levels?"
+    "Stage pair to investigate: auto-detect the largest recent drop, or specify?",
+    "Drop window: most recent completed cohort vs prior 3 averaged, or custom?",
+    "Hypothesis tree depth: 2, 3, or 4 levels?"
   ],
   "whatYoullGet": [
     {

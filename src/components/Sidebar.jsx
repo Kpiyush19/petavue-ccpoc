@@ -34,7 +34,7 @@ const NAV_ITEMS = [
   { to: "/workflows", icon: TreeStructure, label: "Workflows", petavueOnly: true },
   { to: "/skills", icon: Lightning, label: "Skills", petavueOnly: true },
   { to: "/data-hub", icon: Database, label: "Data Hub" },
-  { to: "/settings", icon: Gear, label: "Settings" }
+  { to: "/petavue/settings", icon: Gear, label: "Settings" }
 ];
 
 function getInitialState() {
@@ -227,7 +227,7 @@ export default function Sidebar() {
                         ? "text-[var(--pv-text-disabled)]"
                         : "text-[var(--text-muted)]";
                       const titleHint = meta.badge?.ariaLabel
-                        ? `${s.name || "Session"} — ${meta.badge.ariaLabel}`
+                        ? `${s.name || "Session"}, ${meta.badge.ariaLabel}`
                         : (s.name || undefined);
                       return (
                         <a

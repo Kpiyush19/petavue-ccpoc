@@ -60,7 +60,7 @@ const RECENT_SESSIONS = [
   {
     id: "1",
     type: "MEMO",
-    title: "Lift analysis — Q1 paid social push",
+    title: "Lift analysis: Q1 paid social push",
     timestamp: "4d ago",
     tags: ["ATTRIBUTION", "LIFT ANALYSIS"]
   }

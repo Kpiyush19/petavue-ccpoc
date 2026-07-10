@@ -1,7 +1,7 @@
 {
   "id": "full-funnel-journey-visibility",
   "name": "Full-Funnel Journey Visibility",
-  "description": "See where the funnel is leaking volume or velocity, and exactly how far each stage sits from benchmark — across marketing and sales.",
+  "description": "See where the funnel is leaking volume or velocity, and exactly how far each stage sits from benchmark, across marketing and sales.",
   "renderType": "dashboard",
   "workstream": "Funnel & Conversion",
   "dataSources": [

@@ -4,7 +4,7 @@
   "workstreamId": "sales-activity",
   "workstreamName": "Sales Activity",
   "renderType": "memo",
-  "description": "Compare activity patterns on closed-won vs closed-lost deals to surface which behaviors actually move pipeline. Replaces received-wisdom playbooks with data-grounded correlation analysis — \"this isn't actually working\" findings are surfaced explicitly.",
+  "description": "Compare activity patterns on closed-won vs closed-lost deals to surface which behaviors actually move pipeline. Replaces received-wisdom playbooks with data-grounded correlation analysis. \"This isn't actually working\" findings are surfaced explicitly.",
   "badges": {
     "ready": true,
     "buildTime": "~14 min",
@@ -22,9 +22,9 @@
     "What playbook adjustments are grounded in our own data?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 12 months of closed deals, or custom?",
-    "Deal segments — all closed deals above $10K, or specific tier/segment?",
-    "Comparison method — won vs lost with control for size/segment, or raw?"
+    "Time window: trailing 12 months of closed deals, or custom?",
+    "Deal segments: all closed deals above $10K, or specific tier/segment?",
+    "Comparison method: won vs lost with control for size/segment, or raw?"
   ],
   "whatYoullGet": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "name": "Correlation findings",
-      "desc": "Markdown table — activity dimensions × won-median, lost-median, difference, significance, effect size, classification. Sorted by effect size."
+      "desc": "Markdown table: activity dimensions × won-median, lost-median, difference, significance, effect size, classification. Sorted by effect size."
     },
     {
       "name": "Weak correlations",

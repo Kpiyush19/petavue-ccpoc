@@ -89,7 +89,7 @@ export const SaveObjectsConfirmModal = ({
                   </div>
                   <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-2 leading-relaxed">
                     Removed objects stop syncing on the next run. Existing
-                    data stays in your warehouse — nothing is deleted.
+                    data stays in your warehouse; nothing is deleted.
                   </p>
                 </div>
               )}

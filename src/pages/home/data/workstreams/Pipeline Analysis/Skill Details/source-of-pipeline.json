@@ -4,7 +4,7 @@
   "workstreamId": "pipeline",
   "workstreamName": "Pipeline Analysis",
   "renderType": "dashboard",
-  "description": "Where pipeline comes from — marketing, sales, partner, expansion, other — under a governed source taxonomy. Replaces the ad-hoc reporting where every team's number disagrees with every other team's.",
+  "description": "Where pipeline comes from (marketing, sales, partner, expansion, other) under a governed source taxonomy. Replaces the ad-hoc reporting where every team's number disagrees with every other team's.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -21,9 +21,9 @@
     "Where do we suspect double-counting between marketing and sales?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 12 weeks, or custom?",
-    "Granularity — weekly, monthly, or quarterly buckets?",
-    "Which source categories to display — all five, or a custom subset?"
+    "Time window: trailing 12 weeks, or custom?",
+    "Granularity: weekly, monthly, or quarterly buckets?",
+    "Which source categories to display: all five, or a custom subset?"
   ],
   "whatYoullGet": [
     {
@@ -36,7 +36,7 @@
     },
     {
       "name": "Per-category trends",
-      "desc": "Small-multiple line charts — one per category — with shared scale."
+      "desc": "Small-multiple line charts, one per category, with shared scale."
     },
     {
       "name": "Conversion quality",

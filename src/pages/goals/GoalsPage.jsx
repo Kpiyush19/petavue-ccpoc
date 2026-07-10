@@ -211,7 +211,7 @@ function GoalFilterDropdown({ value, onChange, counts, total }) {
   };
   return (
     <div ref={ref} className="relative shrink-0">
-      <PvButton variant="secondary" size="md" icon={Funnel} aria-label={`Filter goals — ${current.label}`} onClick={toggle} />
+      <PvButton variant="secondary" size="md" icon={Funnel} aria-label={`Filter goals: ${current.label}`} onClick={toggle} />
       {value !== "all" && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pv-primary-primary-500 ring-2 ring-white pointer-events-none" />}
       {open && pos && createPortal(
         <>
@@ -306,8 +306,8 @@ function GoalRow({ goal, onOpen, onFull }) {
   const reason = finding
     ? finding.title
     : inSetup
-      ? (goal.status === "calibrating" ? "Calibrating — reading your data" : "Ready for review — finish setup to start tracking")
-      : "On track — nothing needs action this check-in";
+      ? (goal.status === "calibrating" ? "Calibrating: reading your data" : "Ready for review: finish setup to start tracking")
+      : "On track. Nothing needs action this check-in";
 
   return (
     <div
@@ -374,7 +374,7 @@ function ConfigModal({ onClose }) {
         <div className="shrink-0 flex items-start justify-between gap-3 px-5 py-4 border-b border-[var(--border-primary)]">
           <div>
             <h3 className="text-[18px] font-semibold text-[var(--text-primary)] m-0">Configure</h3>
-            <p className="text-[14px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">The context we ground every goal in — how your business, funnel, and best-fit customers actually work — so the findings fit you, not a generic benchmark.</p>
+            <p className="text-[14px] text-[var(--text-secondary)] mt-0.5 max-w-[480px]">The context we ground every goal in: how your business, funnel, and best-fit customers actually work, so the findings fit you, not a generic benchmark.</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={onClose} />
@@ -502,7 +502,7 @@ export default function GoalsPage() {
     { kind: "On track", color: "green", icon: CheckCircle, value: String(onTrack),
       desc: `of ${goals.length} goal${goals.length !== 1 ? "s" : ""} on pace to hit the number`, foot: setup > 0 ? `${setup} still calibrating` : "Healthy pace", footIcon: Pulse },
     { kind: "Watching", color: "blue", icon: Eye, value: String(watching),
-      desc: `early signal${watching !== 1 ? "s" : ""} we're watching — no action needed yet`, foot: "No action needed yet", footIcon: Pulse },
+      desc: `early signal${watching !== 1 ? "s" : ""} we're watching, no action needed yet`, foot: "No action needed yet", footIcon: Pulse },
   ];
 
   // Every goal opens its full detail page (no overlay).
@@ -561,7 +561,7 @@ export default function GoalsPage() {
                     <div className="mb-8">
                       <div className="flex items-center gap-2 mb-3">
                         <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">Where to act first</h2>
-                        <Tooltip title="The goals bleeding spend or leaving demos on the table — worked top-down, so your next move protects the number." arrow placement="top">
+                        <Tooltip title="The goals bleeding spend or leaving demos on the table, worked top-down, so your next move protects the number." arrow placement="top">
                           <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><Info size={15} /></span>
                         </Tooltip>
                       </div>
@@ -611,7 +611,7 @@ export default function GoalsPage() {
                       {goals.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-2 py-14 border border-[var(--border-primary)] rounded-lg text-center">
                           <Target size={24} className="text-[var(--text-muted)]" />
-                          <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Set one and we'll watch your paid spend for waste and the demand you're missing — and tell you where the next dollar should go.</p>
+                          <p className="text-[14px] text-[var(--text-secondary)]">No goals yet. Set one and we'll watch your paid spend for waste and the demand you're missing, and tell you where the next dollar should go.</p>
                         </div>
                       ) : filtered.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-1.5 py-10 border border-dashed border-[var(--border-primary)] rounded-lg text-center">

@@ -30,7 +30,7 @@ export default function WidgetListView({
       {/* Step intro */}
       <div className="shrink-0 px-6 pt-4 pb-3 border-b border-[var(--border-primary)]">
         <h2 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">User Review</h2>
-        <p className="text-[12px] text-[var(--text-muted)] mt-1 m-0 leading-relaxed">Confirm each widget renders with the right numbers. Verify directly from the list, or open a widget to inspect it. This step is optional — you can skip ahead to the agentic review.</p>
+        <p className="text-[12px] text-[var(--text-muted)] mt-1 m-0 leading-relaxed">Confirm each widget renders with the right numbers. Verify directly from the list, or open a widget to inspect it. This step is optional. You can skip ahead to the agentic review.</p>
       </div>
 
       {/* Filters */}

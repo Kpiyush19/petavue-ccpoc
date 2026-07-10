@@ -22,9 +22,9 @@
     "Which roles have the lowest coverage across our target list?"
   ],
   "beforeWeRun": [
-    "Buying-unit definition — by personas, by titles, or 6sense buying-stages?",
-    "Account scope — all target accounts, or top tier only?",
-    "Coverage threshold — at least N personas engaged in last M days?"
+    "Buying-unit definition: by personas, by titles, or 6sense buying-stages?",
+    "Account scope: all target accounts, or top tier only?",
+    "Coverage threshold: at least N personas engaged in last M days?"
   ],
   "whatYoullGet": [
     {

@@ -82,19 +82,19 @@ export default function SkillsLibraryPage() {
 
         {/* Grey framed content with a white list panel */}
         <div className="w-full p-4 flex bg-[var(--pv-neutral-grey-50)]" style={{ height: "calc(100% - 60px)" }}>
-          <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden">
+          <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden border border-pv-neutral-grey-100">
 
             {/* Panel sub-header: title + count · search · filter · view toggle */}
             <div className="flex items-center justify-between gap-3 h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)] px-4">
               <div className="flex items-center gap-2.5 shrink-0">
-                <span className="font-medium text-[14px] text-[var(--text-primary)]">All analyses</span>
+                <span className="font-medium text-[14px] text-[var(--text-primary)]">{filter === "dashboard" ? "Dashboards" : filter === "memo" ? "Memos" : "All skills"}</span>
                 <span className="text-[11px] text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md tabular-nums">{filtered.length}</span>
               </div>
 
               <div className="flex items-center gap-2.5">
                 <div className="flex items-center gap-2 h-8 w-80 px-3 bg-white border border-[#d4d9ea] rounded-lg focus-within:border-pv-primary-primary-500 transition-colors">
                   <Search size={15} className="text-[var(--text-muted)] shrink-0" />
-                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search analyses…"
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search skills…"
                     className="flex-1 text-[13px] bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
                 </div>
 
@@ -120,11 +120,12 @@ export default function SkillsLibraryPage() {
               </div>
             </div>
 
-            {/* Honest note: the catalog is pre-loaded; no self-serve create/edit yet */}
-            <div className="flex items-start gap-2 px-4 py-2.5 border-b border-[var(--pv-neutral-grey-100)] bg-pv-primary-primary-50/40">
-              <Info size={14} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+            {/* Important callout: these skills are pre-built; drafts get made final in chat.
+                Styled as a distinct primary callout so it reads as a message, not body copy. */}
+            <div className="flex items-start gap-2.5 px-4 py-3 border-b border-pv-primary-primary-100 bg-pv-primary-primary-50">
+              <Info size={15} className="text-pv-primary-primary-600 shrink-0 mt-0.5" />
               <p className="text-[12px] text-[var(--text-secondary)] leading-snug">
-                Every analysis here is pre-built by Petavue, and the previews are samples. Activate one to build a prototype on your data — then verify &amp; publish it in chat to get the final version. Need a new or custom analysis? We'll build it —{" "}
+                <span className="font-medium text-[var(--text-primary)]">These skills are pre-built by Petavue.</span> Activate one to build a draft on your data, then verify &amp; publish it in chat to make it final. Need a custom skill?{" "}
                 <a href="mailto:support@petavue.com" className="font-medium text-pv-primary-primary-600 hover:text-pv-primary-primary-700 hover:underline">Contact Petavue support →</a>
               </p>
             </div>
@@ -133,16 +134,16 @@ export default function SkillsLibraryPage() {
             <div className="flex-1 overflow-y-auto">
               {filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-2">
-                  <p className="text-[14px] text-[var(--text-muted)]">No analyses match “{query}”.</p>
+                  <p className="text-[14px] text-[var(--text-muted)]">No skills match “{query}”.</p>
                 </div>
               ) : view === "grid" ? (
-                <div className="grid grid-cols-3 gap-3 p-4">
+                <div className="grid grid-cols-3 gap-6 p-4">
                   {filtered.map((skill) => {
                     const isMemo = skill.output_type === "memo";
                     const OutputIcon = isMemo ? FileText : LayoutDashboard;
                     return (
                       <div key={skill.id} onClick={() => open(skill.id)}
-                        className="group flex flex-col gap-3 h-full p-5 bg-white border border-pv-neutral-grey-100 rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]">
+                        className="group flex flex-col gap-3 h-full p-5 bg-white border border-pv-neutral-grey-150 rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]">
                         <div className="flex items-center justify-between gap-2.5">
                           <span className={cn("flex items-center gap-1 text-[12px] font-medium uppercase", isMemo ? "text-amber-700" : "text-blue-700")}>
                             <OutputIcon size={12} />{isMemo ? "Memo" : "Dashboard"}
@@ -150,11 +151,11 @@ export default function SkillsLibraryPage() {
                           {skill.time && <span className="text-[12px] font-medium text-[var(--pv-success-text)] whitespace-nowrap">{skill.time}</span>}
                         </div>
                         <h3 className="text-[18px] font-semibold leading-snug tracking-[-0.2px] text-[var(--text-primary)]">{formatSkillName(skill.name)}</h3>
-                        <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed">{skill.description}</p>
+                        <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed line-clamp-3">{skill.description}</p>
                         <div className="flex items-center justify-between gap-3 mt-auto pt-4 border-t border-[var(--border-primary)]">
                           <Connectors tags={skill.tags} />
                           <span className="flex items-center gap-1 text-[12px] font-medium text-[var(--text-muted)] group-hover:text-pv-primary-primary-500 transition-colors whitespace-nowrap shrink-0">
-                            Activate <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+                            Explore <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
                           </span>
                         </div>
                       </div>
@@ -165,7 +166,7 @@ export default function SkillsLibraryPage() {
                 <div className="flex flex-col gap-2 p-4">
                   {/* Column header */}
                   <div className="grid gap-3 items-center px-3 pb-1 text-[12px] font-medium text-[var(--pv-neutral-grey-500)]" style={{ gridTemplateColumns: TABLE_COLS }}>
-                    <span>Analysis</span><span>Description</span><span>Type</span><span>Connects</span><span>Build time</span><span />
+                    <span>Skill</span><span>Description</span><span>Type</span><span>Connects</span><span>Build time</span><span />
                   </div>
                   {/* Rows — spaced bordered cards, single line, hover lift (like the workbook list) */}
                   {filtered.map((skill) => {
@@ -173,7 +174,7 @@ export default function SkillsLibraryPage() {
                     const OutputIcon = isMemo ? FileText : LayoutDashboard;
                     return (
                       <div key={skill.id} onClick={() => open(skill.id)}
-                        className="group grid gap-3 items-center h-[56px] px-3 bg-white border border-[var(--pv-neutral-grey-100)] rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]" style={{ gridTemplateColumns: TABLE_COLS }}>
+                        className="group grid gap-3 items-center h-[56px] px-3 bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg cursor-pointer transition-[background-color,box-shadow] duration-150 hover:bg-pv-primary-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)]" style={{ gridTemplateColumns: TABLE_COLS }}>
                         <span className="min-w-0 truncate text-[12px] text-[var(--text-primary)]">{formatSkillName(skill.name)}</span>
                         <span className="min-w-0 truncate text-[12px] text-[var(--text-muted)]">{skill.description}</span>
                         <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", isMemo ? "text-amber-700" : "text-blue-700")}>

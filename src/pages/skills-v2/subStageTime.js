@@ -34,13 +34,13 @@ export const TIME_HINT_LABEL = {
 // the inline hint switches to "running long" so the user can see the
 // fuller explanation by hovering.
 export const OVERRUN_3X_COPY = {
-  reviewing_data:     'Still reviewing data — large catalogs can take a few extra minutes.',
-  verifying_answers:  'Still verifying answers — this can take a moment.',
-  drafting_plan:      'Still drafting — complex plans take more time.',
+  reviewing_data:     'Still reviewing data. Large catalogs can take a few extra minutes.',
+  verifying_answers:  'Still verifying answers. This can take a moment.',
+  drafting_plan:      'Still drafting. Complex plans take more time.',
   reviewing_plan:     'Still reviewing the plan for completeness.',
-  running_checks:     'Still reviewing — taking a closer look at the result.',
-  applying_fixes:     'Still refining — making final touches before wrapping up.',
-  final_check:        'Still on the final check — taking a thorough look.',
+  running_checks:     'Still reviewing. Taking a closer look at the result.',
+  applying_fixes:     'Still refining. Making final touches before wrapping up.',
+  final_check:        'Still on the final check. Taking a thorough look.',
 }
 
 

@@ -9,25 +9,19 @@ import { MOCK_ENABLED } from "../mocks";
 // live app; the rest open the Petavue design-system pages.
 export const NAV_ITEMS = [
   { id: "skills", label: "Skills", icon: "skills" },
-  { id: "chats", label: "Workbook", icon: "chats" },
   { id: "workflows", label: "Workflows", icon: "workflows" },
   { id: "goals", label: "Goals", icon: "goals" },
   { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
-  { id: "reports", label: "Reports", icon: "reports" },
   { id: "data-hub", label: "Data Hub", icon: "data-hub" },
-  { id: "project", label: "Projects", icon: "project" },
 ];
 
 export const NAV_ROUTES = {
   new: "/new",
-  chats: "/petavue/workbooks",
   "dashboard-live": "/dashboards",
   "dashboards-pv": "/petavue/dashboards",
-  reports: "/petavue/reports",
   "data-hub": "/petavue/data-hub",
   skills: "/skills",
   goals: "/goals",
-  project: "/petavue/projects",
   workflows: "/workflows",
   settings: "/petavue/settings",
 };

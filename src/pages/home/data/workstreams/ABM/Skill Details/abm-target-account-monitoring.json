@@ -21,9 +21,9 @@
     "How many target accounts moved into pipeline this week?"
   ],
   "beforeWeRun": [
-    "Target list — all-tiers or specific tier?",
-    "Heat thresholds — 6sense intent score, or custom?",
-    "Lookback window — 7, 14, or 30 days?"
+    "Target list: all-tiers or specific tier?",
+    "Heat thresholds: 6sense intent score, or custom?",
+    "Lookback window: 7, 14, or 30 days?"
   ],
   "whatYoullGet": [
     {

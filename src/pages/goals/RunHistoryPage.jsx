@@ -105,7 +105,7 @@ function TranscriptModal({ agent, onClose }) {
   const lines = [
     { role: "system", text: `You are the ${agent.name} agent for the Paid Media Pipeline Tracking goal. Ground every claim in the copied history and cite the specific rows.` },
     { role: "user", text: "Analyze the current high-value pipeline against the goal's targets and surface anything that needs action." },
-    { role: "assistant", text: 'Read raw_deals.csv (497 rows). The open high-value pipeline is concentrated in a single $250,000 deal ("D3 - test 2") whose close date is 211 days in the past — it is effectively un-dated and is corrupting the forecast.' },
+    { role: "assistant", text: 'Read raw_deals.csv (497 rows). The open high-value pipeline is concentrated in a single $250,000 deal ("D3 - test 2") whose close date is 211 days in the past. It is effectively un-dated and is corrupting the forecast.' },
     { role: "assistant", text: "Recommendation: have the deal owner confirm it is still live and set a realistic new close date. Flagged as act-now with $250K forecast exposure." },
   ];
   return (
@@ -115,7 +115,7 @@ function TranscriptModal({ agent, onClose }) {
         <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-[var(--border-primary)]">
           <div className="flex items-center gap-2 min-w-0">
             <FileText size={18} className="text-pv-primary-primary-500 shrink-0" />
-            <span className="text-[15px] font-semibold text-[var(--text-primary)] truncate">{label} — transcript</span>
+            <span className="text-[15px] font-semibold text-[var(--text-primary)] truncate">{label}: transcript</span>
           </div>
           <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={onClose} />
         </div>

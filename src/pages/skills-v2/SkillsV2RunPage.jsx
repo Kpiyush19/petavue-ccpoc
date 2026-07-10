@@ -2,18 +2,27 @@ import { useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   Loader2, AlertCircle, Info,
-  X,
+  ChevronRight, X, Sparkles,
 } from 'lucide-react'
+import RunSageOverlay from './RunSageOverlay'
+import { SAGE_GRADIENT } from '../goals/SageWidget'
 import { useSkillRun } from './useSkillRun'
 import ClarificationCard from './ClarificationCard'
 import PlanApprovalCard from './PlanApprovalCard'
 import ExecutionProgress from './ExecutionProgress'
+import BlockedCallout from './BlockedCallout'
 import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
 import { Button } from '../../components/ui/Button'
+import { Button as PvButton } from '../../petavue'
+import { X as XMark, Sparkle, CircleNotch } from '@phosphor-icons/react'
 import { Dialog, DialogHeader, DialogContent, DialogFooter } from '../../components/ui/Dialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { apiPost } from '../../api'
+import { SKILLS_CATALOG } from '../../skills/skillsCatalog'
+
+// Phosphor spinner for PvButton loading states (matches the detail page).
+const Spinner = (props) => <CircleNotch {...props} className="animate-spin" />
 
 
 // Phases where Cancel is a meaningful action — the run is in motion (or
@@ -29,6 +38,10 @@ const CANCELLABLE_PHASES = new Set([
 // may be tempted to wait or cancel. Here we reassure them the run is
 // resumable and that it hands off to an editable chat on completion.
 const RUNNING_PHASES = new Set(['EXECUTING', 'VERIFYING', 'FIXING'])
+
+// Every in-progress phase (planning, approval, build, verify). The resumability
+// reassurance shows across all of these — always present until the run is done.
+const IN_PROGRESS_PHASES = new Set(['PLANNING', 'AWAITING_CONFIRMATION', 'EXECUTING', 'VERIFYING', 'FIXING'])
 
 // Phases where numbers exist on screen — building through done. This is the
 // moment "the numbers look off" happens, so we mark the output a prototype
@@ -65,6 +78,17 @@ function resolveRunTitle({ planSummary, session }) {
     || session?.skill_id
     || 'Starting your run…'
   )
+}
+
+// Short catalog blurb for the running skill — header context so the user
+// always knows what this skill is for. Prefer the plan's copy; fall back to
+// the catalog by slug (available from the session before the plan drafts).
+function resolveSkillDescription({ planSummary, session }) {
+  if (planSummary?.skill_description) return planSummary.skill_description
+  const id = session?.skill_id
+  if (!id) return ''
+  const s = SKILLS_CATALOG.find((x) => x.slug === id || x.name === id)
+  return s?.description || ''
 }
 
 
@@ -108,6 +132,9 @@ function PhaseContent({
   onRerun,
   rerunning,
   pusherPaused,
+  onReviewProgress,
+  skillQuestions,
+  skillOutcome,
 }) {
   if (state.errorMessage) {
     return (
@@ -134,6 +161,9 @@ function PhaseContent({
         onCancel={onCancelPlan}
         approving={approving}
         discarding={discarding}
+        onRequestChanges={onUseDisclosureFollowup}
+        requesting={handingOff}
+        onReviewProgress={onReviewProgress}
       />
     )
   }
@@ -152,9 +182,9 @@ function PhaseContent({
           paused={pusherPaused}
           onCancel={onCancelPlan}
         />
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
           {current ? (
-            <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
               <ClarificationCard
                 key={current.id}
                 clarification={current}
@@ -170,8 +200,39 @@ function PhaseContent({
             <SetupRightPaneCopy
               setupStage={state.setupStage}
               keyChoices={state.keyChoices}
+              questions={skillQuestions}
+              outcome={skillOutcome}
             />
           )}
+        </div>
+      </div>
+    )
+  }
+
+  // Plan-stage block — the planner halted before authoring any plan steps.
+  // Keep the "Preparing the plan" panel visible (frozen where it stopped) and
+  // show the block message BESIDE it, so the user never loses the record of
+  // what ran and how far it got — exactly when that context matters most.
+  if (phase === 'BLOCKED' && !(planSummary?.steps?.length)) {
+    return (
+      <div className="flex-1 flex min-h-0 gap-4 h-full">
+        <SetupSubStepList
+          setupStage={state.setupStage}
+          hadClarifications={state.setupHadClarifications}
+          paused
+          blocked
+        />
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
+            <BlockedCallout
+              summary={state.blockedSummary}
+              fallbackReason={state.blockReason}
+              onRerun={onRerun}
+              rerunning={rerunning}
+              onCorrect={onUseDisclosureFollowup}
+              correcting={handingOff}
+            />
+          </div>
         </div>
       </div>
     )
@@ -399,7 +460,7 @@ export default function SkillsV2RunPage() {
     try {
       const res = await apiPost('/api/sessions', { skill_id: skillId })
       const newSessionId = res?.session?.session_id
-      if (newSessionId) navigate(`/skills-v2/run/${newSessionId}`)
+      if (newSessionId) navigate(`/skills/run/${newSessionId}`)
     } catch {
       // axios interceptor surfaces error toast
     } finally {
@@ -410,11 +471,31 @@ export default function SkillsV2RunPage() {
   // Top-right Cancel button — opens a confirm dialog before discarding
   // (destructive action, no undo, multi-minute investment).
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false)
+  // Per-widget review progress reported up by the approval card, used to gate
+  // the footer's Build it until every widget is Approved or Dropped.
+  const [reviewProgress, setReviewProgress] = useState(null)
+  const [sageOpen, setSageOpen] = useState(false)
   const onConfirmCancel = async () => {
     setCancelConfirmOpen(false)
     await cancelPlan()
   }
   const showCancelButton = CANCELLABLE_PHASES.has(state.phase)
+
+  // Resumability reassurance. Present across the whole in-progress run —
+  // planning, approval, build, and verify — so it never disappears mid-run.
+  // It drops only at terminal states (done/blocked/cancelled), where "you can
+  // leave and it keeps running" no longer applies.
+  const showResumeHint = IN_PROGRESS_PHASES.has(state.phase)
+  const skillDescription = resolveSkillDescription({ planSummary, session })
+  // Catalog entry for the running skill — feeds the plan pane's "what you'll
+  // get + questions it answers" (available from the session before the plan).
+  const runSkill = SKILLS_CATALOG.find((s) => s.slug === session?.skill_id || s.name === session?.skill_id) || null
+  // Build it is gated on the plan review: every widget must be Approved or
+  // Dropped first. Default to gated when there are widgets but no report yet.
+  const buildGated = state.phase === 'AWAITING_CONFIRMATION'
+    && (planSummary?.widgets?.length > 0)
+    && (!reviewProgress || !reviewProgress.allReviewed)
+  const buildRemaining = reviewProgress?.remaining ?? (planSummary?.widgets?.length || 0)
 
   // The two-pane execution view needs a full-bleed body. The PLANNING /
   // AWAITING / BLOCKED / etc. screens still want the padded narrow column.
@@ -422,105 +503,68 @@ export default function SkillsV2RunPage() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-3 border-b border-[var(--border-primary)] shrink-0">
+      {/* Header — app-standard 60px white bar, matching the skill detail page
+          and Dashboards / Goals so Activate → run reads as one continuous
+          product instead of a jump between two. */}
+      <div className="flex w-full px-6 items-center justify-between gap-4 h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
-              {resolveRunTitle({ planSummary, session })}
-            </h1>
-            {session?.skill_description ? (
-              <p
-                className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug"
-                style={{
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden',
-                }}
-                title={session.skill_description}
-              >
-                {session.skill_description}
-              </p>
-            ) : (
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5 font-mono truncate">
-                {sessionId}
-              </p>
-            )}
-          </div>
+          <button
+            onClick={() => navigate('/skills')}
+            className="shrink-0 text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
+          >
+            Skills
+          </button>
+          <ChevronRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
+          <span
+            title={skillDescription || undefined}
+            className="flex-1 min-w-0 truncate text-[16px] leading-[24px] font-medium text-pv-neutral-grey-900"
+          >
+            {resolveRunTitle({ planSummary, session })}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
           {PROTOTYPE_PHASES.has(state.phase) ? (
-            // Prototype marker — sits with the output, not on the marketing
-            // page. Tells the user this is a draft on their data and the
-            // trusted version comes from verify & publish in chat.
+            // Draft marker — this is a draft on the user's data; the trusted
+            // version comes from verify & publish in chat.
             <span
-              title="This is a prototype built on your data. Verify & publish it in chat to finalize — that's the version you can trust and share."
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/25 shrink-0"
+              title="This is a draft built on your data. Verify & publish it in chat to finalize. That's the version you can trust and share."
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/25"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-              Prototype · verify to finalize
+              Draft · verify to publish
             </span>
           ) : null}
-          {state.phase === 'BLOCKED' ? (
-            // Header stays empty on BLOCKED. The progress bar already
-            // shows the blocked state (red exclamation on the failing
-            // stage), and the BlockedCallout in the body carries the
-            // explanation + "Start a new run". A pill here would be
-            // redundant chrome.
-            null
-          ) : showCancelButton ? (
-            // Red-outline styling so it reads as a real, destructive
-            // button — the prior ghost variant was too quiet against the
-            // header background. Border + red text without the solid
-            // `danger` fill keeps it from competing with the progress bar.
-            <Button
-              onClick={() => setCancelConfirmOpen(true)}
-              size="sm"
-              variant="secondary"
-              disabled={discarding}
-              aria-label="Cancel run"
-              className="border-[var(--pv-error-text)]/50 text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)] hover:border-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]"
-            >
-              <X size={13} className="mr-1" />
-              Cancel run
-            </Button>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => setSageOpen(true)}
+            aria-label="Ask Sage about this step"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium text-white border-none cursor-pointer transition-[filter] hover:brightness-105"
+            style={{ background: SAGE_GRADIENT }}
+          >
+            <Sparkles size={13} /> Ask Sage
+          </button>
         </div>
       </div>
-
-      {/* Run progress bar — persistent across all phases. Reads the
-          sub-state slices from the reducer; the bar's own stopwatch
-          handles overrun framing without any extra orchestration here. */}
-      <RunProgressBar
-        phase={state.phase}
-        setupStage={state.setupStage}
-        buildSubStage={state.buildSubStage}
-        checkSubStage={state.checkSubStage}
-        outputType={planSummary?.output_type}
-        blocked={state.phase === 'BLOCKED'}
-        cancelled={state.phase === 'CANCELLED'}
-        paused={connectionStatus !== 'connected'}
-        onCancel={cancelPlan}
-        clarificationCount={state.clarifications.length}
-      />
 
       {/* Resumability + hand-off reassurance — shown only during the long,
           hands-off build phases. Tells the user leaving is safe (the run
           keeps going and is resumable) and that completion hands off to an
           editable chat, so neither the wait nor the transition surprises
           them. */}
-      {RUNNING_PHASES.has(state.phase) && (
-        <div className="px-6 py-2 shrink-0 border-b border-[var(--border-primary)] bg-[var(--bg-tertiary)]">
+      {showResumeHint && (
+        <div className="px-6 py-2 shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
           <p className="flex items-start gap-2 text-[12px] leading-snug text-[var(--text-secondary)]">
             <Info size={14} className="shrink-0 mt-0.5 text-[var(--accent)]" />
             <span>
-              This can take a few minutes — <span className="font-medium text-[var(--text-primary)]">you can leave this page and it keeps running</span>; pick it back up anytime from your sessions. When it finishes, it opens as a chat where you can edit the result and ask follow-ups.
+              This can take a few minutes. <span className="font-medium text-[var(--text-primary)]">You can leave this page and it keeps running</span>; resume anytime from your sessions.
             </span>
           </p>
         </div>
       )}
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Body — grey-50 frame so the white cards read as one product with the
+          white shell, matching the skill detail page. */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-primary)]">
         {/* Hydration gate. We hold the body on a neutral spinner until
             both the session fetch AND the /skill/progress endpoint have
             settled. Without this, in-progress and BLOCKED runs flash
@@ -567,6 +611,9 @@ export default function SkillsV2RunPage() {
                 onRerun={onRerun}
                 rerunning={rerunning}
                 pusherPaused={connectionStatus !== 'connected'}
+                onReviewProgress={setReviewProgress}
+                skillQuestions={runSkill?.questions}
+                skillOutcome={runSkill?.description}
               />
             </div>
           ) : (
@@ -592,11 +639,73 @@ export default function SkillsV2RunPage() {
                 onRerun={onRerun}
                 rerunning={rerunning}
                 pusherPaused={connectionStatus !== 'connected'}
+                onReviewProgress={setReviewProgress}
+                skillQuestions={runSkill?.questions}
+                skillOutcome={runSkill?.description}
               />
             </div>
           )
         )}
       </div>
+
+      {/* Footer — persistent run chrome, mirroring the verify-&-publish flow:
+          Cancel run on the left, the 4-stage stepper centered, and the phase's
+          primary action on the right. */}
+      {!isLoading && !isError && state.progressHydrated ? (
+        <div className="flex items-center gap-4 px-6 py-2.5 shrink-0 border-t border-[var(--pv-neutral-grey-150)] bg-white">
+          <div className="w-[240px] shrink-0 flex justify-start">
+            {showCancelButton ? (
+              <PvButton
+                onClick={() => setCancelConfirmOpen(true)}
+                size="lg"
+                variant="secondary"
+                disabled={discarding}
+                aria-label="Cancel run"
+                label="Cancel run"
+                icon={XMark}
+              />
+            ) : null}
+          </div>
+          <div className="flex-1 min-w-0 flex items-center gap-0.5 overflow-x-auto">
+            <RunProgressBar
+              bare
+              phase={state.phase}
+              setupStage={state.setupStage}
+              buildSubStage={state.buildSubStage}
+              checkSubStage={state.checkSubStage}
+              outputType={planSummary?.output_type}
+              blocked={state.phase === 'BLOCKED'}
+              cancelled={state.phase === 'CANCELLED'}
+              paused={connectionStatus !== 'connected'}
+              onCancel={cancelPlan}
+              clarificationCount={state.clarifications.length}
+            />
+          </div>
+          <div className="w-[240px] shrink-0 flex justify-end">
+            {state.phase === 'AWAITING_CONFIRMATION' && planSummary ? (
+              <PvButton
+                onClick={approvePlan}
+                size="lg"
+                variant="primary"
+                disabled={approving || discarding || buildGated}
+                label={approving ? 'Starting…' : buildGated ? `Approve ${buildRemaining} more` : 'Build it'}
+                icon={approving ? Spinner : buildGated ? null : Sparkle}
+                iconWeight={approving ? 'regular' : 'fill'}
+              />
+            ) : (state.phase === 'COMPLETE' || state.phase === 'OPEN_CHAT') && onFollowUp ? (
+              <PvButton
+                onClick={onFollowUp}
+                size="lg"
+                variant="primary"
+                disabled={handingOff}
+                label={handingOff ? 'Opening…' : 'Verify & refine in chat'}
+                icon={handingOff ? Spinner : Sparkle}
+                iconWeight={handingOff ? 'regular' : 'fill'}
+              />
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       {/* Handoff-in-progress overlay. Shown when the user clicks Follow Up
           or Publish Dashboard and we're about to navigate to the chat
@@ -618,6 +727,9 @@ export default function SkillsV2RunPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Ask Sage — context-aware overlay for the current step. */}
+      <RunSageOverlay phase={state.phase} open={sageOpen} onClose={() => setSageOpen(false)} />
 
       {/* Cancel-run confirm dialog. Destructive action — discards the
           run and signals every agent to halt at the next safe point. */}

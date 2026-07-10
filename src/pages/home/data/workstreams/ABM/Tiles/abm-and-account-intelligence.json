@@ -1,7 +1,7 @@
 {
   "id": "abm-and-account-intelligence",
   "name": "ABM & Account Intelligence",
-  "description": "Know whether you're engaging the right target accounts with enough depth across the right roles — and exactly where you're at risk.",
+  "description": "Know whether you're engaging the right target accounts with enough depth across the right roles, and exactly where you're at risk.",
   "renderType": "dashboard",
   "workstream": "Account Intelligence / ABM",
   "dataSources": [

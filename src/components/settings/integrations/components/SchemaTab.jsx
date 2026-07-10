@@ -446,8 +446,8 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
             {isSearching && (
               <SectionHeader>
                 {totalPages > 1
-                  ? `Search results — ${totalMatches} match${totalMatches === 1 ? "" : "es"} · page ${currentPage} of ${totalPages}`
-                  : `Search results — ${totalMatches} match${totalMatches === 1 ? "" : "es"}`}
+                  ? `Search results: ${totalMatches} match${totalMatches === 1 ? "" : "es"} · page ${currentPage} of ${totalPages}`
+                  : `Search results: ${totalMatches} match${totalMatches === 1 ? "" : "es"}`}
               </SectionHeader>
             )}
             {rows.map((obj) => {
@@ -684,7 +684,7 @@ const SyncObjectConfirmModal = ({
           <div className="mx-5 mb-4 px-3 py-2 text-xs bg-[var(--pv-warning-bg,#fff7e6)] border border-[var(--pv-warning-border,#f7c97e)] text-[var(--pv-warning-text,#8a5a00)] rounded-md">
             <div className="font-medium">HubSpot quota running low</div>
             <div className="mt-0.5">
-              {quota.used} of {quota.limit} bulk exports used today — only {quota.remaining} left. This sync uses 1 slot. Scheduled syncs may be skipped if you run out.
+              {quota.used} of {quota.limit} bulk exports used today. Only {quota.remaining} left. This sync uses 1 slot. Scheduled syncs may be skipped if you run out.
             </div>
           </div>
         )}

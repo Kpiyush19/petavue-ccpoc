@@ -232,12 +232,12 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
         <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)] flex items-start justify-between gap-3">
           <div>
             <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
-              {isEdit ? "Edit custom report" : "Add custom report"}{serviceLabel ? ` — ${serviceLabel}` : ""}
+              {isEdit ? "Edit custom report" : "Add custom report"}{serviceLabel ? `: ${serviceLabel}` : ""}
             </h2>
             <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
               {isEdit
-                ? "Adjust the dimensions, metrics, or settings — changes apply on the next sync."
-                : "Pick the dimensions and metrics you want — we'll sync them as a new table on the next run."}
+                ? "Adjust the dimensions, metrics, or settings. Changes apply on the next sync."
+                : "Pick the dimensions and metrics you want. We'll sync them as a new table on the next run."}
             </p>
           </div>
           <button
@@ -486,7 +486,7 @@ const Field = ({ label, hint, children }) => (
 // happening and that we haven't lost them.
 const CreatingState = ({ serviceLabel, tableName }) => {
   const messages = [
-    "Hang tight — we're getting your report ready…",
+    "Hang tight. We're getting your report ready…",
     `Talking to ${serviceLabel || "your source"}…`,
     "Saving the configuration…",
     "Wiring it up for the next sync…",
@@ -569,7 +569,7 @@ const ReviewSummary = ({
   <div className="px-5 py-4 flex-1 overflow-y-auto flex flex-col gap-3">
     <div className="rounded-md border border-[var(--pv-primary-300,#A5B4FC)] bg-[var(--pv-primary-100,#EEF2FF)] px-3 py-2 text-[11px] text-[var(--pv-primary-700,#3730A3)]">
       {isEdit
-        ? `Review your changes before we send them to ${serviceLabel || "the source"}. Renaming the report creates a new table on the next sync — the old one stops updating.`
+        ? `Review your changes before we send them to ${serviceLabel || "the source"}. Renaming the report creates a new table on the next sync; the old one stops updating.`
         : `Review the report before we send it to ${serviceLabel || "the source"}. Changes take effect on the next sync.`}
     </div>
 

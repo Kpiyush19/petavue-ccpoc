@@ -1,7 +1,7 @@
 {
   "id": "pipeline-coverage",
   "name": "Pipeline Coverage",
-  "description": "Coverage ratio across the org, segments, and individual owners — under one governed definition that doesn't change between leadership asks. The single number every executive conversation starts with.",
+  "description": "Coverage ratio across the org, segments, and individual owners, under one governed definition that doesn't change between leadership asks. The single number every executive conversation starts with.",
   "renderType": "dashboard",
   "workstream": "Pipeline Analysis",
   "dataSources": [

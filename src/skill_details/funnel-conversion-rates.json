@@ -4,7 +4,7 @@
   "workstreamId": "funnel",
   "workstreamName": "Funnel & Conversion",
   "renderType": "dashboard",
-  "description": "Track conversion rates across the full funnel — Lead through Closed Won — under cohort-consistent definitions. Replaces snapshot math that wobbles week-to-week with stable rates derived from completed cohort journeys.",
+  "description": "Track conversion rates across the full funnel (Lead through Closed Won) under cohort-consistent definitions. Replaces snapshot math that wobbles week-to-week with stable rates derived from completed cohort journeys.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -21,9 +21,9 @@
     "Which segments convert at above-average rates?"
   ],
   "beforeWeRun": [
-    "Time period coverage — trailing 6 months, 12 months, or custom?",
-    "Stage transitions to display — all seven, or focus on specific pairs?",
-    "Lifecycle window per stage pair — tenant defaults or override?"
+    "Time period coverage: trailing 6 months, 12 months, or custom?",
+    "Stage transitions to display: all seven, or focus on specific pairs?",
+    "Lifecycle window per stage pair: tenant defaults or override?"
   ],
   "whatYoullGet": [
     {
@@ -36,7 +36,7 @@
     },
     {
       "name": "Stage-pair rates table",
-      "desc": "Sortable — completed-cohort rate, in-flight rate, time-to-conversion, drop-off rate per pair."
+      "desc": "Sortable: completed-cohort rate, in-flight rate, time-to-conversion, drop-off rate per pair."
     },
     {
       "name": "Conversion trend",

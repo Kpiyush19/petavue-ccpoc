@@ -20,10 +20,10 @@
     "What should leadership watch in the next quarter?"
   ],
   "beforeWeRun": [
-    "Quarter to review — current, or last completed (auto-detect if within 7 days of quarter close)?",
-    "Comparison quarter — prior, or year-ago?",
-    "Audience tone — board (concise, financial, risk-forward) or internal-leadership (more tactical)?",
-    "Include rep-level detail — yes for internal-leadership, no for board?"
+    "Quarter to review: current, or last completed (auto-detect if within 7 days of quarter close)?",
+    "Comparison quarter: prior, or year-ago?",
+    "Audience tone: board (concise, financial, risk-forward) or internal-leadership (more tactical)?",
+    "Include rep-level detail: yes for internal-leadership, no for board?"
   ],
   "whatYoullGet": [
     {
@@ -32,15 +32,15 @@
     },
     {
       "name": "Pipeline state",
-      "desc": "Markdown table — open pipeline, coverage, weighted pipeline, opp count, won-to-date, avg deal size, stage distribution — with PoP deltas."
+      "desc": "Markdown table: open pipeline, coverage, weighted pipeline, opp count, won-to-date, avg deal size, stage distribution, with PoP deltas."
     },
     {
       "name": "Quarter highlights",
-      "desc": "4–6 bullets — deals won/lost, segment shifts, velocity changes, source mix changes. Mix of positive and negative."
+      "desc": "4–6 bullets: deals won/lost, segment shifts, velocity changes, source mix changes. Mix of positive and negative."
     },
     {
       "name": "Risk register",
-      "desc": "Markdown table — risk category, severity, magnitude, recommended attention level (immediate / monitor / informational)."
+      "desc": "Markdown table: risk category, severity, magnitude, recommended attention level (immediate / monitor / informational)."
     },
     {
       "name": "Forward look",

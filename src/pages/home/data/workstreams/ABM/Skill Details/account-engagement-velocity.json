@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "dashboard",
-  "description": "Surface accounts that are warming up vs. cooling down vs. stalled — the trajectory question that decides where ABM should focus this week. Replaces weekly manual account reviews that can't reach every account.",
+  "description": "Surface accounts that are warming up vs. cooling down vs. stalled: the trajectory question that decides where ABM should focus this week. Replaces weekly manual account reviews that can't reach every account.",
   "badges": {
     "ready": true,
     "buildTime": "~9 min",
@@ -21,9 +21,9 @@
     "How does velocity differ across tiers and segments?"
   ],
   "beforeWeRun": [
-    "Account list — target accounts only, or include named-account list?",
-    "Velocity window — trailing 4 weeks (8-week baseline) or custom?",
-    "Signal types — all connected, or filter to specific channels?"
+    "Account list: target accounts only, or include named-account list?",
+    "Velocity window: trailing 4 weeks (8-week baseline) or custom?",
+    "Signal types: all connected, or filter to specific channels?"
   ],
   "whatYoullGet": [
     {
@@ -44,11 +44,11 @@
     },
     {
       "name": "Cooled-out accounts",
-      "desc": "Previously-engaged accounts that lost momentum — rescue candidates."
+      "desc": "Previously-engaged accounts that lost momentum: rescue candidates."
     },
     {
       "name": "All accounts table",
-      "desc": "Sortable — score, velocity, classification, signal composition per account."
+      "desc": "Sortable: score, velocity, classification, signal composition per account."
     },
     {
       "name": "Velocity distribution",

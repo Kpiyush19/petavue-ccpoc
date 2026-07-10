@@ -4,7 +4,7 @@
   "workstreamId": "pipeline",
   "workstreamName": "Pipeline Analysis",
   "renderType": "memo",
-  "description": "A weekly memo telling a rep where to focus this week — which open deals deserve effort, which signals matter, and which deals to consider de-prioritizing. Replaces gut-feel triage with explicit reasoning.",
+  "description": "A weekly memo telling a rep where to focus this week: which open deals deserve effort, which signals matter, and which deals to consider de-prioritizing. Replaces gut-feel triage with explicit reasoning.",
   "badges": {
     "ready": true,
     "buildTime": "~11 min",
@@ -20,9 +20,9 @@
     "Where are managers and reps likely to disagree on priorities?"
   ],
   "beforeWeRun": [
-    "Owner scope — single rep, or rolled up to a manager view?",
-    "How many top deals to include — 5, 8, or 12?",
-    "Include drop list — yes / no?"
+    "Owner scope: single rep, or rolled up to a manager view?",
+    "How many top deals to include: 5, 8, or 12?",
+    "Include drop list: yes / no?"
   ],
   "whatYoullGet": [
     {

@@ -45,7 +45,7 @@ export default function NewGoalPage() {
             {/* Card header */}
             <div className="shrink-0 px-6 py-4 border-b border-[var(--pv-neutral-grey-150)]">
               <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Create a new goal</h2>
-              <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">Describe the outcome you want — we'll read your data and propose how to measure and watch it.</p>
+              <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">Describe the outcome you want, and we'll read your data and propose how to measure and watch it.</p>
             </div>
 
             {/* Card body — stacked labeled fields */}
@@ -54,7 +54,7 @@ export default function NewGoalPage() {
               <div className="shrink-0">
                 <div className="flex items-center gap-1.5 mb-2">
                   <label className="text-[14px] font-semibold text-[var(--text-primary)]">What's the goal? <span className="text-pv-primary-primary-500">*</span></label>
-                  <Tooltip title="Describe the outcome in plain language — we'll figure out how to measure it." arrow placement="top">
+                  <Tooltip title="Describe the outcome in plain language, and we'll figure out how to measure it." arrow placement="top">
                     <span className="inline-flex items-center cursor-default text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><Info size={16} /></span>
                   </Tooltip>
                 </div>
@@ -63,7 +63,7 @@ export default function NewGoalPage() {
                   onChange={(e) => setStatement(e.target.value)}
                   rows={3}
                   autoFocus
-                  placeholder="Describe the outcome you want — e.g. “Cut blended cost-per-demo under $180 without losing demo volume”"
+                  placeholder="Describe the outcome you want, e.g. “Cut blended cost-per-demo under $180 without losing demo volume”"
                   className="w-full text-[15px] px-4 py-3.5 rounded-xl border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]"
                 />
               </div>
@@ -81,7 +81,7 @@ export default function NewGoalPage() {
                     </span>
                     <p className="text-[14px] font-semibold text-[var(--text-primary)]">No workflows connected yet</p>
                     <p className="text-[13px] text-[var(--text-secondary)] max-w-[460px] leading-relaxed">
-                      Workflows sharpen a goal by pointing it at a specific report. You don't need one to start — we'll calibrate on all your connected data, and you can attach a workflow later.
+                      Workflows sharpen a goal by pointing it at a specific report. You don't need one to start. We'll calibrate on all your connected data, and you can attach a workflow later.
                     </p>
                     <div className="mt-1">
                       <PvButton variant="secondary" size="sm" label="Set up a workflow" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => navigate("/workflows")} />

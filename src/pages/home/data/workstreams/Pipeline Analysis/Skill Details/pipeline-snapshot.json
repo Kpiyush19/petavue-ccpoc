@@ -21,8 +21,8 @@
     "Where do we stand against the 3x coverage rule?"
   ],
   "beforeWeRun": [
-    "Quarter scope — current, next, or rolling 90 days?",
-    "Coverage target — 3x, 4x, or custom?",
+    "Quarter scope: current, next, or rolling 90 days?",
+    "Coverage target: 3x, 4x, or custom?",
     "Include closed-won YTD in coverage math?"
   ],
   "whatYoullGet": [

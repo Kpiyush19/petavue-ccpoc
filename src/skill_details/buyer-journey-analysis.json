@@ -4,7 +4,7 @@
   "workstreamId": "abm",
   "workstreamName": "Account Intelligence / ABM",
   "renderType": "memo",
-  "description": "See every touch that happened on a single account — and get a prioritized next-best-action grounded in how your won deals actually played out.",
+  "description": "See every touch that happened on a single account, and get a prioritized next-best-action grounded in how your won deals actually played out.",
   "badges": {
     "ready": true,
     "buildTime": "~12 min",
@@ -23,9 +23,9 @@
     "Which signals predict a stall or a stuck deal?"
   ],
   "beforeWeRun": [
-    "Which account — by name, ID, or top-N-from-list?",
-    "Pattern reference — last quarter's wins, all-time wins, or custom?",
-    "Channels to include — email, content, events, ad-engagement?"
+    "Which account: by name, ID, or top-N-from-list?",
+    "Pattern reference: last quarter's wins, all-time wins, or custom?",
+    "Channels to include: email, content, events, ad-engagement?"
   ],
   "whatYoullGet": [
     {

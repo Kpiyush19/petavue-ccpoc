@@ -21,9 +21,9 @@
     "Which SDRs convert their handed-off MQLs at above-team rate?"
   ],
   "beforeWeRun": [
-    "Time period coverage — trailing 6, 12, or 24 months?",
-    "Cohort granularity — weekly, monthly, or daily?",
-    "Lifecycle window — 30, 60, or 90 days?"
+    "Time period coverage: trailing 6, 12, or 24 months?",
+    "Cohort granularity: weekly, monthly, or daily?",
+    "Lifecycle window: 30, 60, or 90 days?"
   ],
   "whatYoullGet": [
     {
@@ -48,7 +48,7 @@
     },
     {
       "name": "By SDR",
-      "desc": "Sortable table — SDRs, MQL volume handled, conversion rate, time-to-conversion."
+      "desc": "Sortable table: SDRs, MQL volume handled, conversion rate, time-to-conversion."
     },
     {
       "name": "Bottleneck indicators",

@@ -358,7 +358,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                 /* Fallback: hardcoded demo preview */
                 <div className="space-y-2">
                   <div className="text-[15px] font-bold text-[#1d1c1d]">
-                    [PETAVUE ALERT] {workflow_name || 'Weekly Revenue Report'} — {timestamp}
+                    [PETAVUE ALERT] {workflow_name || 'Weekly Revenue Report'}, {timestamp}
                   </div>
                   <div className="border-t border-[#ddd]" />
                   <div className="border-l-[4px] border-[#3661ED] pl-3 py-0.5">
@@ -412,7 +412,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
       {isLive && (
         <div className="flex items-center gap-1.5 text-[12px] text-amber-600">
           <Eye size={12} />
-          Preview only — message was not sent to Slack
+          Preview only. Message was not sent to Slack
         </div>
       )}
     </div>

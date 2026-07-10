@@ -20,9 +20,9 @@
     "Which recently-changed sequences improved or regressed?"
   ],
   "beforeWeRun": [
-    "Time window — trailing 60 or 90 days of completed enrollments?",
-    "Conversion metric to optimize — meetings booked, replies, opportunities, or closed-won?",
-    "Minimum enrollment threshold to include — 50, 100, or custom?"
+    "Time window: trailing 60 or 90 days of completed enrollments?",
+    "Conversion metric to optimize: meetings booked, replies, opportunities, or closed-won?",
+    "Minimum enrollment threshold to include: 50, 100, or custom?"
   ],
   "whatYoullGet": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "name": "Sequence leaderboard",
-      "desc": "Sortable — sequences × enrollments, reply/meeting/opp rates, pipeline contribution, classification."
+      "desc": "Sortable: sequences × enrollments, reply/meeting/opp rates, pipeline contribution, classification."
     },
     {
       "name": "Step effectiveness",
