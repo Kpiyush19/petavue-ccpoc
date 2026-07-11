@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FolderOpen, Pencil, Check, Loader2, Circle, CircleDot, PanelRight } from "lucide-react";
-import { Button, Input, Popper } from "@/common-components";
+import { Button, Input, Popper } from "@/ui";
 import { apiPatch } from "../api";
 import useTodoStore from "./todo-progress/useTodoStore";
 
@@ -105,9 +105,9 @@ function ProgressButton({ agentRunning }) {
   return (
     <Popper
       placement="bottom-end"
-      btnColor="secondary ghost"
-      btnSize="sm"
-      mainBtnClassName="h-8 px-3 focus-within:border-pv-neutral-grey-300"
+      variant="secondaryGhost"
+      size="sm"
+      className="h-8 px-3 focus-within:border-grey-300"
       popperClassName="w-[340px] max-h-[60vh] overflow-y-auto mt-1"
       buttonChildren={
         <div className="flex items-center gap-1.5">
@@ -118,7 +118,7 @@ function ProgressButton({ agentRunning }) {
               <CircleDot size={12} className="text-[var(--status-warning)]" />
             )
           ) : null}
-          <span className="tabular-nums text-[11px] font-medium">
+          <span className="tabular-nums text-[12px] font-medium">
             Progress {total > 0 ? `${counts.completed}/${total}` : "0/0"}
           </span>
         </div>
@@ -131,7 +131,7 @@ function ProgressButton({ agentRunning }) {
           <div className="sticky top-0 left-0 bg-white z-10 px-3 pt-3 pb-2 border-b border-[var(--border-primary)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[12px] font-semibold text-[var(--text-primary)]">Progress</span>
-              <span className="text-[11px] text-[var(--text-muted)] tabular-nums">{percent}%</span>
+              <span className="text-[12px] text-[var(--text-muted)] tabular-nums">{percent}%</span>
             </div>
             <div className="h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
               <div
@@ -246,10 +246,10 @@ export default function Header({
     <header className="bg-white border-b border-[var(--border-primary)] px-4 h-[58px] flex items-center gap-3 shrink-0 sticky top-0 z-10">
       {onToggleFiles && (
         <Button
-          btnColor="transparent"
-          btnSize="sm"
+          variant="ghost"
+          size="sm"
           onClick={onToggleFiles}
-          mainBtnClassName={`p-2 ${filesOpen ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : ""}`}
+          className={`p-2 ${filesOpen ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : ""}`}
           title={filesOpen ? "Hide files" : "Show files"}
         >
           <FolderOpen size={18} />
@@ -271,7 +271,7 @@ export default function Header({
             className={{
               input: {
                 wrapper: "py-2 px-3 border-[var(--accent)]",
-                root: "text-[13px]"
+                root: "text-[14px]"
               }
             }}
           />
@@ -280,7 +280,7 @@ export default function Header({
             onClick={startEditing}
             className="flex items-center gap-2 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] rounded-lg cursor-pointer py-2 px-3 border border-transparent hover:border-[var(--border-primary)] transition-colors min-w-0 group"
           >
-            <span className="text-[13px] text-[var(--text-primary)] truncate max-w-[280px]">
+            <span className="text-[14px] text-[var(--text-primary)] truncate max-w-[280px]">
               {sessionName || "Untitled session"}
             </span>
             <Pencil
@@ -301,10 +301,10 @@ export default function Header({
         />
         {onToggleArtifact && (
           <Button
-            btnColor="transparent"
-            btnSize="sm"
+            variant="ghost"
+            size="sm"
             onClick={onToggleArtifact}
-            mainBtnClassName={`p-2 ${artifactOpen ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : ""}`}
+            className={`p-2 ${artifactOpen ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : ""}`}
             title={artifactOpen ? "Close preview panel" : "Open preview panel"}
           >
             <PanelRight size={18} />

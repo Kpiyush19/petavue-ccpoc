@@ -18,24 +18,24 @@ const AssignRoleModal = ({
   return (
     <Modal isOpen={isModalOpen} onClose={isModalClose}>
       <div className="p-6">
-        <h2 className="text-lg font-semibold text-[var(--pv-neutral-grey-900)] mb-4">
+        <h2 className="text-lg font-semibold text-[var(--color-grey-900)] mb-4">
           Assign Role: {selectedRole}
         </h2>
-        <p className="text-[var(--pv-neutral-grey-600)] mb-4">
+        <p className="text-[var(--color-grey-600)] mb-4">
           The following users will be assigned the {selectedRole} role:
         </p>
         <div className="flex flex-wrap gap-2 mb-6 max-h-32 overflow-y-auto">
           {selectedUserName?.map((user, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[var(--pv-neutral-grey-100)] rounded-full"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-grey-100)] rounded-full"
             >
               <Avatar
                 name={getInitials(user?.name)}
                 fullName={user?.name}
                 size="sm"
               />
-              <span className="text-sm text-[var(--pv-neutral-grey-700)]">{user?.name}</span>
+              <span className="text-sm text-[var(--color-grey-700)]">{user?.name}</span>
             </div>
           ))}
         </div>

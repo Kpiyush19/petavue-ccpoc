@@ -17,7 +17,7 @@ export default function EventLog({ entries }) {
   }, [entries])
 
   return (
-    <div className="bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg mt-2 max-h-[180px] overflow-y-auto p-2.5 text-[11px] text-[var(--text-secondary)] font-mono">
+    <div className="bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg mt-2 max-h-[180px] overflow-y-auto p-2.5 text-[12px] text-[var(--text-secondary)] font-mono">
       {entries.map((e, i) => (
         <div
           key={i}

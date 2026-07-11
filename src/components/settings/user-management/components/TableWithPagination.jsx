@@ -31,11 +31,11 @@ const TableWithPagination = ({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-[var(--pv-neutral-grey-50)]">
+            <tr className="bg-[var(--color-grey-50)]">
               {columns.map((column, index) => (
                 <th
                   key={index}
-                  className="px-4 py-3 text-left text-xs font-medium text-[var(--pv-neutral-grey-700)]"
+                  className="px-4 py-3 text-left text-xs font-medium text-[var(--color-grey-700)]"
                 >
                   {column === 'CheckBox' ? (
                     <CheckBox
@@ -54,12 +54,12 @@ const TableWithPagination = ({
             {currentItems.map((item, rowIndex) => (
               <tr
                 key={rowIndex}
-                className="border-t border-[var(--pv-neutral-grey-100)] hover:bg-[var(--pv-neutral-grey-50)]"
+                className="border-t border-[var(--color-grey-100)] hover:bg-[var(--color-grey-50)]"
               >
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}
-                    className="px-4 py-3 text-sm text-[var(--pv-neutral-grey-900)]"
+                    className="px-4 py-3 text-sm text-[var(--color-grey-900)]"
                   >
                     {item[column]}
                   </td>
@@ -70,7 +70,7 @@ const TableWithPagination = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-8 text-center text-[var(--pv-neutral-grey-500)]"
+                  className="px-4 py-8 text-center text-[var(--color-grey-500)]"
                 >
                   No data available
                 </td>
@@ -85,7 +85,7 @@ const TableWithPagination = ({
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-2 rounded hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded hover:bg-[var(--color-grey-100)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CaretLeft size={16} />
           </button>
@@ -101,14 +101,14 @@ const TableWithPagination = ({
             .map((page, index, arr) => (
               <span key={page}>
                 {index > 0 && arr[index - 1] !== page - 1 && (
-                  <span className="px-2 text-[var(--pv-neutral-grey-400)]">...</span>
+                  <span className="px-2 text-[var(--color-grey-400)]">...</span>
                 )}
                 <button
                   onClick={() => goToPage(page)}
                   className={`w-8 h-8 rounded ${
                     currentPage === page
-                      ? 'bg-[var(--pv-primary-500)] text-white'
-                      : 'hover:bg-[var(--pv-neutral-grey-100)]'
+                      ? 'bg-[var(--color-primary-500)] text-white'
+                      : 'hover:bg-[var(--color-grey-100)]'
                   }`}
                 >
                   {page}
@@ -119,7 +119,7 @@ const TableWithPagination = ({
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-2 rounded hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded hover:bg-[var(--color-grey-100)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CaretRight size={16} />
           </button>

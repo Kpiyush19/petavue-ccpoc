@@ -35,18 +35,18 @@ export default function DisclosureCallout({ summary, onUseFollowup }) {
     <div
       className="rounded-xl border shrink-0"
       style={{
-        backgroundColor: 'var(--pv-warning-bg)',
-        borderColor: 'var(--pv-warning-700)',
+        backgroundColor: 'var(--color-orange-bg)',
+        borderColor: 'var(--color-orange)',
       }}
     >
       <div className="flex items-start gap-3 p-3">
         <AlertTriangle
           size={18}
           className="shrink-0 mt-0.5"
-          style={{ color: 'var(--pv-warning-700)' }}
+          style={{ color: 'var(--color-orange)' }}
           aria-hidden="true"
         />
-        <div className="flex-1 min-w-0" style={{ color: 'var(--pv-warning-700)' }}>
+        <div className="flex-1 min-w-0" style={{ color: 'var(--color-orange)' }}>
           {headline && (
             <div className="text-[13.5px] font-semibold leading-snug">
               {headline}
@@ -71,8 +71,8 @@ export default function DisclosureCallout({ summary, onUseFollowup }) {
                   className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-1 rounded-md border transition-colors cursor-pointer hover:opacity-90"
                   style={{
                     backgroundColor: 'rgba(180, 83, 9, 0.12)',
-                    borderColor: 'var(--pv-warning-700)',
-                    color: 'var(--pv-warning-700)',
+                    borderColor: 'var(--color-orange)',
+                    color: 'var(--color-orange)',
                   }}
                   title="Click to use this as a follow-up question"
                 >
@@ -89,7 +89,7 @@ export default function DisclosureCallout({ summary, onUseFollowup }) {
           aria-label={collapsed ? 'Expand details' : 'Minimize'}
           title={collapsed ? 'Expand details' : 'Minimize'}
           className="shrink-0 p-1 rounded hover:bg-black/5 transition-colors cursor-pointer"
-          style={{ color: 'var(--pv-warning-700)' }}
+          style={{ color: 'var(--color-orange)' }}
         >
           {collapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
         </button>

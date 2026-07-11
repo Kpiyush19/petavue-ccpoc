@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Play, Pause, Pencil, Trash2, Clock, Calendar, Inbox, RefreshCw, Globe, FileText } from 'lucide-react'
 import { toast } from 'sonner'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
 import ScheduleFormModal from '../components/ScheduleFormModal'
 import ScheduleRunHistory from '../components/ScheduleRunHistory'
 import { useSessionContext } from '../contexts/SessionContext'
@@ -155,18 +155,18 @@ export default function SchedulesPage() {
                         </span>
                       </div>
                       {s.target_file && (
-                        <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] mt-1">
+                        <div className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] mt-1">
                           <FileText size={10} />
                           <span className="truncate">{s.target_file}</span>
                         </div>
                       )}
                       {!s.target_file && s.prompt && (
-                        <div className="text-[11px] text-[var(--text-muted)] truncate mt-1">
+                        <div className="text-[12px] text-[var(--text-muted)] truncate mt-1">
                           {s.prompt.slice(0, 100)}{s.prompt.length > 100 ? '...' : ''}
                         </div>
                       )}
                       {s.recipients?.length > 0 && (
-                        <div className="text-[11px] text-[var(--text-muted)] mt-1">
+                        <div className="text-[12px] text-[var(--text-muted)] mt-1">
                           Refresh published artifact: {s.target_file || 'N/A'}
                         </div>
                       )}

@@ -193,17 +193,17 @@ export default function HardeningReviewPanel({
             Recipe Steps
           </span>
           {hardeningDone ? (
-            <span className="text-[11px] text-[var(--text-muted)] font-mono">
+            <span className="text-[12px] text-[var(--text-muted)] font-mono">
               {steps.length} steps
             </span>
           ) : (
-            <span className="text-[11px] text-[var(--text-muted)] font-mono">
+            <span className="text-[12px] text-[var(--text-muted)] font-mono">
               {reviewedTotal}/{steps.length} reviewed
             </span>
           )}
           <button
             onClick={toggleAll}
-            className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-secondary)]
+            className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-secondary)]
               bg-transparent border border-[var(--border-primary)] rounded-md px-2 py-0.5 cursor-pointer transition-colors"
           >
             <ChevronsUpDown size={11} />
@@ -216,7 +216,7 @@ export default function HardeningReviewPanel({
                 title="Explain"
                 className={`flex items-center justify-center w-7 h-[22px] cursor-pointer transition-colors border-none
                   ${viewMode === 'summary'
-                    ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)]'
+                    ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)]'
                     : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                   }`}
               >
@@ -227,7 +227,7 @@ export default function HardeningReviewPanel({
                 title="Inspect"
                 className={`flex items-center justify-center w-7 h-[22px] cursor-pointer transition-colors border-none
                   ${viewMode === 'card'
-                    ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)]'
+                    ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)]'
                     : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                   }`}
               >
@@ -239,13 +239,13 @@ export default function HardeningReviewPanel({
 
         <div className="flex items-center gap-2 shrink-0">
           {hardeningPhase === 'running' && (
-            <span className="flex items-center gap-1.5 text-[11px] text-amber-600 font-medium">
+            <span className="flex items-center gap-1.5 text-[12px] text-amber-600 font-medium">
               <Loader2 size={12} className="animate-spin" />
               Hardening for schedule safety...
             </span>
           )}
           {hardeningDone && (
-            <span className="flex items-center gap-1.5 text-[11px] text-[var(--pv-success-text)] font-medium">
+            <span className="flex items-center gap-1.5 text-[12px] text-[var(--color-green)] font-medium">
               <CheckCircle2 size={12} />
               All passed
               {hardenedCount > 0 && (
@@ -261,14 +261,14 @@ export default function HardeningReviewPanel({
       {/* Widget filter pills */}
       {widgetEntries.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-1.5 border-b border-[var(--border-primary)] shrink-0 flex-wrap">
-          <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] font-medium shrink-0">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] font-medium shrink-0">
             <LayoutGrid size={11} /> Widgets:
           </span>
           <button
             onClick={() => setActiveWidget(null)}
-            className={`text-[11px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
+            className={`text-[12px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
               ${!activeWidget
-                ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border-[var(--pv-primary-200)]'
+                ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)] border-[var(--color-primary-200)]'
                 : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-secondary)]'
               }`}
           >
@@ -280,9 +280,9 @@ export default function HardeningReviewPanel({
               <button
                 key={entry.id}
                 onClick={() => setActiveWidget(isActive ? null : entry.id)}
-                className={`text-[11px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
+                className={`text-[12px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
                   ${isActive
-                    ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border-[var(--pv-primary-200)]'
+                    ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)] border-[var(--color-primary-200)]'
                     : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-secondary)]'
                   }`}
               >
@@ -399,10 +399,10 @@ export default function HardeningReviewPanel({
                 <FileText size={14} className="text-[var(--accent)] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <span className="text-[12px] font-semibold text-[var(--text-primary)]">Target Output</span>
-                  <span className="text-[11px] text-[var(--text-muted)] ml-2 font-mono">{recipe.target_file}</span>
+                  <span className="text-[12px] text-[var(--text-muted)] ml-2 font-mono">{recipe.target_file}</span>
                 </div>
                 {hardeningDone && (
-                  <span className="text-[10px] text-[var(--pv-success-text)] font-medium">Ready to preview</span>
+                  <span className="text-[10px] text-[var(--color-green)] font-medium">Ready to preview</span>
                 )}
               </div>
             )}

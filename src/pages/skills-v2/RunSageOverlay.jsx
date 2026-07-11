@@ -5,7 +5,7 @@ import { ChatOverlay } from '../../components/dashboards/dashboard-viewer-widget
 // this stylesheet. The widget index doesn't bundle it, so without this import
 // the panel renders in normal flow — below the footer instead of over the page.
 import '../../components/dashboards/dashboard-viewer-widget/styles.css'
-import { Button as PvButton } from '../../petavue'
+import { Button as PvButton } from '@/ui'
 import { cn } from '../../utils/cn'
 
 // Context-aware "Ask Sage" for the run flow. Uses the shared ChatOverlay panel
@@ -116,10 +116,10 @@ export default function RunSageOverlay({ phase, open, onClose }) {
             <div
               key={i}
               className={cn(
-                'text-[13px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]',
+                'text-[14px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]',
                 m.role === 'user'
-                  ? 'self-end bg-pv-primary-primary-500 text-white rounded-br-md'
-                  : 'self-start bg-pv-neutral-grey-100 text-[var(--text-primary)] rounded-bl-md'
+                  ? 'self-end bg-primary-500 text-white rounded-br-md'
+                  : 'self-start bg-grey-100 text-[var(--text-primary)] rounded-bl-md'
               )}
             >
               {m.text}
@@ -131,7 +131,7 @@ export default function RunSageOverlay({ phase, open, onClose }) {
                 <button
                   key={q}
                   onClick={() => ask(q)}
-                  className="text-[12px] px-3 py-1.5 rounded-full border border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400 hover:text-pv-primary-primary-600 cursor-pointer transition-colors"
+                  className="text-[12px] px-3 py-1.5 rounded-full border border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-primary-400 hover:text-primary-600 cursor-pointer transition-colors"
                 >
                   {q}
                 </button>
@@ -148,7 +148,7 @@ export default function RunSageOverlay({ phase, open, onClose }) {
             rows={1}
             placeholder={`Ask about the ${help.step} step…`}
             style={{ minHeight: '32px', maxHeight: `${MAX_INPUT_H}px` }}
-            className="flex-1 text-[13px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+            className="flex-1 text-[14px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
           />
           <PvButton
             variant="primary"

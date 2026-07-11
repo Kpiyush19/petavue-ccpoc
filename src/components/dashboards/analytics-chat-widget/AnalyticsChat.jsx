@@ -10,7 +10,7 @@ import ChatArea from './components/ChatArea';
 import InputArea from './components/InputArea';
 import ArtifactPanel from './components/ArtifactPanel';
 import { getAuthToken } from '../../../api';
-import spinner from '@/common-components/assets/spinner.gif';
+import spinner from '@/ui/assets/spinner.gif';
 
 /**
  * AnalyticsChatInner - The internal component that uses hooks

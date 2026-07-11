@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Square, Paperclip, X, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { Button, Input, Tooltip } from "@/common-components";
+import { Button, Input, Tooltip } from "@/ui";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../utils/upload";
 
 function formatSize(bytes) {
@@ -132,11 +132,11 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
     <>
       <Tooltip title="Attach file" placement="top">
         <Button
-          btnColor="transparent"
-          btnSize="sm"
+          variant="ghost"
+          size="sm"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          mainBtnClassName="p-2"
+          className="p-2"
           aria-label="Attach file"
         >
           <Paperclip size={16} className="text-[var(--text-muted)]" />
@@ -165,13 +165,13 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
         >
           <Tooltip title="Stop generating" placement="top">
             <Button
-              btnColor="secondary ghost"
-              btnSize="sm"
+              variant="secondaryGhost"
+              size="sm"
               onClick={onCancel}
-              mainBtnClassName="p-2"
+              className="p-2"
               aria-label="Stop generating"
             >
-              <Square size={14} fill="currentColor" className="text-[var(--pv-error-text)]" />
+              <Square size={14} fill="currentColor" className="text-[var(--color-red)]" />
             </Button>
           </Tooltip>
         </motion.div>
@@ -186,11 +186,11 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
           <Tooltip title={canSend ? "Send message" : "Type a message to send"} placement="top">
             <span>
               <Button
-                btnColor="primary"
-                btnSize="sm"
+                variant="primary"
+                size="sm"
                 onClick={handleSend}
                 disabled={!canSend}
-                mainBtnClassName="p-2"
+                className="p-2"
                 aria-label="Send message"
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
@@ -216,7 +216,7 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
             <span key={`${file.name}-${i}`} className="s-composer__file">
               <span className="s-composer__file-name">{file.name}</span>
               <span className="s-composer__file-size">{formatSize(file.size)}</span>
-              <Button btnColor="transparent" btnSize="sm" onClick={() => removeFile(i)} mainBtnClassName="p-0.5">
+              <Button variant="ghost" size="sm" onClick={() => removeFile(i)} className="p-0.5">
                 <X size={10} />
               </Button>
             </span>

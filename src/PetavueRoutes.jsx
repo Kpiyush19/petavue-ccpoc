@@ -1,84 +1,61 @@
-// Router-driven wrapper for the Petavue design-system pages. Mirrors the
-// state switcher in src/petavue/App.jsx but drives the page from the URL
-// (/petavue/<page>) so each screen is linkable. Self-contained — each Petavue
-// page renders its own MenuBar, so this mounts OUTSIDE the app's layout.
+// Self-contained Petavue design-system pages (Settings, Profile) that bring
+// their own MenuBar, so they mount OUTSIDE the app layout. They now live at
+// natural top-level URLs (/settings, /profile) — the page is derived from the
+// first path segment. The old /petavue/* demo screens (chat, dashboards,
+// dashboard-view, data-hub) are retired: the app serves those at their real
+// routes, and /petavue/* now redirects there (see router.jsx).
 import { useState } from "react";
-import { useNavigate, useParams, Navigate } from "react-router-dom";
-// WorkbookHome, Workbooks, Projects, and Reports are archived: the Create-New
-// page (/new) is the single home now, and these are no longer routed or shown
-// in the nav. Their page files stay in the tree but are not rendered.
-import { WorkbookChat } from "./petavue/pages/workbook_chat";
-import { DashboardList } from "./petavue/pages/dashboard_list";
-import { DashboardView } from "./petavue/pages/dashboard_view";
-import { ProfilePage } from "./petavue/pages/profile";
-import { DataHub } from "./petavue/pages/data_hub";
-import { SettingsPage } from "./petavue/pages/settings";
-import { SkillsPage } from "./petavue/pages/skills";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { ProfilePage } from "./pages/standalone/profile";
+import { SettingsPage } from "./pages/standalone/settings";
+import { DataHub } from "./pages/standalone/data-hub";
 
-const PREFIX = "/petavue";
 const DEFAULT_USER = { name: "Ammie Diego", initials: "AD", email: "ammie.diego@work.com" };
-
-// MenuBar nav id -> URL segment (within /petavue).
-const NAV_TO_SEGMENT = {
-  "dashboards-pv": "dashboards",
-  dashboard: "dashboards",
-  "data-hub": "data-hub",
-  skills: "skills",
-  "new-chat": "home",
-  profile: "profile",
-  settings: "settings",
-};
 
 export default function PetavueRoutes() {
   const navigate = useNavigate();
-  const params = useParams();
-  const page = (params["*"] || "home").split("/")[0] || "home";
+  const location = useLocation();
+  const page = location.pathname.split("/").filter(Boolean)[0] || "home";
 
   const [user] = useState(DEFAULT_USER);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [chatQuery, setChatQuery] = useState("");
-  const [activeDashboardId, setActiveDashboardId] = useState(null);
 
-  const go = (segment) => navigate(`${PREFIX}/${segment}`);
+  // MenuBar nav ids → natural app routes.
   const handleNavigate = (id) => {
-    // App-level entries jump out of the Petavue section.
-    if (id === "home") return navigate("/new");
-    if (id === "skills") return navigate("/skills");
-    if (id === "dashboard-live") return navigate("/dashboards");
-    if (id === "workflows") return navigate("/workflows");
-    if (id === "goals") return navigate("/goals");
-    go(NAV_TO_SEGMENT[id] || "skills");
+    const routes = {
+      home: "/new",
+      "new-chat": "/new",
+      skills: "/skills",
+      "dashboard-live": "/dashboards",
+      dashboard: "/dashboards",
+      "dashboards-pv": "/dashboards",
+      workflows: "/workflows",
+      goals: "/goals",
+      "data-hub": "/data-hub",
+      settings: "/settings",
+      profile: "/profile",
+    };
+    navigate(routes[id] || "/skills");
   };
 
-  // Create New always jumps to the main-app Create-New page (/new).
-  const menuProps = { user, onNavigate: handleNavigate, onNewChat: () => navigate("/new"), menuOpen, onMenuToggle: setMenuOpen };
+  const menuProps = {
+    user,
+    onNavigate: handleNavigate,
+    onNewChat: () => navigate("/new"),
+    menuOpen,
+    onMenuToggle: setMenuOpen,
+  };
 
   const renderPage = () => {
     switch (page) {
-      case "chat":
-        return <WorkbookChat {...menuProps} query={chatQuery} onStop={() => go("home")} />;
-      case "dashboards":
-        return (
-          <DashboardList
-            {...menuProps}
-            onNewDashboard={() => go("dashboards")}
-            onOpenDashboard={(id) => { setActiveDashboardId(id); go("dashboard-view"); }}
-          />
-        );
-      case "dashboard-view":
-        return <DashboardView {...menuProps} dashboardId={activeDashboardId} onBack={() => go("dashboards")} />;
-      case "data-hub":
-        return <DataHub {...menuProps} />;
-      case "skills":
-        // The petavue skills page is retired — use the top-level /skills catalog.
-        return <Navigate to="/skills" replace />;
       case "settings":
         return <SettingsPage {...menuProps} />;
       case "profile":
         return <ProfilePage {...menuProps} />;
-      case "home":
+      case "data-hub":
+        return <DataHub {...menuProps} />;
       default:
-        // Petavue home is archived — bounce to the main Create-New page.
+        // Any other segment isn't a self-contained page — send it to the app home.
         return <Navigate to="/new" replace />;
     }
   };

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 import { X, ChevronDown, Check } from 'lucide-react'
-import { Button } from './ui/Button'
-import { Input } from './ui/Input'
+import { Button } from '@/ui'
+import { Input } from '@/ui/components/FormControls/FormControls'
 import { apiPost, apiPut } from '../api'
 
 const TYPE_OPTIONS = [
@@ -47,7 +47,7 @@ function TagInput({ tags, onChange }) {
       {tags.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full
+          className="inline-flex items-center gap-1 text-[12px] font-medium px-2 py-0.5 rounded-full
             bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20"
         >
           {tag}
@@ -117,7 +117,7 @@ function Dropdown({ value, options, onChange }) {
             >
               <div className="flex-1 min-w-0">
                 <div className="text-sm text-[var(--text-primary)]">{opt.label}</div>
-                {opt.desc && <div className="text-[11px] text-[var(--text-muted)]">{opt.desc}</div>}
+                {opt.desc && <div className="text-[12px] text-[var(--text-muted)]">{opt.desc}</div>}
               </div>
               {opt.value === value && <Check size={14} className="text-[var(--accent)] shrink-0" />}
             </button>

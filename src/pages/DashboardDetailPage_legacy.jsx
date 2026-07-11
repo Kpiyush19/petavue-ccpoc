@@ -2,10 +2,10 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { MessageCircle, Globe, ArrowLeft, Workflow, Lightbulb, X, ChevronDown, ChevronRight, Database, Code, FileText, Save } from 'lucide-react'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
 import { apiGet, apiPost, getApiBase, getAuthToken } from '../api'
-import { timeAgo } from '@/common-utils/relativeTimeDiff'
+import { timeAgo } from '@/utils/relativeTimeDiff'
 import { useSessionContext } from '../contexts/SessionContext'
 
 const BLOCK_TYPE_ICONS = {
@@ -185,10 +185,10 @@ export default function DashboardDetailPage() {
         return (
           <div key={gi} className="mb-5">
             <div className="flex items-center gap-2 mb-1.5 px-1">
-              <div className="w-5 h-5 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-[10px] font-bold text-[var(--accent)]">
+              <div className="w-5 h-5 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-[10px] font-semibold text-[var(--accent)]">
                 {gi + 1}
               </div>
-              <div className="text-[13px] font-semibold text-[var(--text-primary)]">{title}</div>
+              <div className="text-[14px] font-semibold text-[var(--text-primary)]">{title}</div>
             </div>
             {desc && (
               <p className="text-[12px] text-[var(--text-secondary)] mb-2.5 px-1 ml-7 leading-relaxed">{desc}</p>
@@ -239,7 +239,7 @@ export default function DashboardDetailPage() {
             <TypeIcon size={12} className="text-[var(--accent)]" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[13px] font-medium text-[var(--text-primary)] truncate">
+            <div className="text-[14px] font-medium text-[var(--text-primary)] truncate">
               {step.title || meta?.label || stepId}
             </div>
             <div className="text-[10px] text-[var(--text-muted)]">{typeLabel}</div>
@@ -267,14 +267,14 @@ export default function DashboardDetailPage() {
               <>
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleCode(stepId) }}
-                  className="flex items-center gap-1 text-[11px] text-[var(--accent)] hover:underline
+                  className="flex items-center gap-1 text-[12px] text-[var(--accent)] hover:underline
                     bg-transparent border-none cursor-pointer mb-1"
                 >
                   <Code size={10} />
                   {isCodeVisible ? 'Hide code' : `View ${meta.code_language === 'sql' ? 'SQL' : 'Python'}`}
                 </button>
                 {isCodeVisible && (
-                  <pre className="text-[11px] leading-relaxed bg-[var(--bg-primary)] border border-[var(--border-primary)]
+                  <pre className="text-[12px] leading-relaxed bg-[var(--bg-primary)] border border-[var(--border-primary)]
                     rounded-md p-2.5 overflow-x-auto max-h-[300px] overflow-y-auto font-mono text-[var(--text-secondary)]
                     whitespace-pre-wrap break-words">
                     {meta.code}
@@ -304,7 +304,7 @@ export default function DashboardDetailPage() {
               {artifact.paused && <Badge variant="warning">Paused</Badge>}
               {isWorkflow && <Badge variant="muted">Workflow</Badge>}
             </div>
-            <p className="text-[11px] text-[var(--text-muted)] mt-0.5 ml-6">
+            <p className="text-[12px] text-[var(--text-muted)] mt-0.5 ml-6">
               {artifact.target_file}
               {artifact.latest_run && ` · Refreshed ${timeAgo(artifact.latest_run.refreshed_at)}`}
               {artifact.schedule && ` · ${artifact.schedule.cron_description}`}
@@ -369,7 +369,7 @@ export default function DashboardDetailPage() {
                   <div>
                     <h3 className="text-sm font-semibold text-[var(--text-primary)]">How this dashboard is built</h3>
                     {explanation?.workflow_name && (
-                      <p className="text-[11px] text-[var(--text-muted)]">{explanation.workflow_name}</p>
+                      <p className="text-[12px] text-[var(--text-muted)]">{explanation.workflow_name}</p>
                     )}
                   </div>
                 </div>

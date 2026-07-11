@@ -12,20 +12,20 @@ export const DASHBOARD_HTML = `<!DOCTYPE html>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f7f8fa; color: #1a2233; padding: 24px; }
   .head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
-  .head h1 { font-size: 20px; font-weight: 700; }
+  .head h1 { font-size: 20px; font-weight: 600; }
   .head .sub { font-size: 12px; color: #6b7280; }
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
   .kpi { background: #fff; border: 1px solid #eceef1; border-radius: 12px; padding: 16px; }
-  .kpi .label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #8b93a1; margin-bottom: 8px; }
-  .kpi .val { font-size: 24px; font-weight: 700; }
+  .kpi .label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #8b93a1; margin-bottom: 8px; }
+  .kpi .val { font-size: 24px; font-weight: 600; }
   .kpi .delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
   .delta.up { color: #16a34a; } .delta.down { color: #dc2626; } .delta.flat { color: #6b7280; }
   .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 14px; }
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .card { background: #fff; border: 1px solid #eceef1; border-radius: 12px; padding: 18px; }
-  .card h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-  .card .cap { font-size: 11px; color: #8b93a1; margin-bottom: 14px; }
+  .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .card .cap { font-size: 12px; color: #8b93a1; margin-bottom: 14px; }
   .bars { display: flex; align-items: flex-end; gap: 12px; height: 180px; padding-top: 10px; }
   .bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
   .bar .col { width: 100%; max-width: 46px; background: linear-gradient(180deg, #6366f1, #818cf8); border-radius: 6px 6px 0 0; }
@@ -37,7 +37,7 @@ export const DASHBOARD_HTML = `<!DOCTYPE html>
   .pill { font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 600; }
   .pill.win { background: #dcfce7; color: #166534; } .pill.risk { background: #fef3c7; color: #92400e; } .pill.neu { background: #e0e7ff; color: #3730a3; }
   .hbars { display: flex; flex-direction: column; gap: 13px; padding-top: 4px; }
-  .hrow { display: flex; align-items: center; gap: 10px; font-size: 11px; }
+  .hrow { display: flex; align-items: center; gap: 10px; font-size: 12px; }
   .hrow .lbl { width: 92px; color: #6b7280; flex-shrink: 0; }
   .hrow .track { flex: 1; height: 10px; background: #f1f2f4; border-radius: 999px; overflow: hidden; }
   .hrow .fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); border-radius: 999px; }
@@ -46,15 +46,15 @@ export const DASHBOARD_HTML = `<!DOCTYPE html>
   .donut { width: 124px; height: 124px; border-radius: 50%; flex-shrink: 0; background: conic-gradient(#4f46e5 0 52%, #818cf8 52% 83%, #c7d2fe 83% 100%); position: relative; }
   .donut::after { content: ""; position: absolute; inset: 24px; background: #fff; border-radius: 50%; }
   .donut .ctr { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; }
-  .donut .ctr .b { font-size: 18px; font-weight: 700; } .donut .ctr .s { font-size: 9px; color: #8b93a1; text-transform: uppercase; letter-spacing: .04em; }
+  .donut .ctr .b { font-size: 18px; font-weight: 600; } .donut .ctr .s { font-size: 10px; color: #8b93a1; text-transform: uppercase; letter-spacing: .04em; }
   .legend { display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
   .legend .li { display: flex; align-items: center; gap: 8px; }
   .legend .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
   .legend .ln { flex: 1; color: #4b5563; } .legend .lv { font-weight: 600; font-variant-numeric: tabular-nums; }
   .spark { width: 100%; height: 150px; display: block; }
   .gauges { display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
-  .gauge .gtop { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
-  .gauge .gtop .gl { color: #6b7280; } .gauge .gtop .gv { font-weight: 700; }
+  .gauge .gtop { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .gauge .gtop .gl { color: #6b7280; } .gauge .gtop .gv { font-weight: 600; }
   .gauge .gtrack { height: 8px; background: #f1f2f4; border-radius: 999px; overflow: hidden; }
   .gauge .gfill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4f46e5, #818cf8); }
   .gauge .gfill.ok { background: linear-gradient(90deg, #16a34a, #4ade80); }
@@ -193,12 +193,12 @@ const WIDGET_SHELL = (inner) => `<!DOCTYPE html><html><head><meta charset="utf-8
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f7f8fa; color: #1a2233; padding: 16px; }
   .card { background: #fff; border: 1px solid #eceef1; border-radius: 12px; padding: 16px; }
-  .card h3 { font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+  .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
   .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .kpi { background: #fff; border: 1px solid #eceef1; border-radius: 12px; padding: 14px; }
   .kpi .label { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #8b93a1; margin-bottom: 6px; }
-  .kpi .val { font-size: 20px; font-weight: 700; }
-  .kpi .delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .kpi .val { font-size: 20px; font-weight: 600; }
+  .kpi .delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
   .delta.up { color: #16a34a; } .delta.down { color: #dc2626; }
   .bars { display: flex; align-items: flex-end; gap: 12px; height: 180px; padding-top: 10px; }
   .bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }

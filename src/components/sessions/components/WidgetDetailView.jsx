@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowLeft, ArrowsClockwise, ShieldCheck, CaretRight, CaretLeft, ArrowLineRight, ArrowLineLeft } from '@phosphor-icons/react'
-import { Button as PvButton } from '../../../petavue'
+import { Button as PvButton } from '@/ui'
 import { apiGet, apiPost } from '../../../api'
 import HtmlViewer from '../viewers/HtmlViewer'
 import LineagePanel from './LineagePanel'
@@ -212,7 +212,7 @@ export default function WidgetDetailView({
           <ArrowLeft size={12} weight="bold" />
           Back to widgets
         </button>
-        <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0 truncate max-w-[40%]">
+        <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0 truncate max-w-[40%]">
           {widget?.name}
         </h3>
         <div className="flex items-center gap-1.5">

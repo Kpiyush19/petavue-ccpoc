@@ -14,9 +14,9 @@ function MiniStats() {
     <div className="grid grid-cols-3 gap-2">
       {tiles.map((t) => (
         <div key={t.l} className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] p-3">
-          <div className="text-[15px] font-semibold text-[var(--text-primary)] leading-none">{t.v}</div>
+          <div className="text-[16px] font-semibold text-[var(--text-primary)] leading-none">{t.v}</div>
           <div className="text-[10px] text-[var(--text-muted)] mt-1.5">{t.l}</div>
-          <div className={`text-[10px] mt-1 font-medium ${t.up ? 'text-[var(--pv-success-text)]' : 'text-[var(--pv-error-text)]'}`}>{t.d}</div>
+          <div className={`text-[10px] mt-1 font-medium ${t.up ? 'text-[var(--color-green)]' : 'text-[var(--color-red)]'}`}>{t.d}</div>
         </div>
       ))}
     </div>
@@ -55,7 +55,7 @@ function MiniList() {
     <div className="flex flex-col gap-1.5">
       {items.map((it) => (
         <div key={it.t} className="flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] px-3 py-2">
-          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${it.s === 'high' ? 'bg-[var(--pv-error-text)]' : it.s === 'med' ? 'bg-amber-500' : 'bg-[var(--pv-success-text)]'}`} />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${it.s === 'high' ? 'bg-[var(--color-red)]' : it.s === 'med' ? 'bg-amber-500' : 'bg-[var(--color-green)]'}`} />
           <span className="text-[11.5px] text-[var(--text-primary)] truncate">{it.t}</span>
         </div>
       ))}
@@ -65,7 +65,7 @@ function MiniList() {
 function MiniTable() {
   const rows = [['Google Ads', '$182k', '3.9×'], ['LinkedIn', '$96k', '2.4×'], ['Meta', '$74k', '1.8×'], ['6sense', '$41k', '4.2×']]
   return (
-    <div className="rounded-lg border border-[var(--border-primary)] overflow-hidden text-[11px]">
+    <div className="rounded-lg border border-[var(--border-primary)] overflow-hidden text-[12px]">
       <div className="grid grid-cols-3 bg-[var(--bg-primary)] px-3 py-1.5 text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
         <span>Channel</span><span>Spend</span><span>ROAS</span>
       </div>

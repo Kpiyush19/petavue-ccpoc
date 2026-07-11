@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { ArrowUp, Paperclip, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "../../utils/cn";
-import { Button, Input } from "../../common-components";
+import { Button, Input } from "@/ui";
 import { useSessionContext } from "../../contexts/SessionContext";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../utils/upload";
 import workstreamsData from "./data/workstreams/workstreams.json";
@@ -157,28 +157,28 @@ export default function WorkstreamsPage() {
 
   return (
     <div className="flex h-full w-full overflow-x-auto scrollbar-hide">
-      <div className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-pv-neutral-grey-50 pb-4">
+      <div className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-grey-50 pb-4">
         <div className="flex flex-col w-full max-w-[1400px] mx-auto px-8 py-8">
           <motion.div {...fadeUp(0)} className="flex items-center gap-3 mb-8 justify-between">
-            <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-              <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-              <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+            <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+              <span className="w-2 h-2 rounded-full bg-primary-500" />
+              <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                 Workstreams
               </span>
-              <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+              <span className="w-2 h-2 rounded-full bg-primary-500" />
             </div>
 
             <div className="flex items-center gap-1.5 border border-neutral-300 rounded-md p-1 bg-white">
               {workstreamsData.map((ws, ind) => (
                 <>
-                  {ind > 0 && <span className="flex w-[1px] h-[20px] bg-pv-neutral-grey-300 shrink-0" />}
+                  {ind > 0 && <span className="flex w-[1px] h-[20px] bg-grey-300 shrink-0" />}
                   <button
                     key={ws.id}
                     onClick={() => handleWorkstreamChange(ws.id)}
                     className={cn(
                       "px-2.5 py-1.5 text-[12px] font-medium rounded-lg transition-all cursor-pointer border-none",
                       selectedWorkstreamId === ws.id
-                        ? `bg-pv-primary-primary-500 text-white shadow-md`
+                        ? `bg-primary-500 text-white shadow-md`
                         : "bg-white text-[var(--text-secondary)] hover:bg-neutral-100"
                     )}
                   >
@@ -191,13 +191,13 @@ export default function WorkstreamsPage() {
 
           <motion.div {...fadeUp(0.05)} className="flex flex-col gap-2 mb-6">
             <h1 className="text-[28px] font-semibold text-[var(--text-primary)]">{selectedWorkstream.name}</h1>
-            <p className="text-[15px] text-[var(--text-secondary)]">{selectedWorkstream.description}</p>
+            <p className="text-[16px] text-[var(--text-secondary)]">{selectedWorkstream.description}</p>
           </motion.div>
 
           <motion.div
             {...fadeUp(0.1)}
             className={cn(
-              "relative flex flex-col bg-white border shadow-sm transition-colors hover:border-pv-primary-primary-300 focus-within:!border-pv-primary-primary-500",
+              "relative flex flex-col bg-white border shadow-sm transition-colors hover:border-primary-300 focus-within:!border-primary-500",
               dragOver ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[var(--border-primary)]"
             )}
             onDragOver={handleDragOver}
@@ -205,15 +205,15 @@ export default function WorkstreamsPage() {
             onDrop={handleDrop}
           >
             <div className="flex items-center gap-2 px-4 pt-3 pb-0">
-              <div className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-              <span className="text-[13px] text-[var(--text-secondary)]">Ask the Petavue agent</span>
+              <div className="w-2 h-2 rounded-full bg-primary-500" />
+              <span className="text-[14px] text-[var(--text-secondary)]">Ask the Petavue agent</span>
             </div>
             {files.length > 0 && (
               <div className="flex flex-wrap gap-1.5 px-4 pt-3 pb-0">
                 {files.map((file, i) => (
                   <span
                     key={`${file.name}-${i}`}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[12px] font-mono
                       bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]"
                   >
                     <span className="truncate max-w-[140px]">{file.name}</span>
@@ -241,9 +241,9 @@ export default function WorkstreamsPage() {
 
             <div className="flex items-center min-h-[52px] gap-2 px-2">
               <Button
-                btnColor="ghost"
-                btnSize="sm"
-                mainBtnClassName="!rounded-xl !w-10 !h-10 !p-0"
+                variant="ghost"
+                size="sm"
+                className="!rounded-xl !w-10 !h-10 !p-0"
                 onClick={() => fileInputRef.current?.click()}
                 title="Attach files"
               >
@@ -278,9 +278,9 @@ export default function WorkstreamsPage() {
               />
 
               <Button
-                btnColor="primary"
-                btnSize="sm"
-                mainBtnClassName="!rounded-xl !w-10 !h-10 !p-0 mr-2"
+                variant="primary"
+                size="sm"
+                className="!rounded-xl !w-10 !h-10 !p-0 mr-2"
                 onClick={handleSend}
                 disabled={!canSend}
               >
@@ -296,7 +296,7 @@ export default function WorkstreamsPage() {
                     setMessage(question);
                     messageInputRef.current?.focus();
                   }}
-                  className="px-3 py-1.5 text-[13px] text-[var(--text-secondary)] bg-white border border-[var(--border-primary)] rounded-full
+                  className="px-3 py-1.5 text-[14px] text-[var(--text-secondary)] bg-white border border-[var(--border-primary)] rounded-full
                     hover:bg-[var(--bg-hover)] hover:border-[var(--border-secondary)] transition-colors cursor-pointer"
                 >
                   {question}
@@ -308,12 +308,12 @@ export default function WorkstreamsPage() {
           {recentActivity.length > 0 && (
             <motion.div {...fadeUp(0.15)} className="flex flex-col gap-4 pt-6 mt-6 border-t border-neutral-200">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-                  <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                  <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+                <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+                  <span className="w-2 h-2 rounded-full bg-primary-500" />
+                  <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                     Pick up where you left off
                   </span>
-                  <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                  <span className="w-2 h-2 rounded-full bg-primary-500" />
                 </div>
                 <span className="text-[12px] text-[var(--text-muted)]">Last 14 days</span>
               </div>
@@ -323,7 +323,7 @@ export default function WorkstreamsPage() {
                   <div
                     key={item.id}
                     className={cn(
-                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-pv-primary-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
+                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
                       index > 0 && "-ml-px"
                     )}
                   >
@@ -340,7 +340,7 @@ export default function WorkstreamsPage() {
                       </span>
                       <span className="text-[12px] text-[var(--text-muted)]">{item.relativeTime}</span>
                     </div>
-                    <h3 className="text-[15px] font-medium text-[var(--text-primary)] leading-snug">{item.title}</h3>
+                    <h3 className="text-[16px] font-medium text-[var(--text-primary)] leading-snug">{item.title}</h3>
                     <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                       {item.workstreamName} · {item.type}
                     </div>
@@ -353,12 +353,12 @@ export default function WorkstreamsPage() {
           <motion.div {...fadeUp(0.2)} className="flex flex-col gap-4 pt-6 mt-6 border-t border-neutral-200 pb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 w-full justify-between">
-                <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-                  <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                  <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+                <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+                  <span className="w-2 h-2 rounded-full bg-primary-500" />
+                  <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                     Skills
                   </span>
-                  <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                  <span className="w-2 h-2 rounded-full bg-primary-500" />
                 </div>
 
                 <div className="flex items-center gap-1.5 border border-neutral-300 rounded-md p-1 bg-white">
@@ -367,7 +367,7 @@ export default function WorkstreamsPage() {
                     className={cn(
                       "px-2.5 py-1.5 text-[12px] font-medium rounded-lg transition-all cursor-pointer border-none",
                       skillFilter === "all"
-                        ? "bg-pv-primary-primary-500 text-white shadow-md"
+                        ? "bg-primary-500 text-white shadow-md"
                         : "bg-white text-[var(--text-secondary)] hover:bg-neutral-100"
                     )}
                   >
@@ -376,13 +376,13 @@ export default function WorkstreamsPage() {
                       {`(${skills.length})`}
                     </span>
                   </button>
-                  <span className="flex w-px h-5 bg-pv-neutral-grey-300 shrink-0" />
+                  <span className="flex w-px h-5 bg-grey-300 shrink-0" />
                   <button
                     onClick={() => setSkillFilter("dashboard")}
                     className={cn(
                       "px-2.5 py-1.5 text-[12px] font-medium rounded-lg transition-all cursor-pointer border-none",
                       skillFilter === "dashboard"
-                        ? "bg-pv-primary-primary-500 text-white shadow-md"
+                        ? "bg-primary-500 text-white shadow-md"
                         : "bg-white text-[var(--text-secondary)] hover:bg-neutral-100"
                     )}
                   >
@@ -391,13 +391,13 @@ export default function WorkstreamsPage() {
                       {`(${dashboardCount})`}
                     </span>
                   </button>
-                  <span className="flex w-px h-5 bg-pv-neutral-grey-300 shrink-0" />
+                  <span className="flex w-px h-5 bg-grey-300 shrink-0" />
                   <button
                     onClick={() => setSkillFilter("memo")}
                     className={cn(
                       "px-2.5 py-1.5 text-[12px] font-medium rounded-lg transition-all cursor-pointer border-none",
                       skillFilter === "memo"
-                        ? "bg-pv-primary-primary-500 text-white shadow-md"
+                        ? "bg-primary-500 text-white shadow-md"
                         : "bg-white text-[var(--text-secondary)] hover:bg-neutral-100"
                     )}
                   >
@@ -420,7 +420,7 @@ export default function WorkstreamsPage() {
                     key={skill.uid}
                     onClick={() => navigate(`/home/skill/${skill.uid}`)}
                     className={cn(
-                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-pv-primary-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
+                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
                       isNotFirstColumn && "-ml-px",
                       isNotFirstRow && "-mt-px"
                     )}
@@ -439,9 +439,9 @@ export default function WorkstreamsPage() {
                       <span className="text-[12px] text-[var(--text-muted)]">{skill.build_time}</span>
                     </div>
 
-                    <h3 className="text-[15px] font-medium text-[var(--text-primary)] leading-snug">{skill.title}</h3>
+                    <h3 className="text-[16px] font-medium text-[var(--text-primary)] leading-snug">{skill.title}</h3>
 
-                    <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed line-clamp-3">
+                    <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed line-clamp-3">
                       {skill.tagline}
                     </p>
 
@@ -449,7 +449,7 @@ export default function WorkstreamsPage() {
                       {skill.data_sources.map((source) => (
                         <span
                           key={source}
-                          className="px-2 py-1 text-[11px] text-[var(--text-secondary)] bg-neutral-100 border border-neutral-200 rounded"
+                          className="px-2 py-1 text-[12px] text-[var(--text-secondary)] bg-neutral-100 border border-neutral-200 rounded"
                         >
                           {source}
                         </span>

@@ -1,8 +1,8 @@
 import { Pencil, Trash2, ExternalLink, Eye, EyeOff, MonitorPlay } from "lucide-react";
 import { DotsThree } from "@phosphor-icons/react";
-import { Tooltip, Popper } from "@/common-components";
-import { formatDate, formatDateTime } from "@/common-utils/formatDateTime";
-import { timeAgo } from "@/common-utils/relativeTimeDiff";
+import { Tooltip, Popper } from "@/ui";
+import { formatDate, formatDateTime } from "@/utils/formatDateTime";
+import { timeAgo } from "@/utils/relativeTimeDiff";
 import { getCurrentUser } from "../../../../api";
 import { getDashboardId } from "../api";
 import { useNavigate, useBasePath } from "../context";
@@ -31,7 +31,7 @@ export const CCDashboardElement = ({
     <div
       role="button"
       tabIndex={0}
-      className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
+      className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg hover:bg-[var(--color-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
       style={{ gridTemplateColumns: GRID_COLUMNS }}
       onClick={() => navigate(`${basePath}/${dashboardId}`)}
       onKeyDown={(e) => {
@@ -41,7 +41,7 @@ export const CCDashboardElement = ({
         }
       }}
     >
-      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
+      <span className="flex items-center px-2 text-xs text-[var(--color-grey-500)]">
         {index + 1}.
       </span>
 
@@ -62,11 +62,11 @@ export const CCDashboardElement = ({
         </Tooltip>
       </span>
 
-      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
+      <span className="flex items-center px-2 text-xs text-[var(--color-grey-600)]">
         {artifact.shared ? "Yes" : "No"}
       </span>
 
-      <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
+      <span className="flex items-center px-2 text-xs text-[var(--color-grey-500)]">
         <Tooltip title={formatDateTime(artifact.latest_run?.refreshed_at || artifact.created_at, artifact.tenant_timezone) || formatDate(artifact.latest_run?.refreshed_at || artifact.created_at)} arrow placement="top" tooltipActive={tooltipActive}>
           <span onMouseEnter={onTooltipReset}>{timeAgo(artifact.latest_run?.refreshed_at || artifact.created_at)}</span>
         </Tooltip>
@@ -79,9 +79,9 @@ export const CCDashboardElement = ({
         <Popper
           buttonChildren={<DotsThree size={18} weight="bold" />}
           placement="bottom-end"
-          btnSize="sm"
-          btnColor="transparent"
-          mainBtnClassName="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-100)] rounded-lg"
+          size="sm"
+          variant="ghost"
+          className="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-grey-400)] hover:text-[var(--color-grey-700)] hover:bg-[var(--color-grey-100)] rounded-lg"
           popperClassName="w-48"
           closeOnClickInside
           zIndex={50}
@@ -92,7 +92,7 @@ export const CCDashboardElement = ({
           {artifact.workflow_id && (
             <button
               onClick={() => navigate(`/workflows/${artifact.workflow_id}`)}
-              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
             >
               <ExternalLink size={14} />
               View Workflow
@@ -101,7 +101,7 @@ export const CCDashboardElement = ({
           {isOwner && artifact.source_session_id && (
             <button
               onClick={() => navigate(`/session/${artifact.source_session_id}`)}
-              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
             >
               <MonitorPlay size={14} />
               Source Session
@@ -109,22 +109,22 @@ export const CCDashboardElement = ({
           )}
           <button
             onClick={() => onRename?.(artifact)}
-            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
           >
             <Pencil size={14} />
             Rename
           </button>
           <button
             onClick={() => onToggleShare?.(artifact)}
-            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
           >
             {artifact.shared ? <EyeOff size={14} /> : <Eye size={14} />}
             {artifact.shared ? "Unshare" : "Share with team"}
           </button>
-          <div className="border-t border-[var(--pv-neutral-grey-150)]" />
+          <div className="border-t border-[var(--color-grey-100)]" />
           <button
             onClick={() => onDelete?.(artifact)}
-            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)] active:bg-white active:text-[var(--pv-error-text)]/60 transition-colors bg-transparent border-none cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-red)] hover:bg-[var(--color-red-bg)] active:bg-white active:text-[var(--color-red)]/60 transition-colors bg-transparent border-none cursor-pointer"
           >
             <Trash2 size={14} />
             Delete

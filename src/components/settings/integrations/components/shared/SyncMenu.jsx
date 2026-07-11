@@ -46,7 +46,7 @@ export const SyncMenu = ({
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full mt-1 z-20 bg-white border border-[var(--pv-neutral-grey-200)] rounded-md shadow-lg min-w-[240px] py-1"
+      className="absolute right-0 top-full mt-1 z-20 bg-white border border-[var(--color-grey-200)] rounded-md shadow-lg min-w-[240px] py-1"
     >
       {modes.map((mode) => {
         const meta = items[mode];
@@ -55,13 +55,13 @@ export const SyncMenu = ({
           <button
             key={mode}
             type="button"
-            className="w-full text-left px-3 py-2 hover:bg-[var(--pv-neutral-grey-50)]"
+            className="w-full text-left px-3 py-2 hover:bg-[var(--color-grey-50)]"
             onClick={() => onPick(mode)}
           >
-            <div className="text-xs font-medium text-[var(--pv-text-primary-text)]">
+            <div className="text-xs font-medium text-[var(--color-text-primary)]">
               {meta.label}
             </div>
-            <div className="text-[10px] text-[var(--pv-neutral-grey-500)] mt-0.5 leading-snug">
+            <div className="text-[10px] text-[var(--color-grey-500)] mt-0.5 leading-snug">
               {meta.blurb}
             </div>
           </button>

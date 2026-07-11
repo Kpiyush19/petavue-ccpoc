@@ -6,12 +6,12 @@ import {
   Pause, Play, Trash2, Pencil, ExternalLink, Eye, EyeOff,
 } from 'lucide-react'
 import { MagnifyingGlass, DotsThree } from '@phosphor-icons/react'
-import { Button, Input, Tooltip, Popper } from '@/common-components'
-import { useScrollCleanup } from '@/common-components/Tooltip/useScrollCleanup'
-import { Badge } from '@/components/ui/Badge'
+import { Button, Input, Tooltip, Popper } from '@/ui'
+import { useScrollCleanup } from '@/hooks/useScrollCleanup'
+import { Badge } from '@/ui'
 import { apiGet, apiPut, apiDelete, apiPost, getCurrentUser } from '@/api'
-import { timeAgo } from '@/common-utils/relativeTimeDiff'
-import { formatDate, formatDateTime } from '@/common-utils/formatDateTime'
+import { timeAgo } from '@/utils/relativeTimeDiff'
+import { formatDate, formatDateTime } from '@/utils/formatDateTime'
 import { DeleteWorkflowModal } from './components/DeleteWorkflowModal'
 import { RenameWorkflowModal } from './components/RenameWorkflowModal'
 
@@ -128,14 +128,14 @@ export default function WorkflowsPage() {
   }
 
   const Skeleton = ({ width, height }) => (
-    <div className="bg-[var(--pv-neutral-grey-200)] rounded animate-pulse" style={{ width, height }} />
+    <div className="bg-[var(--color-grey-200)] rounded animate-pulse" style={{ width, height }} />
   )
 
   const ListLoader = ({ length = 8 }) => (
     <div className="flex flex-col w-full gap-2">
       {Array.from({ length }).map((_, ind) => (
         <div
-          className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg"
+          className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg"
           style={{ gridTemplateColumns: GRID_COLUMNS }}
           key={ind}
         >
@@ -154,19 +154,19 @@ export default function WorkflowsPage() {
   return (
     <div className="flex flex-col w-full h-full overflow-x-auto">
       <div className="flex flex-col w-full h-full min-w-[800px]">
-        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
           <span className="text-[16px] leading-[24px] font-medium">Workflows</span>
         </div>
 
         <div
-          className="w-full p-4 flex overflow-x-auto bg-[var(--pv-neutral-grey-50)]"
+          className="w-full p-4 flex overflow-x-auto bg-[var(--color-grey-50)]"
           style={{ height: 'calc(100% - 60px)' }}
         >
           <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden min-w-[800px]">
-            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)]">
+            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--color-grey-100)]">
               <div className="px-8 flex gap-2.5 items-center">
                 <span className="font-medium text-[14px]">All Workflows</span>
-                <span className="text-xs text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md">
+                <span className="text-xs text-white bg-[var(--color-primary-500)] px-1.5 py-0.5 rounded-md">
                   {filtered.length}
                 </span>
               </div>
@@ -191,7 +191,7 @@ export default function WorkflowsPage() {
             {loading ? (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: 'calc(100% - 56px)' }}>
                 <div
-                  className="grid w-full p-2 border-b border-[var(--pv-neutral-grey-150)]"
+                  className="grid w-full p-2 border-b border-[var(--color-grey-100)]"
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
                   <span className="px-2"><Skeleton width="12px" height="12px" /></span>
@@ -208,12 +208,12 @@ export default function WorkflowsPage() {
               </div>
             ) : filtered.length === 0 && search ? (
               <div className="w-full h-full flex">
-                <div className="m-auto text-[var(--pv-neutral-grey-500)] flex flex-col gap-2 items-center">
+                <div className="m-auto text-[var(--color-grey-500)] flex flex-col gap-2 items-center">
                   <div className="mx-auto">
-                    No results for <b className="text-[var(--pv-neutral-grey-900)]">"{search}"</b>
+                    No results for <b className="text-[var(--color-grey-900)]">"{search}"</b>
                   </div>
                   <div className="flex">
-                    <Button btnSize="sm" btnColor="secondary" onClick={() => setSearch('')}>
+                    <Button size="sm" variant="secondary" onClick={() => setSearch('')}>
                       Clear search
                     </Button>
                   </div>
@@ -221,7 +221,7 @@ export default function WorkflowsPage() {
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col w-full h-full justify-center items-center gap-3">
-                <span className="text-[var(--pv-neutral-grey-500)] font-normal text-sm">No workflows to list</span>
+                <span className="text-[var(--color-grey-500)] font-normal text-sm">No workflows to list</span>
               </div>
             ) : (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: 'calc(100% - 56px)' }}>
@@ -229,13 +229,13 @@ export default function WorkflowsPage() {
                   className={`grid p-2 ${listOverflow ? 'w-[calc(100%-8px)]' : 'w-full'}`}
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Name</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Trigger</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Last Run</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Status</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Shared</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2"></span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">#</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Name</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Trigger</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Last Run</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Status</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Shared</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2"></span>
                 </div>
 
                 <div
@@ -249,11 +249,11 @@ export default function WorkflowsPage() {
                     return (
                       <button
                         key={wf.workflow_id}
-                        className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
+                        className="grid w-full px-3 h-[58px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg hover:bg-[var(--color-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all text-left group cursor-pointer bg-white"
                         style={{ gridTemplateColumns: GRID_COLUMNS }}
                         onClick={() => navigate(`/workflows/${wf.workflow_id}`)}
                       >
-                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-500)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--color-grey-500)]">
                           {index + 1}.
                         </span>
 
@@ -275,25 +275,25 @@ export default function WorkflowsPage() {
                           {isRunning && <Badge variant="accent" className="shrink-0">Running</Badge>}
                         </span>
 
-                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--color-grey-600)]">
                           {getTriggerLabel(wf.trigger)}
                         </span>
 
-                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--color-grey-600)]">
                           {wf.latest_run ? (
                             <Tooltip title={formatDateTime(wf.latest_run.refreshed_at, wf.tenant_timezone) || formatDate(wf.latest_run.refreshed_at)} arrow placement="top" tooltipActive={tooltipShow}>
                               <span onMouseEnter={() => setTooltipShow(true)}>{timeAgo(wf.latest_run.refreshed_at)}</span>
                             </Tooltip>
                           ) : (
-                            <span className="text-[var(--pv-neutral-grey-300)]">—</span>
+                            <span className="text-[var(--color-grey-300)]">—</span>
                           )}
                         </span>
 
-                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--color-grey-600)]">
                           {wf.status === 'paused' ? 'Paused' : 'Active'}
                         </span>
 
-                        <span className="flex items-center px-2 text-xs text-[var(--pv-neutral-grey-600)]">
+                        <span className="flex items-center px-2 text-xs text-[var(--color-grey-600)]">
                           {wf.shared ? 'Yes' : 'No'}
                         </span>
 
@@ -305,9 +305,9 @@ export default function WorkflowsPage() {
                             <Popper
                               buttonChildren={<DotsThree size={18} weight="bold" />}
                               placement="bottom-end"
-                              btnSize="sm"
-                              btnColor="transparent"
-                              mainBtnClassName="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-100)] rounded-lg"
+                              size="sm"
+                              variant="ghost"
+                              className="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-grey-400)] hover:text-[var(--color-grey-700)] hover:bg-[var(--color-grey-100)] rounded-lg"
                               popperClassName="w-48"
                               closeOnClickInside
                               zIndex={50}
@@ -318,7 +318,7 @@ export default function WorkflowsPage() {
                               {wf.dashboard_id && (
                                 <button
                                   onClick={() => navigate(`/dashboards/${wf.dashboard_id}`)}
-                                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+                                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
                                 >
                                   <ExternalLink size={14} />
                                   View Dashboard
@@ -327,7 +327,7 @@ export default function WorkflowsPage() {
                               {wf.source_session_id && (
                                 <button
                                   onClick={() => navigate(`/session/${wf.source_session_id}`)}
-                                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+                                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
                                 >
                                   <ExternalLink size={14} />
                                   Edit Workflow
@@ -336,36 +336,36 @@ export default function WorkflowsPage() {
                               <button
                                 onClick={() => handleTriggerRun(wf)}
                                 disabled={wf.running || wf.status !== 'active'}
-                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 <Play size={14} />
                                 Run now
                               </button>
                               <button
                                 onClick={() => setRenaming(wf)}
-                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
                               >
                                 <Pencil size={14} />
                                 Rename
                               </button>
                               <button
                                 onClick={() => handleToggleShare(wf)}
-                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
                               >
                                 {wf.shared ? <EyeOff size={14} /> : <Eye size={14} />}
                                 {wf.shared ? 'Unshare' : 'Share with team'}
                               </button>
                               <button
                                 onClick={() => handleTogglePause(wf)}
-                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
                               >
                                 {wf.status === 'paused' ? <Play size={14} /> : <Pause size={14} />}
                                 {wf.status === 'paused' ? 'Resume' : 'Pause'}
                               </button>
-                              <div className="border-t border-[var(--pv-neutral-grey-150)]" />
+                              <div className="border-t border-[var(--color-grey-100)]" />
                               <button
                                 onClick={() => setDeleteConfirm(wf)}
-                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)] active:bg-white active:text-[var(--pv-error-text)]/60 transition-colors bg-transparent border-none cursor-pointer"
+                                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-red)] hover:bg-[var(--color-red-bg)] active:bg-white active:text-[var(--color-red)]/60 transition-colors bg-transparent border-none cursor-pointer"
                               >
                                 <Trash2 size={14} />
                                 Delete

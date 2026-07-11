@@ -9,10 +9,10 @@ import {
 } from 'lucide-react'
 import Pusher from 'pusher-js'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../config'
-import { Dialog, DialogHeader } from './ui/Dialog'
-import { Button } from './ui/Button'
-import { Badge } from './ui/Badge'
-import { Input, Textarea, Label } from './ui/Input'
+import { Dialog, DialogHeader } from '@/ui/components/OverlayDialog/OverlayDialog'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
+import { Input, Textarea, Label } from '@/ui/components/FormControls/FormControls'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken } from '../api'
 import RecipeVerifyStep from './RecipeVerifyStep'
 import SlackMessagePreview from './SlackMessagePreview'
@@ -253,7 +253,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
       {!slackConnected && !channelsLoading && (
         <div className="flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
           <AlertCircle size={13} className="text-amber-600 shrink-0 mt-0.5" />
-          <div className="text-[11px] text-amber-800 leading-relaxed">
+          <div className="text-[12px] text-amber-800 leading-relaxed">
             Slack is not connected. <a href="/settings/integrations" className="text-[var(--accent)] font-semibold underline">Connect your workspace</a> first to fetch channels and send alerts.
           </div>
         </div>
@@ -261,7 +261,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
 
       {/* Part 1: Channel Selection (Multi-select) */}
       <div>
-        <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+        <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
           <Hash size={11} />
           Channels
           <span className="text-[var(--text-muted)] font-normal">(optional)</span>
@@ -273,7 +273,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
             {selectedChannels.map((ch) => (
               <span
                 key={ch.id}
-                className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]"
+                className="inline-flex items-center gap-1 px-2 py-1 text-[12px] font-medium rounded-lg bg-[var(--color-primary-50)] text-[var(--accent)] border border-[var(--color-primary-200)]"
               >
                 <Hash size={10} />
                 {ch.name}
@@ -300,7 +300,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
             onClick={() => slackConnected && setShowChannelDropdown(!showChannelDropdown)}
             disabled={!slackConnected || channelsLoading}
             className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl text-[12px] transition-colors ${
-              slackConnected ? 'cursor-pointer hover:border-[var(--pv-primary-300)]' : 'cursor-not-allowed opacity-60'
+              slackConnected ? 'cursor-pointer hover:border-[var(--color-primary-300)]' : 'cursor-not-allowed opacity-60'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -353,10 +353,10 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                 {channelsLoading ? (
                   <div className="px-3 py-3 flex items-center justify-center gap-2">
                     <Loader2 size={14} className="text-[var(--text-muted)] animate-spin" />
-                    <span className="text-[11px] text-[var(--text-muted)]">Loading channels...</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Loading channels...</span>
                   </div>
                 ) : channels.filter(ch => !selectedChannels.some(sc => sc.id === ch.id)).length === 0 ? (
-                  <div className="px-3 py-3 text-[11px] text-[var(--text-muted)] text-center">
+                  <div className="px-3 py-3 text-[12px] text-[var(--text-muted)] text-center">
                     {channels.length === 0 ? 'No channels found' : 'All channels selected'}
                   </div>
                 ) : (
@@ -377,7 +377,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                         <Hash size={13} className="text-[var(--text-muted)] shrink-0" />
                         <span className="text-[12px] text-[var(--text-primary)] flex-1">{ch.name}</span>
                         {ch.is_private && (
-                          <span className="text-[9px] text-[var(--text-muted)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">
                             Private
                           </span>
                         )}
@@ -391,7 +391,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                         type="button"
                         disabled={channelsLoadingMore}
                         onClick={(e) => { e.stopPropagation(); fetchChannels(channelSearch, channelNextCursor) }}
-                        className="w-full py-2 text-[11px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
+                        className="w-full py-2 text-[12px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
                       >
                         {channelsLoadingMore ? (
                           <span className="flex items-center justify-center gap-1.5">
@@ -410,7 +410,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
 
       {/* Part 1b: DM Recipients (Multi-select) */}
       <div>
-        <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+        <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
           <Users size={11} />
           Direct Message Recipients
           <span className="text-[var(--text-muted)] font-normal">(optional)</span>
@@ -430,7 +430,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
             {selectedDmUsers.map((u) => (
               <span
                 key={u.id}
-                className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]"
+                className="inline-flex items-center gap-1 px-2 py-1 text-[12px] font-medium rounded-lg bg-[var(--color-primary-50)] text-[var(--accent)] border border-[var(--color-primary-200)]"
               >
                 {u.avatar_url && (
                   <img src={u.avatar_url} alt="" className="w-4 h-4 rounded-full" />
@@ -457,7 +457,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
             onClick={() => hasDmScope && slackConnected && setShowUserDropdown(!showUserDropdown)}
             disabled={!slackConnected || !hasDmScope}
             className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-xl text-[12px] transition-colors ${
-              slackConnected && hasDmScope ? 'cursor-pointer hover:border-[var(--pv-primary-300)]' : 'cursor-not-allowed opacity-60'
+              slackConnected && hasDmScope ? 'cursor-pointer hover:border-[var(--color-primary-300)]' : 'cursor-not-allowed opacity-60'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -495,14 +495,14 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                     return (
                       <div className="px-3 py-3 flex items-center justify-center gap-2">
                         <Loader2 size={14} className="text-[var(--text-muted)] animate-spin" />
-                        <span className="text-[11px] text-[var(--text-muted)]">Loading users...</span>
+                        <span className="text-[12px] text-[var(--text-muted)]">Loading users...</span>
                       </div>
                     )
                   }
 
                   if (filtered.length === 0) {
                     return (
-                      <div className="px-3 py-3 text-[11px] text-[var(--text-muted)] text-center">
+                      <div className="px-3 py-3 text-[12px] text-[var(--text-muted)] text-center">
                         {userSearch ? 'No users found' : 'All users already added'}
                       </div>
                     )
@@ -554,7 +554,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                           type="button"
                           disabled={usersLoadingMore}
                           onClick={(e) => { e.stopPropagation(); fetchUsers(userSearch, userNextCursor) }}
-                          className="w-full py-2 text-[11px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
+                          className="w-full py-2 text-[12px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
                         >
                           {usersLoadingMore ? (
                             <span className="flex items-center justify-center gap-1.5">
@@ -604,7 +604,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
 
         return (
           <div>
-            <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5 mb-1.5">
+            <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5 mb-1.5">
               <Zap size={11} />
               Message Mode
             </label>
@@ -617,7 +617,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                     key={opt.value}
                     type="button"
                     onClick={() => handleModeChange(opt.value)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer border-none ${
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium rounded-lg transition-all cursor-pointer border-none ${
                       isActive
                         ? 'bg-[var(--bg-surface)] text-[var(--accent)] shadow-sm'
                         : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
@@ -638,7 +638,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
               <select
                 value={block.config.content_from || ''}
                 onChange={(e) => updateConfig(block.id, 'content_from', e.target.value)}
-                className="mt-2 w-full text-[12px] rounded-xl px-3 py-2 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] text-[var(--text-primary)] cursor-pointer transition-colors hover:border-[var(--pv-primary-300)] outline-none"
+                className="mt-2 w-full text-[12px] rounded-xl px-3 py-2 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] text-[var(--text-primary)] cursor-pointer transition-colors hover:border-[var(--color-primary-300)] outline-none"
               >
                 <option value="">Select AI block...</option>
                 {aiBlocks.map(ab => (
@@ -655,7 +655,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
       {/* Part 2: Instruction — shown for ai mode */}
       {mode !== 'content_from' && (
         <div>
-          <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+          <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
             <Brain size={11} />
             Instruction
           </label>
@@ -682,7 +682,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
             className={`flex items-center gap-2 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all cursor-pointer border-none ${
               generating
                 ? 'bg-[var(--accent)]/20 text-[var(--accent)] cursor-wait'
-                : 'bg-[var(--accent)] text-white hover:bg-[var(--pv-primary-600)] shadow-sm'
+                : 'bg-[var(--accent)] text-white hover:bg-[var(--color-primary-600)] shadow-sm'
             }`}
           >
             {generating ? (
@@ -733,7 +733,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
       {classification === 'template' && generated && block.config.config_content && (
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+            <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
               <Eye size={11} />
               Message Preview
             </label>
@@ -757,12 +757,12 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
           <button
             type="button"
             onClick={() => setShowConfigEditor(!showConfigEditor)}
-            className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-secondary)] bg-transparent border-none cursor-pointer hover:text-[var(--text-primary)] transition-colors p-0"
+            className="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)] bg-transparent border-none cursor-pointer hover:text-[var(--text-primary)] transition-colors p-0"
           >
             {showConfigEditor ? <ChevronUp size={11} /> : <ChevronRight size={11} />}
             Edit Config (Advanced)
             {configEdited && (
-              <span className="text-[9px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium ml-1">
+              <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium ml-1">
                 Modified
               </span>
             )}
@@ -775,7 +775,7 @@ function SlackBlockConfigForm({ block, updateConfig, workflowName, workflowId, s
                   updateConfig(block.id, 'config_content', e.target.value)
                   setConfigEdited(true)
                 }}
-                className="w-full text-[11px] font-mono bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[var(--text-secondary)] rounded-lg p-3 resize-y min-h-[200px] outline-none focus:border-[var(--pv-primary-500)] transition-colors"
+                className="w-full text-[12px] font-mono bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[var(--text-secondary)] rounded-lg p-3 resize-y min-h-[200px] outline-none focus:border-[var(--color-primary-500)] transition-colors"
                 rows={14}
                 spellCheck={false}
               />
@@ -1403,7 +1403,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-semibold text-[var(--text-primary)]">Saved draft found</p>
-              <p className="text-[11px] text-[var(--text-secondary)]">
+              <p className="text-[12px] text-[var(--text-secondary)]">
                 {draftCheck.stepsCompleted}/{draftCheck.totalSteps} steps completed
               </p>
             </div>
@@ -1421,13 +1421,13 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
 
       {/* Name input + existing workflow indicator (compact) */}
       <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <label className="text-[11px] font-medium text-[var(--text-muted)] shrink-0 uppercase tracking-wider">Name</label>
+        <label className="text-[12px] font-medium text-[var(--text-muted)] shrink-0 uppercase tracking-wider">Name</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Workflow name"
           disabled={isUpdate}
-          className={`flex-1 text-[13px] font-medium border border-[var(--border-primary)] rounded-md px-2.5 py-1 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors ${isUpdate ? 'bg-[var(--bg-secondary)] cursor-not-allowed opacity-70' : 'bg-[var(--bg-primary)] focus:border-[var(--accent)]'}`}
+          className={`flex-1 text-[14px] font-medium border border-[var(--border-primary)] rounded-md px-2.5 py-1 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors ${isUpdate ? 'bg-[var(--bg-secondary)] cursor-not-allowed opacity-70' : 'bg-[var(--bg-primary)] focus:border-[var(--accent)]'}`}
         />
         {/* Update mode indicator */}
         {isUpdate && (
@@ -1447,7 +1447,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
           <div className="relative shrink-0">
             <button
               onClick={() => setShowExistingDropdown(!showExistingDropdown)}
-              className="flex items-center gap-1 text-[10px] text-[var(--pv-warning-text)] bg-[var(--pv-warning-text)]/8 px-2 py-0.5 rounded-full cursor-pointer bg-transparent border-none hover:bg-[var(--pv-warning-text)]/15 transition-colors"
+              className="flex items-center gap-1 text-[10px] text-[var(--color-orange)] bg-[var(--color-orange)]/8 px-2 py-0.5 rounded-full cursor-pointer bg-transparent border-none hover:bg-[var(--color-orange)]/15 transition-colors"
               title="Existing workflows for this file"
             >
               <Workflow size={9} /> {existingCheck.workflows?.length} existing
@@ -1505,7 +1505,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                   className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
                   onClick={() => setExpandedBlock(isExpanded ? null : block.id)}
                 >
-                  <Icon size={13} className={isAI ? 'text-[var(--pv-accent-text)] shrink-0' : isDashboard ? 'text-[var(--accent)] shrink-0' : isSlack ? 'text-[#4A154B] shrink-0' : 'text-[var(--pv-error-text)] shrink-0'} />
+                  <Icon size={13} className={isAI ? 'text-[var(--color-purple-400)] shrink-0' : isDashboard ? 'text-[var(--accent)] shrink-0' : isSlack ? 'text-[#4A154B] shrink-0' : 'text-[var(--color-red)] shrink-0'} />
                   <span className="text-[12px] font-medium text-[var(--text-primary)] flex-1">{block.label}</span>
                   {isAI ? <Badge variant="accent">AI</Badge> : isDashboard ? <Badge variant="accent">Dashboard</Badge> : isSlack ? <Badge variant="warning">Slack</Badge> : <Badge variant="success">Action</Badge>}
                   <button
@@ -1522,7 +1522,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                     {isAI && (
                       <>
                         <div>
-                          <label className="text-[11px] font-medium text-[var(--text-secondary)]">Prompt</label>
+                          <label className="text-[12px] font-medium text-[var(--text-secondary)]">Prompt</label>
                           <Textarea
                             value={block.config.prompt || ''}
                             onChange={(e) => updateExtraBlockConfig(block.id, 'prompt', e.target.value)}
@@ -1532,7 +1532,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] font-medium text-[var(--text-secondary)]">Output file</label>
+                          <label className="text-[12px] font-medium text-[var(--text-secondary)]">Output file</label>
                           <Input
                             value={block.config.output_file || ''}
                             onChange={(e) => updateExtraBlockConfig(block.id, 'output_file', e.target.value)}
@@ -1545,7 +1545,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                     {block.type === 'send_email' && (
                       <>
                         <div>
-                          <label className="text-[11px] font-medium text-[var(--text-secondary)]">Recipients (comma-separated)</label>
+                          <label className="text-[12px] font-medium text-[var(--text-secondary)]">Recipients (comma-separated)</label>
                           <Input
                             value={typeof block.config.to === 'string' ? block.config.to : (block.config.to || []).join(', ')}
                             onChange={(e) => updateExtraBlockConfig(block.id, 'to', e.target.value)}
@@ -1554,7 +1554,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] font-medium text-[var(--text-secondary)]">Subject</label>
+                          <label className="text-[12px] font-medium text-[var(--text-secondary)]">Subject</label>
                           <Input
                             value={block.config.subject || ''}
                             onChange={(e) => updateExtraBlockConfig(block.id, 'subject', e.target.value)}
@@ -1567,7 +1567,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                     {block.type === 'publish_dashboard' && (
                       <>
                         <div>
-                          <label className="text-[11px] font-medium text-[var(--text-secondary)]">Dashboard name</label>
+                          <label className="text-[12px] font-medium text-[var(--text-secondary)]">Dashboard name</label>
                           <Input
                             value={block.config.name || ''}
                             onChange={(e) => updateExtraBlockConfig(block.id, 'name', e.target.value)}
@@ -1576,7 +1576,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                             disabled={isUpdate}
                           />
                         </div>
-                        <div className="text-[11px] text-[var(--text-muted)]">
+                        <div className="text-[12px] text-[var(--text-muted)]">
                           Publishes the HTML output as a viewable dashboard in the Dashboards page.
                         </div>
                       </>
@@ -1615,7 +1615,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
                 onClick={() => addExtraBlock(opt.type, opt.label)}
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--bg-hover)] bg-transparent border-none cursor-pointer"
               >
-                <Brain size={12} className="text-[var(--pv-accent-text)] shrink-0" />
+                <Brain size={12} className="text-[var(--color-purple-400)] shrink-0" />
                 <span className="text-[12px] text-[var(--text-primary)]">{opt.label}</span>
               </button>
             ))}
@@ -1623,7 +1623,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
             <div className="px-3 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase">Actions</div>
             {ACTION_BLOCK_OPTIONS.filter((opt) => opt.type !== 'send_slack' || slackFeatureEnabled).map((opt) => {
               const ActionIcon = opt.type === 'publish_dashboard' ? LayoutDashboard : opt.type === 'send_slack' ? MessageSquare : Mail
-              const iconColor = opt.type === 'publish_dashboard' ? 'text-[var(--accent)]' : opt.type === 'send_slack' ? 'text-[#4A154B]' : 'text-[var(--pv-error-text)]'
+              const iconColor = opt.type === 'publish_dashboard' ? 'text-[var(--accent)]' : opt.type === 'send_slack' ? 'text-[#4A154B]' : 'text-[var(--color-red)]'
               return (
                 <button
                   key={opt.type}
@@ -1670,7 +1670,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
           <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
             <div className="text-center">
               <p className="text-[14px] font-semibold text-[var(--text-primary)] mb-1">Saved draft found</p>
-              <p className="text-[13px] text-[var(--text-secondary)]">
+              <p className="text-[14px] text-[var(--text-secondary)]">
                 {draftCheck.stepsCompleted}/{draftCheck.totalSteps} steps completed
               </p>
             </div>

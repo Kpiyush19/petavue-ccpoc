@@ -1,5 +1,5 @@
 import { Plus, Minus } from "@phosphor-icons/react";
-import { Button } from "../../../../common-components/Button";
+import { Button } from "@/ui";
 
 // Preview modal that lists exactly what's changing before the PUT fires.
 // Keeps the user from accidentally saving large swaps (e.g. they typed a
@@ -24,11 +24,11 @@ export const SaveObjectsConfirmModal = ({
         className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)]">
-          <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+        <div className="px-5 py-4 border-b border-[var(--color-grey-200)]">
+          <h2 className="text-base font-medium text-[var(--color-text-primary)]">
             Review changes
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             You're about to update which objects Petavue syncs.{" "}
             {totalBefore} → {totalAfter} enabled.
           </p>
@@ -36,7 +36,7 @@ export const SaveObjectsConfirmModal = ({
 
         <div className="px-5 py-4 flex-1 overflow-y-auto flex flex-col gap-4">
           {noChange ? (
-            <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+            <p className="text-sm text-[var(--color-grey-500)]">
               No changes to save.
             </p>
           ) : (
@@ -47,9 +47,9 @@ export const SaveObjectsConfirmModal = ({
                     <Plus
                       size={14}
                       weight="bold"
-                      className="text-[var(--pv-success-text)]"
+                      className="text-[var(--color-green)]"
                     />
-                    <span className="text-xs font-medium text-[var(--pv-text-primary-text)] uppercase tracking-wide">
+                    <span className="text-xs font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
                       Added ({added.length})
                     </span>
                   </div>
@@ -57,7 +57,7 @@ export const SaveObjectsConfirmModal = ({
                     {added.map((name) => (
                       <span
                         key={name}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--pv-success-bg,#ECFDF5)] text-[var(--pv-success-text)] text-xs font-medium"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--color-green-bg,#ECFDF5)] text-[var(--color-green)] text-xs font-medium"
                       >
                         {name}
                       </span>
@@ -73,7 +73,7 @@ export const SaveObjectsConfirmModal = ({
                       weight="bold"
                       className="text-[var(--pv-status-error,#EF4444)]"
                     />
-                    <span className="text-xs font-medium text-[var(--pv-text-primary-text)] uppercase tracking-wide">
+                    <span className="text-xs font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
                       Deleted ({removed.length})
                     </span>
                   </div>
@@ -87,7 +87,7 @@ export const SaveObjectsConfirmModal = ({
                       </span>
                     ))}
                   </div>
-                  <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-2 leading-relaxed">
+                  <p className="text-[12px] text-[var(--color-grey-500)] mt-2 leading-relaxed">
                     Removed objects stop syncing on the next run. Existing
                     data stays in your warehouse; nothing is deleted.
                   </p>
@@ -97,18 +97,18 @@ export const SaveObjectsConfirmModal = ({
           )}
         </div>
 
-        <div className="px-5 py-4 border-t border-[var(--pv-neutral-grey-200)] flex items-center justify-end gap-2">
+        <div className="px-5 py-4 border-t border-[var(--color-grey-200)] flex items-center justify-end gap-2">
           <Button
-            btnColor="secondary"
-            btnSize="md"
+            variant="secondary"
+            size="md"
             onClick={onCancel}
             disabled={isSaving}
           >
             Cancel
           </Button>
           <Button
-            btnColor="primary"
-            btnSize="md"
+            variant="primary"
+            size="md"
             onClick={onConfirm}
             disabled={isSaving || noChange}
           >

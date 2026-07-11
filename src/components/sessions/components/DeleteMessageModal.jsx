@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Modal } from "@/common-components";
+import { Button, Modal } from "@/ui";
 
 export const DeleteMessageModal = ({ isOpen, onClose, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,16 +35,16 @@ export const DeleteMessageModal = ({ isOpen, onClose, onDelete }) => {
     >
       <div className="flex flex-col">
         <div className="px-4 pb-4 flex flex-col gap-2">
-          <p className="text-sm text-[var(--pv-neutral-grey-600)]">
+          <p className="text-sm text-[var(--color-grey-600)]">
             Are you sure you want to delete your last message and its response?
           </p>
         </div>
-        <div className="border-t border-[var(--pv-neutral-grey-150)]">
+        <div className="border-t border-[var(--color-grey-100)]">
           <div className="flex justify-between items-center py-3 px-4">
-            <Button btnColor="ghost" btnSize="lg" onClick={handleClose} disabled={isDeleting}>
+            <Button variant="ghost" size="lg" onClick={handleClose} disabled={isDeleting}>
               Cancel
             </Button>
-            <Button btnColor="primary" btnSize="lg" onClick={handleDelete} disabled={isDeleting}>
+            <Button variant="primary" size="lg" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </div>

@@ -1,0 +1,131 @@
+@import '@/ui/colorography/tokens.css';
+@import '@/ui/typography/typography.css';
+
+/* ==========================================================================
+   Settings Page
+   ========================================================================== */
+
+.settings-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-grey-50);
+  font-family: var(--font-family-primary);
+}
+
+/* Body */
+.settings-page__body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.settings-page__header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  padding: var(--spacing-16) var(--spacing-24);
+  background-color: var(--color-white);
+  border-bottom: var(--border-default) solid var(--color-grey-100);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.settings-page__breadcrumb {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-h2);
+  color: var(--color-text-primary);
+}
+
+/* Tabs */
+.settings-page__tabs-bar {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-grey-100);
+  flex-shrink: 0;
+}
+
+.settings-page__tabs {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-24);
+  padding: 0 var(--spacing-16);
+}
+
+.settings-page__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: var(--spacing-8) var(--spacing-16);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.settings-page__tab:hover {
+  color: var(--color-primary-500);
+}
+
+.settings-page__tab--active {
+  color: var(--color-primary-500);
+  font-weight: var(--font-weight-medium);
+  border-bottom-color: var(--color-primary-500);
+}
+
+/* Content */
+.settings-page__content {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-16);
+}
+
+/* Integrations container */
+.settings-page__integrations {
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-16);
+}
+
+/* 3-column grid */
+.settings-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Make cards fill grid cell */
+.settings-page__grid .integration-card {
+  width: 100%;
+}
+
+/* Empty state */
+.settings-page__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  width: 100%;
+}
+
+.settings-page__empty-text {
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-secondary);
+}

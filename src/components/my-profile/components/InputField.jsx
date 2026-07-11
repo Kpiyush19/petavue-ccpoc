@@ -18,7 +18,7 @@ const InputField = forwardRef(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-[var(--pv-neutral-grey-700)] mb-1">
+          <label className="block text-sm font-medium text-[var(--color-grey-700)] mb-1">
             {label}
           </label>
         )}
@@ -31,7 +31,7 @@ const InputField = forwardRef(
           onKeyDown={onKeyDown}
           onBlur={onBlur}
           disabled={disabled}
-          className={`w-full px-3 py-2 border border-[var(--pv-neutral-grey-300)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary-500)] focus:border-[var(--pv-primary-500)] disabled:bg-[var(--pv-neutral-grey-50)] disabled:text-[var(--pv-neutral-grey-500)] disabled:cursor-not-allowed ${className}`}
+          className={`w-full px-3 py-2 border border-[var(--color-grey-300)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)] disabled:bg-[var(--color-grey-50)] disabled:text-[var(--color-grey-500)] disabled:cursor-not-allowed ${className}`}
         />
       </div>
     );

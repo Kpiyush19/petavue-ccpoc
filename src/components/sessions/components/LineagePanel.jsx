@@ -53,7 +53,7 @@ function StepCard({ step, isLast }) {
         </button>
 
         {expanded && (
-          <div className="mt-1.5 ml-1 text-[11px] space-y-2">
+          <div className="mt-1.5 ml-1 text-[12px] space-y-2">
             {step.llm_card && hasCardContent(step.llm_card) ? (
               <CardView card={step.llm_card} />
             ) : step.llm_description ? (
@@ -80,7 +80,7 @@ function StepCard({ step, isLast }) {
 
 function SiblingChip({ sibling }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] text-[11px] text-[var(--accent)] font-medium">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] text-[12px] text-[var(--accent)] font-medium">
       {sibling.widget_name}
     </span>
   )
@@ -106,7 +106,7 @@ export default function LineagePanel({ lineage, loading, error }) {
       {lineage && !loading && (
         <>
           <div className="mb-4">
-            <h4 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-3">
+            <h4 className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-3">
               Data pipeline ({lineage.chain.length} steps)
             </h4>
             {lineage.chain.map((step, i) => (
@@ -116,7 +116,7 @@ export default function LineagePanel({ lineage, loading, error }) {
 
           {lineage.also_feeds_into && lineage.also_feeds_into.length > 0 && (
             <div className="mb-4">
-              <h4 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-1">
+              <h4 className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-1">
                 Related widgets
               </h4>
               <p className="text-[10px] text-[var(--text-muted)] mb-2 mt-0">

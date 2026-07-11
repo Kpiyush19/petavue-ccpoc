@@ -87,7 +87,7 @@ export function MenuBar({
             >
               {/* Show sidebar icon on hover, P logo at rest */}
               {logoHovered ? (
-                <SidebarToggle color="var(--color-neutral-800, #2D3044)" />
+                <SidebarToggle color="var(--color-grey-800, #2D3044)" />
               ) : (
                 <BrandLogo />
               )}

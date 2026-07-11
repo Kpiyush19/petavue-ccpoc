@@ -5,8 +5,8 @@ import { SchemaTab } from "./components/SchemaTab";
 import { AssociationsTab } from "./components/AssociationsTab";
 import { SettingsTab } from "./components/SettingsTab";
 import { TabButton } from "./components/shared/TabButton";
-import { Button } from "../../../common-components/Button";
-import Skeleton from "../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import { useGetPlatformDetail } from "./api/getPlatformDetail";
 import { useGetIntegrationSetup } from "./api/getIntegrationSetup";
 import { useGetSetupObjects } from "./api/getSetupObjects";
@@ -226,24 +226,24 @@ export const IntegrationDetailWithTabs = ({
     setupQuery.isLoading || objectsQuery.isLoading
       ? null
       : inProgress
-      ? { label: "Sync in progress", color: "var(--pv-primary-500)" }
+      ? { label: "Sync in progress", color: "var(--color-primary-500)" }
       : isSetupComplete || serverPicks.length > 0
-      ? { label: "Active", color: "var(--pv-success-text)" }
+      ? { label: "Active", color: "var(--color-green)" }
       : null;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
+    <div className="flex-1 overflow-y-auto bg-[var(--color-grey-50)]">
       {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-3 sticky top-0 z-10">
+      <div className="px-6 py-4 bg-white border-b border-[var(--color-grey-200)] flex items-center gap-3 sticky top-0 z-10">
         <button
           type="button"
           onClick={onBack}
-          className="text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)]"
+          className="text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)]"
           aria-label="Back to integrations"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-lg font-medium text-[var(--pv-text-primary-text)]">
+        <h1 className="text-lg font-medium text-[var(--color-text-primary)]">
           {integrationName}
         </h1>
         {statusBadge && (
@@ -261,8 +261,8 @@ export const IntegrationDetailWithTabs = ({
         <div className="ml-auto">
           {integrationId && (
             <Button
-              btnColor="primary"
-              btnSize="md"
+              variant="primary"
+              size="md"
               onClick={handleSync}
               disabled={
                 isSyncBusy ||
@@ -302,13 +302,13 @@ export const IntegrationDetailWithTabs = ({
 
       {/* Initial-sync review hold (LF-tag enablement) */}
       {reviewPending && (
-        <div className="px-6 py-3 bg-[var(--pv-warning-bg,#FFF7ED)] border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-3">
-          <Info size={16} className="text-[var(--pv-warning-text,#B45309)] shrink-0" />
-          <span className="text-sm text-[var(--pv-text-primary-text)]">{REVIEW_MESSAGE}</span>
+        <div className="px-6 py-3 bg-[var(--color-orange-bg,#FFF7ED)] border-b border-[var(--color-grey-200)] flex items-center gap-3">
+          <Info size={16} className="text-[var(--color-orange,#B45309)] shrink-0" />
+          <span className="text-sm text-[var(--color-text-primary)]">{REVIEW_MESSAGE}</span>
           {isPetavueUser && (
             <Button
-              btnColor="secondary"
-              btnSize="sm"
+              variant="secondary"
+              size="sm"
               className="ml-auto"
               onClick={() => clearReview.mutate({ id: integrationId })}
               disabled={clearReview.isPending || !integrationId}
@@ -320,7 +320,7 @@ export const IntegrationDetailWithTabs = ({
       )}
 
       {/* Tabs */}
-      <div className="px-6 bg-white border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-2 sticky top-[57px] z-10">
+      <div className="px-6 bg-white border-b border-[var(--color-grey-200)] flex items-center gap-2 sticky top-[57px] z-10">
         <TabButton
           active={activeTab === "schema"}
           onClick={() => setActiveTab("schema")}
@@ -432,19 +432,19 @@ const SyncConfirmModal = ({
         className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-100)] flex items-start justify-between gap-3">
+        <div className="px-5 py-4 border-b border-[var(--color-grey-100)] flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+            <h3 className="text-base font-medium text-[var(--color-text-primary)]">
               {title}
             </h3>
-            <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+            <p className="text-xs text-[var(--color-grey-500)] mt-1">
               {subtitle}
             </p>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)] -mt-1"
+            className="text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)] -mt-1"
             aria-label="Close"
           >
             <X size={18} />
@@ -458,7 +458,7 @@ const SyncConfirmModal = ({
                 <input
                   type="radio"
                   name="sync-mode"
-                  className="accent-[var(--pv-primary-500)]"
+                  className="accent-[var(--color-primary-500)]"
                   checked={mode === "incremental"}
                   onChange={() => onModeChange("incremental")}
                 />
@@ -468,7 +468,7 @@ const SyncConfirmModal = ({
                 <input
                   type="radio"
                   name="sync-mode"
-                  className="accent-[var(--pv-primary-500)]"
+                  className="accent-[var(--color-primary-500)]"
                   checked={mode === "full"}
                   onChange={() => onModeChange("full")}
                 />
@@ -478,11 +478,11 @@ const SyncConfirmModal = ({
           )}
 
           <div>
-            <div className="text-[11px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1.5">
+            <div className="text-[12px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1.5">
               {isPartial ? `We'll sync these now (${objects.length})` : `Objects (${objects.length})`}
             </div>
             {objects.length === 0 ? (
-              <div className="text-xs text-[var(--pv-neutral-grey-500)] border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
+              <div className="text-xs text-[var(--color-grey-500)] border border-[var(--color-grey-200)] rounded-md p-3">
                 No objects selected. Pick at least one from the Schema tab first.
               </div>
             ) : (
@@ -490,7 +490,7 @@ const SyncConfirmModal = ({
                 {objects.map((o) => (
                   <span
                     key={o}
-                    className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--pv-primary-100,#EEF2FF)] text-[var(--pv-primary-700,#3730A3)]"
+                    className="text-[12px] px-2 py-0.5 rounded-full bg-[var(--color-primary-100,#EEF2FF)] text-[var(--color-primary-700,#3730A3)]"
                   >
                     {o}
                   </span>
@@ -501,14 +501,14 @@ const SyncConfirmModal = ({
 
           {inProgressObjects.length > 0 && (
             <div>
-              <div className="text-[11px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1.5">
+              <div className="text-[12px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1.5">
                 Already syncing, can't start now ({inProgressObjects.length})
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {inProgressObjects.map((o) => (
                   <span
                     key={o}
-                    className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)]"
+                    className="text-[12px] px-2 py-0.5 rounded-full bg-[var(--color-grey-100)] text-[var(--color-grey-500)]"
                   >
                     {o}
                   </span>
@@ -518,13 +518,13 @@ const SyncConfirmModal = ({
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-[var(--pv-neutral-grey-100)] flex items-center justify-end gap-2">
-          <Button btnColor="secondary" btnSize="md" onClick={onCancel} disabled={isPending}>
+        <div className="px-5 py-3 border-t border-[var(--color-grey-100)] flex items-center justify-end gap-2">
+          <Button variant="secondary" size="md" onClick={onCancel} disabled={isPending}>
             Cancel
           </Button>
           <Button
-            btnColor="primary"
-            btnSize="md"
+            variant="primary"
+            size="md"
             onClick={onConfirm}
             disabled={isPending || objects.length === 0}
           >

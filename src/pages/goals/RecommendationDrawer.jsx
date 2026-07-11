@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { X, Bell, ChatCircle, CheckCircle, ClockCounterClockwise, XCircle, Sliders, CircleNotch, ArrowUUpLeft, Question, CaretDown, Target, Lightning, Eye, Clock, Tag } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Button as PvButton } from "../../petavue";
+import { Button as PvButton } from "@/ui";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 
@@ -27,17 +27,17 @@ function SnoozeMenu({ onSnooze, disabled }) {
   return (
     <>
       <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[14px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
         <ClockCounterClockwise size={16} /> Snooze <CaretDown size={12} />
       </button>
       {open && pos && createPortal(
         <>
           <div className="fixed inset-0 z-[70]" onClick={() => setOpen(false)} />
           <div className="fixed z-[71] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ bottom: pos.bottom, left: pos.left }}>
-            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
+            <p className="px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
             {SNOOZE_OPTIONS.map((label) => (
               <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">
+                className="w-full flex items-center gap-2 px-3 py-2 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-grey-50 text-[var(--text-primary)]">
                 {label}
               </button>
             ))}
@@ -53,7 +53,7 @@ function SnoozeMenu({ onSnooze, disabled }) {
 function renderInline(text) {
   return text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g).map((p, i) => {
     if (p.startsWith("`") && p.endsWith("`"))
-      return <code key={i} className="px-1.5 py-0.5 rounded-md bg-pv-neutral-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{p.slice(1, -1)}</code>;
+      return <code key={i} className="px-1.5 py-0.5 rounded-md bg-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{p.slice(1, -1)}</code>;
     if (p.startsWith("**") && p.endsWith("**"))
       return <strong key={i} className="font-semibold text-[var(--text-primary)]">{p.slice(2, -2)}</strong>;
     return <span key={i}>{p}</span>;
@@ -110,15 +110,15 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
       <div className="border-b border-[var(--border-primary)] px-5 py-4 flex flex-col gap-2.5">
         <div className="flex items-start justify-between gap-3">
           <h2 className="flex-1 text-[16px] font-semibold text-[var(--text-primary)] leading-snug">{rec.title}</h2>
-          {onClose && <button onClick={onClose} className="shrink-0 -mt-1 -mr-1 p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
+          {onClose && <button onClick={onClose} className="shrink-0 -mt-1 -mr-1 p-1 rounded-md text-[var(--text-muted)] hover:bg-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close"><X size={18} /></button>}
         </div>
         {onOpenGoal && goal?.name && (
-          <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0 self-start"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
+          <button onClick={() => onOpenGoal(goalId)} className="inline-flex items-center gap-1 text-[12px] font-medium text-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0 self-start"><Target size={13} weight="bold" className="shrink-0" />{goal.name}</button>
         )}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-secondary)]">{actNow ? <Lightning size={11} weight="fill" /> : <Eye size={11} weight="fill" />}{actNow ? "Act now" : "Watch"}</span>
-            {rec.age && <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-pv-primary-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
+            {rec.age && <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-primary-600"><Clock size={11} weight="bold" />{rec.age}</span>}
             <span className="inline-flex items-center gap-1 text-[12px] font-normal uppercase tracking-wide text-[var(--text-muted)]"><Tag size={11} weight="bold" />{rec.category}</span>
           </div>
         </div>
@@ -127,19 +127,19 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
       {/* Body */}
       <div className="px-5 py-4 flex flex-col gap-5 [&>*]:shrink-0">
         {rec.derivation?.length > 0 && (
-          <div className="rounded-lg border border-[var(--pv-neutral-grey-150)] overflow-hidden">
-            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center justify-between w-full px-4 py-3 text-[13px] font-semibold text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">
+          <div className="rounded-lg border border-[var(--color-grey-100)] overflow-hidden">
+            <button onClick={() => setShowDeriv((v) => !v)} className="flex items-center justify-between w-full px-4 py-3 text-[14px] font-semibold text-primary-600 bg-transparent border-none cursor-pointer">
               <span className="flex items-center gap-1.5"><Question size={15} weight="bold" /> Find out how</span>
               <CaretDown size={14} className={cn("transition-transform", showDeriv && "rotate-180")} />
             </button>
             <AnimatePresence initial={false}>
               {showDeriv && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                  <div className="border-t border-[var(--pv-neutral-grey-150)] bg-white px-4 py-1">
+                  <div className="border-t border-[var(--color-grey-100)] bg-white px-4 py-1">
                     {rec.derivation.map((step, i) => (
-                      <div key={i} className={cn("flex items-start gap-3 py-3", i > 0 && "border-t border-[var(--pv-neutral-grey-150)]")}>
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-pv-primary-primary-600 border border-pv-primary-primary-300 text-[12px] font-semibold shrink-0">{i + 1}</span>
-                        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed pt-0.5">{renderInline(step)}</p>
+                      <div key={i} className={cn("flex items-start gap-3 py-3", i > 0 && "border-t border-[var(--color-grey-100)]")}>
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-primary-600 border border-primary-300 text-[12px] font-semibold shrink-0">{i + 1}</span>
+                        <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed pt-0.5">{renderInline(step)}</p>
                       </div>
                     ))}
                   </div>
@@ -150,11 +150,11 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
         )}
 
         {rec.metrics?.length > 0 && (
-          <div className="rounded-lg border border-pv-neutral-grey-150/50 overflow-hidden dropshadow-card">
+          <div className="rounded-lg border border-grey-100/50 overflow-hidden dropshadow-card">
             {rec.metrics.map((m, i) => (
-              <div key={i} className={cn("flex items-baseline justify-between gap-4 px-4 py-2.5", i > 0 && "border-t border-[var(--pv-neutral-grey-100)]")}>
-                <span className="text-[13px] text-[var(--text-secondary)] shrink-0">{m.label}</span>
-                <span className="text-[13px] text-right text-[var(--text-primary)]"><span className="font-medium">{m.value}</span>{m.note && <span className="text-[var(--text-muted)]"> · {m.note}</span>}</span>
+              <div key={i} className={cn("flex items-baseline justify-between gap-4 px-4 py-2.5", i > 0 && "border-t border-[var(--color-grey-100)]")}>
+                <span className="text-[14px] text-[var(--text-secondary)] shrink-0">{m.label}</span>
+                <span className="text-[14px] text-right text-[var(--text-primary)]"><span className="font-medium">{m.value}</span>{m.note && <span className="text-[var(--text-muted)]"> · {m.note}</span>}</span>
               </div>
             ))}
           </div>
@@ -174,7 +174,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
             <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">Action</p>
             <ul className="flex flex-col gap-1.5">
               {(rec.steps || [rec.tldr]).map((s, i) => (
-                <li key={i} className="flex items-start gap-1.5 text-[12px] text-[var(--text-primary)] leading-snug"><span className="text-pv-primary-primary-500 mt-0.5">›</span>{s}</li>
+                <li key={i} className="flex items-start gap-1.5 text-[12px] text-[var(--text-primary)] leading-snug"><span className="text-primary-500 mt-0.5">›</span>{s}</li>
               ))}
             </ul>
           </div>
@@ -197,7 +197,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
       <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3.5">
         {done ? (
           <div className="flex items-center justify-between">
-            <span className={cn("inline-flex items-center gap-1.5 text-[13px] font-medium", resolved?.cls)}><CheckCircle size={15} weight="fill" /> {resolved?.label}</span>
+            <span className={cn("inline-flex items-center gap-1.5 text-[14px] font-medium", resolved?.cls)}><CheckCircle size={15} weight="fill" /> {resolved?.label}</span>
             <PvButton variant="secondary" size="sm" label="Undo" icon={ArrowUUpLeft} onClick={() => act.mutate({ action: "open" })} />
           </div>
         ) : pending ? (
@@ -210,13 +210,13 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                   onChange={(e) => setSnoozeFor(e.target.value)}
                   autoFocus
                   placeholder="e.g. 2 weeks · until next month · after the launch"
-                  className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none"
+                  className="w-full text-[14px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none"
                 />
                 <div className="flex flex-wrap gap-1.5">
                   {SNOOZE_OPTIONS.map((opt) => (
                     <button key={opt} type="button" onClick={() => setSnoozeFor(opt)}
-                      className={cn("text-[11px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
-                        snoozeFor === opt ? "border-pv-primary-primary-400 text-pv-primary-primary-600 bg-pv-primary-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400")}>
+                      className={cn("text-[12px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
+                        snoozeFor === opt ? "border-primary-400 text-primary-600 bg-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-primary-400")}>
                       {opt}
                     </button>
                   ))}
@@ -234,7 +234,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
               rows={2}
               autoFocus={pending.action !== "snoozed"}
               placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search, it's our best demo source" : "Add context for the next run…"}
-              className="w-full text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+              className="w-full text-[14px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
             />
             <div className="flex items-center gap-2">
               <PvButton
@@ -246,21 +246,21 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                   pending.action === "acted" ? "Marked done, monitoring for recovery" : pending.action === "rejected" ? "Dismissed, archived" : `Snoozed · ${snoozeFor.trim()}`
                 )}
               />
-              <button onClick={() => { setPending(null); setReason(""); setSnoozeFor(""); }} className="text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">Cancel</button>
+              <button onClick={() => { setPending(null); setReason(""); setSnoozeFor(""); }} className="text-[14px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">Cancel</button>
             </div>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <button onClick={() => { setReason(""); setPending({ action: "acted" }); }} disabled={act.isPending}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[14px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <CheckCircle size={16} /> Acted
             </button>
             <button onClick={() => { setReason(""); setPending({ action: "rejected" }); }} disabled={act.isPending}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[14px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <XCircle size={16} /> Reject
             </button>
             <button onClick={() => { setReason(""); setSnoozeFor(""); setPending({ action: "snoozed" }); }} disabled={act.isPending}
-              className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[14px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <ClockCounterClockwise size={16} /> Snooze
             </button>
           </div>
@@ -277,17 +277,17 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
           >
             <div className="shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-primary)]">
               <div className="flex items-center gap-1.5">
-                <ChatCircle size={16} className="text-pv-primary-primary-500" />
-                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Comment / instruction</p>
+                <ChatCircle size={16} className="text-primary-500" />
+                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Comment / instruction</p>
               </div>
-              <button onClick={() => setShowChat(false)} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close comments"><X size={16} /></button>
+              <button onClick={() => setShowChat(false)} className="p-1 rounded-md text-[var(--text-muted)] hover:bg-grey-100 bg-transparent border-none cursor-pointer" aria-label="Close comments"><X size={16} /></button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
               {thread.length === 0 ? (
                 <p className="text-[12px] text-[var(--text-muted)] leading-relaxed">Leave a comment or an instruction for this recommendation. It's saved to its record and carries into the next run.</p>
               ) : (
                 thread.map((m, i) => (
-                  <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-lg max-w-[88%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)]")}>
+                  <div key={i} className={cn("text-[14px] leading-relaxed px-3 py-2 rounded-lg max-w-[88%]", m.role === "user" ? "self-end bg-primary-500 text-white" : "self-start bg-grey-100 text-[var(--text-primary)]")}>
                     {m.text}
                   </div>
                 ))
@@ -301,7 +301,7 @@ export function RecommendationDetail({ goalId, recId, onClose, onOpenGoal }) {
                 rows={2}
                 autoFocus
                 placeholder="e.g. Never pause Brand Search, hold this one"
-                className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+                className="flex-1 text-[14px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
               />
               <PvButton variant="primary" size="md" label="Send" disabled={!comment.trim()} onClick={sendComment} />
             </div>

@@ -47,7 +47,7 @@ export const UserManagement = ({ showInviteButton = true }) => {
   const isAdmin = userDetail?.role?.toLowerCase?.() === "admin";
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-full overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
+    <div className="relative flex flex-col flex-1 min-h-full overflow-y-auto bg-[var(--color-grey-50)]">
       <UsersTabTable
         itemsPerPage={10}
         tableWrapperClassName="px-4 pb-2 rounded-lg"

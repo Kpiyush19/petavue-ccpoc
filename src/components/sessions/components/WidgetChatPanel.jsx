@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowUp, ArrowRight } from 'lucide-react'
-import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
+import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 import { apiGet } from '../../../api'
 
 // Bootstrap fallback for the sliding-window cap — used ONLY for the very
@@ -259,14 +259,14 @@ export default function WidgetChatPanel({
       {mainChatEditsCount > 0 && (
         <div className="shrink-0 px-3 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-tertiary)]">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] text-[var(--text-secondary)]">
+            <span className="text-[12px] text-[var(--text-secondary)]">
               Main chat has made {mainChatEditsCount} {mainChatEditsCount === 1 ? 'edit' : 'edits'} to this widget.
             </span>
             {onClose && (
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex items-center gap-1 text-[11px] text-[var(--accent)] hover:opacity-80
+                className="inline-flex items-center gap-1 text-[12px] text-[var(--accent)] hover:opacity-80
                   bg-transparent border-none cursor-pointer"
               >
                 View
@@ -279,7 +279,7 @@ export default function WidgetChatPanel({
 
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2">
         {messages.length === 0 && (
-          <div className="text-[11px] text-[var(--text-muted)] py-3 leading-relaxed">
+          <div className="text-[12px] text-[var(--text-muted)] py-3 leading-relaxed">
             <p className="m-0">
               This is a fresh widget-scoped conversation. Ask a question or
               request a change. The agent will only see this widget's
@@ -326,7 +326,7 @@ export default function WidgetChatPanel({
         )}
 
         {isBusy && (
-          <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] py-1">
+          <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] py-1">
             <span className="inline-block w-1 h-1 rounded-full bg-[var(--text-muted)] animate-pulse" />
             <span className="inline-block w-1 h-1 rounded-full bg-[var(--text-muted)] animate-pulse" style={{ animationDelay: '150ms' }} />
             <span className="inline-block w-1 h-1 rounded-full bg-[var(--text-muted)] animate-pulse" style={{ animationDelay: '300ms' }} />

@@ -4,8 +4,8 @@ import { toast, Toaster } from "sonner";
 import { useGoogleLogin } from "@react-oauth/google";
 import { googleLogin, loginWithEmailAndPassword } from "../../components/google-auth/api";
 import { fetchAndStoreCurrentUser, clearAuthToken, setAuthToken } from "../../api";
-import Input from "../../common-components/Input";
-import { Button } from "../../common-components/Button";
+import { Input } from "@/ui";
+import { Button } from "@/ui";
 import TNCModal from "./TNCModal";
 
 export default function LoginPage() {
@@ -90,17 +90,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-pv-neutral-grey-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-grey-50 flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-pv-neutral-grey-100 rounded-2xl p-10 w-full max-w-[440px] flex flex-col gap-6 shadow-xl mx-4"
+        className="bg-white border border-grey-100 rounded-2xl p-10 w-full max-w-[440px] flex flex-col gap-6 shadow-xl mx-4"
       >
         <div className="flex flex-col items-center gap-2 mb-2">
-          <div className="w-14 h-14 rounded-xl bg-pv-primary-primary-50 border border-pv-primary-primary-100 flex items-center justify-center mb-2">
+          <div className="w-14 h-14 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center mb-2">
             <img src="/petavue-logo.svg" alt="" className="w-7 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-brand-ai-1100">Petavue</h1>
-          <p className="text-sm text-pv-text-secondary-text">Sign in to continue</p>
+          <h1 className="text-2xl font-semibold text-grey-900">Petavue</h1>
+          <p className="text-sm text-[var(--text-secondary)]">Sign in to continue</p>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -124,26 +124,26 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3">
           <Button
             type="submit"
-            btnSize="xl"
+            size="lg"
             disabled={isLoading || !username || !password}
-            mainBtnClassName="w-full rounded-xl"
+            className="w-full rounded-xl"
           >
             {loading ? "Signing in..." : "Sign in"}
           </Button>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-pv-neutral-grey-200" />
-            <span className="text-sm text-pv-text-secondary-text italic">or</span>
-            <div className="flex-1 h-px bg-pv-neutral-grey-200" />
+            <div className="flex-1 h-px bg-grey-200" />
+            <span className="text-sm text-[var(--text-secondary)] italic">or</span>
+            <div className="flex-1 h-px bg-grey-200" />
           </div>
 
           <Button
             type="button"
-            btnColor="secondary ghost"
-            btnSize="xl"
+            variant="secondaryGhost"
+            size="lg"
             onClick={triggerGoogleLogin}
             disabled={isLoading}
-            mainBtnClassName="w-full rounded-xl"
+            className="w-full rounded-xl"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -175,8 +175,8 @@ export default function LoginPage() {
         toastOptions={{
           style: {
             background: "white",
-            border: "1px solid var(--pv-neutral-grey-200)",
-            color: "var(--brand-ai-1100)"
+            border: "1px solid var(--color-grey-200)",
+            color: "var(--grey-900)"
           }
         }}
       />

@@ -92,7 +92,7 @@ export default function VerifyPublishModal({
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-full">
-              <span className="text-[14px] text-[var(--pv-error-text)]">{error}</span>
+              <span className="text-[14px] text-[var(--color-red)]">{error}</span>
             </div>
           ) : (
             <PublishView

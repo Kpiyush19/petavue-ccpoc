@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { X } from '@phosphor-icons/react';
-import Input from '../../../../common-components/Input';
+import { Input } from '@/ui';
 
 const IntegrationModalDatabase = ({
   index,
@@ -275,10 +275,10 @@ const IntegrationModalDatabase = ({
   return (
     <div className="flex flex-col gap-4 pb-6 justify-between">
       <div className={`flex justify-between ${index !== 0 ? 'border-t pt-6 mx-6' : 'px-6 pt-4'}`}>
-        <label className="block text-sm text-[var(--pv-neutral-grey-700)]">Database {index + 1}</label>
+        <label className="block text-sm text-[var(--color-grey-700)]">Database {index + 1}</label>
         {index !== 0 && (
           <button
-            className="flex items-center gap-2 cursor-pointer text-[var(--pv-primary-500)]"
+            className="flex items-center gap-2 cursor-pointer text-[var(--color-primary-500)]"
             onClick={() => removeConnection(index)}
           >
             <X size={16} />

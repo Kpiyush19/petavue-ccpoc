@@ -6,8 +6,10 @@ import { FullStory, init as initFullStory } from "@fullstory/browser";
 import { fullStoryIntegration } from "@sentry/fullstory";
 import "primereact/resources/primereact.min.css";
 import "./index.css";
-// Petavue design system — tokens, Poppins, reset (loaded last so it's authoritative).
-import "./petavue/petavue.css";
+// Design system globals — tokens, Poppins, reset (loaded last so it's authoritative).
+import "./ui/global.css";
+// Canonical color tokens — the single source of truth.
+import "./ui/tokens/tokens.css";
 import { router } from "./router";
 import { AuthProvider } from "./providers/auth";
 import { PostHogProvider } from "./providers/posthog";

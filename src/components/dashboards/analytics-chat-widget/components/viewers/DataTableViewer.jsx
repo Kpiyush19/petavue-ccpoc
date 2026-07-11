@@ -55,13 +55,13 @@ function CellContent({ value }) {
         title={expanded ? 'Click to collapse' : 'Click to expand'}
       >
         {isObject && !expanded ? (
-          <span className="text-[var(--text-muted)] text-[11px] font-mono">
+          <span className="text-[var(--text-muted)] text-[12px] font-mono">
             {Array.isArray(value)
               ? `[${value.length} items]`
               : `{${Object.keys(value).length} keys}`}
           </span>
         ) : (
-          <pre className="text-[11px] font-mono whitespace-pre-wrap break-words m-0">
+          <pre className="text-[12px] font-mono whitespace-pre-wrap break-words m-0">
             {text}
           </pre>
         )}

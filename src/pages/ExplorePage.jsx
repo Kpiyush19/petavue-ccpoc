@@ -59,7 +59,7 @@ export default function ExplorePage() {
             {greeting}
             {userName ? `, ${userName}` : ""}
           </h1>
-          <p className="text-[15px] text-[var(--text-secondary)] mt-2">How can I help you today?</p>
+          <p className="text-[16px] text-[var(--text-secondary)] mt-2">How can I help you today?</p>
         </motion.div>
 
         <motion.div {...fadeUp(0.08)} className="w-full">

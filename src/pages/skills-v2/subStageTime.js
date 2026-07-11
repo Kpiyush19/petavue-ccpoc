@@ -146,7 +146,7 @@ export function getInlineTimeHint(subStageKey, elapsed) {
 // Map severity → tailwind text-color class. Centralized so SetupSubStepList
 // and ExecutionProgress verify rows render the same colors.
 export function severityTextClass(severity) {
-  if (severity === 'critical') return 'text-[var(--pv-error-text)] font-medium'
+  if (severity === 'critical') return 'text-[var(--color-red)] font-medium'
   if (severity === 'overrun')  return 'text-amber-700 font-medium'
   if (severity === 'warn')     return 'text-amber-600'
   return 'text-[var(--text-muted)]'
@@ -157,7 +157,7 @@ export function severityTextClass(severity) {
 // Subtle visual cue so overrun is visible at a glance, not just in the
 // inline text.
 export function severityRowAccentClass(severity) {
-  if (severity === 'critical') return 'border-[var(--pv-error-text)]/40 bg-[var(--pv-error-bg)]/30'
+  if (severity === 'critical') return 'border-[var(--color-red)]/40 bg-[var(--color-red-bg)]/30'
   if (severity === 'overrun')  return 'border-amber-400/50 bg-amber-50/40'
   // 'warn' and 'normal' keep the default row chrome
   return ''

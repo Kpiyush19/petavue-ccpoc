@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Scroll, CaretRight, X } from '@phosphor-icons/react'
 import { apiGet } from '../../api'
-import { Button } from '../ui/Button'
-import { Spinner } from '../ui/Spinner'
+import { Button } from '@/ui'
+import { Spinner } from '@/ui'
 import { PHASE_LABEL } from '../../pages/skills-v2/statusMap'
 
 // Skill-run activity. The trigger lives INSIDE the left menu (above the
@@ -124,7 +124,7 @@ export default function RunsActivity({ expanded = false }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={summary}
-        className="group relative w-8 h-8 shrink-0 rounded-lg border border-pv-neutral-grey-100 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+        className="group relative w-8 h-8 shrink-0 rounded-lg border border-grey-100 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
       >
         {runningCount > 0 ? (
           <Spinner size={16} />
@@ -132,7 +132,7 @@ export default function RunsActivity({ expanded = false }) {
           <Scroll size={16} weight="fill" className="text-[var(--accent)]" />
         )}
         {/* Hover tooltip — the run summary, in the petavue dark tooltip style. */}
-        <span className="absolute left-full ml-2 px-3 py-1 rounded-md bg-[var(--color-neutral-700)] border border-[var(--color-neutral-100)] shadow-sm text-xs font-normal text-white whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+        <span className="absolute left-full ml-2 px-3 py-1 rounded-md bg-[var(--color-grey-700)] border border-[var(--color-grey-100)] shadow-sm text-xs font-normal text-white whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
           {summary}
         </span>
       </button>
@@ -143,7 +143,7 @@ export default function RunsActivity({ expanded = false }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="w-full flex items-center gap-2 px-2.5 h-10 rounded-xl border border-pv-neutral-grey-100 text-left bg-white hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
+        className="w-full flex items-center gap-2 px-2.5 h-10 rounded-xl border border-grey-100 text-left bg-white hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
       >
         {runningCount > 0 ? (
           <Spinner size={13} className="shrink-0" />
@@ -170,7 +170,7 @@ export default function RunsActivity({ expanded = false }) {
           >
             <div className="flex items-center gap-2 h-11 px-3.5 shrink-0 border-b border-[var(--border-primary)]">
               {runningCount > 0 ? <Spinner size={13} className="shrink-0" /> : null}
-              <span className="flex-1 min-w-0 text-[13px] font-semibold text-[var(--text-primary)] truncate">
+              <span className="flex-1 min-w-0 text-[14px] font-semibold text-[var(--text-primary)] truncate">
                 {summary}{runningCount > 0 && readyCount > 0 ? ` · ${readyCount} ready` : ''}
               </span>
               <button

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowsClockwise, Info } from "@phosphor-icons/react";
-import { Button } from "../../../../common-components/Button";
-import Skeleton from "../../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import { useGetSetupAssociations } from "../api/getSetupAssociations";
 import { usePutSetupAssociations } from "../api/putSetupAssociations";
 import { useNotificationStore } from "../stores/notifications";
@@ -125,8 +125,8 @@ export const AssociationsTab = ({ integrationId }) => {
   if (!integrationId) {
     return (
       <div className="px-6 py-5">
-        <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg p-6 text-center">
-          <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+        <div className="border border-[var(--color-grey-200)] rounded-lg p-6 text-center">
+          <p className="text-sm text-[var(--color-grey-500)]">
             We couldn't load this integration. It may not be connected yet.
           </p>
         </div>
@@ -138,10 +138,10 @@ export const AssociationsTab = ({ integrationId }) => {
     <div className="px-6 py-5 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h2 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+          <h2 className="text-sm font-medium text-[var(--color-text-primary)]">
             Associations to sync
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             {allSelected
               ? "Auto mode: Petavue syncs every supported pair, including new ones HubSpot may add later."
               : "Custom mode: only the ticked pairs sync. Switch back to Auto to also include future pairs."}
@@ -149,8 +149,8 @@ export const AssociationsTab = ({ integrationId }) => {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            btnColor="secondary"
-            btnSize="md"
+            variant="secondary"
+            size="md"
             onClick={handleRefresh}
             disabled={associationsQuery.isFetching}
           >
@@ -173,7 +173,7 @@ export const AssociationsTab = ({ integrationId }) => {
           "Custom" doesn't change picks; it's effectively a passthrough that
           tells the user the current state is treated as a custom selection. */}
       {allSupportedKeys.length > 0 && (
-        <div className="inline-flex border border-[var(--pv-neutral-grey-200)] rounded-md overflow-hidden self-start">
+        <div className="inline-flex border border-[var(--color-grey-200)] rounded-md overflow-hidden self-start">
           <ModeButton
             active={allSelected}
             onClick={() => {
@@ -223,8 +223,8 @@ const ModeButton = ({ active, onClick, title, children }) => (
     className={[
       "px-4 py-1.5 text-xs font-medium transition-colors",
       active
-        ? "bg-[var(--pv-primary-500)] text-white"
-        : "bg-white text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)]"
+        ? "bg-[var(--color-primary-500)] text-white"
+        : "bg-white text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)]"
     ].join(" ")}
   >
     {children}
@@ -276,7 +276,7 @@ const SelectableAssociationsList = ({
   }
   if (supported.length === 0) {
     return (
-      <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-6 text-center text-xs text-[var(--pv-neutral-grey-500)]">
+      <div className="border border-[var(--color-grey-200)] rounded-lg bg-white p-6 text-center text-xs text-[var(--color-grey-500)]">
         No association pairs available yet. Save objects on the Schema tab
         first, then come back here.
       </div>
@@ -300,20 +300,20 @@ const SelectableAssociationsList = ({
       {picks.size === 0 && (
         <div className="border border-[var(--pv-status-warning,#F59E0B)]/30 bg-[var(--pv-status-warning,#F59E0B)]/5 rounded-lg p-3 flex items-start gap-2">
           <Info size={14} className="text-[var(--pv-status-warning,#F59E0B)] mt-0.5 shrink-0" />
-          <p className="text-xs text-[var(--pv-text-primary-text)]">
+          <p className="text-xs text-[var(--color-text-primary)]">
             No associations selected. Saving like this turns off association sync
             entirely.
           </p>
         </div>
       )}
       <div className="flex items-center justify-between gap-2 px-1">
-        <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+        <span className="text-xs text-[var(--color-grey-500)]">
           {selectedCount} of {supported.length} pair{supported.length === 1 ? "" : "s"} selected
         </span>
-        <label className="flex items-center gap-2 cursor-pointer text-xs text-[var(--pv-neutral-grey-500)]">
+        <label className="flex items-center gap-2 cursor-pointer text-xs text-[var(--color-grey-500)]">
           <input
             type="checkbox"
-            className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+            className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
             checked={allSelected}
             onChange={onToggleAll}
             disabled={isSaving}
@@ -328,13 +328,13 @@ const SelectableAssociationsList = ({
           return (
             <div
               key={g.from}
-              className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden"
+              className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden"
             >
-              <div className="flex items-center justify-between px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-b border-[var(--pv-neutral-grey-100)]">
-                <span className="text-[11px] font-medium text-[var(--pv-text-primary-text)] uppercase tracking-wide">
+              <div className="flex items-center justify-between px-3 py-2 bg-[var(--color-grey-50)] border-b border-[var(--color-grey-100)]">
+                <span className="text-[12px] font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
                   {humanizeObject(g.from)}
                 </span>
-                <span className="text-[10px] text-[var(--pv-neutral-grey-500)]">
+                <span className="text-[10px] text-[var(--color-grey-500)]">
                   {groupSelected} of {g.pairs.length} selected
                 </span>
               </div>
@@ -343,22 +343,22 @@ const SelectableAssociationsList = ({
                 return (
                   <label
                     key={p.key}
-                    className="grid grid-cols-[40px_1fr] items-center px-3 py-2.5 border-b border-[var(--pv-neutral-grey-100)] last:border-b-0 cursor-pointer bg-white hover:bg-[var(--pv-neutral-grey-50)]"
+                    className="grid grid-cols-[40px_1fr] items-center px-3 py-2.5 border-b border-[var(--color-grey-100)] last:border-b-0 cursor-pointer bg-white hover:bg-[var(--color-grey-50)]"
                   >
                     <input
                       type="checkbox"
-                      className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+                      className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
                       checked={checked}
                       onChange={() => onToggle(p.key)}
                       disabled={isSaving}
                     />
                     <div>
-                      <div className="text-sm text-[var(--pv-text-primary-text)] font-medium flex items-center gap-1.5">
-                        <span className="text-[var(--pv-neutral-grey-400)]">↔</span>
+                      <div className="text-sm text-[var(--color-text-primary)] font-medium flex items-center gap-1.5">
+                        <span className="text-[var(--color-grey-400)]">↔</span>
                         <span>{humanizeObject(p.to)}</span>
                       </div>
                       {p.description && (
-                        <div className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-0.5">
+                        <div className="text-[12px] text-[var(--color-grey-500)] mt-0.5">
                           {p.description}
                         </div>
                       )}

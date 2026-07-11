@@ -3,8 +3,8 @@ import { Play, CheckCircle2, XCircle, Loader2, Save, RotateCcw, Sparkles, Chevro
 import Pusher from 'pusher-js'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../config'
 import { apiPost, getApiBase, getAuthToken, getCurrentUser } from '../api'
-import { Button } from './ui/Button'
-import { DialogContent, DialogFooter } from './ui/Dialog'
+import { Button } from '@/ui'
+import { DialogContent, DialogFooter } from '@/ui/components/OverlayDialog/OverlayDialog'
 import RecipeStepCell from './RecipeStepCell'
 import RecipeGroupCard from './RecipeGroupCard'
 import OutputPreview from './OutputPreview'
@@ -933,7 +933,7 @@ export default function RecipeVerifyStep({
             <span className="text-[12px] font-semibold text-[var(--text-primary)]">
               Recipe Steps
             </span>
-            <span className="text-[11px] text-[var(--text-muted)] font-mono">
+            <span className="text-[12px] text-[var(--text-muted)] font-mono">
               {completedCount}/{activeSteps.length} completed
               {skippedCount > 0 && ` · ${skippedCount} redundant`}
               {removedSteps.size > 0 && ` (${removedSteps.size} removed)`}
@@ -941,7 +941,7 @@ export default function RecipeVerifyStep({
             </span>
             <button
               onClick={toggleAll}
-              className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-secondary)]
+              className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-secondary)]
                 bg-transparent border border-[var(--border-primary)] rounded-md px-2 py-0.5 cursor-pointer transition-colors"
             >
               <ChevronsUpDown size={11} />
@@ -954,7 +954,7 @@ export default function RecipeVerifyStep({
                   title="Explain"
                   className={`flex items-center justify-center w-7 h-[22px] cursor-pointer transition-colors border-none
                     ${viewMode === 'summary'
-                      ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)]'
+                      ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)]'
                       : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                     }`}
                 >
@@ -965,7 +965,7 @@ export default function RecipeVerifyStep({
                   title="Inspect"
                   className={`flex items-center justify-center w-7 h-[22px] cursor-pointer transition-colors border-none
                     ${viewMode === 'card'
-                      ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)]'
+                      ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)]'
                       : 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                     }`}
                 >
@@ -974,17 +974,17 @@ export default function RecipeVerifyStep({
               </div>
             )}
             {codeToNl && summaryStatus && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--accent)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--accent)]">
                 <Sparkles size={11} className="animate-pulse" /> {summaryStatus}
               </span>
             )}
             {failedCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--pv-error-text)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--color-red)]">
                 <XCircle size={11} /> {failedCount} failed
               </span>
             )}
             {allPassed && hardeningPhase !== 'running' && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--pv-success-text)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--color-green)]">
                 <CheckCircle2 size={11} /> All passed
               </span>
             )}
@@ -1055,7 +1055,7 @@ export default function RecipeVerifyStep({
               <span className="text-[12px] font-medium text-red-700">
                 Execution stopped
               </span>
-              <span className="text-[11px] text-red-600">
+              <span className="text-[12px] text-red-600">
                 {blockedError.message || blockedError.reason}
               </span>
             </div>
@@ -1066,18 +1066,18 @@ export default function RecipeVerifyStep({
         {codeToNl && insights && (
           <div className="flex items-center gap-3 px-4 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-primary)] shrink-0 flex-wrap">
             {insights.queryCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--pv-primary-500)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--color-primary-500)]">
                 <Database size={11} /> {insights.queryCount} {insights.queryCount === 1 ? 'query' : 'queries'}
               </span>
             )}
             {insights.outputFileCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--pv-success-text)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--color-green)]">
                 <FileText size={11} /> {insights.outputFileCount} output {insights.outputFileCount === 1 ? 'file' : 'files'}
               </span>
             )}
             {/* Removed: "steps without tracked output" warning — produces false positives on write_file steps */}
             {insights.fallbackCount > 0 && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--pv-warning-text)]">
+              <span className="flex items-center gap-1 text-[12px] text-[var(--color-orange)]">
                 <AlertTriangle size={11} /> {insights.fallbackCount} generic
               </span>
             )}
@@ -1087,14 +1087,14 @@ export default function RecipeVerifyStep({
         {/* Widget filter pills (petavue users, React dashboards only) */}
         {widgetEntries.length > 0 && (
           <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-primary)] shrink-0 flex-wrap">
-            <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] font-medium shrink-0">
+            <span className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] font-medium shrink-0">
               <LayoutGrid size={11} /> Widgets:
             </span>
             <button
               onClick={() => setActiveWidget(null)}
-              className={`text-[11px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
+              className={`text-[12px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
                 ${!activeWidget
-                  ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border-[var(--pv-primary-200)]'
+                  ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)] border-[var(--color-primary-200)]'
                   : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-secondary)]'
                 }`}
             >
@@ -1106,9 +1106,9 @@ export default function RecipeVerifyStep({
                 <button
                   key={entry.id}
                   onClick={() => setActiveWidget(isActive ? null : entry.id)}
-                  className={`text-[11px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
+                  className={`text-[12px] font-medium px-2 py-0.5 rounded-full border cursor-pointer transition-colors
                     ${isActive
-                      ? 'bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border-[var(--pv-primary-200)]'
+                      ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-500)] border-[var(--color-primary-200)]'
                       : 'bg-transparent text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-secondary)]'
                     }`}
                 >
@@ -1135,7 +1135,7 @@ export default function RecipeVerifyStep({
               <>
                 <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/5">
                   <Sparkles size={14} className="text-[var(--accent)] animate-pulse shrink-0" />
-                  <span className="text-[13px] text-[var(--accent)] font-medium">{summaryStatus}</span>
+                  <span className="text-[14px] text-[var(--accent)] font-medium">{summaryStatus}</span>
                 </div>
                 {Array.from({ length: Math.min(steps.length || 5, 8) }).map((_, i) => (
                   <div key={i} className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-surface)] overflow-hidden animate-pulse">
@@ -1245,10 +1245,10 @@ export default function RecipeVerifyStep({
                 <FileText size={14} className="text-[var(--accent)] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <span className="text-[12px] font-semibold text-[var(--text-primary)]">Target Output</span>
-                  <span className="text-[11px] text-[var(--text-muted)] ml-2 font-mono">{recipe.target_file}</span>
+                  <span className="text-[12px] text-[var(--text-muted)] ml-2 font-mono">{recipe.target_file}</span>
                 </div>
                 {allPassed && (
-                  <span className="text-[10px] text-[var(--pv-success-text)] font-medium">Ready to preview</span>
+                  <span className="text-[10px] text-[var(--color-green)] font-medium">Ready to preview</span>
                 )}
               </div>
             )}
@@ -1399,7 +1399,7 @@ function FeedbackInput({ sessionId, execSessionId, disabled, onAgentRestart, onA
         onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
         placeholder={isDisabled ? 'Agent is working...' : 'Give feedback to the agent...'}
         disabled={isDisabled}
-        className="flex-1 text-[12px] border border-[var(--border-primary)] rounded-md px-2.5 py-1.5 bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--pv-primary-500)] disabled:opacity-50"
+        className="flex-1 text-[12px] border border-[var(--border-primary)] rounded-md px-2.5 py-1.5 bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-500)] disabled:opacity-50"
       />
       <Button variant="primary" size="sm" onClick={handleSend} disabled={isDisabled || !text.trim()}>
         {sending ? <Loader2 size={12} className="animate-spin" /> : 'Send'}

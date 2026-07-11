@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { ArrowLeft, Download, File, Globe } from 'lucide-react';
-import { Button } from '@/common-components';
+import { Button } from '@/ui';
 // import ArtifactTabs from './ArtifactTabs'; // Commented out - may need later
 import HtmlViewer from './viewers/HtmlViewer';
 import MarkdownViewer from './viewers/MarkdownViewer';
@@ -31,8 +31,8 @@ function DownloadCard({ sessionId, path, title }) {
       </div>
       <span className="download-card__title">{title}</span>
       <Button
-        btnColor="primary"
-        btnSize="lg"
+        variant="primary"
+        size="lg"
         label="Download"
         onClick={handleDownload}
       />
@@ -102,10 +102,10 @@ export default function ArtifactPanel({
 
       <div className="artifact-panel__header">
         <Button
-          btnColor="ghost"
-          btnSize="sm"
+          variant="ghost"
+          size="sm"
           onClick={onClose}
-          mainBtnClassName="artifact-panel__back-btn p-1.5"
+          className="artifact-panel__back-btn p-1.5"
         >
           <ArrowLeft size={16} />
         </Button>
@@ -128,10 +128,10 @@ export default function ArtifactPanel({
         <div className="artifact-panel__actions">
           {activeTab && activeTab.path && (
             <Button
-              btnColor="secondary ghost"
-              btnSize="sm"
+              variant="secondaryGhost"
+              size="sm"
               onClick={handleDownload}
-              mainBtnClassName="p-1.5"
+              className="p-1.5"
               title={isHtml ? 'Save as PDF' : `Download ${activeTab.title}`}
             >
               <Download size={13} />

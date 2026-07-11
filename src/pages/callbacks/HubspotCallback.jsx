@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useHubspotCallback } from './api';
-import spinner from '../../common-components/assets/spinner.gif';
+import spinner from '@/ui/assets/spinner.gif';
 
 export default function HubspotCallback() {
   const location = useLocation();

@@ -1,0 +1,528 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   DashboardWidget — card wrapper for dashboard chart/table widgets
+   ========================================================================== */
+
+.dashboard-widget {
+  background: var(--color-white);
+  border: var(--border-default) solid var(--color-grey-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  max-height: 450px;
+  transition: box-shadow 0.2s ease;
+}
+
+.dashboard-widget:hover {
+  box-shadow: 0 8px 24px 0 rgba(122, 122, 122, 0.12);
+}
+
+/* Header row: title + hover actions */
+.dashboard-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-8) var(--spacing-20);
+  border-bottom: var(--border-default) solid var(--color-grey-100);
+}
+
+.dashboard-widget__title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h2);
+  color: var(--color-text-primary);
+  margin: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover action buttons — hidden by default, shown on card hover */
+.dashboard-widget__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.dashboard-widget:hover .dashboard-widget__actions {
+  opacity: 1;
+}
+
+.dashboard-widget__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-32);
+  height: var(--spacing-32);
+  padding: var(--spacing-8);
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-widget__action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dashboard-widget__action-btn:hover {
+  background: var(--color-grey-50);
+}
+
+.dashboard-widget__sage-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  height: var(--spacing-32);
+  padding: var(--spacing-6) var(--spacing-12);
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-primary-500);
+}
+
+.dashboard-widget__sage-btn:hover {
+  background: var(--color-primary-50);
+}
+
+/* Description row */
+.dashboard-widget__description-wrapper {
+  position: relative;
+  padding: var(--spacing-8) var(--spacing-20);
+}
+
+.dashboard-widget__description {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-secondary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  cursor: default;
+}
+
+/* Dark tooltip matching Figma — shown when description is truncated */
+.dashboard-widget__tooltip {
+  position: absolute;
+  top: 100%;
+  left: var(--spacing-20);
+  right: var(--spacing-20);
+  z-index: 20;
+  background-color: var(--color-grey-700);
+  border: var(--border-default) solid var(--color-grey-100);
+  border-radius: 6px;
+  padding: var(--spacing-4) var(--spacing-12);
+  box-shadow: 0px 12px 12px 0px rgba(177, 177, 177, 0.1);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-white);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Edit mode — drag handle + always-visible action icons
+   -------------------------------------------------------------------------- */
+
+.dashboard-widget--editing {
+  transition: border-color 0.15s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-widget--editing:hover {
+  border-color: var(--color-primary-500);
+}
+
+.dashboard-widget__drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  flex-shrink: 0;
+  margin-right: var(--spacing-4);
+}
+
+/* In edit mode, action icons are always visible */
+.dashboard-widget__edit-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex-shrink: 0;
+}
+
+/* Body — flexible content area */
+.dashboard-widget__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--spacing-20) var(--spacing-12);
+  min-height: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Link button — tooltip + access popover
+   -------------------------------------------------------------------------- */
+
+.dashboard-widget__link-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Small dark tooltip */
+.dashboard-widget__link-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-grey-700);
+  border-radius: 6px;
+  padding: var(--spacing-4) var(--spacing-12);
+  box-shadow: 0px 12px 12px 0px rgba(177, 177, 177, 0.1);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-white);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ==========================================================================
+   Widget Access Dialog — centered popup overlay
+   ========================================================================== */
+
+@keyframes widget-access-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes widget-access-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.widget-access-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: widget-access-overlay-in 0.15s ease;
+}
+
+.widget-access-dialog {
+  width: 460px;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border-top: 4px solid var(--color-primary-500);
+  box-shadow: 0px 12px 12px 0px rgba(122, 122, 122, 0.08);
+  overflow: hidden;
+  animation: widget-access-dialog-in 0.2s ease;
+}
+
+.widget-access-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-16) var(--spacing-12);
+}
+
+.widget-access-dialog__title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: 26px;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.widget-access-dialog__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.widget-access-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  padding: 0 var(--spacing-12) var(--spacing-16);
+}
+
+.widget-access-dialog__desc {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Primary action button (Generate / Copy) */
+.widget-access-dialog__primary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-6);
+  height: 32px;
+  width: 100%;
+  padding: var(--spacing-6) var(--spacing-12);
+  border-radius: var(--radius-md);
+  border: none;
+  background-color: var(--color-primary-500);
+  color: var(--color-white);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.widget-access-dialog__primary-btn:hover {
+  background-color: var(--color-primary-800);
+}
+
+@keyframes widget-access-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.widget-access-dialog__generated {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  animation: widget-access-fade-in 0.25s ease;
+}
+
+/* Generated link display box */
+.widget-access-dialog__link-box {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: var(--spacing-8) var(--spacing-12);
+  background-color: var(--color-grey-50);
+  border: 0.5px solid var(--color-grey-200);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.widget-access-dialog__link-text {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-grey-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Additional information accordion ---- */
+.widget-access-dialog__accordion {
+  background-color: rgba(248, 249, 252, 0.5);
+  border: 1px solid var(--color-grey-100);
+  border-radius: 6px;
+  padding: var(--spacing-8);
+  overflow: hidden;
+}
+
+.widget-access-dialog__accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.widget-access-dialog__accordion-content--open {
+  grid-template-rows: 1fr;
+}
+
+.widget-access-dialog__accordion-inner {
+  overflow: hidden;
+}
+
+.widget-access-dialog__accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.widget-access-dialog__accordion-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.widget-access-dialog__accordion-label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-grey-600);
+}
+
+.widget-access-dialog__accordion-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  margin-top: var(--spacing-8);
+}
+
+/* "Know more" link */
+.widget-access-dialog__info-link-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+}
+
+.widget-access-dialog__info-link {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-primary-500);
+  cursor: pointer;
+}
+
+.widget-access-dialog__info-link:hover {
+  text-decoration: underline;
+}
+
+/* Info text paragraphs */
+.widget-access-dialog__info-text {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-grey-600);
+  margin: 0;
+}
+
+/* Code tags (.csv, .png) */
+.widget-access-dialog__code-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 4px;
+  background-color: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--font-size-body-2);
+  font-weight: 400;
+  color: var(--color-misc-orange);
+}
+
+/* Profile link */
+.widget-access-dialog__profile-link {
+  color: var(--color-primary-500);
+  cursor: pointer;
+}
+
+.widget-access-dialog__profile-link:hover {
+  text-decoration: underline;
+}
+
+/* Divider */
+.widget-access-dialog__divider {
+  height: 0;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+/* API Key section */
+.widget-access-dialog__api-key-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.widget-access-dialog__api-key-label {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-grey-600);
+}
+
+.widget-access-dialog__api-key-box {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  height: 32px;
+  padding: var(--spacing-8) var(--spacing-12);
+  background-color: var(--color-grey-50);
+  border: 0.5px solid var(--color-grey-200);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.widget-access-dialog__api-key-value {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-grey-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+
+.widget-access-dialog__api-key-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.widget-access-dialog__api-key-action:hover {
+  opacity: 0.7;
+}

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   X, ArrowSquareOut, Play, CircleNotch, CheckCircle, XCircle, ClockCounterClockwise, Target, WaveSine, CaretRight,
 } from "@phosphor-icons/react";
-import { Button as PvButton } from "../../petavue";
+import { Button as PvButton } from "@/ui";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 
@@ -22,17 +22,17 @@ function SnoozeMenu({ onSnooze, disabled }) {
   return (
     <>
       <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50">
+        className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-grey-100 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50">
         <ClockCounterClockwise size={14} /> Snooze <CaretRight size={11} className="rotate-90" />
       </button>
       {open && pos && createPortal(
         <>
           <div className="fixed inset-0 z-[90]" onClick={() => setOpen(false)} />
           <div className="fixed z-[91] w-44 bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
-            <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
+            <p className="px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Snooze for</p>
             {SNOOZE_OPTIONS.map((label) => (
               <button key={label} onClick={() => { onSnooze(label); setOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50 text-[var(--text-primary)]">{label}</button>
+                className="w-full flex items-center gap-2 px-3 py-2 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-grey-50 text-[var(--text-primary)]">{label}</button>
             ))}
           </div>
         </>,
@@ -54,15 +54,15 @@ function QuickRec({ goalId, rec, onChanged }) {
     snoozed: { icon: ClockCounterClockwise, cls: "text-amber-600", label: rec.snoozeLabel ? `Snoozed · ${rec.snoozeLabel}` : "Snoozed" },
   }[rec.status];
   return (
-    <div className={cn("p-3.5 rounded-lg border", done ? "border-[var(--border-primary)] bg-pv-neutral-grey-50" : "border-pv-primary-primary-200 bg-pv-primary-primary-50/30")}>
-      <p className={cn("text-[13px] font-medium leading-snug mb-1", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>→ {rec.tldr}</p>
+    <div className={cn("p-3.5 rounded-lg border", done ? "border-[var(--border-primary)] bg-grey-50" : "border-primary-200 bg-primary-50/30")}>
+      <p className={cn("text-[14px] font-medium leading-snug mb-1", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>→ {rec.tldr}</p>
       <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed mb-2.5">{rec.body}</p>
       {done ? (
         <div className="flex items-center justify-between">
           <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
             {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
           </span>
-          <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+          <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
@@ -121,9 +121,9 @@ export default function GoalQuickView({ id, onClose, onFull }) {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-                  <h3 className="text-[17px] font-semibold text-[var(--text-primary)] truncate">{goal.name}</h3>
+                  <h3 className="text-[18px] font-semibold text-[var(--text-primary)] truncate">{goal.name}</h3>
                 </div>
-                <p className="text-[13px] text-[var(--text-secondary)] mt-1 line-clamp-2">{goal.statement}</p>
+                <p className="text-[14px] text-[var(--text-secondary)] mt-1 line-clamp-2">{goal.statement}</p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <PvButton variant="ghost" size="sm" icon={ArrowSquareOut} aria-label="Open full view" onClick={() => onFull(id)} />
@@ -133,23 +133,23 @@ export default function GoalQuickView({ id, onClose, onFull }) {
 
             {/* Actions */}
             <div className="shrink-0 flex items-center justify-between gap-2 px-5 py-3 border-b border-[var(--border-primary)]">
-              <button onClick={() => onFull(id)} className="text-[13px] font-medium text-pv-primary-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0">Open full view</button>
+              <button onClick={() => onFull(id)} className="text-[14px] font-medium text-primary-600 hover:underline bg-transparent border-none cursor-pointer p-0">Open full view</button>
               <PvButton variant="primary" size="sm" label={check.isPending ? "Checking…" : "Run check-in"} icon={check.isPending ? Spinner : Play} iconPosition="suffix" disabled={check.isPending} onClick={() => check.mutate()} />
             </div>
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-6">
               {lastCheckIn && (
-                <div className="p-4 bg-pv-neutral-grey-50 border border-[var(--border-primary)] rounded-xl">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Latest check-in · {lastCheckIn.at}</p>
+                <div className="p-4 bg-grey-50 border border-[var(--border-primary)] rounded-xl">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Latest check-in · {lastCheckIn.at}</p>
                   <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{lastCheckIn.summary}</p>
                 </div>
               )}
 
               <section>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Recommendations</p>
+                <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Recommendations</p>
                 {recs.length === 0 ? (
-                  <p className="text-[13px] text-[var(--text-muted)]">No recommendations yet. Run a check-in.</p>
+                  <p className="text-[14px] text-[var(--text-muted)]">No recommendations yet. Run a check-in.</p>
                 ) : (
                   <div className="flex flex-col gap-2.5">
                     {recs.map((r) => <QuickRec key={r.id} goalId={id} rec={r} onChanged={invalidate} />)}
@@ -158,12 +158,12 @@ export default function GoalQuickView({ id, onClose, onFull }) {
               </section>
 
               <section>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Targets</p>
+                <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2.5">Targets</p>
                 {goal.targets.map((t) => (
                   <div key={t.id} className="flex gap-2">
-                    <Target size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+                    <Target size={16} className="text-primary-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
+                      <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{t.label}</p>
                       {t.target && <p className="text-[12px] text-[var(--text-muted)] mt-0.5">Target: {t.target}</p>}
                     </div>
                   </div>
@@ -180,11 +180,11 @@ export default function GoalQuickView({ id, onClose, onFull }) {
                       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-primary)]">
                         <div className="flex items-center gap-2">
                           <WaveSine size={16} className="text-[var(--text-muted)]" />
-                          <p className="text-[13px] font-semibold text-[var(--text-primary)]">What we're watching</p>
+                          <p className="text-[14px] font-semibold text-[var(--text-primary)]">What we're watching</p>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] font-medium">
+                        <div className="flex items-center gap-2 text-[12px] font-medium">
                           <span className={cn("inline-flex items-center gap-1", firing > 0 ? "text-rose-600" : "text-[var(--text-muted)]")}>
-                            <span className={cn("w-1.5 h-1.5 rounded-full", firing > 0 ? "bg-rose-500" : "bg-pv-neutral-grey-300")} />{firing}
+                            <span className={cn("w-1.5 h-1.5 rounded-full", firing > 0 ? "bg-rose-500" : "bg-grey-300")} />{firing}
                           </span>
                           <span className="inline-flex items-center gap-1 text-[var(--text-muted)]"><span className="w-1.5 h-1.5 rounded-full bg-green-400" />{quiet}</span>
                         </div>
@@ -201,7 +201,7 @@ export default function GoalQuickView({ id, onClose, onFull }) {
                                     <span className="w-2 h-2 rounded-full bg-rose-500" />
                                   </>
                                 ) : (
-                                  <span className="w-2 h-2 rounded-full border-[1.5px] border-pv-neutral-grey-300" />
+                                  <span className="w-2 h-2 rounded-full border-[1.5px] border-grey-300" />
                                 )}
                               </span>
                               <p className={cn("flex-1 text-[12px] leading-snug line-clamp-2", fired ? "text-[var(--text-primary)] font-medium" : "text-[var(--text-secondary)]")}>{c.label}</p>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Dialog, DialogHeader, DialogContent, DialogFooter } from './ui/Dialog'
-import { Input, Textarea, Select, Label } from './ui/Input'
-import { Button } from './ui/Button'
+import { Dialog, DialogHeader, DialogContent, DialogFooter } from '@/ui/components/OverlayDialog/OverlayDialog'
+import { Input, Textarea, Select, Label } from '@/ui/components/FormControls/FormControls'
+import { Button } from '@/ui'
 
 const CRON_PRESETS = [
   { label: 'Daily at 9:00 AM', value: '0 9 * * *' },
@@ -134,7 +134,7 @@ export default function ScheduleFormModal({ schedule, prefillDashboardId, target
                   <option key={f} value={f}>{f}</option>
                 ))}
               </Select>
-              <p className="text-[11px] text-[var(--text-muted)] mt-1">
+              <p className="text-[12px] text-[var(--text-muted)] mt-1">
                 The output file to refresh on each scheduled run
               </p>
             </div>
@@ -183,7 +183,7 @@ export default function ScheduleFormModal({ schedule, prefillDashboardId, target
                 placeholder="0 9 * * 1"
                 required
               />
-              <p className="text-[11px] text-[var(--text-muted)] mt-1">
+              <p className="text-[12px] text-[var(--text-muted)] mt-1">
                 5-field cron: minute hour day-of-month month day-of-week
               </p>
             </div>

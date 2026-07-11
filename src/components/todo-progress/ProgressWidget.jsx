@@ -103,7 +103,7 @@ export default function ProgressWidget({ artifactPanelOpen = false, agentRunning
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'flex items-center gap-1.5 h-7 px-2 rounded-md text-[11px] font-medium transition-colors cursor-pointer',
+          'flex items-center gap-1.5 h-7 px-2 rounded-md text-[12px] font-medium transition-colors cursor-pointer',
           'border border-[var(--border-primary)] bg-[var(--bg-secondary)]',
           'hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]',
           open && 'bg-[var(--bg-hover)] text-[var(--text-primary)]'
@@ -143,7 +143,7 @@ export default function ProgressWidget({ artifactPanelOpen = false, agentRunning
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-center justify-between pb-2 mb-1 border-b border-[var(--border-primary)]">
-                  <span className="text-[11px] font-medium text-[var(--text-secondary)]">Progress</span>
+                  <span className="text-[12px] font-medium text-[var(--text-secondary)]">Progress</span>
                   <span className="text-[10px] text-[var(--text-muted)] tabular-nums">
                     {counts.completed} done · {counts.in_progress} {agentRunning ? 'active' : 'paused'} · {counts.pending} pending
                   </span>

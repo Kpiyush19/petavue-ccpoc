@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Plug, CheckCircle, XCircle, User, Buildings } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../../common-components/Button";
-import Skeleton from "../../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import { useRequestSetupDisconnect } from "../api/requestSetupDisconnect";
 import { useTestSetupConnection } from "../api/testSetupConnection";
 import { useGetPlatformDetail } from "../api/getPlatformDetail";
@@ -62,12 +62,12 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
   return (
     <div className="px-6 py-5 flex flex-col gap-6">
       {/* Connection */}
-      <section className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
+      <section className="border border-[var(--color-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
         <div>
-          <h2 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+          <h2 className="text-sm font-medium text-[var(--color-text-primary)]">
             Connection
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             OAuth connection details for {integrationName || platform}.
           </p>
         </div>
@@ -80,30 +80,30 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1">
+            <div className="border border-[var(--color-grey-200)] rounded-md p-3">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1">
                 <Buildings size={12} />
                 Org URL
               </div>
-              <div className="text-xs text-[var(--pv-text-primary-text)] break-all">
+              <div className="text-xs text-[var(--color-text-primary)] break-all">
                 {detail.org_url || "—"}
               </div>
             </div>
-            <div className="border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1">
+            <div className="border border-[var(--color-grey-200)] rounded-md p-3">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1">
                 <User size={12} />
                 Connected by
               </div>
-              <div className="text-xs text-[var(--pv-text-primary-text)]">
+              <div className="text-xs text-[var(--color-text-primary)]">
                 {detail.admin_name || "—"}
               </div>
             </div>
-            <div className="border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1">
+            <div className="border border-[var(--color-grey-200)] rounded-md p-3">
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1">
                 <User size={12} />
                 Service account
               </div>
-              <div className="text-xs text-[var(--pv-text-primary-text)] break-all">
+              <div className="text-xs text-[var(--color-text-primary)] break-all">
                 {detail.service_account_name || detail.service_account_user || "—"}
               </div>
             </div>
@@ -112,8 +112,8 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
 
         <div className="flex items-center gap-2 flex-wrap">
           <Button
-            btnColor="secondary"
-            btnSize="md"
+            variant="secondary"
+            size="md"
             onClick={() => {
               if (!integrationId) return;
               setTestResult(null);
@@ -127,7 +127,7 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
             <span
               className={`inline-flex items-center gap-1 text-xs ${
                 testResult.ok
-                  ? "text-[var(--pv-success-text)]"
+                  ? "text-[var(--color-green)]"
                   : "text-[var(--pv-status-error,#EF4444)]"
               }`}
             >
@@ -138,13 +138,13 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
         </div>
 
         {!showDisconnectConfirm ? (
-          <div className="flex items-center gap-2 pt-2 border-t border-[var(--pv-neutral-grey-100)]">
+          <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-grey-100)]">
             <Button
-              btnColor="red ghost"
-              btnSize="md"
+              variant="red"
+              size="md"
               onClick={() => setShowDisconnectConfirm(true)}
               disabled={!integrationId}
-              mainBtnClassName="border border-[var(--pv-status-error,#EF4444)]"
+              className="border border-[var(--pv-status-error,#EF4444)]"
             >
               <Plug size={14} className="mr-1.5" />
               Request disconnect
@@ -161,11 +161,11 @@ export const SettingsTab = ({ platform, integrationId, integrationName, onDiscon
         )}
       </section>
 
-      <p className="text-[11px] text-[var(--pv-neutral-grey-500)]">
+      <p className="text-[12px] text-[var(--color-grey-500)]">
         Looking for the sync timezone? It's tenant-wide now and lives under{" "}
         <Link
           to="/settings/general"
-          className="text-[var(--pv-primary-500)] font-medium hover:underline"
+          className="text-[var(--color-primary-500)] font-medium hover:underline"
         >
           Settings → General
         </Link>

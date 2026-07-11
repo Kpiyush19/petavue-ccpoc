@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ClickAwayListener, Fade, Popper } from '@mui/material';
 import { Files } from '@phosphor-icons/react';
-import { Button } from '@/common-components';
+import { Button } from '@/ui';
 
 export default function FilesTrayButton({
   sessionId,
@@ -41,7 +41,7 @@ export default function FilesTrayButton({
 
   if (!WorkspaceTray) {
     return (
-      <Button onClick={handleClick} btnColor="ghost" btnSize="sm">
+      <Button onClick={handleClick} variant="ghost" size="sm">
         <Files size={14} weight={open ? 'fill' : 'regular'} />
         Files
       </Button>
@@ -50,7 +50,7 @@ export default function FilesTrayButton({
 
   return (
     <>
-      <Button onClick={handleClick} btnColor="ghost" btnSize="sm">
+      <Button onClick={handleClick} variant="ghost" size="sm">
         <Files size={14} weight={open ? 'fill' : 'regular'} />
         Files
       </Button>
@@ -67,7 +67,7 @@ export default function FilesTrayButton({
           <ClickAwayListener onClickAway={handleClose}>
             <Fade {...TransitionProps} timeout={200}>
               <div
-                className="bg-white rounded-lg shadow-lg border border-[var(--pv-neutral-grey-200)] overflow-hidden"
+                className="bg-white rounded-lg shadow-lg border border-[var(--color-grey-200)] overflow-hidden"
                 style={{ width: 340, height: 460 }}
                 data-theme="light"
               >

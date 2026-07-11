@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { useLinkedinCallback } from './api';
-import spinner from '../../common-components/assets/spinner.gif';
+import spinner from '@/ui/assets/spinner.gif';
 
 // Public, no-auth landing page LinkedIn redirects to after the user approves
 // consent. By the time this renders, the code has been exchanged and the
@@ -84,19 +84,19 @@ export default function LinkedinCallback() {
 
         <div className="pv-pop">
           {isConnected ? (
-            <CheckCircle size={56} weight="fill" color="var(--pv-success-text)" />
+            <CheckCircle size={56} weight="fill" color="var(--color-green)" />
           ) : (
-            <XCircle size={56} weight="fill" color="var(--pv-error-text, #b42318)" />
+            <XCircle size={56} weight="fill" color="var(--color-red, #b42318)" />
           )}
         </div>
 
         <div className="flex flex-col gap-2 pv-rise-2">
-          <h1 className="text-xl font-medium text-[var(--pv-text-primary-text)]">
+          <h1 className="text-xl font-medium text-[var(--color-text-primary)]">
             {isConnected
               ? 'LinkedIn connected successfully'
               : 'LinkedIn connection unsuccessful'}
           </h1>
-          <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+          <p className="text-sm text-[var(--color-grey-500)]">
             {isConnected
               ? 'Your account is linked and ready. You can safely close this tab.'
               : 'Something went wrong while connecting. You can close this tab and try again.'}

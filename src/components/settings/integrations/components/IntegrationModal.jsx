@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Plus } from "@phosphor-icons/react";
-import { Modal } from "../../../../common-components/Modal";
-import { Button } from "../../../../common-components/Button";
+import { Modal } from "@/ui";
+import { Button } from "@/ui";
 import { useConnectDatabase } from "../api/connectDatabase";
 import IntegrationModalDatabase from "./IntegrationModalDatabase";
 import { useNotificationStore } from "../stores/notifications";
@@ -205,18 +205,18 @@ export const IntegrationModal = ({
         ))}
       </div>
 
-      <div className="flex justify-between px-6 py-4 border-t border-[var(--pv-neutral-grey-200)] items-end gap-1.5">
-        <Button btnColor="ghost" btnSize="lg" onClick={handleCloseModal}>
+      <div className="flex justify-between px-6 py-4 border-t border-[var(--color-grey-200)] items-end gap-1.5">
+        <Button variant="ghost" size="lg" onClick={handleCloseModal}>
           Cancel
         </Button>
         <div className="flex gap-4">
           {!singleConnectionIntegrations.includes(selectedCard?.name) && (
-            <Button btnColor="secondary" btnSize="lg" onClick={handleAddNewComponent} disabled={connecting}>
+            <Button variant="secondary" size="lg" onClick={handleAddNewComponent} disabled={connecting}>
               <Plus />
               <span className="whitespace-nowrap">Add New Connection</span>
             </Button>
           )}
-          <Button btnColor="primary" btnSize="lg" onClick={handleConnect} disabled={!canConnect || connecting}>
+          <Button variant="primary" size="lg" onClick={handleConnect} disabled={!canConnect || connecting}>
             {connecting ? (
               <>
                 <svg

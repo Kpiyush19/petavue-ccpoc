@@ -1,6 +1,6 @@
 import { File, Calendar } from 'lucide-react';
-import { Button } from '@/common-components';
-import MarkdownRenderer from '@/common-utils/MarkdownRenderer';
+import { Button } from '@/ui';
+import MarkdownRenderer from '@/utils/MarkdownRenderer';
 import Timestamp from './Timestamp';
 
 export default function MessageBubble({
@@ -77,11 +77,11 @@ export default function MessageBubble({
         {onSchedule && !isStreaming && text && (
           <div className="flex items-center gap-2 mt-2">
             <Button
-              btnColor="ghost"
-              btnSize="sm"
+              variant="ghost"
+              size="sm"
               label="Schedule"
               onClick={onSchedule}
-              mainBtnClassName="msg-schedule-btn"
+              className="msg-schedule-btn"
             >
               <Calendar size={12} />
             </Button>

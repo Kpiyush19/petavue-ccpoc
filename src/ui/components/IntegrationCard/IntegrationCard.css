@@ -1,0 +1,168 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   IntegrationCard — integration tile with 3 states
+   ========================================================================== */
+
+.integration-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  align-items: flex-start;
+  padding: var(--spacing-16);
+  width: 400px;
+  height: 200px;
+  background: var(--color-white);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.integration-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Header — logo + name + badge / notify
+   -------------------------------------------------------------------------- */
+
+.integration-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 32px;
+}
+
+.integration-card__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.integration-card__logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.integration-card__name {
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.integration-card__badge {
+  flex-shrink: 0;
+}
+
+/* Notify Me link (coming-soon) */
+.integration-card__notify {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  padding: var(--spacing-6) var(--spacing-12);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-primary-500);
+  transition: background-color 0.15s ease;
+}
+
+.integration-card__notify:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* --------------------------------------------------------------------------
+   Category tag
+   -------------------------------------------------------------------------- */
+
+.integration-card__category {
+  display: inline-flex;
+  align-items: flex-start;
+  padding: var(--spacing-2) var(--spacing-12);
+  background: var(--color-tag-blue);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Description
+   -------------------------------------------------------------------------- */
+
+.integration-card__desc {
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  color: var(--color-text-secondary);
+  margin: 0;
+  height: 56px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* --------------------------------------------------------------------------
+   Action buttons — 3 states
+   -------------------------------------------------------------------------- */
+
+.integration-card__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: var(--spacing-6) var(--spacing-12);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Connect — blue filled */
+.integration-card__btn--connect {
+  background-color: var(--color-primary-500);
+  color: var(--color-white);
+  border: none;
+}
+
+.integration-card__btn--connect:hover {
+  background-color: var(--color-primary-800);
+}
+
+/* View Details — blue outlined */
+.integration-card__btn--details {
+  background-color: var(--color-white);
+  color: var(--color-primary-500);
+  border: 1px solid var(--color-primary-500);
+}
+
+.integration-card__btn--details:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* Coming Soon — light blue, disabled */
+.integration-card__btn--soon {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-500);
+  border: none;
+  cursor: default;
+}

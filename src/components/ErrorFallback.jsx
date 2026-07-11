@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowClockwise, House } from "@phosphor-icons/react";
-import { Button } from "../common-components/Button";
+import { Button } from "@/ui";
 
 export function ErrorFallback({ error, resetError }) {
   const handleReload = () => {
@@ -59,11 +59,11 @@ export function ErrorFallback({ error, resetError }) {
           transition={{ delay: 0.4, duration: 0.4 }}
           className="flex gap-3 w-full px-4"
         >
-          <Button btnColor="primary" btnSize="xl" onClick={handleReload} className="flex-1">
+          <Button variant="primary" size="lg" onClick={handleReload} className="flex-1">
             <ArrowClockwise size={16} weight="bold" />
             Try again
           </Button>
-          <Button btnColor="secondary" btnSize="xl" onClick={() => (window.location.href = "/")} className="flex-1">
+          <Button variant="secondary" size="lg" onClick={() => (window.location.href = "/")} className="flex-1">
             <House size={16} weight="bold" />
             Home
           </Button>

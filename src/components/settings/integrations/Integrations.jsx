@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { ArrowsClockwise, CheckCircle } from "@phosphor-icons/react";
 import { useGetSourceIntegrations } from "./api/getSourceIntegrations";
-import Skeleton from "../../../common-components/Skeleton";
-import { Button } from "../../../common-components/Button";
+import { Skeleton } from "@/ui";
+import { Button } from "@/ui";
 import IntegrationCard from "./components/IntegrationCard";
 import { IntegrationModal } from "./components/IntegrationModal";
 import { SpinnerModal } from "./components/SpinnerModal";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const CardSkeleton = ({ ind }) => {
   return (
     <div
-      className="flex flex-col gap-4 bg-white items-start justify-between border border-[var(--pv-neutral-grey-200)] h-full w-full rounded-lg px-6 py-4"
+      className="flex flex-col gap-4 bg-white items-start justify-between border border-[var(--color-grey-200)] h-full w-full rounded-lg px-6 py-4"
       key={ind}
     >
       <div className="flex flex-col gap-4 w-full">
@@ -56,7 +56,7 @@ export const Integrations = ({ onNavigate }) => {
   // signals for the same connector (e.g. Pusher event + popup-close backstop).
   const notifyConnected = ({ slug, name }) => {
     refetchSourceIntegrations();
-    const icon = <CheckCircle size={18} weight="fill" color="var(--pv-success-text)" />;
+    const icon = <CheckCircle size={18} weight="fill" color="var(--color-green)" />;
     if (!slug) {
       toast.success(`${name || "Your integration"} connected`, {
         icon,
@@ -127,22 +127,22 @@ export const Integrations = ({ onNavigate }) => {
   });
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[var(--pv-neutral-grey-50)] min-h-full">
+    <div className="flex-1 overflow-y-auto bg-[var(--color-grey-50)] min-h-full">
       <div className="my-4 px-4 w-full">
         <div className="min-w-[900px]">
           <div className="flex justify-between items-center mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[var(--pv-neutral-grey-200)] text-sm">
-              <span className="text-[var(--pv-text-primary-text)]">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[var(--color-grey-200)] text-sm">
+              <span className="text-[var(--color-text-primary)]">
                 <span className="font-semibold">{totalCount}</span> Available
               </span>
-              <span className="w-px h-4 bg-[var(--pv-neutral-grey-200)]" />
-              <span className="text-[var(--pv-success-text)]">
+              <span className="w-px h-4 bg-[var(--color-grey-200)]" />
+              <span className="text-[var(--color-green)]">
                 <span className="font-semibold">{connectedCount}</span> Connected
               </span>
             </div>
             <Button
-              btnColor="secondary ghost"
-              btnSize="md"
+              variant="secondaryGhost"
+              size="md"
               onClick={() => refetchSourceIntegrations()}
               disabled={integFetch}
             >

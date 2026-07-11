@@ -75,7 +75,7 @@ function MinimizedStrip({ label, onExpand }) {
         <ArrowLeft size={14} />
       </button>
       <span
-        className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap"
+        className="text-[12px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider whitespace-nowrap"
         style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
       >
         {label}
@@ -295,7 +295,7 @@ export default function WidgetFocusModal({
         {/* Modal header */}
         <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
           <LayoutDashboard size={16} className="text-[var(--accent)]" />
-          <span className="text-[13px] font-semibold text-[var(--text-primary)] flex-1 truncate">
+          <span className="text-[14px] font-semibold text-[var(--text-primary)] flex-1 truncate">
             {widgetName}
           </span>
           <button

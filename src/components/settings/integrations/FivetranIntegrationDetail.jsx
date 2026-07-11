@@ -14,8 +14,8 @@ import {
   Clock
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../common-components/Button";
-import Skeleton from "../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import { useNotificationStore } from "./stores/notifications";
 import { TabButton } from "./components/shared/TabButton";
 import { SyncMenu } from "./components/shared/SyncMenu";
@@ -195,23 +195,23 @@ export const FivetranIntegrationDetail = ({
   const statusBadge = detailQuery.isLoading
     ? null
     : optimisticSyncing
-    ? { label: "Sync in progress", color: "var(--pv-primary-500)" }
+    ? { label: "Sync in progress", color: "var(--color-primary-500)" }
     : detail.connectionStatus === "connected"
-    ? { label: "Active", color: "var(--pv-success-text)" }
-    : { label: detail.connectionStatus || "Setup pending", color: "var(--pv-neutral-grey-500)" };
+    ? { label: "Active", color: "var(--color-green)" }
+    : { label: detail.connectionStatus || "Setup pending", color: "var(--color-grey-500)" };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
-      <div className="px-6 py-4 bg-white border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-3 sticky top-0 z-10">
+    <div className="flex-1 overflow-y-auto bg-[var(--color-grey-50)]">
+      <div className="px-6 py-4 bg-white border-b border-[var(--color-grey-200)] flex items-center gap-3 sticky top-0 z-10">
         <button
           type="button"
           onClick={onBack}
-          className="text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)]"
+          className="text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)]"
           aria-label="Back to integrations"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-lg font-medium text-[var(--pv-text-primary-text)]">
+        <h1 className="text-lg font-medium text-[var(--color-text-primary)]">
           {integrationName}
         </h1>
         {statusBadge && (
@@ -229,8 +229,8 @@ export const FivetranIntegrationDetail = ({
         <div className="ml-auto">
           {integrationId && (
             <Button
-              btnColor="primary"
-              btnSize="md"
+              variant="primary"
+              size="md"
               onClick={handleSync}
               disabled={
                 isSyncBusy ||
@@ -266,13 +266,13 @@ export const FivetranIntegrationDetail = ({
 
       {/* Initial-sync review hold (LF-tag enablement) */}
       {reviewPending && (
-        <div className="px-6 py-3 bg-[var(--pv-warning-bg,#FFF7ED)] border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-3">
-          <Info size={16} className="text-[var(--pv-warning-text,#B45309)] shrink-0" />
-          <span className="text-sm text-[var(--pv-text-primary-text)]">{REVIEW_MESSAGE}</span>
+        <div className="px-6 py-3 bg-[var(--color-orange-bg,#FFF7ED)] border-b border-[var(--color-grey-200)] flex items-center gap-3">
+          <Info size={16} className="text-[var(--color-orange,#B45309)] shrink-0" />
+          <span className="text-sm text-[var(--color-text-primary)]">{REVIEW_MESSAGE}</span>
           {isPetavueUser && (
             <Button
-              btnColor="secondary"
-              btnSize="sm"
+              variant="secondary"
+              size="sm"
               className="ml-auto"
               onClick={() => clearReview.mutate({ id: integrationId })}
               disabled={clearReview.isPending || !integrationId}
@@ -293,7 +293,7 @@ export const FivetranIntegrationDetail = ({
         Petavue as the system doing the work.
       */}
       {detail.isInitialSyncInProgress && fivetranSelectedCount > 0 && (
-        <div className="px-6 py-3 bg-[var(--pv-primary-50,#EEF2FF)] border-b border-[var(--pv-primary-200,#C7D2FE)] flex items-center gap-2 text-sm text-[var(--pv-primary-700,#3730A3)]">
+        <div className="px-6 py-3 bg-[var(--color-primary-50,#EEF2FF)] border-b border-[var(--color-primary-200,#C7D2FE)] flex items-center gap-2 text-sm text-[var(--color-primary-700,#3730A3)]">
           <Lightning size={16} weight="fill" />
           <span>
             <strong>We're getting things ready for you.</strong> Pulling your data
@@ -303,7 +303,7 @@ export const FivetranIntegrationDetail = ({
         </div>
       )}
 
-      <div className="px-6 bg-white border-b border-[var(--pv-neutral-grey-200)] flex items-center gap-2 sticky top-[57px] z-10">
+      <div className="px-6 bg-white border-b border-[var(--color-grey-200)] flex items-center gap-2 sticky top-[57px] z-10">
         <TabButton
           active={activeTab === "schema"}
           onClick={() => setActiveTab("schema")}
@@ -342,8 +342,8 @@ export const FivetranIntegrationDetail = ({
         </div>
       ) : byPlatformQuery.isError ? (
         <div className="px-6 py-5">
-          <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg p-6 text-center">
-            <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+          <div className="border border-[var(--color-grey-200)] rounded-lg p-6 text-center">
+            <p className="text-sm text-[var(--color-grey-500)]">
               We couldn't find this integration. It may not be connected yet.
               Try connecting from the integrations page.
             </p>
@@ -454,7 +454,7 @@ const PostConnectScreen = ({
         type="button"
         onClick={onClose}
         aria-label="Dismiss"
-        className="absolute top-4 right-4 text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-text-primary-text)]"
+        className="absolute top-4 right-4 text-[var(--color-grey-400)] hover:text-[var(--color-text-primary)]"
       >
         <X size={20} />
       </button>
@@ -463,19 +463,19 @@ const PostConnectScreen = ({
 
         <div className="pv-pop">
           {isSuccess ? (
-            <CheckCircle size={56} weight="fill" color="var(--pv-success-text)" />
+            <CheckCircle size={56} weight="fill" color="var(--color-green)" />
           ) : (
-            <XCircle size={56} weight="fill" color="var(--pv-error-text, #b42318)" />
+            <XCircle size={56} weight="fill" color="var(--color-red, #b42318)" />
           )}
         </div>
 
         <div className="flex flex-col gap-2 pv-rise-2">
-          <h1 className="text-xl font-medium text-[var(--pv-text-primary-text)]">
+          <h1 className="text-xl font-medium text-[var(--color-text-primary)]">
             {isSuccess
               ? `${integrationName} connected successfully`
               : `${integrationName} connection failed`}
           </h1>
-          <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+          <p className="text-sm text-[var(--color-grey-500)]">
             {isSuccess
               ? "Your account is linked. Want to pick the objects you'd like to sync now, or set it up later?"
               : reason && reason !== "unknown"
@@ -485,11 +485,11 @@ const PostConnectScreen = ({
         </div>
 
         <div className="flex items-center justify-center gap-3 w-full mt-2 pv-rise-3">
-          <Button btnColor="secondary" btnSize="lg" onClick={onLater}>
+          <Button variant="secondary" size="lg" onClick={onLater}>
             {isSuccess ? "Later" : "Back to integrations"}
           </Button>
           {isSuccess && (
-            <Button btnColor="primary" btnSize="lg" onClick={onStartSync}>
+            <Button variant="primary" size="lg" onClick={onStartSync}>
               <Lightning size={14} className="mr-1.5" weight="fill" />
               Configure sync
             </Button>
@@ -657,7 +657,7 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
     <div className="px-6 py-5 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+          <span className="text-xs text-[var(--color-grey-500)]">
             {picks.size} of {allTables.length} object{allTables.length === 1 ? "" : "s"} enabled
           </span>
         </div>
@@ -675,14 +675,14 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
       <div className="relative w-full max-w-md">
         <MagnifyingGlass
           size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pv-neutral-grey-400)] z-10 pointer-events-none"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-grey-400)] z-10 pointer-events-none"
         />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search objects…"
-          className="w-full h-9 pl-9 pr-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white text-[var(--pv-text-primary-text)] placeholder:text-[var(--pv-neutral-grey-400)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary-100)] focus:border-[var(--pv-primary-500)] transition-colors"
+          className="w-full h-9 pl-9 pr-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white text-[var(--color-text-primary)] placeholder:text-[var(--color-grey-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-100)] focus:border-[var(--color-primary-500)] transition-colors"
         />
       </div>
 
@@ -695,21 +695,21 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
         connector is still pending finalize.
       */}
       {nextSyncAtDisplay && !syncInProgress && (
-        <span className="inline-flex items-center gap-1 text-xs text-[var(--pv-neutral-grey-500)]">
+        <span className="inline-flex items-center gap-1 text-xs text-[var(--color-grey-500)]">
           <Clock size={12} />
           Next sync ~ {nextSyncAtDisplay}
         </span>
       )}
 
-      <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden">
-        <div className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-b border-[var(--pv-neutral-grey-100)] text-[11px] font-medium text-[var(--pv-neutral-grey-500)] uppercase tracking-wide">
+      <div className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden">
+        <div className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2 bg-[var(--color-grey-50)] border-b border-[var(--color-grey-100)] text-[12px] font-medium text-[var(--color-grey-500)] uppercase tracking-wide">
           <label
             className="cursor-pointer flex items-center justify-center"
             title={allVisibleSelected ? "Deselect all" : "Select all"}
           >
             <input
               type="checkbox"
-              className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+              className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
               checked={allVisibleSelected}
               onChange={toggleAllVisible}
               disabled={putTables.isPending || rows.length === 0}
@@ -733,7 +733,7 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
             initializing. Try again in a minute.
           </div>
         ) : rows.length === 0 ? (
-          <div className="p-6 text-center text-xs text-[var(--pv-neutral-grey-500)]">
+          <div className="p-6 text-center text-xs text-[var(--color-grey-500)]">
             {search
               ? "No objects match this search."
               : data?.schemaPending
@@ -750,25 +750,25 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
             return (
               <div
                 key={t.name}
-                className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--pv-neutral-grey-100)] last:border-b-0 bg-white hover:bg-[var(--pv-neutral-grey-50)]"
+                className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--color-grey-100)] last:border-b-0 bg-white hover:bg-[var(--color-grey-50)]"
               >
                 <label className="cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+                    className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
                     checked={isEnabled}
                     onChange={() => toggle(t.name)}
                     disabled={putTables.isPending}
                   />
                 </label>
-                <div className="text-sm font-medium text-[var(--pv-text-primary-text)] flex items-center gap-1.5">
+                <div className="text-sm font-medium text-[var(--color-text-primary)] flex items-center gap-1.5">
                   <span>{humanizeTableName(t.name)}</span>
-                  <span className="text-[11px] text-[var(--pv-neutral-grey-500)] font-normal">
+                  <span className="text-[12px] text-[var(--color-grey-500)] font-normal">
                     ({t.name})
                   </span>
                   {t.isCustomReport && (
                     <span
-                      className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-[var(--pv-primary-100,#EEF2FF)] text-[var(--pv-primary-700,#3730A3)]"
+                      className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-[var(--color-primary-100,#EEF2FF)] text-[var(--color-primary-700,#3730A3)]"
                       title="Custom report, auto-created on connect"
                     >
                       Custom report
@@ -777,13 +777,13 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
                   {catalogIds[t.name] ? (
                     <Link
                       to={`/data-hub/dictionary/${integrationId}?table=${catalogIds[t.name]}`}
-                      className="inline-flex items-center gap-0.5 text-[11px] font-normal text-[var(--pv-primary-500)] hover:underline"
+                      className="inline-flex items-center gap-0.5 text-[12px] font-normal text-[var(--color-primary-500)] hover:underline"
                       title="View this table in the data catalog"
                     >
                       View Catalog
                     </Link>
                   ) : (
-                    <span className="text-[11px] font-normal text-[var(--pv-neutral-grey-400)]">
+                    <span className="text-[12px] font-normal text-[var(--color-grey-400)]">
                       No catalog
                     </span>
                   )}
@@ -806,7 +806,7 @@ const FivetranSchemaTab = ({ integrationId, schemaQuery, nextSyncAtDisplay, isSy
                     <button
                       type="button"
                       onClick={() => setOpenMenuFor(menuOpen ? null : t.name)}
-                      className="p-1 rounded hover:bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)]"
+                      className="p-1 rounded hover:bg-[var(--color-grey-100)] text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)]"
                       aria-label="Sync options"
                       disabled={tableResync.isPending}
                     >
@@ -874,22 +874,22 @@ const FivetranTableSyncConfirmModal = ({ tableName, isPending, onConfirm, onCanc
       className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)]">
-        <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+      <div className="px-5 py-4 border-b border-[var(--color-grey-200)]">
+        <h2 className="text-base font-medium text-[var(--color-text-primary)]">
           Sync this object
         </h2>
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
-          Object: <span className="font-medium text-[var(--pv-text-primary-text)]">{humanizeTableName(tableName)}</span>
+        <p className="text-xs text-[var(--color-grey-500)] mt-1">
+          Object: <span className="font-medium text-[var(--color-text-primary)]">{humanizeTableName(tableName)}</span>
         </p>
       </div>
-      <div className="px-5 py-4 text-sm text-[var(--pv-text-primary-text)]">
+      <div className="px-5 py-4 text-sm text-[var(--color-text-primary)]">
         We'll re-pull every record for this object from the source. Other objects in this connector keep their normal sync cadence.
       </div>
-      <div className="px-5 py-4 border-t border-[var(--pv-neutral-grey-200)] flex items-center justify-end gap-2">
-        <Button btnColor="secondary" btnSize="md" onClick={onCancel} disabled={isPending}>
+      <div className="px-5 py-4 border-t border-[var(--color-grey-200)] flex items-center justify-end gap-2">
+        <Button variant="secondary" size="md" onClick={onCancel} disabled={isPending}>
           Cancel
         </Button>
-        <Button btnColor="primary" btnSize="md" onClick={onConfirm} disabled={isPending}>
+        <Button variant="primary" size="md" onClick={onConfirm} disabled={isPending}>
           <Lightning size={14} className="mr-1.5" weight="fill" />
           {isPending ? "Queueing…" : "Yes, sync now"}
         </Button>
@@ -938,47 +938,47 @@ const FivetranSettingsTab = ({ integrationId, integrationName, detail, onDisconn
 
   return (
     <div className="px-6 py-5 flex flex-col gap-6">
-      <section className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
+      <section className="border border-[var(--color-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
         <div>
-          <h2 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+          <h2 className="text-sm font-medium text-[var(--color-text-primary)]">
             Connection
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             Data lands in your Petavue warehouse on the schedule below.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1">
+          <div className="border border-[var(--color-grey-200)] rounded-md p-3">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1">
               <Buildings size={12} />
               Source
             </div>
-            <div className="text-xs text-[var(--pv-text-primary-text)]">
+            <div className="text-xs text-[var(--color-text-primary)]">
               {detail.datasource || "—"}
             </div>
           </div>
-          <div className="border border-[var(--pv-neutral-grey-200)] rounded-md p-3">
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--pv-neutral-grey-500)] mb-1">
+          <div className="border border-[var(--color-grey-200)] rounded-md p-3">
+            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-[var(--color-grey-500)] mb-1">
               <User size={12} />
               Connected by
             </div>
-            <div className="text-xs text-[var(--pv-text-primary-text)] break-all">
+            <div className="text-xs text-[var(--color-text-primary)] break-all">
               {detail.createdByEmail || "—"}
             </div>
           </div>
         </div>
 
         {lastConnected && (
-          <div className="text-[11px] text-[var(--pv-neutral-grey-500)]">
+          <div className="text-[12px] text-[var(--color-grey-500)]">
             Last connected: {lastConnected}
           </div>
         )}
 
         <div className="flex items-center gap-2 flex-wrap">
           <Button
-            btnColor="secondary"
-            btnSize="md"
+            variant="secondary"
+            size="md"
             onClick={() => {
               if (!integrationId) return;
               setTestResult(null);
@@ -992,7 +992,7 @@ const FivetranSettingsTab = ({ integrationId, integrationName, detail, onDisconn
             <span
               className={`inline-flex items-center gap-1 text-xs ${
                 testResult.ok
-                  ? "text-[var(--pv-success-text)]"
+                  ? "text-[var(--color-green)]"
                   : "text-[var(--pv-status-error,#EF4444)]"
               }`}
             >
@@ -1003,13 +1003,13 @@ const FivetranSettingsTab = ({ integrationId, integrationName, detail, onDisconn
         </div>
 
         {!showDisconnectConfirm ? (
-          <div className="flex items-center gap-2 pt-2 border-t border-[var(--pv-neutral-grey-100)]">
+          <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-grey-100)]">
             <Button
-              btnColor="red ghost"
-              btnSize="md"
+              variant="red"
+              size="md"
               onClick={() => setShowDisconnectConfirm(true)}
               disabled={!integrationId}
-              mainBtnClassName="border border-[var(--pv-status-error,#EF4444)]"
+              className="border border-[var(--pv-status-error,#EF4444)]"
             >
               <Plug size={14} className="mr-1.5" />
               Request disconnect
@@ -1046,19 +1046,19 @@ const FivetranSyncConfirmModal = ({
       className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-100)] flex items-start justify-between gap-3">
+      <div className="px-5 py-4 border-b border-[var(--color-grey-100)] flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+          <h3 className="text-base font-medium text-[var(--color-text-primary)]">
             Sync now
           </h3>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             We'll queue a sync for {integrationName}.
           </p>
         </div>
         <button
           type="button"
           onClick={onCancel}
-          className="text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)] -mt-1"
+          className="text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)] -mt-1"
           aria-label="Close"
         >
           <X size={18} />
@@ -1071,7 +1071,7 @@ const FivetranSyncConfirmModal = ({
             <input
               type="radio"
               name="fv-sync-mode"
-              className="accent-[var(--pv-primary-500)]"
+              className="accent-[var(--color-primary-500)]"
               checked={mode === "incremental"}
               onChange={() => onModeChange("incremental")}
             />
@@ -1081,27 +1081,27 @@ const FivetranSyncConfirmModal = ({
             <input
               type="radio"
               name="fv-sync-mode"
-              className="accent-[var(--pv-primary-500)]"
+              className="accent-[var(--color-primary-500)]"
               checked={mode === "full"}
               onChange={() => onModeChange("full")}
             />
             <span>Full re-sync</span>
           </label>
         </div>
-        <p className="text-[11px] text-[var(--pv-neutral-grey-500)]">
+        <p className="text-[12px] text-[var(--color-grey-500)]">
           {mode === "full"
             ? "We'll re-pull all historical data on the next run."
             : "We'll pick up changes since the last successful sync."}
         </p>
       </div>
 
-      <div className="px-5 py-3 border-t border-[var(--pv-neutral-grey-100)] flex items-center justify-end gap-2">
-        <Button btnColor="secondary" btnSize="md" onClick={onCancel} disabled={isPending}>
+      <div className="px-5 py-3 border-t border-[var(--color-grey-100)] flex items-center justify-end gap-2">
+        <Button variant="secondary" size="md" onClick={onCancel} disabled={isPending}>
           Cancel
         </Button>
         <Button
-          btnColor="primary"
-          btnSize="md"
+          variant="primary"
+          size="md"
           onClick={onConfirm}
           disabled={isPending}
         >

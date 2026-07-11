@@ -5,8 +5,8 @@ import {
   X,
   CheckCircle
 } from "@phosphor-icons/react";
-import { Button } from "@/common-components";
-import { Button as PvButton } from "../../petavue";
+import { Button } from "@/ui";
+import { Button as PvButton } from "@/ui";
 import { getCurrentUser, getApiBase, getAuthToken, apiGet } from "../../api";
 import { MOCK_ENABLED } from "../../mocks";
 import ArtifactTabs from "./components/ArtifactTabs";
@@ -50,7 +50,7 @@ function DownloadCard({ sessionId, path, title, onLoadComplete }) {
         <File size={22} weight="light" />
       </div>
       <span className="s-download-card__title">{title}</span>
-      <Button btnColor="primary" btnSize="lg" label="Download" onClick={handleDownload} />
+      <Button variant="primary" size="lg" label="Download" onClick={handleDownload} />
     </div>
   );
 }
@@ -209,7 +209,7 @@ export default function ArtifactPanel({
         <div className="s-artifact-panel__header">
           <span className="s-artifact-panel__title">Preview</span>
           <div className="s-artifact-panel__actions">
-            <Button btnColor="ghost" btnSize="sm" mainBtnClassName="p-1" onClick={onClose} title="Close panel">
+            <Button variant="ghost" size="sm" className="p-1" onClick={onClose} title="Close panel">
               <X size={14} weight="bold" />
             </Button>
           </div>
@@ -250,15 +250,15 @@ export default function ArtifactPanel({
             <Button
               onClick={() => setLineagePath(lineagePath ? null : activeTab.path)}
               disabled={isLoading}
-              btnColor="ghost"
-              btnSize="sm"
-              mainBtnClassName="p-1"
+              variant="ghost"
+              size="sm"
+              className="p-1"
               title={lineagePath ? "Hide lineage" : "How it's built"}
             >
               <GitBranch size={14} weight="bold" />
             </Button>
           )}
-          <Button btnColor="ghost" btnSize="sm" mainBtnClassName="p-1" onClick={onClose} title="Close panel">
+          <Button variant="ghost" size="sm" className="p-1" onClick={onClose} title="Close panel">
             <X size={16} weight="bold" />
           </Button>
         </div>

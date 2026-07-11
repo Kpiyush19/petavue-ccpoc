@@ -7,11 +7,11 @@ import {
   Clock, Globe, Search, Workflow,
   Pause, Play, Trash2, MoreVertical, EyeOff, Eye, Pencil, Inbox, ExternalLink,
 } from 'lucide-react'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
-import { Input } from '../components/ui/Input'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
+import { Input } from '@/ui/components/FormControls/FormControls'
 import { apiGet, apiPut, apiDelete, getCurrentUser } from '../api'
-import { timeAgo } from '@/common-utils/relativeTimeDiff'
+import { timeAgo } from '@/utils/relativeTimeDiff'
 
 export default function DashboardsPage() {
   const navigate = useNavigate()
@@ -180,7 +180,7 @@ export default function DashboardsPage() {
                     <div className="text-[12px] text-[var(--text-muted)] truncate">
                       {art.target_file}
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-[11px] text-[var(--text-muted)]">
+                    <div className="flex items-center gap-3 mt-1 text-[12px] text-[var(--text-muted)]">
                       {art.latest_run && (
                         <span className="flex items-center gap-1">
                           <Clock size={10} />

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from "react";
 import { Globe, Table2, Image, FileText, File, X } from "lucide-react";
-import { Button, Tooltip } from "@/common-components";
+import { Button, Tooltip } from "@/ui";
 import { getFileIcon } from "../utils/fileTypes";
 
 function TabIcon({ type }) {
@@ -86,13 +86,13 @@ export default function ArtifactTabs({ tabs, activeTabId, onSelectTab, onCloseTa
             </Tooltip>
             {tabs.length > 1 && (
               <Button
-                btnColor="transparent"
-                btnSize="sm"
+                variant="ghost"
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   onCloseTab(tab.id);
                 }}
-                mainBtnClassName="p-1"
+                className="p-1"
               >
                 <X size={12} />
               </Button>

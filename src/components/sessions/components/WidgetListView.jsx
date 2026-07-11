@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CheckCircle, CaretRight, Check } from '@phosphor-icons/react'
-import { Button as PvButton } from '../../../petavue'
+import { Button as PvButton } from '@/ui'
 
 const FILTERS = ['All', 'Pending', 'Verified']
 
@@ -80,7 +80,7 @@ export default function WidgetListView({
                     >
                       {widget.verified && <Check size={10} weight="bold" className="text-white" />}
                     </div>
-                    <span className="flex-1 text-[13px] font-medium text-[var(--text-primary)] truncate">{name}</span>
+                    <span className="flex-1 text-[14px] font-medium text-[var(--text-primary)] truncate">{name}</span>
                   </button>
 
                   {/* Read-only verified badge (verification happens inside the detail view) */}

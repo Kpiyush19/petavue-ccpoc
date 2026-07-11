@@ -120,10 +120,10 @@ export function getSessionRowMeta(session) {
 //              review." Shown only on post-handoff skill runs the user
 //              hasn't chatted on yet; disappears after their first chat.
 const BADGE_DOT_CLASSES = {
-  awaiting: 'bg-[var(--pv-warning-text)]',
+  awaiting: 'bg-[var(--color-orange)]',
   progress: 'bg-[var(--accent)] animate-pulse',
-  blocked: 'bg-[var(--pv-error-text)]',
-  done: 'bg-[var(--pv-success-text)]',
+  blocked: 'bg-[var(--color-red)]',
+  done: 'bg-[var(--color-green)]',
 }
 
 export function badgeDotClassname(kind) {

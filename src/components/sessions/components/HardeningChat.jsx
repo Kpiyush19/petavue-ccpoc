@@ -3,7 +3,7 @@ import { Loader2, Send, Wrench, Bot, ChevronDown, ChevronRight } from 'lucide-re
 import Pusher from 'pusher-js'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, getApiBase, getAuthToken } from '../../../api'
-import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
+import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 
 export default function HardeningChat({
   sessionId,
@@ -229,7 +229,7 @@ export default function HardeningChat({
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder={isDisabled ? 'Agent is working...' : 'Tell the system if any adjustment doesn\'t look right...'}
           disabled={isDisabled}
-          className="flex-1 text-[13px] border border-[var(--border-primary)] rounded-lg px-3 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50"
+          className="flex-1 text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50"
         />
         <button
           onClick={handleSend}
@@ -264,7 +264,7 @@ function ChatMessage({ message }) {
     return (
       <div className="flex items-start gap-2">
         <Bot size={14} className="shrink-0 mt-1 text-[var(--text-muted)]" />
-        <div className="max-w-[85%] px-3 py-2 rounded-lg bg-[var(--bg-secondary)] text-[13px] text-[var(--text-primary)] leading-relaxed">
+        <div className="max-w-[85%] px-3 py-2 rounded-lg bg-[var(--bg-secondary)] text-[14px] text-[var(--text-primary)] leading-relaxed">
           <MarkdownRenderer content={message.content} className="prose-sm prose-p:m-0 prose-p:leading-relaxed prose-li:m-0 prose-ul:my-1 prose-ol:my-1 prose-strong:text-[var(--text-primary)]" />
           {type === 'assistant-streaming' && <span className="inline-block w-1.5 h-3.5 bg-[var(--accent)] animate-pulse ml-0.5 rounded-sm" />}
         </div>
@@ -278,7 +278,7 @@ function ChatMessage({ message }) {
 
   if (type === 'thinking') {
     return (
-      <div className="flex items-center gap-1.5 px-2 py-1.5 text-[11px] text-[var(--text-muted)] min-h-[28px]">
+      <div className="flex items-center gap-1.5 px-2 py-1.5 text-[12px] text-[var(--text-muted)] min-h-[28px]">
         <Loader2 size={11} className="animate-spin shrink-0" />
         <span>Thinking...</span>
       </div>
@@ -305,7 +305,7 @@ function ToolCallGroup({ tools }) {
     <div className="px-2">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] bg-transparent border-none cursor-pointer p-0 hover:text-[var(--text-secondary)] transition-colors"
+        className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] bg-transparent border-none cursor-pointer p-0 hover:text-[var(--text-secondary)] transition-colors"
       >
         {expanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
         <Wrench size={10} className={allDone ? 'text-green-500' : 'text-amber-500'} />

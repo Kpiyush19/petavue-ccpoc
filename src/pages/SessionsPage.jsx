@@ -10,10 +10,10 @@ import {
   Flask,
   ChatCircle,
 } from "@phosphor-icons/react";
-import { Input, Button, Popper, Tooltip } from "@/common-components";
-import { useScrollCleanup } from "@/common-components/Tooltip/useScrollCleanup";
-import { formatDate, formatDateTime } from "@/common-utils/formatDateTime";
-import { timeAgo } from "@/common-utils/relativeTimeDiff";
+import { Input, Button, Popper, Tooltip } from "@/ui";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
+import { formatDate, formatDateTime } from "@/utils/formatDateTime";
+import { timeAgo } from "@/utils/relativeTimeDiff";
 import { useSessionsListQuery, useInvalidateSessionsList } from "../hooks/useSessionsQuery";
 import { apiPatch, apiDelete } from "../api";
 import { DeleteSessionModal } from "./sessions/components/DeleteSessionModal";
@@ -24,14 +24,14 @@ import { cn } from "../utils/cn";
 const GRID_COLUMNS = "5% 70% 20% 5%";
 
 const Skeleton = ({ width, height }) => (
-  <div className="bg-[var(--pv-neutral-grey-200)] rounded animate-pulse" style={{ width, height }} />
+  <div className="bg-[var(--color-grey-200)] rounded animate-pulse" style={{ width, height }} />
 );
 
 const ListLoader = ({ length = 8 }) => (
   <div className="flex flex-col w-full gap-2">
     {Array.from({ length }).map((_, ind) => (
       <div
-        className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg"
+        className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg"
         style={{ gridTemplateColumns: GRID_COLUMNS }}
         key={ind}
       >
@@ -59,19 +59,19 @@ const SessionElement = ({
   const meta = getSessionRowMeta(s);
   const IconComp = meta.isSkillRun ? Flask : ChatCircle;
   const iconColor = meta.iconMuted
-    ? "text-[var(--pv-text-disabled)]"
-    : "text-[var(--pv-neutral-grey-500)]";
+    ? "text-[var(--color-text-disabled)]"
+    : "text-[var(--color-grey-500)]";
   const fallbackName = `Session from ${s.last_active_at ? formatDate(s.last_active_at) : "unknown"}`;
   const tooltipTitle = meta.badge?.ariaLabel
     ? `${s.name || fallbackName}, ${meta.badge.ariaLabel}`
     : (s.name || fallbackName);
   return (
     <button
-      className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:border-[var(--pv-primary-300)] active:border-[var(--pv-neutral-grey-200)] active:bg-white text-left group cursor-pointer bg-white"
+      className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] active:border-[var(--color-grey-200)] active:bg-white text-left group cursor-pointer bg-white"
       style={{ gridTemplateColumns: GRID_COLUMNS }}
       onClick={() => onSelect(meta.route)}
     >
-      <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-500)]">
+      <span className="flex items-center px-2 text-sm text-[var(--color-grey-500)]">
         {index + 1}
       </span>
 
@@ -97,14 +97,14 @@ const SessionElement = ({
               onSelect(meta.route);
             }}
             onMouseEnter={onTooltipReset}
-            className="text-sm truncate group-hover:text-[var(--pv-primary-500)] group-hover:underline"
+            className="text-sm truncate group-hover:text-[var(--color-primary-500)] group-hover:underline"
           >
             {s.name || fallbackName}
           </a>
         </Tooltip>
       </span>
 
-      <span className="flex items-center px-2 text-sm text-[var(--pv-neutral-grey-500)]">
+      <span className="flex items-center px-2 text-sm text-[var(--color-grey-500)]">
         <Tooltip title={formatDateTime(s.last_active_at || s.created_at, s.tenant_timezone) || formatDate(s.last_active_at || s.created_at)} arrow placement="top" tooltipActive={tooltipActive}>
           <span onMouseEnter={onTooltipReset}>{timeAgo(s.last_active_at || s.created_at)}</span>
         </Tooltip>
@@ -117,9 +117,9 @@ const SessionElement = ({
         <Popper
           buttonChildren={<DotsThree size={18} weight="bold" />}
           placement="bottom-end"
-          btnSize="sm"
-          btnColor="transparent"
-          mainBtnClassName="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-100)] rounded-lg"
+          size="sm"
+          variant="ghost"
+          className="!p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-grey-400)] hover:text-[var(--color-grey-700)] hover:bg-[var(--color-grey-100)] rounded-lg"
           popperClassName="w-40"
           closeOnClickInside
           zIndex={50}
@@ -129,15 +129,15 @@ const SessionElement = ({
         >
           <button
             onClick={() => onRename?.(s)}
-            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-neutral-grey-700)] hover:bg-[var(--pv-neutral-grey-50)] active:bg-white active:text-[var(--pv-neutral-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
           >
             <Pencil size={14} />
             Rename
           </button>
-          <div className="border-t border-[var(--pv-neutral-grey-150)]" />
+          <div className="border-t border-[var(--color-grey-100)]" />
           <button
             onClick={() => onDelete?.(s)}
-            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)] active:bg-white active:text-[var(--pv-error-text)]/60 transition-colors bg-transparent border-none cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-red)] hover:bg-[var(--color-red-bg)] active:bg-white active:text-[var(--color-red)]/60 transition-colors bg-transparent border-none cursor-pointer"
           >
             <Trash size={14} />
             Delete
@@ -202,19 +202,19 @@ export default function SessionsPage() {
   return (
     <div className="flex flex-col w-full h-full overflow-x-auto">
       <div className="flex flex-col w-full h-full min-w-[800px]">
-        <div className="flex w-full px-6 items-center justify-between h-[64px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex w-full px-6 items-center justify-between h-[64px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
           <span className="text-[16px] leading-[24px] font-medium">Sessions</span>
         </div>
 
         <div
-          className="w-full p-4 flex overflow-x-auto bg-[var(--pv-neutral-grey-50)]"
+          className="w-full p-4 flex overflow-x-auto bg-[var(--color-grey-50)]"
           style={{ height: "calc(100% - 64px)" }}
         >
           <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden min-w-[800px]">
-            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)]">
+            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--color-grey-100)]">
               <div className="px-8 flex gap-2.5 items-center">
                 <span className="font-medium text-[14px]">All Sessions</span>
-                <span className="text-xs text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md">
+                <span className="text-xs text-white bg-[var(--color-primary-500)] px-1.5 py-0.5 rounded-md">
                   {filteredSessions.length}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export default function SessionsPage() {
             {isLoading ? (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: "calc(100% - 56px)" }}>
                 <div
-                  className="grid w-full p-2 border-b border-[var(--pv-neutral-grey-150)]"
+                  className="grid w-full p-2 border-b border-[var(--color-grey-100)]"
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
                   <span className="px-2"><Skeleton width="12px" height="12px" /></span>
@@ -253,12 +253,12 @@ export default function SessionsPage() {
               </div>
             ) : filteredSessions.length === 0 && searchQuery ? (
               <div className="w-full h-full flex">
-                <div className="m-auto text-[var(--pv-neutral-grey-500)] flex flex-col gap-2 items-center">
+                <div className="m-auto text-[var(--color-grey-500)] flex flex-col gap-2 items-center">
                   <div className="mx-auto">
-                    No results for <b className="text-[var(--pv-neutral-grey-900)]">"{searchQuery}"</b>
+                    No results for <b className="text-[var(--color-grey-900)]">"{searchQuery}"</b>
                   </div>
                   <div className="flex">
-                    <Button btnSize="sm" btnColor="secondary" onClick={() => setSearchQuery("")}>
+                    <Button size="sm" variant="secondary" onClick={() => setSearchQuery("")}>
                       Clear search
                     </Button>
                   </div>
@@ -266,10 +266,10 @@ export default function SessionsPage() {
               </div>
             ) : filteredSessions.length === 0 ? (
               <div className="flex flex-col w-full h-full justify-center items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-[var(--pv-neutral-grey-100)] flex items-center justify-center">
-                  <Tray size={24} className="text-[var(--pv-neutral-grey-400)]" />
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-grey-100)] flex items-center justify-center">
+                  <Tray size={24} className="text-[var(--color-grey-400)]" />
                 </div>
-                <span className="text-[var(--pv-neutral-grey-500)] font-normal text-sm">No sessions yet</span>
+                <span className="text-[var(--color-grey-500)] font-normal text-sm">No sessions yet</span>
               </div>
             ) : (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: "calc(100% - 56px)" }}>
@@ -277,10 +277,10 @@ export default function SessionsPage() {
                   className={`grid p-2 ${listOverflow ? "w-[calc(100%-8px)]" : "w-full"}`}
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Name</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Last Active</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2"></span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">#</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Name</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Last Active</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2"></span>
                 </div>
 
                 <div

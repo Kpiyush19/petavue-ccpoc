@@ -10,13 +10,13 @@ import {
 } from '@phosphor-icons/react'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken, getCurrentUser } from '../../../api'
-import { Toggle } from '@/common-components'
-import { Button as PvButton } from '../../../petavue'
+import { Toggle } from '@/ui'
+import { Button as PvButton } from '@/ui'
 import RecipeGroupCard from '../../RecipeGroupCard'
 import RecipeStepCell from '../../RecipeStepCell'
 import OutputPreview from '../../OutputPreview'
 import HardeningChat from './HardeningChat'
-import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
+import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 import SlackChannelPicker from '../../shared/SlackChannelPicker'
 import WidgetListView from './WidgetListView'
 import WidgetDetailView from './WidgetDetailView'
@@ -1844,8 +1844,8 @@ export default function PublishView({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-[12px] font-bold text-[#1d1c1d]">Petavue</span>
-              <span className="text-[12px] font-bold uppercase bg-[var(--bg-hover)] text-[var(--text-muted)] px-1 rounded">App</span>
+              <span className="text-[12px] font-semibold text-[#1d1c1d]">Petavue</span>
+              <span className="text-[12px] font-semibold uppercase bg-[var(--bg-hover)] text-[var(--text-muted)] px-1 rounded">App</span>
               <span className="text-[12px] text-[var(--text-muted)]">now</span>
             </div>
             <div className="text-[12px] text-[#1d1c1d] leading-relaxed">
@@ -1889,7 +1889,7 @@ export default function PublishView({
           </div>
           <div className="flex-1 min-w-0 flex flex-col rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/40 overflow-hidden min-h-[160px]">
             <div className="px-3.5 py-2.5 border-b border-[var(--border-primary)] shrink-0">
-              <span className="text-[13px] font-semibold text-[var(--text-primary)]">Preview</span>
+              <span className="text-[14px] font-semibold text-[var(--text-primary)]">Preview</span>
             </div>
             <div className="p-3.5 flex-1 min-h-0 overflow-y-auto">
               {renderSummaryPreview()}
@@ -1919,7 +1919,7 @@ export default function PublishView({
                 <div className="mt-2.5 pl-6 space-y-2">
                   <div className="flex items-end gap-2 flex-wrap">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[11px] font-medium text-[var(--text-muted)]">Folder</span>
+                      <span className="text-[12px] font-medium text-[var(--text-muted)]">Folder</span>
                       <CustomSelect
                         value={summaryFolder}
                         onChange={setSummaryFolder}
@@ -1929,12 +1929,12 @@ export default function PublishView({
                     </div>
                     {summaryFolder === NEW_FOLDER && (
                       <div className="flex flex-col gap-1">
-                        <span className="text-[11px] font-medium text-[var(--text-muted)]">New folder name</span>
+                        <span className="text-[12px] font-medium text-[var(--text-muted)]">New folder name</span>
                         <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g. weekly-reports" className="w-44 text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
                       </div>
                     )}
                     <div className="flex flex-col gap-1">
-                      <span className="text-[11px] font-medium text-[var(--text-muted)]">File name</span>
+                      <span className="text-[12px] font-medium text-[var(--text-muted)]">File name</span>
                       <input value={aiFilename} onChange={(e) => setAiFilename(e.target.value)} placeholder="File name" className="w-40 text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
                     </div>
                   </div>
@@ -2305,7 +2305,7 @@ export default function PublishView({
             <p className="text-[12px] text-amber-700 mt-2 mb-0 leading-relaxed">The dashboard has changed since the agent last reviewed it. Run the review again before you publish.</p>
             {lastUserMsg && (
               <div className="rounded-lg bg-white border border-amber-200/70 px-3 py-2.5 mt-3">
-                <span className="block text-[11px] font-semibold text-amber-700/80 uppercase tracking-wide mb-1">Your last request</span>
+                <span className="block text-[12px] font-semibold text-amber-700/80 uppercase tracking-wide mb-1">Your last request</span>
                 <p className="text-[12px] text-[var(--text-secondary)] m-0 leading-snug line-clamp-3">{lastUserMsg}</p>
               </div>
             )}
@@ -2523,7 +2523,7 @@ export default function PublishView({
               disabled={t.locked}
               onClick={() => { if (!t.locked) setTab(t.id) }}
               title={t.locked ? 'Complete the agentic review first' : undefined}
-              className={`relative flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-medium border-none bg-transparent transition-colors ${active ? 'text-[var(--accent)]' : t.locked ? 'text-[var(--text-muted)]/50 cursor-not-allowed' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer'}`}
+              className={`relative flex items-center gap-1.5 px-3 py-2.5 text-[14px] font-medium border-none bg-transparent transition-colors ${active ? 'text-[var(--accent)]' : t.locked ? 'text-[var(--text-muted)]/50 cursor-not-allowed' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer'}`}
             >
               {t.label}
               {active && <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-[var(--accent)]" />}
@@ -2683,7 +2683,7 @@ export default function PublishView({
         {/* 2nd — Ask or edit (chat) */}
         <div className="shrink-0 min-w-[280px] border-r border-[var(--border-primary)] flex flex-col overflow-hidden" style={{ width: chatColWidth }}>
           <div className="shrink-0 px-4 py-3 border-b border-[var(--border-primary)]">
-            <h3 className="text-[13px] font-semibold text-[var(--text-primary)] m-0">Ask or edit</h3>
+            <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">Ask or edit</h3>
             <p className="text-[12px] text-[var(--text-muted)] mt-0.5 m-0 leading-snug">Ask a question or request changes to any adjustment.</p>
           </div>
           <div className="flex-1 min-h-0 flex flex-col p-3">

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Sparkle, X, PaperPlaneRight, CircleNotch } from "@phosphor-icons/react";
-import { Button as PvButton } from "../../petavue";
+import { Button as PvButton } from "@/ui";
 import { apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 import { ChatOverlay } from "../../components/dashboards/dashboard-viewer-widget";
@@ -90,17 +90,17 @@ function SageChat({ goal }) {
           <div
             key={i}
             className={cn(
-              "text-[13px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]",
+              "text-[14px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]",
               m.role === "user"
-                ? "self-end bg-pv-primary-primary-500 text-white rounded-br-md"
-                : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)] rounded-bl-md"
+                ? "self-end bg-primary-500 text-white rounded-br-md"
+                : "self-start bg-grey-100 text-[var(--text-primary)] rounded-bl-md"
             )}
           >
             {m.text}
           </div>
         ))}
         {ask.isPending && (
-          <div className="self-start bg-pv-neutral-grey-100 text-[var(--text-muted)] rounded-2xl rounded-bl-md px-3 py-2">
+          <div className="self-start bg-grey-100 text-[var(--text-muted)] rounded-2xl rounded-bl-md px-3 py-2">
             <Spinner size={14} />
           </div>
         )}
@@ -110,7 +110,7 @@ function SageChat({ goal }) {
               <button
                 key={s}
                 onClick={() => sendSuggestion(s)}
-                className="text-[12px] px-3 py-1.5 rounded-full border border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400 hover:text-pv-primary-primary-600 cursor-pointer transition-colors"
+                className="text-[12px] px-3 py-1.5 rounded-full border border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-primary-400 hover:text-primary-600 cursor-pointer transition-colors"
               >
                 {s}
               </button>
@@ -127,7 +127,7 @@ function SageChat({ goal }) {
           rows={1}
           placeholder={goal ? `Ask about ${goal.name}…` : "Ask about spend, demos, or what to fix first…"}
           style={{ minHeight: "32px", maxHeight: `${MAX_INPUT_H}px` }}
-          className="flex-1 text-[13px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+          className="flex-1 text-[14px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
         />
         <PvButton
           variant="primary"

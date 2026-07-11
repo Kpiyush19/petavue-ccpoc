@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Play, Pause, Pencil, Trash2, Clock, X, Plus, Calendar, Inbox } from 'lucide-react'
 import { toast } from 'sonner'
-import { Dialog, DialogHeader, DialogContent } from './ui/Dialog'
-import { Button } from './ui/Button'
-import { Badge } from './ui/Badge'
+import { Dialog, DialogHeader, DialogContent } from '@/ui/components/OverlayDialog/OverlayDialog'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
 import { cn } from '../utils/cn'
 import ScheduleFormModal from './ScheduleFormModal'
 import ScheduleRunHistory from './ScheduleRunHistory'
@@ -159,7 +159,7 @@ export default function SchedulesPanel({
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[13px] font-semibold text-[var(--text-primary)] truncate">
+                        <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
                           {sched.name}
                         </span>
                         <Badge variant={sched.status === 'active' ? 'success' : 'muted'}>
@@ -169,10 +169,10 @@ export default function SchedulesPanel({
                           <Badge variant="warning" className="animate-pulse">running</Badge>
                         )}
                       </div>
-                      <div className="text-[11px] text-[var(--text-muted)] truncate">
+                      <div className="text-[12px] text-[var(--text-muted)] truncate">
                         {sched.cron_description || sched.cron_expression} &middot; {sched.timezone}
                       </div>
-                      <div className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
+                      <div className="text-[12px] text-[var(--text-muted)] truncate mt-0.5">
                         {sched.prompt?.slice(0, 80)}{sched.prompt?.length > 80 ? '...' : ''}
                       </div>
                       {sched.recipients?.length > 0 && (

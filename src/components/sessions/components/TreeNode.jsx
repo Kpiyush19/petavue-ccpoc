@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react'
-import { Tooltip } from '@/common-components'
+import { Tooltip } from '@/ui'
 import { cn } from '../utils/cn'
 import { formatFileSize } from '../utils/fileTypes'
 import { FolderIconSvg, FileIconSvg, ExtBadge } from './FileIcons'
@@ -33,7 +33,7 @@ export default function TreeNode({
         <button
           type="button"
           onClick={() => onToggleDir(node.path)}
-          className="w-full flex items-center gap-1.5 pr-2 py-1.5 text-left bg-transparent border-none cursor-pointer rounded-lg hover:bg-[var(--pv-neutral-grey-50)] transition-all duration-150 group outline-none"
+          className="w-full flex items-center gap-1.5 pr-2 py-1.5 text-left bg-transparent border-none cursor-pointer rounded-lg hover:bg-[var(--color-grey-50)] transition-all duration-150 group outline-none"
           style={{ paddingLeft: `${8 + indent}px` }}
         >
           <ChevronRight
@@ -47,12 +47,12 @@ export default function TreeNode({
             <FolderIconSvg dirName={node.name} />
           </span>
           <Tooltip title={node.name} placement="top" displayTooltipOnOverflow>
-            <span className="text-[11px] text-[var(--text-primary)] font-semibold truncate flex-1 min-w-0 tracking-tight">
+            <span className="text-[12px] text-[var(--text-primary)] font-semibold truncate flex-1 min-w-0 tracking-tight">
               {node.name}
             </span>
           </Tooltip>
           {fileCount > 0 && (
-            <span className="shrink-0 text-[9px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
+            <span className="shrink-0 text-[10px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
               {fileCount}
             </span>
           )}
@@ -103,7 +103,7 @@ export default function TreeNode({
           'w-full flex items-center gap-1.5 pr-2 py-[5px] text-left border-none cursor-pointer rounded-lg transition-all duration-150 group outline-none',
           isActive
             ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
-            : 'bg-transparent hover:bg-pv-neutral-grey-50'
+            : 'bg-transparent hover:bg-grey-50'
         )}
         style={{ paddingLeft: `${22 + indent}px` }}
       >
@@ -111,7 +111,7 @@ export default function TreeNode({
           <FileIconSvg contentType={node.content_type} />
         </span>
         <Tooltip title={`${node.path}${fileSize ? ` • ${fileSize}` : ''}`} placement="top" displayTooltipOnOverflow>
-          <span className="text-[11px] truncate flex-1 min-w-0 text-pv-text-primary-text">
+          <span className="text-[12px] truncate flex-1 min-w-0 text-[var(--text-primary)]">
             {node.name}
           </span>
         </Tooltip>

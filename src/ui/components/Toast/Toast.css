@@ -1,0 +1,125 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Toast — system notification bar
+   ========================================================================== */
+
+.toast {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid;
+  overflow: hidden;
+  animation: toast-slide-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+.toast--exiting {
+  animation: toast-slide-out 0.25s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Status variants
+   -------------------------------------------------------------------------- */
+
+.toast--success {
+  background: var(--color-green);
+  border-left-color: var(--color-green);
+}
+
+.toast--warning {
+  background: var(--color-orange);
+  border-left-color: var(--color-orange);
+}
+
+.toast--error {
+  background: var(--color-red);
+  border-left-color: var(--color-red);
+}
+
+/* --------------------------------------------------------------------------
+   Content layout
+   -------------------------------------------------------------------------- */
+
+.toast__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+  padding: var(--spacing-8) var(--spacing-16);
+}
+
+/* --------------------------------------------------------------------------
+   Message text
+   -------------------------------------------------------------------------- */
+
+.toast__message {
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+  color: var(--color-white);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Link
+   -------------------------------------------------------------------------- */
+
+.toast__link {
+  font-size: var(--font-size-body-2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-2);
+  color: var(--color-white);
+  text-decoration: underline;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.toast__link:hover {
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   Close button
+   -------------------------------------------------------------------------- */
+
+.toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.toast__close:hover {
+  opacity: 0.7;
+}

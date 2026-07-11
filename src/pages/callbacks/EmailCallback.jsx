@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDownloadSharedTableAsCSV } from './api';
-import spinner from '../../common-components/assets/spinner.gif';
+import spinner from '@/ui/assets/spinner.gif';
 
 const CheckCircleIcon = ({ className }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 20 20">
@@ -55,7 +55,7 @@ export default function EmailCallback() {
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center">
           <img src="/petavue-logo.svg" className="w-6 h-7" alt="Logo" />
-          <span className="ml-3 text-xl text-pv-primary-primary-500 font-medium">Petavue</span>
+          <span className="ml-3 text-xl text-primary-500 font-medium">Petavue</span>
         </div>
         <p>
           {status === 'loading' ? `Downloading ${reportName}` : status === 'success' ? `Downloaded ${reportName}` : `Failed to download ${reportName}`}

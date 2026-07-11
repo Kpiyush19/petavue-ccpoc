@@ -2,9 +2,9 @@ import { useState, useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { MagnifyingGlass, DotsThreeVertical, Lightning, Clock, LinkSimple, ArrowRight, Info } from "@phosphor-icons/react";
-import { Button } from "../../../../common-components/Button";
-import Skeleton from "../../../../common-components/Skeleton";
-import Tooltip from "../../../../common-components/Tooltip";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
+import { Tooltip } from "@/ui";
 import { useGetSetupObjects } from "../api/getSetupObjects";
 import { usePutSetupObjects } from "../api/putSetupObjects";
 import { useGetIntegrationSetup } from "../api/getIntegrationSetup";
@@ -29,12 +29,12 @@ import { humanizeName } from "../utils/strings";
 //   PUT  /integration-setup/:id/objects  (with preview confirm modal)
 //   POST /integration-setup/:id/sync     (per-row sync trigger)
 const SectionHeader = ({ children, count }) => (
-  <div className="flex items-center gap-2 px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-b border-[var(--pv-neutral-grey-100)]">
-    <span className="text-xs font-medium text-[var(--pv-text-primary-text)] uppercase tracking-wide">
+  <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-grey-50)] border-b border-[var(--color-grey-100)]">
+    <span className="text-xs font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
       {children}
     </span>
     {typeof count === "number" && (
-      <span className="text-[10px] text-[var(--pv-neutral-grey-500)] px-1.5 py-0.5 rounded-full bg-white border border-[var(--pv-neutral-grey-200)]">
+      <span className="text-[10px] text-[var(--color-grey-500)] px-1.5 py-0.5 rounded-full bg-white border border-[var(--color-grey-200)]">
         {count}
       </span>
     )}
@@ -349,8 +349,8 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
   if (!integrationId) {
     return (
       <div className="px-6 py-5">
-        <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg p-6 text-center">
-          <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+        <div className="border border-[var(--color-grey-200)] rounded-lg p-6 text-center">
+          <p className="text-sm text-[var(--color-grey-500)]">
             We couldn't load this integration. It may not be connected yet.
           </p>
         </div>
@@ -364,11 +364,11 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
           move into the unified UnsavedChangesBanner that pops below on edits. */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+          <span className="text-xs text-[var(--color-grey-500)]">
             {serverPicks.length} object{serverPicks.length === 1 ? "" : "s"} enabled
           </span>
           {setupRow?.nextSyncAtDisplay && !syncInProgress && (
-            <span className="inline-flex items-center gap-1 text-xs text-[var(--pv-neutral-grey-500)] ml-2">
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--color-grey-500)] ml-2">
               <Clock size={12} />
               Next sync ~ {setupRow.nextSyncAtDisplay}
             </span>
@@ -388,26 +388,26 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
       <div className="relative w-full max-w-md">
         <MagnifyingGlass
           size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pv-neutral-grey-400)] pointer-events-none"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-grey-400)] pointer-events-none"
         />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search objects…"
-          className="w-full h-9 pl-9 pr-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white text-[var(--pv-text-primary-text)] placeholder:text-[var(--pv-neutral-grey-400)] focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary-100)] focus:border-[var(--pv-primary-500)] transition-colors"
+          className="w-full h-9 pl-9 pr-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white text-[var(--color-text-primary)] placeholder:text-[var(--color-grey-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-100)] focus:border-[var(--color-primary-500)] transition-colors"
         />
       </div>
 
-      <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden">
-        <div className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-b border-[var(--pv-neutral-grey-100)] text-[11px] font-medium text-[var(--pv-neutral-grey-500)] uppercase tracking-wide">
+      <div className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden">
+        <div className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2 bg-[var(--color-grey-50)] border-b border-[var(--color-grey-100)] text-[12px] font-medium text-[var(--color-grey-500)] uppercase tracking-wide">
           <label
             className="cursor-pointer flex items-center justify-center"
             title={allVisibleSelected ? "Deselect all" : "Select all"}
           >
             <input
               type="checkbox"
-              className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+              className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
               checked={allVisibleSelected}
               onChange={toggleAllVisible}
               disabled={putObjects.isPending || rows.length === 0}
@@ -418,7 +418,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
           <Tooltip title={<SyncStatusLegend />} arrow placement="top" maxWidth="260px">
             <div className="inline-flex items-center gap-1 w-fit cursor-help">
               Status
-              <Info size={12} className="text-[var(--pv-neutral-grey-400)]" />
+              <Info size={12} className="text-[var(--color-grey-400)]" />
             </div>
           </Tooltip>
           <div />
@@ -436,7 +436,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
             and try again.
           </div>
         ) : rows.length === 0 ? (
-          <div className="p-6 text-center text-xs text-[var(--pv-neutral-grey-500)]">
+          <div className="p-6 text-center text-xs text-[var(--color-grey-500)]">
             {isSearching
               ? `No objects match "${search}".`
               : "No objects available yet."}
@@ -458,7 +458,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
               return (
                 <div
                   key={obj.name}
-                  className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--pv-neutral-grey-100)] last:border-b-0 bg-white hover:bg-[var(--pv-neutral-grey-50)]"
+                  className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--color-grey-100)] last:border-b-0 bg-white hover:bg-[var(--color-grey-50)]"
                   title={
                     isUnqueryable ? "This object isn't queryable in your org." : undefined
                   }
@@ -466,34 +466,34 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
                   <label className="cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer"
+                      className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer"
                       checked={isEnabled}
                       onChange={() => toggle(obj.name)}
                       disabled={putObjects.isPending}
                     />
                   </label>
-                  <div className="text-sm font-medium text-[var(--pv-text-primary-text)] flex items-center gap-1.5">
+                  <div className="text-sm font-medium text-[var(--color-text-primary)] flex items-center gap-1.5">
                     <span>{obj.label}</span>
                     {obj.label !== obj.name && (
-                      <span className="text-[11px] text-[var(--pv-neutral-grey-500)] font-normal">
+                      <span className="text-[12px] text-[var(--color-grey-500)] font-normal">
                         ({obj.name})
                       </span>
                     )}
                     {isUnqueryable && (
-                      <span className="text-[10px] text-[var(--pv-neutral-grey-500)] bg-[var(--pv-neutral-grey-100)] px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] text-[var(--color-grey-500)] bg-[var(--color-grey-100)] px-1.5 py-0.5 rounded">
                         Not queryable
                       </span>
                     )}
                     {catalogIds[obj.name] ? (
                       <Link
                         to={`/data-hub/dictionary/${integrationId}?table=${catalogIds[obj.name]}`}
-                        className="inline-flex items-center gap-0.5 text-[11px] font-normal text-[var(--pv-primary-500)] hover:underline"
+                        className="inline-flex items-center gap-0.5 text-[12px] font-normal text-[var(--color-primary-500)] hover:underline"
                         title="View this table in the data catalog"
                       >
                         View Catalog
                       </Link>
                     ) : (
-                      <span className="text-[11px] font-normal text-[var(--pv-neutral-grey-400)]">
+                      <span className="text-[12px] font-normal text-[var(--color-grey-400)]">
                         No catalog
                       </span>
                     )}
@@ -517,7 +517,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
                         onClick={() =>
                           setOpenMenuFor(menuOpen ? null : obj.name)
                         }
-                        className="p-1 rounded hover:bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                        className="p-1 rounded hover:bg-[var(--color-grey-100)] text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                         aria-label="Sync options"
                         title={
                           reviewPending
@@ -544,8 +544,8 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
               );
             })}
             {isSearching && totalPages > 1 && (
-              <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-t border-[var(--pv-neutral-grey-100)]">
-                <span className="text-[11px] text-[var(--pv-neutral-grey-500)]">
+              <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[var(--color-grey-50)] border-t border-[var(--color-grey-100)]">
+                <span className="text-[12px] text-[var(--color-grey-500)]">
                   Showing {(currentPage - 1) * SEARCH_PAGE_SIZE + 1}–
                   {Math.min(currentPage * SEARCH_PAGE_SIZE, totalMatches)} of{" "}
                   {totalMatches}
@@ -553,7 +553,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    className="px-2.5 py-1 text-xs rounded border border-[var(--pv-neutral-grey-200)] bg-white text-[var(--pv-text-primary-text)] hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="px-2.5 py-1 text-xs rounded border border-[var(--color-grey-200)] bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setSearchPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
                   >
@@ -561,7 +561,7 @@ export const SchemaTab = ({ platform, integrationId: integrationIdProp, onManage
                   </button>
                   <button
                     type="button"
-                    className="px-2.5 py-1 text-xs rounded border border-[var(--pv-neutral-grey-200)] bg-white text-[var(--pv-text-primary-text)] hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="px-2.5 py-1 text-xs rounded border border-[var(--color-grey-200)] bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() =>
                       setSearchPage((p) => Math.min(totalPages, p + 1))
                     }
@@ -656,32 +656,32 @@ const SyncObjectConfirmModal = ({
         className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)]">
-          <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+        <div className="px-5 py-4 border-b border-[var(--color-grey-200)]">
+          <h2 className="text-base font-medium text-[var(--color-text-primary)]">
             {SYNC_MODE_LABEL[mode] || "Sync now"}
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
-            Object: <span className="font-medium text-[var(--pv-text-primary-text)]">{humanizeName(objectName)}</span>
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
+            Object: <span className="font-medium text-[var(--color-text-primary)]">{humanizeName(objectName)}</span>
           </p>
         </div>
-        <div className="px-5 py-4 text-sm text-[var(--pv-text-primary-text)]">
+        <div className="px-5 py-4 text-sm text-[var(--color-text-primary)]">
           {SYNC_MODE_BLURB[mode] || "Queue a sync for this object now?"}
         </div>
 
         {quotaLoading && (
-          <div className="mx-5 mb-4 px-3 py-2 text-xs text-[var(--pv-neutral-grey-500)] bg-[var(--pv-neutral-grey-50)] border border-[var(--pv-neutral-grey-200)] rounded-md">
+          <div className="mx-5 mb-4 px-3 py-2 text-xs text-[var(--color-grey-500)] bg-[var(--color-grey-50)] border border-[var(--color-grey-200)] rounded-md">
             Checking HubSpot daily quota…
           </div>
         )}
 
         {quota && quotaTier === "ok" && (
-          <div className="mx-5 mb-4 px-3 py-2 text-xs text-[var(--pv-neutral-grey-500)] bg-[var(--pv-neutral-grey-50)] border border-[var(--pv-neutral-grey-200)] rounded-md">
-            HubSpot daily quota: <span className="font-medium text-[var(--pv-text-primary-text)]">{quota.used} of {quota.limit}</span> used ({quota.remaining} remaining).
+          <div className="mx-5 mb-4 px-3 py-2 text-xs text-[var(--color-grey-500)] bg-[var(--color-grey-50)] border border-[var(--color-grey-200)] rounded-md">
+            HubSpot daily quota: <span className="font-medium text-[var(--color-text-primary)]">{quota.used} of {quota.limit}</span> used ({quota.remaining} remaining).
           </div>
         )}
 
         {quota && quotaTier === "warn" && (
-          <div className="mx-5 mb-4 px-3 py-2 text-xs bg-[var(--pv-warning-bg,#fff7e6)] border border-[var(--pv-warning-border,#f7c97e)] text-[var(--pv-warning-text,#8a5a00)] rounded-md">
+          <div className="mx-5 mb-4 px-3 py-2 text-xs bg-[var(--color-orange-bg,#fff7e6)] border border-[var(--[var(--color-orange)],#f7c97e)] text-[var(--color-orange,#8a5a00)] rounded-md">
             <div className="font-medium">HubSpot quota running low</div>
             <div className="mt-0.5">
               {quota.used} of {quota.limit} bulk exports used today. Only {quota.remaining} left. This sync uses 1 slot. Scheduled syncs may be skipped if you run out.
@@ -690,7 +690,7 @@ const SyncObjectConfirmModal = ({
         )}
 
         {quota && blocked && (
-          <div className="mx-5 mb-4 px-3 py-2 text-xs bg-[var(--pv-error-bg,#fde8e8)] border border-[var(--pv-error-border,#f5a5a5)] text-[var(--pv-error-text,#8b1d1d)] rounded-md">
+          <div className="mx-5 mb-4 px-3 py-2 text-xs bg-[var(--color-red-bg,#fde8e8)] border border-[var(--[var(--color-red)],#f5a5a5)] text-[var(--color-red,#8b1d1d)] rounded-md">
             <div className="font-medium">HubSpot daily quota exhausted</div>
             <div className="mt-0.5">
               All {quota.limit} bulk-export slots are used for today. Quota resets at midnight in your tenant timezone. Try again then.
@@ -698,11 +698,11 @@ const SyncObjectConfirmModal = ({
           </div>
         )}
 
-        <div className="px-5 py-4 border-t border-[var(--pv-neutral-grey-200)] flex items-center justify-end gap-2">
-          <Button btnColor="secondary" btnSize="md" onClick={onCancel} disabled={isPending}>
+        <div className="px-5 py-4 border-t border-[var(--color-grey-200)] flex items-center justify-end gap-2">
+          <Button variant="secondary" size="md" onClick={onCancel} disabled={isPending}>
             Cancel
           </Button>
-          <Button btnColor="primary" btnSize="md" onClick={onConfirm} disabled={isPending || blocked}>
+          <Button variant="primary" size="md" onClick={onConfirm} disabled={isPending || blocked}>
             {isPending ? "Queueing…" : "Yes, sync now"}
           </Button>
         </div>
@@ -734,13 +734,13 @@ const HubspotAssociationsSummary = ({
   const activeCount = effectivePairs.length;
 
   return (
-    <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--pv-neutral-grey-100)] bg-[var(--pv-neutral-grey-50)]">
-        <LinkSimple size={14} className="text-[var(--pv-primary-500)]" />
-        <h3 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+    <div className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--color-grey-100)] bg-[var(--color-grey-50)]">
+        <LinkSimple size={14} className="text-[var(--color-primary-500)]" />
+        <h3 className="text-sm font-medium text-[var(--color-text-primary)]">
           Associations
         </h3>
-        <span className="text-xs text-[var(--pv-neutral-grey-500)] ml-auto">
+        <span className="text-xs text-[var(--color-grey-500)] ml-auto">
           {isReady
             ? `${activeCount} of ${totalCount} enabled`
             : query.isLoading
@@ -751,7 +751,7 @@ const HubspotAssociationsSummary = ({
           <button
             type="button"
             onClick={onManage}
-            className="inline-flex items-center gap-0.5 text-xs font-medium text-[var(--pv-primary-500)] hover:underline"
+            className="inline-flex items-center gap-0.5 text-xs font-medium text-[var(--color-primary-500)] hover:underline"
             title="Enable or disable association pairs"
           >
             Manage
@@ -761,7 +761,7 @@ const HubspotAssociationsSummary = ({
       </div>
 
       {!isReady ? (
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] px-3 py-2.5">
+        <p className="text-xs text-[var(--color-grey-500)] px-3 py-2.5">
           Save your object selection above, then refresh to see available
           association pairs.
         </p>
@@ -772,22 +772,22 @@ const HubspotAssociationsSummary = ({
             return (
               <div
                 key={p.key}
-                className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--pv-neutral-grey-100)] last:border-b-0 bg-white hover:bg-[var(--pv-neutral-grey-50)]"
+                className="grid grid-cols-[40px_1fr_140px_40px] items-center px-3 py-2.5 border-b border-[var(--color-grey-100)] last:border-b-0 bg-white hover:bg-[var(--color-grey-50)]"
               >
                 {/* Empty cell aligning with the object rows' checkbox column. */}
                 <div aria-hidden="true" />
-                <div className="text-sm font-medium text-[var(--pv-text-primary-text)] flex items-center gap-1.5">
+                <div className="text-sm font-medium text-[var(--color-text-primary)] flex items-center gap-1.5">
                   <span>{p.label || `${p.from} ↔ ${p.to}`}</span>
                   {catalogIds[p.key] && integrationId ? (
                     <Link
                       to={`/data-hub/dictionary/${integrationId}?table=${catalogIds[p.key]}`}
-                      className="inline-flex items-center gap-0.5 text-[11px] font-normal text-[var(--pv-primary-500)] hover:underline"
+                      className="inline-flex items-center gap-0.5 text-[12px] font-normal text-[var(--color-primary-500)] hover:underline"
                       title="View this association table in the data catalog"
                     >
                       View Catalog
                     </Link>
                   ) : (
-                    <span className="text-[11px] font-normal text-[var(--pv-neutral-grey-400)]">
+                    <span className="text-[12px] font-normal text-[var(--color-grey-400)]">
                       No catalog
                     </span>
                   )}
@@ -803,7 +803,7 @@ const HubspotAssociationsSummary = ({
         </div>
       )}
 
-      <p className="text-[11px] text-[var(--pv-neutral-grey-500)] px-3 py-2.5 border-t border-[var(--pv-neutral-grey-100)]">
+      <p className="text-[12px] text-[var(--color-grey-500)] px-3 py-2.5 border-t border-[var(--color-grey-100)]">
         Enable or disable pairs on the{" "}
         <span className="font-medium">Associations</span> tab.
       </p>

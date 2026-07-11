@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { CaretRight, CaretDown, Sparkle, Lightbulb, X, Database, Code, File, FloppyDisk, TextAlignLeft, ListDashes, ClockCounterClockwise, Stack, ArrowClockwise } from "@phosphor-icons/react";
 import { ClickAwayListener } from "@mui/material";
-import { Tooltip } from "@/common-components";
-import spinner from "@/common-components/assets/spinner.gif";
+import { Tooltip } from "@/ui";
+import spinner from "@/ui/assets/spinner.gif";
 import CCDashboardDropdown from "./CCDashboardDropdown";
-import { formatDateTime } from "@/common-utils/formatDateTime";
+import { formatDateTime } from "@/utils/formatDateTime";
 import {
   useGetPublishedDashboards,
   useStartChatSession,
@@ -16,7 +16,7 @@ import useCCDashboardStore from "../store/useCCDashboardStore";
 import { useNavigate, useBasePath, useConfig, useWidgets } from "../context";
 import { getAuthToken } from "../../../../api";
 import { MOCK_ENABLED } from "../../../../mocks";
-import { Button as PvButton } from "../../../../petavue";
+import { Button as PvButton } from "@/ui";
 import apolloLogo from "@/assets/integrations/apollo.svg";
 import hubspotLogo from "@/assets/integrations/hubspot.svg";
 import salesforceLogo from "@/assets/integrations/salesforce.svg";
@@ -132,24 +132,24 @@ function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep,
   const effectiveViewMode = (viewMode === "card" && hasCardContent(step.card)) ? "card" : "summary";
 
   return (
-    <div className="mb-2 border border-[var(--pv-neutral-grey-150)] rounded-lg overflow-hidden bg-[var(--pv-neutral-grey-50)]">
+    <div className="mb-2 border border-[var(--color-grey-100)] rounded-lg overflow-hidden bg-[var(--color-grey-50)]">
       <button
         onClick={() => onToggleStep(stepId)}
-        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left bg-transparent border-none cursor-pointer hover:bg-[var(--pv-neutral-grey-100)] transition-colors"
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left bg-transparent border-none cursor-pointer hover:bg-[var(--color-grey-100)] transition-colors"
       >
         {isExpanded ? (
-          <CaretDown size={12} className="text-[var(--pv-neutral-grey-500)] shrink-0" />
+          <CaretDown size={12} className="text-[var(--color-grey-500)] shrink-0" />
         ) : (
-          <CaretRight size={12} className="text-[var(--pv-neutral-grey-500)] shrink-0" />
+          <CaretRight size={12} className="text-[var(--color-grey-500)] shrink-0" />
         )}
-        <div className="w-6 h-6 rounded-md bg-[var(--pv-primary-500)]/10 flex items-center justify-center shrink-0">
-          <TypeIcon size={12} className="text-[var(--pv-primary-500)]" />
+        <div className="w-6 h-6 rounded-md bg-[var(--color-primary-500)]/10 flex items-center justify-center shrink-0">
+          <TypeIcon size={12} className="text-[var(--color-primary-500)]" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)] truncate">
+          <div className="text-[14px] font-medium text-[var(--color-grey-900)] truncate">
             {stripPills(step.title) || meta?.label || stepId}
           </div>
-          <div className="text-[10px] text-[var(--pv-neutral-grey-500)]">{typeLabel}</div>
+          <div className="text-[10px] text-[var(--color-grey-500)]">{typeLabel}</div>
         </div>
       </button>
 
@@ -162,7 +162,7 @@ function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep,
           ) : (
             explanationText &&
             (hasBullets ? (
-              <ul className="text-[12px] text-[var(--pv-neutral-grey-600)] space-y-1 list-disc list-inside mb-2">
+              <ul className="text-[12px] text-[var(--color-grey-600)] space-y-1 list-disc list-inside mb-2">
                 {explanationText
                   .split("\n")
                   .filter((l) => l.trim())
@@ -171,7 +171,7 @@ function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep,
                   ))}
               </ul>
             ) : (
-              <p className="text-[12px] text-[var(--pv-neutral-grey-600)] leading-relaxed mb-2">{stripPills(explanationText)}</p>
+              <p className="text-[12px] text-[var(--color-grey-600)] leading-relaxed mb-2">{stripPills(explanationText)}</p>
             ))
           )}
 
@@ -182,13 +182,13 @@ function StepCard({ stepId, step, meta, isExpanded, isCodeVisible, onToggleStep,
                   e.stopPropagation();
                   onToggleCode(stepId);
                 }}
-                className="flex items-center gap-1 text-[11px] text-[var(--pv-primary-500)] hover:underline bg-transparent border-none cursor-pointer mb-1"
+                className="flex items-center gap-1 text-[12px] text-[var(--color-primary-500)] hover:underline bg-transparent border-none cursor-pointer mb-1"
               >
                 <Code size={10} />
                 {isCodeVisible ? "Hide code" : `View ${meta.code_language === "sql" ? "SQL" : "Python"}`}
               </button>
               {isCodeVisible && (
-                <pre className="text-[11px] leading-relaxed bg-white border border-[var(--pv-neutral-grey-150)] rounded-md p-2.5 overflow-x-auto max-h-[300px] overflow-y-auto font-mono text-[var(--pv-neutral-grey-700)] whitespace-pre-wrap break-words">
+                <pre className="text-[12px] leading-relaxed bg-white border border-[var(--color-grey-100)] rounded-md p-2.5 overflow-x-auto max-h-[300px] overflow-y-auto font-mono text-[var(--color-grey-700)] whitespace-pre-wrap break-words">
                   {meta.code}
                 </pre>
               )}
@@ -211,15 +211,15 @@ function ExplanationSteps({ explanation, blockMeta, expandedSteps, showCode, tog
       return (
         <div key={gi} className="mb-5">
           <div className="flex items-center gap-2 mb-1.5 px-1">
-            <div className="w-5 h-5 rounded-full bg-[var(--pv-primary-500)]/10 flex items-center justify-center text-[10px] font-bold text-[var(--pv-primary-500)]">
+            <div className="w-5 h-5 rounded-full bg-[var(--color-primary-500)]/10 flex items-center justify-center text-[10px] font-semibold text-[var(--color-primary-500)]">
               {gi + 1}
             </div>
-            <div className="text-[13px] font-semibold text-[var(--pv-neutral-grey-900)]">{title}</div>
+            <div className="text-[14px] font-semibold text-[var(--color-grey-900)]">{title}</div>
           </div>
           {desc && (
-            <p className="text-[12px] text-[var(--pv-neutral-grey-600)] mb-2.5 px-1 ml-7 leading-relaxed">{stripPills(desc)}</p>
+            <p className="text-[12px] text-[var(--color-grey-600)] mb-2.5 px-1 ml-7 leading-relaxed">{stripPills(desc)}</p>
           )}
-          <div className="ml-3 border-l-2 border-[var(--pv-primary-500)]/15 pl-4">
+          <div className="ml-3 border-l-2 border-[var(--color-primary-500)]/15 pl-4">
             {(group.step_ids || []).map((stepId) => {
               const step = steps[stepId];
               if (!step) return null;
@@ -599,7 +599,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
         <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg">
           <div className="flex flex-col items-center gap-3">
             <img src={spinner} alt="loading" className="w-6 h-6" />
-            <span className="text-sm text-[var(--pv-neutral-grey-500)]">Loading dashboard...</span>
+            <span className="text-sm text-[var(--color-grey-500)]">Loading dashboard...</span>
           </div>
         </div>
       );
@@ -609,7 +609,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
       return (
         <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg">
           <div className="flex flex-col items-center gap-3 text-center">
-            <span className="text-sm text-[var(--pv-error-text)]">
+            <span className="text-sm text-[var(--color-red)]">
               {error?.response?.data?.error?.message || error?.message || "Dashboard not found"}
             </span>
             <PvButton variant="secondary" size="lg" label="Back to List" onClick={() => navigate(basePath)} />
@@ -626,7 +626,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
               <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg z-10">
                 <div className="flex flex-col items-center gap-3">
                   <img src={spinner} alt="loading" className="w-6 h-6" />
-                  <span className="text-sm text-[var(--pv-neutral-grey-500)]">Loading dashboard...</span>
+                  <span className="text-sm text-[var(--color-grey-500)]">Loading dashboard...</span>
                 </div>
               </div>
             )}
@@ -643,7 +643,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
             </div>
           </>
         ) : (
-          <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg text-[var(--pv-neutral-grey-500)]">
+          <div className="absolute inset-4 flex items-center justify-center bg-white rounded-lg text-[var(--color-grey-500)]">
             No refresh completed yet. Trigger a refresh first.
           </div>
         )}
@@ -652,20 +652,20 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-[var(--pv-neutral-grey-50)] overflow-hidden">
-      <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
+    <div className="h-full w-full flex flex-col bg-[var(--color-grey-50)] overflow-hidden">
+      <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--color-grey-100)]">
         <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => navigate(basePath)}
-            className="text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer"
+            className="text-[16px] leading-[24px] font-medium text-[var(--color-grey-500)] hover:text-[var(--color-grey-900)] hover:underline transition-colors cursor-pointer"
           >
             Dashboard
           </button>
-          <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
+          <CaretRight size={14} className="text-[var(--color-grey-400)] shrink-0" />
           {loading ? (
             <div className="flex items-center gap-2">
               <img src={spinner} alt="loading" className="w-4 h-4" />
-              <span className="text-sm text-[var(--pv-neutral-grey-500)]">Loading...</span>
+              <span className="text-sm text-[var(--color-grey-500)]">Loading...</span>
             </div>
           ) : (
             <CCDashboardDropdown
@@ -689,7 +689,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           )}
 
           {/* Separator */}
-          <div className="w-px h-6 bg-[var(--pv-neutral-grey-200)]" />
+          <div className="w-px h-6 bg-[var(--color-grey-200)]" />
 
           {/* Data freshness — opens the Data Freshness popup */}
           <PvButton variant="ghost" size="lg" label="Data freshness" icon={Stack} onClick={() => setShowFreshness(true)} />
@@ -721,15 +721,15 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 relative bg-[var(--pv-neutral-grey-50)]">{renderContent()}</div>
+      <div className="flex-1 min-h-0 relative bg-[var(--color-grey-50)]">{renderContent()}</div>
 
       {/* Sync Details modal — last sync time per connected data source */}
       {showFreshness && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowFreshness(false)} />
-          <div className="relative w-[660px] max-w-[94vw] max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--pv-primary-500)]">
+          <div className="relative w-[660px] max-w-[94vw] max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--color-primary-500)]">
             <div className="shrink-0 flex items-center justify-between px-5 py-4">
-              <h3 className="text-[16px] font-semibold text-[var(--pv-neutral-grey-900)] m-0">Data Freshness</h3>
+              <h3 className="text-[16px] font-semibold text-[var(--color-grey-900)] m-0">Data Freshness</h3>
               <div className="flex items-center gap-1.5">
                 <PvButton
                   variant="secondary"
@@ -743,30 +743,30 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
               </div>
             </div>
             <div className="px-5 pb-5 overflow-y-auto">
-              <div className="rounded-xl border border-[var(--pv-neutral-grey-150)] overflow-hidden">
-                <div className="grid grid-cols-[56px_1fr_1.3fr] bg-[var(--pv-primary-500)]/8 text-[12px] font-semibold text-[var(--pv-neutral-grey-700)]">
+              <div className="rounded-xl border border-[var(--color-grey-100)] overflow-hidden">
+                <div className="grid grid-cols-[56px_1fr_1.3fr] bg-[var(--color-primary-500)]/8 text-[12px] font-semibold text-[var(--color-grey-700)]">
                   <div className="px-4 py-2.5">#</div>
                   <div className="px-4 py-2.5">Data Source</div>
                   <div className="px-4 py-2.5">Sync Status</div>
                 </div>
                 {integrations.map((it, i) => (
-                  <div key={it.name} className="grid grid-cols-[56px_1fr_1.3fr] items-center h-12 border-t border-[var(--pv-neutral-grey-150)]">
-                    <div className="px-4 text-[13px] text-[var(--pv-neutral-grey-400)]">{i + 1}.</div>
+                  <div key={it.name} className="grid grid-cols-[56px_1fr_1.3fr] items-center h-12 border-t border-[var(--color-grey-100)]">
+                    <div className="px-4 text-[14px] text-[var(--color-grey-400)]">{i + 1}.</div>
                     <div className="px-4 flex items-center gap-2.5 min-w-0">
                       {it.logo ? (
                         <img src={it.logo} alt="" className="shrink-0 w-5 h-5 rounded-md object-contain" />
                       ) : (
-                        <span className="shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-bold text-white" style={{ backgroundColor: it.color }}>{it.name[0]}</span>
+                        <span className="shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[12px] font-semibold text-white" style={{ backgroundColor: it.color }}>{it.name[0]}</span>
                       )}
-                      <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)] truncate">{it.name}</span>
+                      <span className="text-[14px] font-medium text-[var(--color-grey-900)] truncate">{it.name}</span>
                     </div>
-                    <div className="px-4 text-[13px]">
+                    <div className="px-4 text-[14px]">
                       {it.status === "live" || it.live ? (
                         <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-green-600">
                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />Live
                         </span>
                       ) : it.status === "syncing" ? (
-                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--pv-primary-500)]">
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--color-primary-500)]">
                           <SpinnerSolid size={12} />
                           Syncing…
                         </span>
@@ -776,7 +776,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                           Petavue is looking into it
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--pv-neutral-grey-500)]">
+                        <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--color-grey-500)]">
                           <CheckSolid size={16} className="text-green-500/80" />
                           {it.synced}
                         </span>
@@ -804,9 +804,9 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                 }
                 if (syncing.length > 0) {
                   return (
-                    <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-[var(--pv-primary-500)]/8 border border-[var(--pv-primary-500)]/20">
-                      <SpinnerSolid size={20} className="shrink-0 text-[var(--pv-primary-500)]" />
-                      <div className="text-[12px] text-[var(--pv-neutral-grey-800)]">
+                    <div className="flex items-start gap-2.5 mt-4 px-3.5 py-3 rounded-xl bg-[var(--color-primary-500)]/8 border border-[var(--color-primary-500)]/20">
+                      <SpinnerSolid size={20} className="shrink-0 text-[var(--color-primary-500)]" />
+                      <div className="text-[12px] text-[var(--color-grey-800)]">
                         <span className="font-semibold">Sync in progress.</span>{" "}
                         {syncing.map((it) => it.name).join(", ")} {syncing.length > 1 ? "are" : "is"} updating now. Figures may change shortly.
                       </div>
@@ -832,7 +832,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
         <div className="fixed inset-0 z-50">
           <ClickAwayListener onClickAway={handlePanelClickAway}>
             <div
-              className="absolute top-0 right-0 h-full bg-white border-l border-[var(--pv-neutral-grey-150)] shadow-2xl flex flex-col"
+              className="absolute top-0 right-0 h-full bg-white border-l border-[var(--color-grey-100)] shadow-2xl flex flex-col"
               style={{ width: `${panelPercent}%`, animation: "slideInRight 0.25s ease-out" }}
             >
               <div
@@ -840,25 +840,25 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                 className={`explanation-panel__resize ${isDraggingPanel ? "explanation-panel__resize--active" : ""}`}
               />
 
-              <div className="flex items-center justify-between h-[64px] px-4 border-b border-[var(--pv-neutral-grey-150)] bg-white shrink-0">
+              <div className="flex items-center justify-between h-[64px] px-4 border-b border-[var(--color-grey-100)] bg-white shrink-0">
                 <div className="flex items-center gap-2 w-full overflow-hidden">
-                  <Lightbulb weight="fill" size={22} className="text-[var(--pv-primary-500)] shrink-0" />
-                  <span className="font-medium text-[var(--pv-text-primary-text)] whitespace-nowrap">Find out how</span>
-                  <span className="text-[var(--pv-neutral-grey-600)]">|</span>
-                  <span className="text-[var(--pv-text-primary-text)] truncate">
+                  <Lightbulb weight="fill" size={22} className="text-[var(--color-primary-500)] shrink-0" />
+                  <span className="font-medium text-[var(--color-text-primary)] whitespace-nowrap">Find out how</span>
+                  <span className="text-[var(--color-grey-600)]">|</span>
+                  <span className="text-[var(--color-text-primary)] truncate">
                     {artifact?.name || explanationData?.workflow_name || "Dashboard"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   {Object.values(explanationData?.explanation?.steps || {}).some(s => hasCardContent(s?.card)) && (
-                    <div className="inline-flex rounded-md border border-[var(--pv-neutral-grey-150)] overflow-hidden shrink-0">
+                    <div className="inline-flex rounded-md border border-[var(--color-grey-100)] overflow-hidden shrink-0">
                       <button
                         onClick={() => setViewMode("summary")}
                         title="Explain"
-                        className={`px-2 py-1 text-[11px] font-medium border-none cursor-pointer transition-colors flex items-center ${
+                        className={`px-2 py-1 text-[12px] font-medium border-none cursor-pointer transition-colors flex items-center ${
                           viewMode === "summary"
-                            ? "bg-[var(--pv-primary-500)] text-white"
-                            : "bg-white text-[var(--pv-neutral-grey-600)] hover:bg-[var(--pv-neutral-grey-100)]"
+                            ? "bg-[var(--color-primary-500)] text-white"
+                            : "bg-white text-[var(--color-grey-600)] hover:bg-[var(--color-grey-100)]"
                         }`}
                       >
                         <TextAlignLeft size={13} />
@@ -866,10 +866,10 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                       <button
                         onClick={() => setViewMode("card")}
                         title="Inspect"
-                        className={`px-2 py-1 text-[11px] font-medium border-none cursor-pointer transition-colors flex items-center ${
+                        className={`px-2 py-1 text-[12px] font-medium border-none cursor-pointer transition-colors flex items-center ${
                           viewMode === "card"
-                            ? "bg-[var(--pv-primary-500)] text-white"
-                            : "bg-white text-[var(--pv-neutral-grey-600)] hover:bg-[var(--pv-neutral-grey-100)]"
+                            ? "bg-[var(--color-primary-500)] text-white"
+                            : "bg-white text-[var(--color-grey-600)] hover:bg-[var(--color-grey-100)]"
                         }`}
                       >
                         <ListDashes size={13} />
@@ -878,7 +878,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                   )}
                   <button
                     onClick={() => setShowExplanation(false)}
-                    className="p-1.5 rounded-md hover:bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)] bg-transparent border-none cursor-pointer"
+                    className="p-1.5 rounded-md hover:bg-[var(--color-grey-100)] text-[var(--color-grey-500)] bg-transparent border-none cursor-pointer"
                   >
                     <X size={18} />
                   </button>
@@ -889,12 +889,12 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                 {explanationLoading && (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
                     <img src={spinner} alt="loading" className="w-5 h-5" />
-                    <span className="text-sm text-[var(--pv-neutral-grey-500)]">Loading explanation...</span>
+                    <span className="text-sm text-[var(--color-grey-500)]">Loading explanation...</span>
                   </div>
                 )}
 
                 {!explanationLoading && !explanationData?.explanation && (
-                  <div className="text-center py-12 text-sm text-[var(--pv-neutral-grey-500)]">
+                  <div className="text-center py-12 text-sm text-[var(--color-grey-500)]">
                     No explanation available.
                   </div>
                 )}
@@ -910,10 +910,10 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
                       toggleCode={toggleCode}
                       viewMode={viewMode}
                     />
-                    <div className="mt-6 pt-4 border-t border-[var(--pv-neutral-grey-150)] text-center">
+                    <div className="mt-6 pt-4 border-t border-[var(--color-grey-100)] text-center">
                       <button
                         onClick={() => { setShowExplanation(false); handleStartChat(); }}
-                        className="inline-flex items-center gap-1.5 text-[13px] text-[var(--pv-primary-500)] hover:underline bg-transparent border-none cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-[14px] text-[var(--color-primary-500)] hover:underline bg-transparent border-none cursor-pointer"
                       >
                         <Sparkle size={14} />
                         Want to know more? Ask Sage

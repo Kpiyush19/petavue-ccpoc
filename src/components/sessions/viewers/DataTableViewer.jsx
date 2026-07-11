@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown, Maximize2, Check } from "lucide-react";
-import { Button, Popper } from "@/common-components";
+import { Button, Popper } from "@/ui";
 import { cn } from "../utils/cn";
 import { useDataTable } from "../../../hooks/useDataTable";
 
@@ -33,9 +33,9 @@ function PageSizeSelector({ value, onChange }) {
   return (
     <Popper
       placement="top-end"
-      btnColor="secondary ghost"
-      btnSize="sm"
-      mainBtnClassName="text-[11px] !px-2 !py-0.5 !h-auto !min-h-0 gap-1"
+      variant="secondaryGhost"
+      size="sm"
+      className="text-[12px] !px-2 !py-0.5 !h-auto !min-h-0 gap-1"
       popperClassName="w-[60px]"
       closeOnClickInside
       buttonChildren={({ open }) => (
@@ -49,9 +49,9 @@ function PageSizeSelector({ value, onChange }) {
         <Button
           key={opt}
           onClick={() => onChange(opt)}
-          btnColor="blue ghost"
-          btnSize="sm"
-          mainBtnClassName={cn("w-full justify-start text-[12px] rounded-none", value === opt && "font-medium")}
+          variant="blueGhost"
+          size="sm"
+          className={cn("w-full justify-start text-[12px] rounded-none", value === opt && "font-medium")}
         >
           {value === opt ? <Check size={12} /> : <span className="w-3" />}
           {opt}
@@ -253,29 +253,29 @@ export default function DataTableViewer({ sessionId, path, onLoadComplete }) {
       </div>
 
       <div className="shrink-0 flex items-center justify-between px-3 py-2 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <span className="text-[11px] text-[var(--text-muted)] font-mono">{totalRows.toLocaleString()} rows</span>
+        <span className="text-[12px] text-[var(--text-muted)] font-mono">{totalRows.toLocaleString()} rows</span>
 
         <div className="flex items-center gap-2">
           <PageSizeSelector value={pageSize} onChange={setPageSize} />
 
           <Button
-            btnColor="secondary ghost"
-            btnSize="sm"
+            variant="secondaryGhost"
+            size="sm"
             onClick={() => loadPage(currentPage - 1)}
             disabled={currentPage <= 1 || isLoading}
-            mainBtnClassName="text-[11px] !px-2 !py-0.5 !h-auto !min-h-0"
+            className="text-[12px] !px-2 !py-0.5 !h-auto !min-h-0"
           >
             Prev
           </Button>
-          <span className="text-[11px] text-[var(--text-secondary)] tabular-nums font-mono">
+          <span className="text-[12px] text-[var(--text-secondary)] tabular-nums font-mono">
             {currentPage} / {totalPages}
           </span>
           <Button
-            btnColor="secondary ghost"
-            btnSize="sm"
+            variant="secondaryGhost"
+            size="sm"
             onClick={() => loadPage(currentPage + 1)}
             disabled={currentPage >= totalPages || isLoading}
-            mainBtnClassName="text-[11px] !px-2 !py-0.5 !h-auto !min-h-0"
+            className="text-[12px] !px-2 !py-0.5 !h-auto !min-h-0"
           >
             Next
           </Button>

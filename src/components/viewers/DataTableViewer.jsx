@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, Maximize2 } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Select } from '../ui/Input'
+import { Button } from '@/ui'
+import { Select } from '@/ui/components/FormControls/FormControls'
 import { cn } from '../../utils/cn'
 import { useDataTable } from '../../hooks/useDataTable'
 
@@ -31,7 +31,7 @@ function PageSizeSelector({ value, onChange }) {
     <Select
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="text-[11px] w-auto h-auto px-1.5 py-0.5 rounded min-h-0"
+      className="text-[12px] w-auto h-auto px-1.5 py-0.5 rounded min-h-0"
     >
       <option value={25}>25</option>
       <option value={50}>50</option>
@@ -209,7 +209,7 @@ export default function DataTableViewer({ sessionId, path }) {
 
       {/* Pagination bar */}
       <div className="shrink-0 flex items-center justify-between px-3 py-2 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-        <span className="text-[11px] text-[var(--text-muted)] font-mono">
+        <span className="text-[12px] text-[var(--text-muted)] font-mono">
           {totalRows.toLocaleString()} rows
         </span>
 
@@ -221,11 +221,11 @@ export default function DataTableViewer({ sessionId, path }) {
             size="sm"
             onClick={() => loadPage(currentPage - 1)}
             disabled={currentPage <= 1 || isLoading}
-            className="text-[11px] px-2 py-0.5 h-auto"
+            className="text-[12px] px-2 py-0.5 h-auto"
           >
             Prev
           </Button>
-          <span className="text-[11px] text-[var(--text-secondary)] tabular-nums font-mono">
+          <span className="text-[12px] text-[var(--text-secondary)] tabular-nums font-mono">
             {currentPage} / {totalPages}
           </span>
           <Button
@@ -233,7 +233,7 @@ export default function DataTableViewer({ sessionId, path }) {
             size="sm"
             onClick={() => loadPage(currentPage + 1)}
             disabled={currentPage >= totalPages || isLoading}
-            className="text-[11px] px-2 py-0.5 h-auto"
+            className="text-[12px] px-2 py-0.5 h-auto"
           >
             Next
           </Button>

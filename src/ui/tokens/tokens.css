@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Petavue — Canonical Color Tokens (single source of truth)
+   Naming: group/step  ->  --color-<group>-<step>
+   Based on petavue/colorography (Scheme C), with the agreed renames and
+   drift corrections applied:
+     - neutral  -> grey
+     - accent   -> purple
+     - success/warning/error  -> green/red/orange
+     - grey-500 = #757A97  (was drifting to #757A9B)
+     - grey-900 = #1F212E  (distinct from text/primary #232532)
+   All retired token names (Scheme A --color-pv-*, Scheme B --pv-*, and the
+   legacy Scheme C names) are aliased onto these in legacy-bridge.css.
+   ========================================================================== */
+
+:root {
+  /* --- Primary (brand blue) ------------------------------------------------ */
+  --color-primary-50:  #F5F8FF;
+  --color-primary-100: #E0EBFE;
+  --color-primary-150: #CCD9FA;
+  --color-primary-200: #B8C9F6;
+  --color-primary-300: #90A6EE;
+  --color-primary-400: #6384EB;
+  --color-primary-500: #3661ED;   /* ⭐ brand */
+  --color-primary-600: #2952D9;
+  --color-primary-700: #1A3FC0;
+  --color-primary-800: #052DAB;
+  --color-primary-900: #041E85;
+
+  /* --- Grey (was "neutral") ------------------------------------------------ */
+  --color-grey-50:  #F8F9FC;
+  --color-grey-100: #EEF0F7;
+  --color-grey-200: #D4D9EA;
+  --color-grey-300: #ADB2CE;
+  --color-grey-400: #8E93AF;
+  --color-grey-500: #757A97;   /* = text/secondary (drift-fixed, was #757A9B) */
+  --color-grey-600: #52577A;
+  --color-grey-700: #424766;
+  --color-grey-800: #2D3044;
+  --color-grey-900: #1F212E;   /* distinct from text/primary #232532 */
+
+  /* --- Text ---------------------------------------------------------------- */
+  --color-text-primary:   #232532;               /* main ink, whole product */
+  --color-text-secondary: var(--color-grey-500); /* #757A97 — sub-text, descriptions */
+  --color-text-disabled:  var(--color-grey-300); /* #ADB2CE */
+  --color-text-link:      var(--color-primary-500);
+
+  /* --- Purple (accent) ----------------------------------------------------- */
+  --color-purple-50:  #EBE3FA;
+  --color-purple-100: #CBBAF3;
+  --color-purple-200: #A88BEB;
+  --color-purple-300: #825CDE;
+  --color-purple-400: #643BCF;
+
+  /* --- Action (green / red / orange) — solid + soft background ------------- */
+  --color-green:     #08BD50;   --color-green-bg:  #EBFFF3;
+  --color-red:       #F93D3D;   --color-red-bg:    #FFF2F2;
+  --color-orange:    #FBBF24;   --color-orange-bg: #FEF3D5;
+
+  /* --- Misc (categorical / one-off) --------------------------------------- */
+  --color-misc-orange: #F87F00;
+  --color-misc-green:  #0D787F;
+  --color-misc-purple: #9747FF;
+  --color-misc-brown:  #795548;
+
+  /* --- Icon (semantic — map to the grey scale) ---------------------------- */
+  --color-icon-active:   var(--color-grey-700); /* #424766 — active/hover */
+  --color-icon-default:  var(--color-grey-500); /* #757A97 — resting */
+  --color-icon-disabled: var(--color-grey-300); /* #ADB2CE — disabled */
+}

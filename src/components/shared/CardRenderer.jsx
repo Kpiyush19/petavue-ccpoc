@@ -7,7 +7,7 @@ export function renderWithPills(text) {
     const match = part.match(/^\{\{(.+)\}\}$/)
     if (match) {
       return (
-        <span key={i} className="inline-flex items-center text-[10px] font-mono font-semibold text-[var(--pv-primary-500)] bg-[var(--pv-primary-100)] px-1.5 py-0.5 rounded border border-[var(--pv-primary-500)]/20 mx-0.5">
+        <span key={i} className="inline-flex items-center text-[10px] font-mono font-semibold text-[var(--color-primary-500)] bg-[var(--color-primary-100)] px-1.5 py-0.5 rounded border border-[var(--color-primary-500)]/20 mx-0.5">
           {match[1]}
         </span>
       )
@@ -58,7 +58,7 @@ export function CardView({ card }) {
           {conditions.length > 0 ? (
             conditions.map((cond, i) => (
               <div key={i} className="flex items-start gap-2 text-[12px] text-[var(--text-secondary)] leading-relaxed">
-                <span className="text-[10px] font-bold text-[var(--pv-primary-500)] bg-[var(--pv-primary-100)] px-1.5 py-0.5 rounded shrink-0 mt-px">IF</span>
+                <span className="text-[10px] font-semibold text-[var(--color-primary-500)] bg-[var(--color-primary-100)] px-1.5 py-0.5 rounded shrink-0 mt-px">IF</span>
                 <span className="flex-1 flex flex-wrap items-center gap-y-0.5">{renderWithPills(cond)}</span>
               </div>
             ))

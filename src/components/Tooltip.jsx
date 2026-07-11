@@ -96,16 +96,16 @@ export default function Tooltip({
   }
 
   const arrowStyles = {
-    top: 'left-1/2 -translate-x-1/2 top-full border-l-transparent border-r-transparent border-b-transparent border-t-[var(--pv-text-primary-text)]',
-    bottom: 'left-1/2 -translate-x-1/2 bottom-full border-l-transparent border-r-transparent border-t-transparent border-b-[var(--pv-text-primary-text)]',
-    left: 'top-1/2 -translate-y-1/2 left-full border-t-transparent border-b-transparent border-r-transparent border-l-[var(--pv-text-primary-text)]',
-    right: 'top-1/2 -translate-y-1/2 right-full border-t-transparent border-b-transparent border-l-transparent border-r-[var(--pv-text-primary-text)]',
+    top: 'left-1/2 -translate-x-1/2 top-full border-l-transparent border-r-transparent border-b-transparent border-t-[var(--color-text-primary)]',
+    bottom: 'left-1/2 -translate-x-1/2 bottom-full border-l-transparent border-r-transparent border-t-transparent border-b-[var(--color-text-primary)]',
+    left: 'top-1/2 -translate-y-1/2 left-full border-t-transparent border-b-transparent border-r-transparent border-l-[var(--color-text-primary)]',
+    right: 'top-1/2 -translate-y-1/2 right-full border-t-transparent border-b-transparent border-l-transparent border-r-[var(--color-text-primary)]',
   };
 
   const tooltipContent = showTooltip && (
     <div
       ref={tooltipRef}
-      className="fixed z-50 px-2.5 py-1.5 text-xs text-white bg-[var(--pv-text-primary-text)] rounded-md shadow-lg max-w-xs break-words pointer-events-none transition-opacity duration-75"
+      className="fixed z-50 px-2.5 py-1.5 text-xs text-white bg-[var(--color-text-primary)] rounded-md shadow-lg max-w-xs break-words pointer-events-none transition-opacity duration-75"
       style={{
         ...(disablePortal ? {} : { top: position.top, left: position.left }),
         opacity: isPositioned ? 1 : 0,

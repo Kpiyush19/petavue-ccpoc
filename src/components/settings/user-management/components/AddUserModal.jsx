@@ -46,11 +46,11 @@ const RoleDropdown = ({ role, setRole, disabled }) => {
         ref={triggerRef}
         onClick={handleOpen}
         className={`flex items-center w-60 shrink-0 px-3 py-2 border rounded-lg text-sm text-left ${
-          role ? 'text-[var(--pv-neutral-grey-900)]' : 'text-[var(--pv-neutral-grey-400)]'
+          role ? 'text-[var(--color-grey-900)]' : 'text-[var(--color-grey-400)]'
         } ${
           disabled
-            ? 'border-[var(--pv-neutral-grey-200)] bg-[var(--pv-neutral-grey-50)] cursor-not-allowed'
-            : 'border-[var(--pv-neutral-grey-300)] hover:border-[var(--pv-primary-400)]'
+            ? 'border-[var(--color-grey-200)] bg-[var(--color-grey-50)] cursor-not-allowed'
+            : 'border-[var(--color-grey-300)] hover:border-[var(--color-primary-400)]'
         }`}
         disabled={disabled}
       >
@@ -61,7 +61,7 @@ const RoleDropdown = ({ role, setRole, disabled }) => {
           <div className="fixed inset-0 z-50" onClick={handleClose} />
           <div
             style={dropdownStyle}
-            className="bg-white border border-[var(--pv-neutral-grey-200)] rounded-lg shadow-lg overflow-hidden"
+            className="bg-white border border-[var(--color-grey-200)] rounded-lg shadow-lg overflow-hidden"
           >
             {roleOptions.map((roleOp, ind) => (
               <button
@@ -70,7 +70,7 @@ const RoleDropdown = ({ role, setRole, disabled }) => {
                   setRole(roleOp);
                   handleClose();
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-[var(--pv-primary-50)] first:rounded-t-lg last:rounded-b-lg"
+                className="w-full text-left px-4 py-3 hover:bg-[var(--color-primary-50)] first:rounded-t-lg last:rounded-b-lg"
               >
                 {roleOp}
               </button>
@@ -148,7 +148,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
           {users.map((user, ind) => (
             <div className="flex items-center w-full gap-2 px-4" key={ind}>
               <div className="flex flex-col gap-2 w-full">
-                <span className="text-sm text-[var(--pv-neutral-grey-700)]">Email*</span>
+                <span className="text-sm text-[var(--color-grey-700)]">Email*</span>
                 <Input
                   placeholder="Enter Email"
                   value={user.email}
@@ -163,7 +163,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
                 />
               </div>
               <div className="flex flex-col gap-2 w-fit">
-                <span className="text-sm text-[var(--pv-neutral-grey-700)]">Role*</span>
+                <span className="text-sm text-[var(--color-grey-700)]">Role*</span>
                 <RoleDropdown
                   role={user.role}
                   setRole={(role) => {
@@ -184,7 +184,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
                       setUsers((prev) => prev.filter((_, i) => i !== ind));
                     }}
                     disabled={inviting}
-                    className="p-1.5 rounded text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-neutral-grey-600)] hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-50"
+                    className="p-1.5 rounded text-[var(--color-grey-400)] hover:text-[var(--color-grey-600)] hover:bg-[var(--color-grey-100)] disabled:opacity-50"
                   >
                     <X size={16} />
                   </button>
@@ -193,7 +193,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
             </div>
           ))}
         </div>
-        <div className="flex justify-between items-center px-6 py-3 border-t border-[var(--pv-neutral-grey-200)]">
+        <div className="flex justify-between items-center px-6 py-3 border-t border-[var(--color-grey-200)]">
           <Button variant="ghost" onClick={handleCloseModal} disabled={inviting}>
             Cancel
           </Button>

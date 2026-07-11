@@ -5,6 +5,23 @@ function BubbleError() {
   throw useRouteError();
 }
 
+// Retired /petavue/<page> URLs → their natural equivalents (bookmarks/back-compat).
+function PetavueLegacyRedirect() {
+  const params = useParams();
+  const seg = (params["*"] || "").split("/")[0];
+  const map = {
+    settings: "/settings",
+    profile: "/profile",
+    "data-hub": "/data-hub",
+    dashboards: "/dashboards",
+    "dashboard-view": "/dashboards",
+    chat: "/new",
+    skills: "/skills",
+    home: "/new",
+  };
+  return <Navigate to={map[seg] || "/new"} replace />;
+}
+
 import AuthGuard from "./pages/auth/AuthGuard";
 import LoginPage from "./pages/auth/LoginPage";
 import LoginAs from "./pages/auth/LoginAs";
@@ -14,7 +31,7 @@ import { MOCK_ENABLED } from "./mocks";
 import IndexRedirect from "./components/IndexRedirect";
 import { SessionProvider } from "./contexts/SessionContext";
 import LegacyRedirect from "./pages/LegacyRedirect";
-import PetavueSplash from "./components/PetavueSplash";
+import PageSkeleton from "./components/PageSkeleton";
 
 // lazy() but resilient to stale dynamic-import chunks. When a chunk hash is
 // invalidated (Vite HMR/rebuild in dev, or a new deploy in prod), the dynamic
@@ -59,7 +76,6 @@ const GoogleAnalyticsCallback = lazy(() => import("./pages/callbacks/GoogleAnaly
 const GoogleAnalyticsRedirect = lazy(() => import("./pages/callbacks/GoogleAnalyticsRedirect"));
 
 const RootLayout = lazy(() => import("./layouts/RootLayout"));
-const DataHubLayout = lazy(() => import("./layouts/DataHubLayout"));
 const WorkflowsLayout = lazy(() => import("./layouts/WorkflowsLayout"));
 const DashboardsLayout = lazy(() => import("./layouts/DashboardsLayout"));
 const SessionsLayout = lazy(() => import("./layouts/SessionsLayout"));
@@ -89,15 +105,13 @@ function LegacyRunRedirect() {
 }
 const WorkflowsPage = lazy(() => import("./pages/workflows"));
 const WorkflowDetailPage = lazy(() => import("./pages/WorkflowDetailPage"));
-const DataHubPage = lazy(() => import("./pages/DataHubPage"));
-const DictionaryPage = lazy(() => import("./pages/data-hub/DictionaryPage"));
-const SyncActivityPage = lazy(() => import("./pages/data-hub/SyncActivityPage"));
-const DictionaryDetailPage = lazy(() => import("./pages/DictionaryDetailPage"));
 const MyProfilePage = lazy(() => import("./pages/MyProfilePage"));
 const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
+// Page-navigation loading now shows a content-shaped skeleton instead of the
+// petavue splash spinner. (PetavueSplash is still used for initial app boot.)
 const SuspenseWrapper = ({ children }) => {
-  return <Suspense fallback={<PetavueSplash />}>{children}</Suspense>;
+  return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>;
 };
 
 function AuthenticatedLayout() {
@@ -112,13 +126,39 @@ function AuthenticatedLayout() {
 
 export const router = createBrowserRouter([
   {
-    // Petavue design-system pages (self-contained, own MenuBar — outside the app layout).
-    path: "/petavue/*",
+    // Settings & Profile are self-contained (own MenuBar) so they mount OUTSIDE
+    // the app layout — now at natural URLs (/settings, /profile).
+    path: "/settings/*",
     element: (
       <SuspenseWrapper>
         <PetavueRoutes />
       </SuspenseWrapper>
     ),
+    errorElement: <BubbleError />
+  },
+  {
+    path: "/profile/*",
+    element: (
+      <SuspenseWrapper>
+        <PetavueRoutes />
+      </SuspenseWrapper>
+    ),
+    errorElement: <BubbleError />
+  },
+  {
+    // Data Hub — the petavue source-cards page (self-contained, own MenuBar).
+    path: "/data-hub/*",
+    element: (
+      <SuspenseWrapper>
+        <PetavueRoutes />
+      </SuspenseWrapper>
+    ),
+    errorElement: <BubbleError />
+  },
+  {
+    // Back-compat: retire the old /petavue/* URLs → send to their natural home.
+    path: "/petavue/*",
+    element: <PetavueLegacyRedirect />,
     errorElement: <BubbleError />
   },
   {
@@ -492,57 +532,6 @@ export const router = createBrowserRouter([
             // Legacy path — redirect /skills-v2/run/:id → /skills/run/:id.
             path: "skills-v2/run/:sessionId",
             element: <LegacyRunRedirect />
-          },
-          {
-            path: "data-hub",
-            element: (
-              <SuspenseWrapper>
-                <DataHubLayout />
-              </SuspenseWrapper>
-            ),
-            children: [
-              {
-                element: (
-                  <SuspenseWrapper>
-                    <DataHubPage />
-                  </SuspenseWrapper>
-                ),
-                children: [
-                  { index: true, element: <Navigate to="dictionary" replace /> },
-                  {
-                    path: "dictionary",
-                    element: (
-                      <SuspenseWrapper>
-                        <DictionaryPage />
-                      </SuspenseWrapper>
-                    )
-                  },
-                  {
-                    path: "sync-activity",
-                    element: (
-                      <SuspenseWrapper>
-                        <SyncActivityPage />
-                      </SuspenseWrapper>
-                    )
-                  }
-                ]
-              },
-              {
-                path: "dictionary/:id",
-                element: (
-                  <SuspenseWrapper>
-                    <DictionaryDetailPage />
-                  </SuspenseWrapper>
-                )
-              }
-            ]
-          },
-          {
-            // Settings + integrations now live at /petavue/settings (the
-            // canonical page). The old standalone /settings/* pages are
-            // removed; anything still pointing there redirects to the new home.
-            path: "settings/*",
-            element: <Navigate to="/petavue/settings" replace />,
           },
           {
             path: "my-profile",
