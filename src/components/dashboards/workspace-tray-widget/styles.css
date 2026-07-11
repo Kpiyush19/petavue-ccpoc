@@ -12,7 +12,7 @@
 
 .workspace-tray-widget {
   /* Backgrounds */
-  --bg-primary: var(#fff, #ffffff);
+  --bg-primary: #ffffff;
   --bg-secondary: var(--color-grey-50, #f8f9fc);
   --bg-hover: var(--color-grey-100, #eef0f7);
 

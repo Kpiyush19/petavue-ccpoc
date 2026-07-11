@@ -11,7 +11,7 @@
 .dashboard-screen {
   --bg-primary: var(--color-grey-50, #f8f9fc);
   --bg-secondary: var(--color-grey-100, #eef0f7);
-  --bg-tertiary: var(#fff, #ffffff);
+  --bg-tertiary: #ffffff;
   --bg-hover: var(--color-grey-200, #d4d9ea);
 
   --border-primary: var(--color-grey-200, #d4d9ea);
@@ -405,7 +405,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(#fff, #ffffff);
+  background: #ffffff;
   box-shadow: -4px 0 15px -3px rgb(0 0 0 / 0.1);
   overflow: hidden;
 }
@@ -477,7 +477,7 @@
   height: 61px;
   padding: 0 16px;
   border-bottom: 1px solid var(--color-grey-200, #d4d9ea);
-  background: var(#fff, #ffffff);
+  background: #ffffff;
   flex-shrink: 0;
 }
 

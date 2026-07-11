@@ -13,9 +13,9 @@
   --chat-max-width: 1000px; /* Shared max-width for messages and input area */
 
   /* Backgrounds - Petavue neutral greys */
-  --bg-primary: var(#fff, #ffffff);
+  --bg-primary: #ffffff;
   --bg-secondary: var(--color-grey-50, #f8f9fc);
-  --bg-tertiary: var(#fff, #ffffff);
+  --bg-tertiary: #ffffff;
   --bg-hover: var(--color-grey-100, #eef0f7);
   --bg-divider: var(--color-grey-100, #eef0f7);
   --bg-user-msg: var(--color-primary-500, #3661ed);
@@ -52,7 +52,7 @@
   --error: var(--color-red, #f93d3d);
 
   /* Panel - Petavue greys */
-  --tab-active-bg: var(#fff, #ffffff);
+  --tab-active-bg: #ffffff;
   --tab-hover-bg: var(--color-grey-100, #eef0f7);
   --resize-handle: var(--color-grey-200, #d4d9ea);
   --resize-handle-active: var(--color-primary-500, #3661ed);
@@ -961,7 +961,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(#fff, #ffffff);
+  background: #ffffff;
   border-left: 1px solid var(--border-primary);
   animation: panel-slide-in 0.2s ease-out both;
 }
@@ -972,7 +972,7 @@
   gap: 8px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-primary);
-  background: var(#fff, #ffffff);
+  background: #ffffff;
 }
 
 .artifact-panel__back-btn {
