@@ -32,7 +32,7 @@ const UserTableSkeleton = ({ len = 10, showFullSkeleton = true }) => {
 
   return (
     <div className="flex flex-col w-full px-4">
-      <div className="grid bg-[var(--pv-neutral-grey-50)] rounded-t-lg" style={{ gridTemplateColumns: colSectors }}>
+      <div className="grid bg-[var(--color-grey-50)] rounded-t-lg" style={{ gridTemplateColumns: colSectors }}>
         {showFullSkeleton && (
           <div className="w-full p-2">
             <Skeleton width={19} height={19} />
@@ -167,7 +167,7 @@ const UsersTabTable = ({ tableWrapperClassName, itemsPerPage, showCheckBox = tru
       <div className="bg-white rounded-lg m-4 pt-4 min-w-[900px]">
         <div className="flex px-4 items-center justify-between pb-2">
           <div className="flex gap-4 items-center">
-            <p className="font-normal text-sm leading-5 text-[var(--pv-neutral-grey-900)]">
+            <p className="font-normal text-sm leading-5 text-[var(--color-grey-900)]">
               {selectedUsersCount > 0
                 ? `Users Selected: ${selectedUsersCount}`
                 : `Users: ${filteredUsers?.length || ""}`}
@@ -183,8 +183,8 @@ const UsersTabTable = ({ tableWrapperClassName, itemsPerPage, showCheckBox = tru
               <Skeleton width={240} height={36} />
             ) : (
               <Input
-                icon={<MagnifyingGlass size={18} className="text-[var(--pv-neutral-grey-400)]" />}
-                clearIcon={searchQuery && <X size={15} className="text-[var(--pv-neutral-grey-400)] cursor-pointer" />}
+                icon={<MagnifyingGlass size={18} className="text-[var(--color-grey-400)]" />}
+                clearIcon={searchQuery && <X size={15} className="text-[var(--color-grey-400)] cursor-pointer" />}
                 onClear={() => setSearchQuery("")}
                 placeholder="Search by User Name"
                 value={searchQuery}
@@ -233,7 +233,7 @@ const UsersTabTable = ({ tableWrapperClassName, itemsPerPage, showCheckBox = tru
                   )}
                 </div>
               ),
-              "User Email": <p className="text-[var(--pv-neutral-grey-500)] text-xs">{row?.email}</p>,
+              "User Email": <p className="text-[var(--color-grey-500)] text-xs">{row?.email}</p>,
               Role: row?.role.charAt(0).toUpperCase() + row?.role.slice(1).toLowerCase(),
               Added: (
                 <div className="flex gap-3 items-center">
@@ -244,7 +244,7 @@ const UsersTabTable = ({ tableWrapperClassName, itemsPerPage, showCheckBox = tru
               Actions: (
                 <Menu
                   trigger={
-                    <DotsThree size={32} className="text-[var(--pv-neutral-grey-500)] hover:bg-[var(--pv-primary-100)] rounded-lg cursor-pointer" />
+                    <DotsThree size={32} className="text-[var(--color-grey-500)] hover:bg-[var(--color-primary-100)] rounded-lg cursor-pointer" />
                   }
                   items={[
                     ...(row?.displayInviteUserOption

@@ -2,8 +2,8 @@ import { CaretDown, MagnifyingGlass } from "@phosphor-icons/react";
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClickAwayListener } from "@mui/material";
-import { Tooltip, Input } from "../common-components";
-import { useScrollCleanup } from "../common-components/Tooltip/useScrollCleanup";
+import { Tooltip, Input } from "@/ui";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 
 export default function WorkflowDropdown({ workflows, currentWorkflow, loading }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,20 +62,20 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
     <div className="relative">
       <button
         className={`flex items-center gap-1.5 px-1 py-1.5 rounded-lg bg-transparent border-none ${
-          loading ? "text-pv-neutral-grey-400 cursor-not-allowed" : "cursor-pointer hover:bg-pv-neutral-grey-50"
+          loading ? "text-grey-400 cursor-not-allowed" : "cursor-pointer hover:bg-grey-50"
         }`}
         onClick={handleClick}
         disabled={loading}
       >
         <Tooltip title={currentWorkflow?.name} displayTooltipOnOverflow placement="bottom">
-          <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[300px] text-pv-neutral-grey-900">
+          <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[300px] text-grey-900">
             {currentWorkflow?.name || "Select Workflow"}
           </span>
         </Tooltip>
         <CaretDown
           size={14}
           weight="fill"
-          className="text-pv-neutral-grey-400"
+          className="text-grey-400"
           style={{
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 300ms ease-out"
@@ -87,13 +87,13 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
         <ClickAwayListener onClickAway={handleClose}>
           <div
             id="workflow-dropdown-menu"
-            className="absolute top-full left-0 mt-1 bg-white flex flex-col rounded-lg border border-pv-neutral-grey-200 z-50 min-w-[300px] max-w-[350px]"
+            className="absolute top-full left-0 mt-1 bg-white flex flex-col rounded-lg border border-grey-200 z-50 min-w-[300px] max-w-[350px]"
             style={{ boxShadow: "0px 8px 24px 0px rgba(0, 0, 0, 0.10)" }}
           >
             <div className="flex flex-col w-full py-3">
               <div className="px-3 mb-2">
                 <Input
-                  leftElem={<MagnifyingGlass size={16} className="text-pv-neutral-grey-400" />}
+                  leftElem={<MagnifyingGlass size={16} className="text-grey-400" />}
                   showClearInput
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -106,7 +106,7 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
                 className="flex flex-col h-full w-full overflow-y-auto overflow-x-hidden max-h-44"
               >
                 {searchQuery.length > 0 && (
-                  <span className="py-1.5 px-3 text-xs text-pv-neutral-grey-500">
+                  <span className="py-1.5 px-3 text-xs text-grey-500">
                     Search results for <span className="font-medium">"{searchQuery}"</span>
                   </span>
                 )}
@@ -123,8 +123,8 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
                       >
                         <div
                           data-selected={isSelected || undefined}
-                          className={`truncate px-4 py-3 shrink-0 cursor-pointer hover:bg-pv-primary-primary-50 border-l-2 border-transparent ${
-                            isSelected ? "font-medium bg-pv-primary-primary-50 border-pv-primary-primary-500" : ""
+                          className={`truncate px-4 py-3 shrink-0 cursor-pointer hover:bg-primary-50 border-l-2 border-transparent ${
+                            isSelected ? "font-medium bg-primary-50 border-primary-500" : ""
                           }`}
                           onMouseEnter={() => setTooltipShow(true)}
                           onClick={() => handleSelect(wf)}
@@ -135,7 +135,7 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
                     );
                   })
                 ) : (
-                  <div className="px-3 py-2 text-sm text-pv-neutral-grey-500">No workflows found</div>
+                  <div className="px-3 py-2 text-sm text-grey-500">No workflows found</div>
                 )}
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowsClockwise, MagnifyingGlass } from '@phosphor-icons/react';
-import { Button, Input, Tooltip } from '@/common-components';
-import spinner from '@/common-components/assets/spinner.gif';
+import { Button, Input, Tooltip } from '@/ui';
+import spinner from '@/ui/assets/spinner.gif';
 import { TreeNode } from './TreeNode';
 
 function DefaultLoader({ src = spinner, alt = 'loading', className }) {
@@ -63,11 +63,11 @@ export function WorkspaceTray({
       {showHeader && (
         <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--border-primary)]">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.12em]">
+            <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.12em]">
               {title}
             </span>
             {totalFiles > 0 && (
-              <span className="text-[9px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
+              <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
                 {totalFiles}
               </span>
             )}
@@ -75,11 +75,11 @@ export function WorkspaceTray({
           {onRefresh && (
             <Tooltip title="Refresh files" placement="bottom">
               <Button
-                btnColor="ghost"
-                btnSize="sm"
+                variant="ghost"
+                size="sm"
                 onClick={handleRefresh}
                 disabled={loading || isRefreshing}
-                mainBtnClassName="!p-1 !min-w-0 w-6 h-6"
+                className="!p-1 !min-w-0 w-6 h-6"
                 aria-label="Refresh files"
               >
                 {loading || isRefreshing ? (
@@ -88,7 +88,7 @@ export function WorkspaceTray({
                   <ArrowsClockwise
                     size={14}
                     weight="bold"
-                    className="text-[var(--pv-text-secondary-text)]"
+                    className="text-[var(--color-text-secondary)]"
                   />
                 )}
               </Button>
@@ -104,7 +104,7 @@ export function WorkspaceTray({
             onChange={(e) => setLocalQuery(e.target.value)}
             placeholder="Search files..."
             showClearInput
-            leftElem={<MagnifyingGlass size={14} className="text-pv-neutral-grey-400" />}
+            leftElem={<MagnifyingGlass size={14} className="text-grey-400" />}
             className={{
               input: {
                 wrapper: 'py-2 px-3',
@@ -140,7 +140,7 @@ export function WorkspaceTray({
               </svg>
             </div>
             <div>
-              <div className="text-[11px] text-[var(--text-secondary)] font-medium">
+              <div className="text-[12px] text-[var(--text-secondary)] font-medium">
                 No files yet
               </div>
               <div className="text-[10px] text-[var(--text-muted)] mt-0.5">

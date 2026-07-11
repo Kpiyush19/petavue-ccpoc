@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus } from '@phosphor-icons/react';
 import { isEqual } from 'lodash';
-import { Button } from '../../../common-components/Button';
+import { Button } from '@/ui';
 import Skeleton from './components/Skeleton';
 import IntegrationDetailDatabase from './components/IntegrationDetailDatabase';
 import { DisconnectIntegrationModal } from './components/DisconnectIntegrationModal';
@@ -231,7 +231,7 @@ export const IntegrationDetail = ({
     <>
       <div className="h-screen flex flex-col">
         {!hideHeader && (
-          <div className="flex items-center border-b border-[var(--pv-neutral-grey-200)] h-[64px] shrink-0 bg-white justify-between px-6 py-4">
+          <div className="flex items-center border-b border-[var(--color-grey-200)] h-[64px] shrink-0 bg-white justify-between px-6 py-4">
             <div className="flex gap-4 items-center">
               <div
                 onClick={goBack}
@@ -239,7 +239,7 @@ export const IntegrationDetail = ({
               >
                 <ArrowLeft size={25} />
               </div>
-              <h1 className="text-[var(--pv-text-primary-text)] text-lg leading-7">
+              <h1 className="text-[var(--color-text-primary)] text-lg leading-7">
                 {integrationName} Details
               </h1>
             </div>
@@ -247,14 +247,14 @@ export const IntegrationDetail = ({
               {!isSingleConnectionType && (
                 <>
                   <Button
-                    btnColor="secondary"
-                    btnSize="lg"
+                    variant="secondary"
+                    size="lg"
                     onClick={handleAddNewConnection}
                   >
                     <Plus size={16} />
                     Add New Connection
                   </Button>
-                  <Button btnColor="primary" btnSize="lg" onClick={saveConnections} disabled={!changesMade}>
+                  <Button variant="primary" size="lg" onClick={saveConnections} disabled={!changesMade}>
                     Save
                   </Button>
                 </>
@@ -263,26 +263,26 @@ export const IntegrationDetail = ({
           </div>
         )}
 
-        <div className="p-4 flex flex-col h-full overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
+        <div className="p-4 flex flex-col h-full overflow-y-auto bg-[var(--color-grey-50)]">
           <div className="flex flex-col bg-white overflow-y-auto h-full rounded-md px-4 pb-4 pt-6">
             {getIntegrationDetails.isLoading ? (
               <div className="flex flex-col w-full gap-6">
                 <div className="flex flex-col h-[66px] w-full justify-between">
                   <Skeleton width="80px" height="20px" />
-                  <div className="flex h-[36px] w-full bg-[var(--pv-neutral-grey-100)] rounded-lg px-3 py-2">
+                  <div className="flex h-[36px] w-full bg-[var(--color-grey-100)] rounded-lg px-3 py-2">
                     <Skeleton width="180px" height="20px" />
                   </div>
                 </div>
                 <div className="flex w-full gap-9 justify-between">
                   <div className="flex flex-col h-[66px] w-full justify-between">
                     <Skeleton width="80px" height="20px" />
-                    <div className="flex h-[36px] w-full bg-[var(--pv-neutral-grey-100)] rounded-lg px-3 py-2">
+                    <div className="flex h-[36px] w-full bg-[var(--color-grey-100)] rounded-lg px-3 py-2">
                       <Skeleton width="180px" height="20px" />
                     </div>
                   </div>
                   <div className="flex flex-col h-[66px] w-full justify-between">
                     <Skeleton width="80px" height="20px" />
-                    <div className="flex h-[36px] w-full bg-[var(--pv-neutral-grey-100)] rounded-lg px-3 py-2">
+                    <div className="flex h-[36px] w-full bg-[var(--color-grey-100)] rounded-lg px-3 py-2">
                       <Skeleton width="180px" height="20px" />
                     </div>
                   </div>

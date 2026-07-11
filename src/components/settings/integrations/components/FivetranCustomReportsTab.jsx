@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash, Info, PencilSimple, CaretRight, CaretDown } from "@phosphor-icons/react";
-import { Button } from "../../../../common-components/Button";
-import Skeleton from "../../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import {
   useGetFivetranReports,
   useGetFivetranReportCatalog,
@@ -170,7 +170,7 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
   if (!supports) {
     return (
       <div className="px-6 py-5">
-        <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg p-6 text-center text-sm text-[var(--pv-neutral-grey-500)]">
+        <div className="border border-[var(--color-grey-200)] rounded-lg p-6 text-center text-sm text-[var(--color-grey-500)]">
           Custom reports aren't available for this source.
         </div>
       </div>
@@ -181,33 +181,33 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
     <div className="px-6 py-5 flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="max-w-2xl">
-          <h2 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+          <h2 className="text-sm font-medium text-[var(--color-text-primary)]">
             Custom reports
           </h2>
-          <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+          <p className="text-xs text-[var(--color-grey-500)] mt-1">
             A custom report is a saved query: you pick the dimensions
             (e.g. date, country, campaign) and the metrics (e.g. sessions,
             users, conversions) you want, and we sync that combination as
             a new table in your warehouse.
           </p>
           {CUSTOM_REPORTS_SELF_SERVE ? (
-            <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1.5">
-              Click <span className="font-medium text-[var(--pv-text-primary-text)]">+ Add report</span>
+            <p className="text-xs text-[var(--color-grey-500)] mt-1.5">
+              Click <span className="font-medium text-[var(--color-text-primary)]">+ Add report</span>
               {" "}to build one. Toggle below to choose which reports sync;
               the same toggle is also available in the Schema tab.
             </p>
           ) : (
-            <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1.5">
+            <p className="text-xs text-[var(--color-grey-500)] mt-1.5">
               To add or remove a custom report, please contact the
-              {" "}<span className="font-medium text-[var(--pv-text-primary-text)]">Petavue support team</span>.
+              {" "}<span className="font-medium text-[var(--color-text-primary)]">Petavue support team</span>.
               You can still toggle below to choose which reports sync.
             </p>
           )}
         </div>
         {CUSTOM_REPORTS_SELF_SERVE && (
           <Button
-            btnColor="primary"
-            btnSize="md"
+            variant="primary"
+            size="md"
             onClick={handleAddReport}
           >
             <Plus size={14} className="mr-1.5" />
@@ -240,8 +240,8 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
       {reports.length === 0 ? (
         <EmptyState onAdd={handleAddReport} canAdd={CUSTOM_REPORTS_SELF_SERVE} />
       ) : (
-        <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden">
-          <div className="grid grid-cols-[40px_1fr_100px_80px] items-center px-3 py-2 bg-[var(--pv-neutral-grey-50)] border-b border-[var(--pv-neutral-grey-100)] text-[11px] font-medium text-[var(--pv-neutral-grey-500)] uppercase tracking-wide">
+        <div className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden">
+          <div className="grid grid-cols-[40px_1fr_100px_80px] items-center px-3 py-2 bg-[var(--color-grey-50)] border-b border-[var(--color-grey-100)] text-[12px] font-medium text-[var(--color-grey-500)] uppercase tracking-wide">
             <div />
             <div>Report</div>
             <div>Status</div>
@@ -253,15 +253,15 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
             return (
               <div
                 key={r.key}
-                className="border-b border-[var(--pv-neutral-grey-100)] last:border-b-0"
+                className="border-b border-[var(--color-grey-100)] last:border-b-0"
               >
               <div
-                className="grid grid-cols-[40px_1fr_100px_80px] items-center px-3 py-3 bg-white hover:bg-[var(--pv-neutral-grey-50)]"
+                className="grid grid-cols-[40px_1fr_100px_80px] items-center px-3 py-3 bg-white hover:bg-[var(--color-grey-50)]"
               >
                 <label className="cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 accent-[var(--pv-primary-500)] cursor-pointer ml-1"
+                    className="w-4 h-4 accent-[var(--color-primary-500)] cursor-pointer ml-1"
                     checked={checked}
                     disabled={saving}
                     onChange={(e) => toggleLocal(r.key, e.target.checked)}
@@ -274,11 +274,11 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
                   aria-expanded={isOpen}
                   title={isOpen ? "Hide fields" : "Show selected fields"}
                 >
-                  <span className="text-[var(--pv-neutral-grey-400)] group-hover:text-[var(--pv-neutral-grey-600)] mt-0.5 shrink-0">
+                  <span className="text-[var(--color-grey-400)] group-hover:text-[var(--color-grey-600)] mt-0.5 shrink-0">
                     {isOpen ? <CaretDown size={12} weight="bold" /> : <CaretRight size={12} weight="bold" />}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-medium text-[var(--pv-text-primary-text)]">
+                    <span className="block text-sm font-medium text-[var(--color-text-primary)]">
                       {r.key}
                     </span>
                     <ReportSummary config={r.config} service={data.service} />
@@ -286,12 +286,12 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
                 </button>
                 <div className="text-xs">
                   {checked ? (
-                    <span className="inline-flex items-center gap-1 text-[var(--pv-success-text)]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--pv-success-text)]" />
+                    <span className="inline-flex items-center gap-1 text-[var(--color-green)]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-green)]" />
                       Enabled
                     </span>
                   ) : (
-                    <span className="text-[var(--pv-neutral-grey-500)]">Disabled</span>
+                    <span className="text-[var(--color-grey-500)]">Disabled</span>
                   )}
                 </div>
                 {CUSTOM_REPORTS_SELF_SERVE ? (
@@ -299,7 +299,7 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
                     <button
                       type="button"
                       onClick={() => setEditReport(r)}
-                      className="text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-primary-500)] p-1"
+                      className="text-[var(--color-grey-400)] hover:text-[var(--color-primary-500)] p-1"
                       title="Edit report"
                       aria-label="Edit report"
                       disabled={deleteMut.isPending}
@@ -309,7 +309,7 @@ export const FivetranCustomReportsTab = ({ integrationId }) => {
                     <button
                       type="button"
                       onClick={() => setConfirmDelete(r.key)}
-                      className="text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-status-error,#EF4444)] p-1"
+                      className="text-[var(--color-grey-400)] hover:text-[var(--pv-status-error,#EF4444)] p-1"
                       title="Delete report"
                       aria-label="Delete report"
                       disabled={deleteMut.isPending}
@@ -383,20 +383,20 @@ const ConfirmDeleteReportModal = ({ reportKey, isDeleting, onCancel, onConfirm }
       className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)]">
-        <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+      <div className="px-5 py-4 border-b border-[var(--color-grey-200)]">
+        <h2 className="text-base font-medium text-[var(--color-text-primary)]">
           Delete custom report
         </h2>
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+        <p className="text-xs text-[var(--color-grey-500)] mt-1">
           The report <span className="font-medium">{reportKey}</span> will be removed from this connection.
           Existing data in your warehouse stays; only future syncs stop.
         </p>
       </div>
       <div className="px-5 py-3 flex items-center justify-end gap-2">
-        <Button btnColor="secondary" btnSize="md" onClick={onCancel} disabled={isDeleting}>
+        <Button variant="secondary" size="md" onClick={onCancel} disabled={isDeleting}>
           Cancel
         </Button>
-        <Button btnColor="primary red" btnSize="md" onClick={onConfirm} disabled={isDeleting}>
+        <Button variant="red" size="md" onClick={onConfirm} disabled={isDeleting}>
           {isDeleting ? "Deleting…" : "Delete report"}
         </Button>
       </div>
@@ -447,7 +447,7 @@ const ReportSummary = ({ config, service }) => {
 
   if (parts.length === 0) return null;
   return (
-    <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-0.5">{parts.join(" · ")}</p>
+    <p className="text-xs text-[var(--color-grey-500)] mt-0.5">{parts.join(" · ")}</p>
   );
 };
 
@@ -482,14 +482,14 @@ const ReportDetails = ({ config, service, labelByName, metricSet, loading }) => 
   const label = (n) => labelByName?.get(n) || n;
 
   return (
-    <div className="px-3 pb-3 pl-[52px] bg-[var(--pv-neutral-grey-50)] flex flex-col gap-2.5">
+    <div className="px-3 pb-3 pl-[52px] bg-[var(--color-grey-50)] flex flex-col gap-2.5">
       <FieldChips title={`Dimensions (${dims.length})`} names={dims} label={label} loading={loading} />
       <FieldChips title={`Metrics (${metrics.length})`} names={metrics} label={label} loading={loading} />
       {extras.length > 0 && (
         <div className="flex flex-wrap gap-x-4 gap-y-1 pt-0.5">
           {extras.map(([k, v]) => (
-            <span key={k} className="text-[11px] text-[var(--pv-neutral-grey-500)]">
-              <span className="font-medium text-[var(--pv-neutral-grey-600)]">{k}:</span> {v}
+            <span key={k} className="text-[12px] text-[var(--color-grey-500)]">
+              <span className="font-medium text-[var(--color-grey-600)]">{k}:</span> {v}
             </span>
           ))}
         </div>
@@ -500,11 +500,11 @@ const ReportDetails = ({ config, service, labelByName, metricSet, loading }) => 
 
 const FieldChips = ({ title, names, label, loading }) => (
   <div className="flex flex-col gap-1">
-    <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--pv-neutral-grey-500)]">
+    <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-grey-500)]">
       {title}
     </span>
     {names.length === 0 ? (
-      <span className="text-[11px] text-[var(--pv-neutral-grey-400)]">
+      <span className="text-[12px] text-[var(--color-grey-400)]">
         {loading ? "Loading…" : "None"}
       </span>
     ) : (
@@ -513,7 +513,7 @@ const FieldChips = ({ title, names, label, loading }) => (
           <span
             key={n}
             title={n}
-            className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full bg-white border border-[var(--pv-neutral-grey-200)] text-[var(--pv-neutral-grey-700)]"
+            className="inline-flex items-center text-[12px] px-2 py-0.5 rounded-full bg-white border border-[var(--color-grey-200)] text-[var(--color-grey-700)]"
           >
             {label(n)}
           </span>
@@ -524,28 +524,28 @@ const FieldChips = ({ title, names, label, loading }) => (
 );
 
 const EmptyState = ({ onAdd, canAdd }) => (
-  <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-8 flex items-start gap-3">
-    <Info size={18} className="text-[var(--pv-neutral-grey-500)] mt-0.5 shrink-0" />
+  <div className="border border-[var(--color-grey-200)] rounded-lg bg-white p-8 flex items-start gap-3">
+    <Info size={18} className="text-[var(--color-grey-500)] mt-0.5 shrink-0" />
     <div className="flex-1">
-      <p className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+      <p className="text-sm font-medium text-[var(--color-text-primary)]">
         No custom reports configured
       </p>
       {canAdd ? (
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+        <p className="text-xs text-[var(--color-grey-500)] mt-1">
           Nothing to sync from this connection yet. Use{" "}
           <button
             type="button"
             onClick={onAdd}
-            className="text-[var(--pv-primary-500)] font-medium hover:underline"
+            className="text-[var(--color-primary-500)] font-medium hover:underline"
           >
             Add report
           </button>{" "}
           to set one up.
         </p>
       ) : (
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+        <p className="text-xs text-[var(--color-grey-500)] mt-1">
           Nothing to sync from this connection yet. Please contact the{" "}
-          <span className="font-medium text-[var(--pv-text-primary-text)]">Petavue support team</span>
+          <span className="font-medium text-[var(--color-text-primary)]">Petavue support team</span>
           {" "}to add one.
         </p>
       )}

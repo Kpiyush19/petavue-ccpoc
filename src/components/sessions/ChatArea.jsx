@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Trash2, BellOff } from "lucide-react";
-import { Button } from "@/common-components";
+import { Button } from "@/ui";
 import MessageBubble from "./components/MessageBubble";
 import DeleteMessageModal from "./components/DeleteMessageModal";
 import ToolCallsContainer from "./components/ToolCallsContainer";
@@ -279,10 +279,10 @@ export default function ChatArea({
         {showTimestamp && <Timestamp timestamp={timestamp} messagesWrapperRef={messagesWrapperRef} />}
         {showDelete && (
           <Button
-            btnColor="transparent"
-            btnSize="sm"
+            variant="ghost"
+            size="sm"
             onClick={() => setShowDeleteModal(true)}
-            mainBtnClassName="px-2 py-1 hover:border-pv-neutral-grey-400 active:border-pv-neutral-grey-200"
+            className="px-2 py-1 hover:border-grey-400 active:border-grey-200"
           >
             <Trash2 size={14} />
           </Button>

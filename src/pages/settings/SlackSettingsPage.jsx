@@ -5,8 +5,8 @@ import {
   CheckCircle2, XCircle, RefreshCw, Loader2, Hash, Lock, Users,
   ExternalLink, Shield, Unplug, Plus, Trash2, AlertTriangle,
 } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
-import { Badge } from '../../components/ui/Badge'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
 import { apiGet, apiPost, apiDelete, getApiBase, getAuthToken } from '../../api'
 
 /**
@@ -168,9 +168,9 @@ export default function SlackSettingsPage() {
   // ── Loading state ─────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-12 flex items-center justify-center gap-2 text-[var(--pv-neutral-grey-400)]">
+      <div className="max-w-4xl mx-auto px-6 py-12 flex items-center justify-center gap-2 text-[var(--color-grey-400)]">
         <Loader2 size={16} className="animate-spin" />
-        <span className="text-[13px]">Loading Slack settings...</span>
+        <span className="text-[14px]">Loading Slack settings...</span>
       </div>
     )
   }
@@ -179,14 +179,14 @@ export default function SlackSettingsPage() {
   if (connection && connection.feature_enabled === false) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white p-8 text-center">
-          <div className="w-12 h-12 rounded-lg bg-[var(--pv-neutral-grey-100)] flex items-center justify-center mx-auto mb-4">
-            <Lock size={20} className="text-[var(--pv-neutral-grey-400)]" />
+        <div className="rounded-xl border border-[var(--color-grey-200)] bg-white p-8 text-center">
+          <div className="w-12 h-12 rounded-lg bg-[var(--color-grey-100)] flex items-center justify-center mx-auto mb-4">
+            <Lock size={20} className="text-[var(--color-grey-400)]" />
           </div>
-          <h3 className="text-[15px] font-semibold text-[var(--pv-neutral-grey-900)] mb-2">
+          <h3 className="text-[16px] font-semibold text-[var(--color-grey-900)] mb-2">
             Slack Integration Not Available
           </h3>
-          <p className="text-[13px] text-[var(--pv-neutral-grey-500)] max-w-md mx-auto">
+          <p className="text-[14px] text-[var(--color-grey-500)] max-w-md mx-auto">
             The Slack integration is not enabled for your organization.
             Please contact your administrator to enable this feature.
           </p>
@@ -198,8 +198,8 @@ export default function SlackSettingsPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-6 space-y-6">
       {/* Connection Status Card */}
-      <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white overflow-hidden">
-        <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-150)] flex items-center justify-between">
+      <div className="rounded-xl border border-[var(--color-grey-200)] bg-white overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--color-grey-100)] flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Slack logo */}
             <div className="w-10 h-10 rounded-lg bg-[#4A154B] flex items-center justify-center shrink-0">
@@ -212,7 +212,7 @@ export default function SlackSettingsPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-[15px] font-semibold text-[var(--pv-neutral-grey-900)]">
+                <h3 className="text-[16px] font-semibold text-[var(--color-grey-900)]">
                   {isConnected ? connection.workspace_name : 'Slack Workspace'}
                 </h3>
                 {isConnected ? (
@@ -222,7 +222,7 @@ export default function SlackSettingsPage() {
                 )}
               </div>
               {isConnected && connection.connected_at && (
-                <p className="text-[12px] text-[var(--pv-neutral-grey-500)] mt-0.5">
+                <p className="text-[12px] text-[var(--color-grey-500)] mt-0.5">
                   Connected {connection.connected_by ? `by ${connection.connected_by} ` : ''}on {formatDate(connection.connected_at)}
                 </p>
               )}
@@ -245,7 +245,7 @@ export default function SlackSettingsPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowDisconnect(true)}
-                  className="text-[var(--pv-error-text)] hover:bg-[var(--pv-error-text)]/8"
+                  className="text-[var(--color-red)] hover:bg-[var(--color-red)]/8"
                 >
                   <Unplug size={13} />
                   Disconnect
@@ -262,8 +262,8 @@ export default function SlackSettingsPage() {
 
         {/* Disconnect confirmation */}
         {showDisconnect && (
-          <div className="px-5 py-3 bg-[var(--pv-error-text)]/5 border-b border-[var(--pv-error-text)]/15 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[12px] text-[var(--pv-error-text)]">
+          <div className="px-5 py-3 bg-[var(--color-red)]/5 border-b border-[var(--color-red)]/15 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-[12px] text-[var(--color-red)]">
               <AlertTriangle size={14} />
               <span className="font-medium">Disconnecting will disable all Slack alert workflow steps. Are you sure?</span>
             </div>
@@ -284,19 +284,19 @@ export default function SlackSettingsPage() {
             {/* Bot & Scopes */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[11px] font-semibold text-[var(--pv-neutral-grey-500)] uppercase tracking-wider">
+                <label className="text-[12px] font-semibold text-[var(--color-grey-500)] uppercase tracking-wider">
                   Bot User ID
                 </label>
-                <p className="text-[13px] text-[var(--pv-neutral-grey-900)] font-medium mt-1 font-mono">
+                <p className="text-[14px] text-[var(--color-grey-900)] font-medium mt-1 font-mono">
                   {connection.bot_user_id || '—'}
                 </p>
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-[var(--pv-neutral-grey-500)] uppercase tracking-wider">
+                <label className="text-[12px] font-semibold text-[var(--color-grey-500)] uppercase tracking-wider">
                   Last Validated
                 </label>
-                <p className="text-[13px] text-[var(--pv-neutral-grey-900)] font-medium mt-1 flex items-center gap-1.5">
-                  <CheckCircle2 size={13} className="text-[var(--pv-success-text)]" />
+                <p className="text-[14px] text-[var(--color-grey-900)] font-medium mt-1 flex items-center gap-1.5">
+                  <CheckCircle2 size={13} className="text-[var(--color-green)]" />
                   {formatDate(connection.last_validated_at)}
                 </p>
               </div>
@@ -305,7 +305,7 @@ export default function SlackSettingsPage() {
             {/* Scopes */}
             {connection.scopes?.length > 0 && (
               <div>
-                <label className="text-[11px] font-semibold text-[var(--pv-neutral-grey-500)] uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-[12px] font-semibold text-[var(--color-grey-500)] uppercase tracking-wider flex items-center gap-1.5">
                   <Shield size={11} />
                   OAuth Scopes
                 </label>
@@ -313,7 +313,7 @@ export default function SlackSettingsPage() {
                   {connection.scopes.map((scope) => (
                     <span
                       key={scope}
-                      className="inline-flex items-center text-[11px] font-mono text-[var(--pv-neutral-grey-600)] bg-[var(--pv-neutral-grey-50)] border border-[var(--pv-neutral-grey-200)] px-2 py-0.5 rounded-md"
+                      className="inline-flex items-center text-[12px] font-mono text-[var(--color-grey-600)] bg-[var(--color-grey-50)] border border-[var(--color-grey-200)] px-2 py-0.5 rounded-md"
                     >
                       {scope}
                     </span>
@@ -323,9 +323,9 @@ export default function SlackSettingsPage() {
             )}
 
             {/* Security note */}
-            <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--pv-primary-50)] border border-[var(--pv-primary-100)]">
-              <Shield size={14} className="text-[var(--pv-primary-500)] shrink-0 mt-0.5" />
-              <p className="text-[11px] text-[var(--pv-neutral-grey-600)] leading-relaxed">
+            <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--color-primary-50)] border border-[var(--color-primary-100)]">
+              <Shield size={14} className="text-[var(--color-primary-500)] shrink-0 mt-0.5" />
+              <p className="text-[12px] text-[var(--color-grey-600)] leading-relaxed">
                 OAuth and token management handled by integration service. Bot tokens are <strong>never</strong> exposed to the LLM agent.
                 Workflow Slack messages are queued via SQS for reliable delivery with rate limiting and retries.
               </p>
@@ -336,40 +336,40 @@ export default function SlackSettingsPage() {
 
       {/* Available Channels */}
       {isConnected && (
-        <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[var(--pv-neutral-grey-150)] flex items-center justify-between">
+        <div className="rounded-xl border border-[var(--color-grey-200)] bg-white overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[var(--color-grey-100)] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Hash size={15} className="text-[var(--pv-neutral-grey-500)]" />
-              <h3 className="text-[14px] font-semibold text-[var(--pv-neutral-grey-900)]">
+              <Hash size={15} className="text-[var(--color-grey-500)]" />
+              <h3 className="text-[14px] font-semibold text-[var(--color-grey-900)]">
                 Available Channels
               </h3>
-              <span className="text-[11px] text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md font-medium">
+              <span className="text-[12px] text-white bg-[var(--color-primary-500)] px-1.5 py-0.5 rounded-md font-medium">
                 {channels.length}
               </span>
             </div>
-            <p className="text-[11px] text-[var(--pv-neutral-grey-500)]">
+            <p className="text-[12px] text-[var(--color-grey-500)]">
               Channels visible to the Petavue Alerts bot
             </p>
           </div>
 
           {channels.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px] text-[var(--pv-neutral-grey-400)]">
+            <div className="px-5 py-8 text-center text-[14px] text-[var(--color-grey-400)]">
               No channels found. Invite the Petavue Alerts bot to channels to see them here.
             </div>
           ) : (
-            <div className="divide-y divide-[var(--pv-neutral-grey-100)]">
+            <div className="divide-y divide-[var(--color-grey-100)]">
               {channels.map((ch) => (
-                <div key={ch.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[var(--pv-neutral-grey-50)] transition-colors">
-                  <div className="w-8 h-8 rounded-md bg-[var(--pv-neutral-grey-100)] flex items-center justify-center shrink-0">
+                <div key={ch.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[var(--color-grey-50)] transition-colors">
+                  <div className="w-8 h-8 rounded-md bg-[var(--color-grey-100)] flex items-center justify-center shrink-0">
                     {ch.is_private ? (
-                      <Lock size={14} className="text-[var(--pv-neutral-grey-500)]" />
+                      <Lock size={14} className="text-[var(--color-grey-500)]" />
                     ) : (
-                      <Hash size={14} className="text-[var(--pv-neutral-grey-500)]" />
+                      <Hash size={14} className="text-[var(--color-grey-500)]" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)]">
+                      <span className="text-[14px] font-medium text-[var(--color-grey-900)]">
                         #{ch.name}
                       </span>
                       {ch.is_private && (
@@ -377,12 +377,12 @@ export default function SlackSettingsPage() {
                       )}
                     </div>
                     {ch.topic && (
-                      <p className="text-[11px] text-[var(--pv-neutral-grey-500)] truncate mt-0.5">
+                      <p className="text-[12px] text-[var(--color-grey-500)] truncate mt-0.5">
                         {ch.topic}
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-[var(--pv-neutral-grey-400)] shrink-0">
+                  <div className="flex items-center gap-1.5 text-[12px] text-[var(--color-grey-400)] shrink-0">
                     <Users size={12} />
                     {ch.num_members}
                   </div>
@@ -395,46 +395,46 @@ export default function SlackSettingsPage() {
 
       {/* Recent Slack Messages */}
       {isConnected && (
-        <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[var(--pv-neutral-grey-150)]">
-            <h3 className="text-[14px] font-semibold text-[var(--pv-neutral-grey-900)] flex items-center gap-2">
-              <ExternalLink size={14} className="text-[var(--pv-neutral-grey-500)]" />
+        <div className="rounded-xl border border-[var(--color-grey-200)] bg-white overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[var(--color-grey-100)]">
+            <h3 className="text-[14px] font-semibold text-[var(--color-grey-900)] flex items-center gap-2">
+              <ExternalLink size={14} className="text-[var(--color-grey-500)]" />
               Recent Alert Deliveries
             </h3>
           </div>
 
           {messages.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px] text-[var(--pv-neutral-grey-400)]">
+            <div className="px-5 py-8 text-center text-[14px] text-[var(--color-grey-400)]">
               No alert deliveries yet. Run a workflow with a Slack step to see messages here.
             </div>
           ) : (
-            <div className="divide-y divide-[var(--pv-neutral-grey-100)]">
+            <div className="divide-y divide-[var(--color-grey-100)]">
               {messages.map((msg, i) => (
                 <div key={i} className="flex items-center gap-3 px-5 py-3">
                   <div className="shrink-0">
                     {msg.status === 'delivered' ? (
-                      <CheckCircle2 size={16} className="text-[var(--pv-success-text)]" />
+                      <CheckCircle2 size={16} className="text-[var(--color-green)]" />
                     ) : (
-                      <XCircle size={16} className="text-[var(--pv-error-text)]" />
+                      <XCircle size={16} className="text-[var(--color-red)]" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-medium text-[var(--pv-neutral-grey-900)]">
+                      <span className="text-[14px] font-medium text-[var(--color-grey-900)]">
                         {msg.workflow_name}
                       </span>
-                      <span className="text-[11px] text-[var(--pv-neutral-grey-400)]">
+                      <span className="text-[12px] text-[var(--color-grey-400)]">
                         &rarr;
                       </span>
-                      <span className="text-[12px] text-[var(--pv-neutral-grey-600)] font-mono">
+                      <span className="text-[12px] text-[var(--color-grey-600)] font-mono">
                         #{msg.channel}
                       </span>
                     </div>
                     {msg.error && (
-                      <p className="text-[11px] text-[var(--pv-error-text)] mt-0.5">{msg.error}</p>
+                      <p className="text-[12px] text-[var(--color-red)] mt-0.5">{msg.error}</p>
                     )}
                   </div>
-                  <div className="text-[11px] text-[var(--pv-neutral-grey-400)] shrink-0">
+                  <div className="text-[12px] text-[var(--color-grey-400)] shrink-0">
                     {timeAgo(msg.sent_at)}
                   </div>
                   <Badge variant={msg.status === 'delivered' ? 'success' : 'danger'}>
@@ -449,18 +449,18 @@ export default function SlackSettingsPage() {
 
       {/* Slack Tools Reference */}
       {isConnected && (
-        <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[var(--pv-neutral-grey-150)]">
-            <h3 className="text-[14px] font-semibold text-[var(--pv-neutral-grey-900)] flex items-center gap-2">
-              <Shield size={14} className="text-[var(--pv-neutral-grey-500)]" />
+        <div className="rounded-xl border border-[var(--color-grey-200)] bg-white overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[var(--color-grey-100)]">
+            <h3 className="text-[14px] font-semibold text-[var(--color-grey-900)] flex items-center gap-2">
+              <Shield size={14} className="text-[var(--color-grey-500)]" />
               Available Slack Tools
             </h3>
-            <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-0.5">
+            <p className="text-[12px] text-[var(--color-grey-500)] mt-0.5">
               Pre-built tools used by the agent. Auth handled internally, never exposed to LLM
             </p>
           </div>
 
-          <div className="divide-y divide-[var(--pv-neutral-grey-100)]">
+          <div className="divide-y divide-[var(--color-grey-100)]">
             {[
               { name: 'slack_fetch_channels', desc: 'Returns list of channels from the connected Slack workspace', status: 'active' },
               { name: 'slack_send_message', desc: 'Sends a Block Kit message to a specified channel', status: 'active' },
@@ -478,10 +478,10 @@ export default function SlackSettingsPage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[13px] font-mono font-medium text-[var(--pv-neutral-grey-900)]">
+                  <span className="text-[14px] font-mono font-medium text-[var(--color-grey-900)]">
                     {tool.name}
                   </span>
-                  <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-0.5">
+                  <p className="text-[12px] text-[var(--color-grey-500)] mt-0.5">
                     {tool.desc}
                   </p>
                 </div>

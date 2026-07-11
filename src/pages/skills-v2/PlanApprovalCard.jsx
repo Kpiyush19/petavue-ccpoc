@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Check, Sparkles, AlertCircle, Calculator, X, MessageSquare, Info, BarChart3, LineChart, Table2, List, LayoutGrid, AlignLeft } from 'lucide-react'
-import { Button as PvButton } from '../../petavue'
+import { Button as PvButton } from '@/ui'
 import { PaperPlaneRight, CheckCircle, XCircle, ArrowUUpLeft, PencilSimple } from '@phosphor-icons/react'
-import { Spinner } from '../../components/ui/Spinner'
+import { Spinner } from '@/ui'
 import { WidgetPreview, WIDGET_TYPE_BY_ID } from './WidgetSchematic'
 
 // Widget-type chip icon per schematic kind (see WIDGET_TYPE_BY_ID).
@@ -58,7 +58,7 @@ function OutcomeHero({ title, outcome }) {
           {outcome}
         </p>
       ) : (
-        <p className="text-[13px] text-[var(--text-muted)] italic">
+        <p className="text-[14px] text-[var(--text-muted)] italic">
           No outcome summary available for this plan.
         </p>
       )}
@@ -72,13 +72,13 @@ function DeliverList({ icon, iconColor, title, items, emptyText }) {
   if (!items?.length && !emptyText) return null
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
+      <div className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
         {title}
       </div>
       {items?.length ? (
         <ul className="space-y-1.5">
           {items.map((item, i) => (
-            <li key={i} className="flex items-start gap-2 text-[13px] text-[var(--text-primary)] leading-snug">
+            <li key={i} className="flex items-start gap-2 text-[14px] text-[var(--text-primary)] leading-snug">
               <ItemIcon size={13} className={`shrink-0 mt-0.5 ${iconColor}`} />
               <span>{item}</span>
             </li>
@@ -100,7 +100,7 @@ function KeyFormulasList({ formulas }) {
   if (!Array.isArray(formulas) || formulas.length === 0) return null
   return (
     <div className="mb-5">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
+      <div className="flex items-center gap-1.5 text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
         <Calculator size={11} />
         Key formulas applied
       </div>
@@ -182,9 +182,9 @@ export default function PlanApprovalCard({
   if (error) {
     const { title, body } = describeError(error)
     return (
-      <div className="max-w-md mx-auto mt-12 p-5 bg-[var(--pv-error-bg)] border border-[var(--pv-error-text)]/30 rounded-xl">
+      <div className="max-w-md mx-auto mt-12 p-5 bg-[var(--color-red-bg)] border border-[var(--color-red)]/30 rounded-xl">
         <div className="flex items-start gap-3">
-          <AlertCircle size={20} className="text-[var(--pv-error-text)] shrink-0 mt-0.5" />
+          <AlertCircle size={20} className="text-[var(--color-red)] shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <h2 className="text-[14px] font-semibold text-[var(--text-primary)] mb-1">{title}</h2>
             <p className="text-[12.5px] text-[var(--text-secondary)] mb-4 leading-snug">{body}</p>
@@ -264,7 +264,7 @@ export default function PlanApprovalCard({
     return (
       <div className="flex-1 flex min-h-0 h-full relative overflow-hidden">
         {/* LEFT — widget checklist, matching the setup step list */}
-        <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+        <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] border-r-0 rounded-l-2xl overflow-hidden">
           <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0">
             <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
               What we&apos;ll build
@@ -316,7 +316,7 @@ export default function PlanApprovalCard({
         </div>
 
         {/* RIGHT — selected widget detail + sample layout */}
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] rounded-r-2xl overflow-hidden">
           <div className="flex items-center h-12 px-4 shrink-0">
             <span className={`text-[16px] font-semibold truncate ${selected && dropped.has(selected.id) ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
               {selected ? selected.name : 'Review the plan'}
@@ -415,10 +415,10 @@ export default function PlanApprovalCard({
           onClick={() => setChangePanelOpen(false)}
         />
         <aside
-          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--pv-neutral-grey-150)] transition-transform duration-200 ${changePanelOpen ? 'translate-x-0 shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)]' : 'translate-x-full'}`}
+          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--color-grey-100)] transition-transform duration-200 ${changePanelOpen ? 'translate-x-0 shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)]' : 'translate-x-full'}`}
           aria-hidden={!changePanelOpen}
         >
-          <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0 border-b border-[var(--pv-neutral-grey-150)]">
+          <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0 border-b border-[var(--color-grey-100)]">
             <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">Request a change</span>
             <button
               type="button"
@@ -432,10 +432,10 @@ export default function PlanApprovalCard({
           <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
             <div>
               <div className="text-[14px] uppercase tracking-wider text-[var(--text-muted)] mb-1">{isMemo ? 'Section' : 'Widget'}</div>
-              <div className="text-[13px] font-medium text-[var(--text-primary)]">{selected?.name}</div>
+              <div className="text-[14px] font-medium text-[var(--text-primary)]">{selected?.name}</div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1.5">What should change?</label>
+              <label className="block text-[12px] font-medium text-[var(--text-muted)] mb-1.5">What should change?</label>
               <textarea
                 value={selected ? (widgetNotes[selected.id] || '') : ''}
                 onChange={(e) => selected && setWidgetNotes((m) => ({ ...m, [selected.id]: e.target.value }))}
@@ -449,7 +449,7 @@ export default function PlanApprovalCard({
               </p>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2 p-3 border-t border-[var(--pv-neutral-grey-150)] shrink-0">
+          <div className="flex items-center justify-end gap-2 p-3 border-t border-[var(--color-grey-100)] shrink-0">
             <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="blueGhost" label="Cancel" />
             <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="primary" label="Save change" />
           </div>
@@ -461,7 +461,7 @@ export default function PlanApprovalCard({
   // No widget breakdown — a single clean card with the plan title/outcome
   // header and the prose summary (assumptions + includes + formulas).
   return (
-    <div className="w-full bg-white border border-[var(--pv-neutral-grey-150)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
+    <div className="w-full bg-white border border-[var(--color-grey-100)] rounded-2xl flex flex-col min-h-0 h-full overflow-hidden">
       <div className="px-6 pt-4 pb-4 border-b border-[var(--border-primary)] shrink-0">
         <div className="text-[10.5px] uppercase tracking-wider text-[var(--text-muted)] mb-2">Review the plan</div>
         <OutcomeHero title={summary.title} outcome={summary.plan_outcome} />
@@ -479,7 +479,7 @@ export default function PlanApprovalCard({
             </div>
           ) : null}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <DeliverList icon={Check} iconColor="text-[var(--pv-success-text)]" title="Includes" items={summary.plan_will_deliver} emptyText="(nothing listed)" />
+            <DeliverList icon={Check} iconColor="text-[var(--color-green)]" title="Includes" items={summary.plan_will_deliver} emptyText="(nothing listed)" />
             <DeliverList icon={X} iconColor="text-[var(--text-muted)]" title="Won't include" items={summary.plan_wont_deliver} emptyText="(nothing flagged)" />
           </div>
           <KeyFormulasList formulas={summary.plan_key_formulas} />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Trash } from '@phosphor-icons/react';
-import { Button } from '@/common-components';
+import { Button } from '@/ui';
 
 export default function DeleteButton({ onDelete }) {
   const [deleting, setDeleting] = useState(false);
@@ -17,7 +17,7 @@ export default function DeleteButton({ onDelete }) {
 
   return (
     <Button
-      btnColor="secondary ghost"
+      variant="secondaryGhost"
       onClick={handleDelete}
       disabled={deleting}
       className="h-fit ml-auto"

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Modal } from "../../common-components/Modal";
-import { Button } from "../../common-components/Button";
-import MarkdownRenderer from "../../common-utils/MarkdownRenderer";
+import { Modal } from "@/ui";
+import { Button } from "@/ui";
+import MarkdownRenderer from "../../utils/MarkdownRenderer";
 import { accepttnc } from "./api/accepttnc";
 
 const tncText = `
@@ -85,25 +85,25 @@ export default function TNCModal({ isOpen, onClose, authDeets, onAccept }) {
       className="!w-[950px] max-w-[95vw]"
       styles={{ modal: { width: "950px", maxWidth: "95vw" } }}
       topStripClassName="hidden"
-      headerClassName="border-b border-pv-neutral-grey-100 px-6 py-4"
+      headerClassName="border-b border-grey-100 px-6 py-4"
     >
       <div className="flex flex-col h-[600px] max-h-[70vh]">
         <div className="flex-1 overflow-y-auto px-8 pb-6 pt-4">
           {error && (
-            <div className="text-sm text-pv-error-text bg-pv-error-bg border border-pv-error-border rounded-lg px-3 py-2 mb-4">
+            <div className="text-sm text-[var(--color-red)] bg-[var(--color-red-bg)] border border-[var(--color-red)] rounded-lg px-3 py-2 mb-4">
               {error}
             </div>
           )}
           <MarkdownRenderer
             content={tncText}
-            className="[&_li]:text-[var(--pv-text-secondary-text)] [&_p]:text-[var(--pv-text-secondary-text)]"
+            className="[&_li]:text-[var(--color-text-secondary)] [&_p]:text-[var(--color-text-secondary)]"
           />
         </div>
-        <div className="flex justify-between items-center px-8 py-4 border-t border-pv-neutral-grey-100">
-          <Button onClick={onClose} btnColor="ghost" btnSize="lg" disabled={accepting}>
+        <div className="flex justify-between items-center px-8 py-4 border-t border-grey-100">
+          <Button onClick={onClose} variant="ghost" size="lg" disabled={accepting}>
             Decline
           </Button>
-          <Button onClick={acceptHandler} btnSize="lg" disabled={accepting}>
+          <Button onClick={acceptHandler} size="lg" disabled={accepting}>
             {accepting ? "Accepting..." : "Accept"}
           </Button>
         </div>

@@ -62,6 +62,6 @@ if (MOCK_ENABLED) {
   // eslint-disable-next-line no-console
   console.info(
     "%c[mock] Frontend-only mode is ON — all backend calls are mocked.",
-    "color:#7c3aed;font-weight:bold"
+    "color:#7c3aed;font-weight:600"
   );
 }

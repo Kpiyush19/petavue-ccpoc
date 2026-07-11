@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Input } from "@/common-components";
-import { Button as PvButton } from "@/petavue";
-import { useScrollCleanup } from "@/common-components/Tooltip/useScrollCleanup";
+import { Input } from "@/ui";
+import { Button as PvButton } from "@/ui";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import { CCDashboardElement } from "./CCDashboardElement";
 import { DeleteDashboardModal } from "./DeleteDashboardModal";
 import { RenameDashboardModal } from "./RenameDashboardModal";
@@ -13,7 +13,7 @@ import { apiPut, apiDelete } from "@/api";
 const GRID_COLUMNS = "5% 67% 8% 15% 5%";
 
 const DefaultSkeleton = ({ width, height }) => (
-  <div className="bg-[var(--pv-neutral-grey-200)] rounded animate-pulse" style={{ width, height }} />
+  <div className="bg-[var(--color-grey-200)] rounded animate-pulse" style={{ width, height }} />
 );
 
 const DefaultInput = ({ value, onChange, placeholder, leftElem, disabled }) => (
@@ -49,7 +49,7 @@ const ListLoader = ({ length = 8, Skeleton }) => {
     <div className="flex flex-col w-full gap-2">
       {Array.from({ length }).map((_, ind) => (
         <div
-          className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--pv-neutral-grey-150)] rounded-lg"
+          className="grid w-full px-3 h-[52px] shrink-0 items-center border border-[var(--color-grey-100)] rounded-lg"
           style={{ gridTemplateColumns: GRID_COLUMNS }}
           key={ind}
         >
@@ -145,19 +145,19 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
   return (
     <div className="flex flex-col w-full h-full overflow-x-auto">
       <div className="flex flex-col w-full h-full min-w-[800px]">
-        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
           <span className="text-[16px] leading-[24px] font-medium">Dashboards</span>
         </div>
 
         <div
-          className="w-full p-4 flex overflow-x-auto bg-[var(--pv-neutral-grey-50)]"
+          className="w-full p-4 flex overflow-x-auto bg-[var(--color-grey-50)]"
           style={{ height: "calc(100% - 64px)" }}
         >
           <div className="flex flex-col bg-white rounded-xl h-full w-full overflow-hidden min-w-[800px]">
-            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--pv-neutral-grey-150)]">
+            <div className="flex items-center justify-between h-14 shrink-0 w-full border-b border-[var(--color-grey-100)]">
               <div className="px-8 flex gap-2.5 items-center">
                 <span className="font-medium text-[14px]">All Dashboards</span>
-                <span className="text-xs text-white bg-[var(--pv-primary-500)] px-1.5 py-0.5 rounded-md">
+                <span className="text-xs text-white bg-[var(--color-primary-500)] px-1.5 py-0.5 rounded-md">
                   {filteredArtifacts.length}
                 </span>
               </div>
@@ -175,7 +175,7 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
             {loading ? (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: "calc(100% - 56px)" }}>
                 <div
-                  className="grid w-full p-2 border-b border-[var(--pv-neutral-grey-150)]"
+                  className="grid w-full p-2 border-b border-[var(--color-grey-100)]"
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
                   <span className="px-2"><SkeletonComp width="12px" height="12px" /></span>
@@ -190,7 +190,7 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
               </div>
             ) : isError ? (
               <div className="flex flex-col w-full h-full justify-center items-center gap-3">
-                <span className="text-sm text-[var(--pv-error-text)]">
+                <span className="text-sm text-[var(--color-red)]">
                   {error?.response?.data?.error?.message || error?.message || "Failed to load dashboards"}
                 </span>
                 <ButtonComp variant="primary" onClick={() => refetch()}>
@@ -199,9 +199,9 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
               </div>
             ) : filteredArtifacts.length === 0 && searchQuery ? (
               <div className="w-full h-full flex">
-                <div className="m-auto text-[var(--pv-neutral-grey-500)] flex flex-col gap-2 items-center">
+                <div className="m-auto text-[var(--color-grey-500)] flex flex-col gap-2 items-center">
                   <div className="mx-auto">
-                    No results for <b className="text-[var(--pv-neutral-grey-900)]">"{searchQuery}"</b>
+                    No results for <b className="text-[var(--color-grey-900)]">"{searchQuery}"</b>
                   </div>
                   <div className="flex">
                     <ButtonComp onClick={() => setSearchQuery("")}>Clear search</ButtonComp>
@@ -210,7 +210,7 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
               </div>
             ) : filteredArtifacts.length === 0 ? (
               <div className="flex flex-col w-full h-full justify-center items-center gap-3">
-                <span className="text-[var(--pv-neutral-grey-500)] font-normal text-sm">No dashboards to list</span>
+                <span className="text-[var(--color-grey-500)] font-normal text-sm">No dashboards to list</span>
               </div>
             ) : (
               <div className="flex flex-col w-full px-4 py-2" style={{ height: "calc(100% - 56px)" }}>
@@ -218,11 +218,11 @@ export const CCDashboardHome = ({ Skeleton, Input, Button }) => {
                   className={`grid p-2 ${listOverflow ? "w-[calc(100%-8px)]" : "w-full"}`}
                   style={{ gridTemplateColumns: GRID_COLUMNS }}
                 >
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">#</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Name</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Shared</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">Last Modified</span>
-                  <span className="text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2"></span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">#</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Name</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Shared</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2">Last Modified</span>
+                  <span className="text-[var(--color-grey-500)] font-medium text-xs px-2"></span>
                 </div>
 
                 <div

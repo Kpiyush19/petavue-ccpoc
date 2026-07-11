@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { Button, Input } from "@/common-components";
+import { Button, Input } from "@/ui";
 import { ArrowUp, Square, Paperclip, X, UploadSimple } from "@phosphor-icons/react";
 import { MAX_FILES, MAX_FILE_SIZE, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../../utils/upload";
 
@@ -104,12 +104,12 @@ export default function Composer({
 
   return (
     <div
-      className={`flex flex-col w-full border border-[var(--pv-neutral-grey-200)] rounded-lg px-3 py-2 gap-2 relative transition-shadow duration-300 ${
+      className={`flex flex-col w-full border border-[var(--color-grey-200)] rounded-lg px-3 py-2 gap-2 relative transition-shadow duration-300 ${
         dragOver
-          ? "border-[var(--pv-primary-500)] bg-[var(--pv-primary-50)]"
+          ? "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]"
           : disabled
-            ? `bg-[var(--pv-neutral-grey-50)] cursor-not-allowed`
-            : `hover:border-[var(--pv-primary-300)] focus-within:!border-[var(--pv-primary-500)]`
+            ? `bg-[var(--color-grey-50)] cursor-not-allowed`
+            : `hover:border-[var(--color-primary-300)] focus-within:!border-[var(--color-primary-500)]`
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -117,7 +117,7 @@ export default function Composer({
     >
       {/* Drag overlay */}
       {dragOver && (
-        <div className="absolute inset-0 rounded-2xl bg-[var(--pv-primary-50)] border-2 border-dashed border-[var(--pv-primary-500)] flex items-center justify-center gap-2 text-[var(--pv-primary-500)] text-sm font-medium z-10">
+        <div className="absolute inset-0 rounded-2xl bg-[var(--color-primary-50)] border-2 border-dashed border-[var(--color-primary-500)] flex items-center justify-center gap-2 text-[var(--color-primary-500)] text-sm font-medium z-10">
           <UploadSimple size={18} />
           Drop files to attach
         </div>
@@ -129,13 +129,13 @@ export default function Composer({
           {files.map((file, i) => (
             <span
               key={`${file.name}-${i}`}
-              className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-[var(--pv-neutral-grey-200)] rounded-lg text-xs"
+              className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-[var(--color-grey-200)] rounded-lg text-xs"
             >
-              <span className="text-[var(--pv-text-primary-text)] truncate max-w-[120px]">{file.name}</span>
-              <span className="text-[var(--pv-text-secondary-text)]">{formatSize(file.size)}</span>
+              <span className="text-[var(--color-text-primary)] truncate max-w-[120px]">{file.name}</span>
+              <span className="text-[var(--color-text-secondary)]">{formatSize(file.size)}</span>
               <button
                 onClick={() => removeFile(i)}
-                className="text-[var(--pv-neutral-grey-400)] hover:text-[var(--pv-neutral-grey-600)] p-0.5"
+                className="text-[var(--color-grey-400)] hover:text-[var(--color-grey-600)] p-0.5"
               >
                 <X size={10} weight="bold" />
               </button>
@@ -147,10 +147,10 @@ export default function Composer({
       {/* Input row */}
       <div className="flex items-center gap-2">
         <Button
-          btnColor="ghost"
+          variant="ghost"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          mainBtnClassName="p-2"
+          className="p-2"
         >
           <Paperclip size={18} className="shrink-0" />
         </Button>
@@ -186,11 +186,11 @@ export default function Composer({
 
         {/* Send / Stop button */}
         {isThinking ? (
-          <Button btnColor="secondary ghost" mainBtnClassName="p-2" onClick={onCancel}>
-            <Square size={14} weight="fill" className="text-[var(--pv-error-text)]" />
+          <Button variant="secondaryGhost" className="p-2" onClick={onCancel}>
+            <Square size={14} weight="fill" className="text-[var(--color-red)]" />
           </Button>
         ) : (
-          <Button disabled={!canSend} onClick={handleSend} mainBtnClassName="p-2">
+          <Button disabled={!canSend} onClick={handleSend} className="p-2">
             <ArrowUp size={18} weight="bold" />
           </Button>
         )}

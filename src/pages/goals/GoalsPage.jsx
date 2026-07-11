@@ -9,8 +9,8 @@ import {
   Sparkle, PaperPlaneRight, Funnel, Info, Warning,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Tooltip } from "@/common-components";
-import { Button as PvButton } from "../../petavue";
+import { Tooltip } from "@/ui";
+import { Button as PvButton } from "@/ui";
 import { apiGet, apiPost, apiPut, apiDelete } from "../../api";
 import { cn } from "../../utils/cn";
 import { RecommendationDetail } from "./RecommendationDrawer";
@@ -45,7 +45,7 @@ function RowMenu({ items, disabled }) {
   return (
     <div className="flex justify-center">
       <button ref={btnRef} onClick={toggle} disabled={disabled}
-        className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer disabled:opacity-50" aria-label="Actions">
+        className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-grey-100 bg-transparent border-none cursor-pointer disabled:opacity-50" aria-label="Actions">
         <DotsThree size={18} weight="bold" />
       </button>
       {createPortal(
@@ -63,7 +63,7 @@ function RowMenu({ items, disabled }) {
               >
                 {items.map((it) => (
                   <button key={it.label} onClick={(e) => { e.stopPropagation(); it.onClick(); setOpen(false); }}
-                    className={cn("w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50", it.danger ? "text-rose-600" : "text-[var(--text-primary)]")}>
+                    className={cn("w-full flex items-center gap-2.5 px-3 py-2 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-grey-50", it.danger ? "text-rose-600" : "text-[var(--text-primary)]")}>
                     {it.icon && <it.icon size={15} />} {it.label}
                   </button>
                 ))}
@@ -83,19 +83,19 @@ const INSIGHT_COLOR = {
   red: { bar: "#ef4444", txt: "text-rose-600" },
   amber: { bar: "#f59e0b", txt: "text-amber-600" },
   green: { bar: "#22c55e", txt: "text-green-600" },
-  blue: { bar: "var(--pv-primary-500)", txt: "text-pv-primary-primary-600" },
+  blue: { bar: "var(--color-primary-500)", txt: "text-primary-600" },
 };
 function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: FootIcon, onClick }) {
   const c = INSIGHT_COLOR[color] || INSIGHT_COLOR.blue;
   return (
-    <div className="flex flex-col h-full bg-white border border-pv-neutral-grey-150/50 rounded-lg px-4 py-3.5 dropshadow-card">
+    <div className="flex flex-col h-full bg-white border border-grey-100/50 rounded-lg px-4 py-3.5 dropshadow-card">
       <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{kind}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={16} className={c.txt} />}
         <span className="text-[24px] font-semibold leading-none text-[var(--text-primary)]">{value}</span>
       </div>
       <p className="text-[12px] text-[var(--text-secondary)] leading-snug mb-3">{desc}</p>
-      <div className="flex items-center gap-1.5 mt-auto pt-2.5 border-t border-[var(--pv-neutral-grey-100)]">
+      <div className="flex items-center gap-1.5 mt-auto pt-2.5 border-t border-[var(--color-grey-100)]">
         {FootIcon && <FootIcon size={13} className="text-[var(--text-muted)] shrink-0" />}
         <span className="text-[12px] text-[var(--text-muted)] truncate">{foot}</span>
       </div>
@@ -106,7 +106,7 @@ function InsightCard({ kind, color, icon: Icon, value, desc, foot, footIcon: Foo
 /* ── Column header cell with a Phosphor icon ── */
 function HeaderCell({ icon: Icon, label }) {
   return (
-    <span className="flex items-center gap-1.5 text-[var(--pv-neutral-grey-500)] font-medium text-xs px-2">
+    <span className="flex items-center gap-1.5 text-[var(--color-grey-500)] font-medium text-xs px-2">
       {Icon && <Icon size={13} />} {label}
     </span>
   );
@@ -115,13 +115,13 @@ function HeaderCell({ icon: Icon, label }) {
 /* ── Collapsible section with a proper heading ── */
 function Section({ title, icon: Icon, iconClass, count, badge, open, onToggle, headerRight, children }) {
   return (
-    <section className="bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-16px_rgba(16,24,40,0.14)]">
-      <div className="flex items-center justify-between px-5 py-4 cursor-pointer select-none hover:bg-pv-neutral-grey-50/60 transition-colors" onClick={onToggle}>
+    <section className="bg-white border border-[var(--color-grey-100)] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-16px_rgba(16,24,40,0.14)]">
+      <div className="flex items-center justify-between px-5 py-4 cursor-pointer select-none hover:bg-grey-50/60 transition-colors" onClick={onToggle}>
         <div className="flex items-center gap-2.5">
           {Icon && <Icon size={18} weight="fill" className={cn("shrink-0", iconClass || "text-[var(--text-muted)]")} />}
           <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">{title}</h2>
           {typeof count === "number" && (
-            <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", badge || "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{count}</span>
+            <span className={cn("px-1.5 py-0.5 text-[12px] font-semibold rounded-full", badge || "bg-grey-100 text-[var(--text-muted)]")}>{count}</span>
           )}
           <CaretDown size={15} className={cn("text-[var(--text-muted)] transition-transform ml-0.5", !open && "-rotate-90")} />
         </div>
@@ -157,14 +157,14 @@ function AttentionRow({ item, onOpen, onOpenRec }) {
       initial={false}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-      className="grid items-center gap-3 px-5 py-3 border-t border-[var(--pv-neutral-grey-100)] hover:bg-pv-neutral-grey-50/70 transition-colors overflow-hidden"
+      className="grid items-center gap-3 px-5 py-3 border-t border-[var(--color-grey-100)] hover:bg-grey-50/70 transition-colors overflow-hidden"
       style={{ gridTemplateColumns: NEEDS_COLS }}
     >
       <button onClick={() => onOpenRec(item.goalId, item.recId)} className="flex items-center gap-2 min-w-0 bg-transparent border-none p-0 cursor-pointer text-left">
         <Lightning size={14} weight="fill" className="text-rose-500 shrink-0" />
-        <span className="text-[13px] font-medium text-[var(--text-primary)] truncate hover:text-pv-primary-primary-600">{item.title}</span>
+        <span className="text-[14px] font-medium text-[var(--text-primary)] truncate hover:text-primary-600">{item.title}</span>
       </button>
-      <button onClick={() => onOpen(item.goalId)} className="text-[12px] font-medium text-pv-primary-primary-600 hover:underline truncate text-left bg-transparent border-none p-0 cursor-pointer">{item.goalName}</button>
+      <button onClick={() => onOpen(item.goalId)} className="text-[12px] font-medium text-primary-600 hover:underline truncate text-left bg-transparent border-none p-0 cursor-pointer">{item.goalName}</button>
       <span className="text-[12px] text-[var(--text-secondary)] truncate">{item.groupLabel}</span>
       <span className="text-[12px] text-[var(--text-muted)] whitespace-nowrap">{item.at}</span>
       <RowMenu
@@ -212,12 +212,12 @@ function GoalFilterDropdown({ value, onChange, counts, total }) {
   return (
     <div ref={ref} className="relative shrink-0">
       <PvButton variant="secondary" size="md" icon={Funnel} aria-label={`Filter goals: ${current.label}`} onClick={toggle} />
-      {value !== "all" && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pv-primary-primary-500 ring-2 ring-white pointer-events-none" />}
+      {value !== "all" && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary-500 ring-2 ring-white pointer-events-none" />}
       {open && pos && createPortal(
         <>
           <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
           <div className="fixed z-[61] w-[240px] bg-white border border-[var(--border-primary)] rounded-lg shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
-            <p className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filter by</p>
+            <p className="px-4 py-2 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filter by</p>
             {GOAL_FILTERS.map((f) => {
               const count = f.k === "all" ? total : (counts[f.k] || 0);
               const active = f.k === value;
@@ -226,13 +226,13 @@ function GoalFilterDropdown({ value, onChange, counts, total }) {
                   key={f.k}
                   onClick={() => { onChange(f.k); setOpen(false); }}
                   className={cn(
-                    "w-full flex items-center justify-between gap-4 px-4 py-3 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-pv-neutral-grey-50",
-                    active ? "text-pv-primary-primary-600 font-medium" : "text-[var(--text-primary)]"
+                    "w-full flex items-center justify-between gap-4 px-4 py-3 text-[14px] text-left bg-transparent border-none cursor-pointer hover:bg-grey-50",
+                    active ? "text-primary-600 font-medium" : "text-[var(--text-primary)]"
                   )}
                 >
                   <span className="inline-flex items-center gap-2.5">
-                    <span className={cn("flex items-center justify-center w-4 h-4 rounded-full border-2 shrink-0 transition-colors", active ? "border-pv-primary-primary-500" : "border-pv-neutral-grey-300")}>
-                      {active && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+                    <span className={cn("flex items-center justify-center w-4 h-4 rounded-full border-2 shrink-0 transition-colors", active ? "border-primary-500" : "border-grey-300")}>
+                      {active && <span className="w-2 h-2 rounded-full bg-primary-500" />}
                     </span>
                     {f.label}
                   </span>
@@ -311,7 +311,7 @@ function GoalRow({ goal, onOpen, onFull }) {
 
   return (
     <div
-      className="grid items-center w-full px-3 h-[52px] shrink-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-lg hover:bg-[var(--pv-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all cursor-pointer"
+      className="grid items-center w-full px-3 h-[52px] shrink-0 bg-white border border-[var(--color-grey-100)] rounded-lg hover:bg-[var(--color-primary-50)] hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all cursor-pointer"
       style={{ gridTemplateColumns: GOALS_COLS }}
       onClick={() => onOpen(goal)}
     >
@@ -331,7 +331,7 @@ function GoalRow({ goal, onOpen, onFull }) {
           if (goal.watching > 0 && goal.actNow === 0) parts.push(<span key="watch" className="whitespace-nowrap">{goal.watching} watching</span>);
           if (goal.firingCount > 0) parts.push(<span key="fire" className="whitespace-nowrap">{goal.firingCount} firing</span>);
           if (parts.length === 0) return <span>—</span>;
-          return parts.flatMap((el, i) => i === 0 ? [el] : [<span key={`sep${i}`} className="text-[var(--pv-neutral-grey-300)]">|</span>, el]);
+          return parts.flatMap((el, i) => i === 0 ? [el] : [<span key={`sep${i}`} className="text-[var(--color-grey-300)]">|</span>, el]);
         })()}
       </span>
       {/* Checked */}
@@ -369,7 +369,7 @@ function ConfigModal({ onClose }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-        className="relative w-[700px] max-w-[94vw] max-h-[88vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--pv-primary-500)]"
+        className="relative w-[700px] max-w-[94vw] max-h-[88vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[3px] border-[var(--color-primary-500)]"
       >
         <div className="shrink-0 flex items-start justify-between gap-3 px-5 py-4 border-b border-[var(--border-primary)]">
           <div>
@@ -385,7 +385,7 @@ function ConfigModal({ onClose }) {
             <div key={f.k} className="flex flex-col gap-1.5">
               <label className="text-[12px] font-semibold text-[var(--text-primary)]">{f.label}</label>
               <textarea value={value[f.k] || ""} onChange={(e) => set(f.k, e.target.value)} rows={3} placeholder={f.placeholder}
-                className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
+                className="w-full text-[14px] px-3.5 py-3 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none text-[var(--text-primary)] placeholder:text-[#adb2ce]" />
             </div>
           ))}
         </div>
@@ -411,8 +411,8 @@ function RecListItem({ item, selected, onClick }) {
       className={cn(
         "w-full min-h-[76px] text-left rounded-[4px] border bg-white transition-colors cursor-pointer",
         selected
-          ? "bg-pv-primary-primary-50 border-pv-primary-primary-500 shadow-[0_4px_4px_rgba(54,97,237,0.08)]"
-          : "border-[var(--pv-neutral-grey-200)] hover:bg-pv-primary-primary-50",
+          ? "bg-primary-50 border-primary-500 shadow-[0_4px_4px_rgba(54,97,237,0.08)]"
+          : "border-[var(--color-grey-200)] hover:bg-primary-50",
         done && "opacity-70"
       )}
     >
@@ -420,7 +420,7 @@ function RecListItem({ item, selected, onClick }) {
         {/* icon frame */}
         <div className="flex items-center justify-center p-2.5 shrink-0">
           <div
-            className={cn("flex items-center justify-center w-9 h-9 rounded-[4px] border border-[var(--pv-neutral-grey-200)]", selected ? "bg-white" : "bg-pv-neutral-grey-50")}
+            className={cn("flex items-center justify-center w-9 h-9 rounded-[4px] border border-[var(--color-grey-200)]", selected ? "bg-white" : "bg-grey-50")}
             style={{ boxShadow: "0 4px 4px rgba(122,122,122,0.04)" }}
           >
             <Icon size={16} className={done ? "text-[var(--text-muted)]" : actNow ? "text-rose-500" : "text-amber-500"} />
@@ -450,8 +450,8 @@ function RecommendationsPanel({ onOpenGoal }) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 h-full text-center px-6">
         <CheckCircle size={26} weight="fill" className="text-green-500" />
-        <p className="text-[15px] font-medium text-[var(--text-primary)]">You're all caught up</p>
-        <p className="text-[13px] text-[var(--text-secondary)] max-w-[380px]">No moves to make right now. We'll flag anything wasting spend or leaving demand on the table the moment it shows up.</p>
+        <p className="text-[16px] font-medium text-[var(--text-primary)]">You're all caught up</p>
+        <p className="text-[14px] text-[var(--text-secondary)] max-w-[380px]">No moves to make right now. We'll flag anything wasting spend or leaving demand on the table the moment it shows up.</p>
       </div>
     );
   }
@@ -459,7 +459,7 @@ function RecommendationsPanel({ onOpenGoal }) {
   return (
     <div className="flex h-full">
       {/* Left: recommendation list (wbc__chat-style panel) */}
-      <div className="w-[380px] shrink-0 flex flex-col border-r border-[var(--pv-neutral-grey-150)] overflow-hidden">
+      <div className="w-[380px] shrink-0 flex flex-col border-r border-[var(--color-grey-100)] overflow-hidden">
         <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
           {items.map((it) => (
             <RecListItem key={it.recId} item={it} selected={selected?.recId === it.recId} onClick={() => setSel(it.recId)} />
@@ -514,12 +514,12 @@ export default function GoalsPage() {
   return (
     <div className="flex flex-col w-full h-full">
       {/* Standard app header bar (consistent with Dashboards / Sessions / Workflows) */}
-      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
         <span className="text-[16px] leading-[24px] font-medium">Goals</span>
       </div>
 
       {/* Sub-tab bar (Goals · Recommendations) */}
-      <div className="flex w-full shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
+      <div className="flex w-full shrink-0 bg-white border-b border-[var(--color-grey-100)]">
         <div className="flex items-start gap-6 px-4">
           {[{ k: "goals", label: "Objectives" }, { k: "recommendations", label: "Recommendations" }].map((t) => (
             <button
@@ -527,12 +527,12 @@ export default function GoalsPage() {
               onClick={() => setTab(t.k)}
               className={cn(
                 "flex items-center gap-2 h-12 px-2 border-b-2 bg-transparent cursor-pointer text-[14px] transition-colors",
-                tab === t.k ? "text-pv-primary-primary-500 font-medium border-pv-primary-primary-500" : "text-[var(--text-primary)] border-transparent hover:text-pv-primary-primary-500"
+                tab === t.k ? "text-primary-500 font-medium border-primary-500" : "text-[var(--text-primary)] border-transparent hover:text-primary-500"
               )}
             >
               {t.label}
               {t.k === "recommendations" && recCount > 0 && (
-                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-500 text-white" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{recCount}</span>
+                <span className={cn("px-1.5 py-0.5 text-[12px] font-semibold rounded-full", tab === t.k ? "bg-primary-500 text-white" : "bg-grey-100 text-[var(--text-muted)]")}>{recCount}</span>
               )}
             </button>
           ))}
@@ -540,8 +540,8 @@ export default function GoalsPage() {
       </div>
 
       {/* Dashboards-style frame: grey-50 padded area with the page in a white panel */}
-      <div className="flex-1 min-h-0 p-4 bg-pv-neutral-grey-50 overflow-hidden">
-        <div className="flex flex-col w-full h-full bg-white rounded-xl border border-[var(--pv-neutral-grey-150)] overflow-hidden">
+      <div className="flex-1 min-h-0 p-4 bg-grey-50 overflow-hidden">
+        <div className="flex flex-col w-full h-full bg-white rounded-xl border border-[var(--color-grey-100)] overflow-hidden">
           {tab === "goals" ? (
             <div className="w-full h-full overflow-y-auto">
               <div className="flex flex-col w-full p-3">
@@ -588,18 +588,18 @@ export default function GoalsPage() {
                       <div id="your-goals" className="flex items-center gap-3 mb-3 scroll-mt-4 flex-wrap">
                         <div className="flex items-center gap-2.5">
                           <h2 className="text-[14px] font-normal text-[var(--text-primary)] tracking-[-0.01em]">Your goals</h2>
-                          <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goals.length}</span>
+                          <span className="px-1.5 py-0.5 text-[12px] font-semibold rounded-full bg-grey-100 text-[var(--text-muted)]">{goals.length}</span>
                         </div>
                         {goals.length > 0 && (
                           <div className="flex items-center gap-2 ml-auto">
                             {/* Search — consistent 320px design-system style */}
-                            <div className="flex items-center gap-2 w-80 h-8 border border-pv-neutral-grey-200 rounded-lg bg-white focus-within:border-brand-ai-100 hover:border-pv-primary-primary-300 px-3 transition-colors">
-                              <MagnifyingGlass size={16} weight="regular" className="text-pv-neutral-grey-500 shrink-0" />
+                            <div className="flex items-center gap-2 w-80 h-8 border border-grey-200 rounded-lg bg-white focus-within:border-primary-500 hover:border-primary-300 px-3 transition-colors">
+                              <MagnifyingGlass size={16} weight="regular" className="text-grey-500 shrink-0" />
                               <input
                                 value={goalSearch}
                                 onChange={(e) => setGoalSearch(e.target.value)}
                                 placeholder="Search goals"
-                                className="flex-1 min-w-0 border-none outline-none bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-pv-neutral-grey-500 p-0"
+                                className="flex-1 min-w-0 border-none outline-none bg-transparent text-[14px] text-[var(--text-primary)] placeholder:text-grey-500 p-0"
                               />
                             </div>
                             {/* Filter — 32×32 icon-only secondary button, after the search */}
@@ -616,7 +616,7 @@ export default function GoalsPage() {
                       ) : filtered.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-1.5 py-10 border border-dashed border-[var(--border-primary)] rounded-lg text-center">
                           <MagnifyingGlass size={20} className="text-[var(--text-muted)]" />
-                          <p className="text-[13px] text-[var(--text-secondary)]">No goals match{q ? ` “${goalSearch.trim()}”` : " this filter"}.</p>
+                          <p className="text-[14px] text-[var(--text-secondary)]">No goals match{q ? ` “${goalSearch.trim()}”` : " this filter"}.</p>
                         </div>
                       ) : (
                         <div className="flex flex-col w-full">

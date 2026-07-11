@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ClickAwayListener, Fade, Popper } from "@mui/material";
 import { ClockCounterClockwise, Circle, Plus } from "@phosphor-icons/react";
-import { Button } from "@/common-components";
-import spinner from "@/common-components/assets/spinner.gif";
+import { Button } from "@/ui";
+import spinner from "@/ui/assets/spinner.gif";
 
 export default function ChatHistoryButton({
   dashboardId,
@@ -91,7 +91,7 @@ export default function ChatHistoryButton({
 
   return (
     <>
-      <Button onClick={handleClick} btnColor="ghost" btnSize="sm">
+      <Button onClick={handleClick} variant="ghost" size="sm">
         <ClockCounterClockwise size={14} weight={open ? "fill" : "regular"} />
         Sessions
       </Button>
@@ -101,31 +101,31 @@ export default function ChatHistoryButton({
           <ClickAwayListener onClickAway={handleClose}>
             <Fade {...TransitionProps} timeout={200}>
               <div
-                className="bg-white rounded-lg shadow-lg border border-pv-neutral-grey-200 overflow-hidden"
+                className="bg-white rounded-lg shadow-lg border border-grey-200 overflow-hidden"
                 style={{ width: 300, maxHeight: 400 }}
                 data-theme="light"
               >
                 <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--border-primary)]">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.12em]">
+                    <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.12em]">
                       Sessions
                     </span>
                     {sessions.length > 0 && (
-                      <span className="text-[9px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
+                      <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-hover)] rounded-full px-1.5 py-px font-mono">
                         {sessions.length}
                       </span>
                     )}
                   </div>
                   {onNewSession && (
                     <Button
-                      btnColor="ghost"
-                      btnSize="sm"
+                      variant="ghost"
+                      size="sm"
                       onClick={handleNewSession}
                       disabled={isCreatingSession}
-                      mainBtnClassName="!px-2 !py-1"
+                      className="!px-2 !py-1"
                     >
                       <Plus size={12} weight="bold" />
-                      <span className="text-[11px]">{isCreatingSession ? "Creating..." : "New"}</span>
+                      <span className="text-[12px]">{isCreatingSession ? "Creating..." : "New"}</span>
                     </Button>
                   )}
                 </div>
@@ -136,7 +136,7 @@ export default function ChatHistoryButton({
                       <img src={loadingImageSrc} alt="loading" className="w-5 h-5" />
                     </div>
                   ) : sessions.length === 0 ? (
-                    <div className="px-4 py-8 text-center text-sm text-pv-text-secondary-text">No past sessions</div>
+                    <div className="px-4 py-8 text-center text-sm text-[var(--text-secondary)]">No past sessions</div>
                   ) : (
                     <div className="py-1 px-1.5">
                       {sessions.map((session, index) => {
@@ -146,10 +146,10 @@ export default function ChatHistoryButton({
                           <button
                             key={session.session_id}
                             onClick={() => handleSessionClick(session, index)}
-                            className={`group w-full px-3 py-2 text-left rounded-lg border-none cursor-pointer hover:bg-pv-neutral-grey-50 active:bg-white ${isCurrent ? "bg-pv-neutral-grey-50" : "bg-transparent"}`}
+                            className={`group w-full px-3 py-2 text-left rounded-lg border-none cursor-pointer hover:bg-grey-50 active:bg-white ${isCurrent ? "bg-grey-50" : "bg-transparent"}`}
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-[13px] font-medium truncate text-black group-active:text-pv-neutral-grey-600">
+                              <span className="text-[14px] font-medium truncate text-black group-active:text-grey-600">
                                 {formatSessionLabel(session)}
                               </span>
                               <div className="flex items-center gap-1.5 shrink-0">
@@ -157,13 +157,13 @@ export default function ChatHistoryButton({
                                   <Circle size={8} weight="fill" className="text-green-500 animate-pulse" />
                                 )}
                                 {isCurrent && (
-                                  <span className="text-[10px] font-medium bg-pv-tags-blue border border-pv-neutral-grey-300 px-1.5 py-0.5 rounded-md">
+                                  <span className="text-[10px] font-medium bg-[var(--color-tag-blue)] border border-grey-300 px-1.5 py-0.5 rounded-md">
                                     Current
                                   </span>
                                 )}
                               </div>
                             </div>
-                            <div className="text-[11px] text-black group-active:text-pv-neutral-grey-600 mt-0.5">
+                            <div className="text-[12px] text-black group-active:text-grey-600 mt-0.5">
                               {hasMessages
                                 ? `${session.turn_count} ${session.turn_count === 1 ? "message" : "messages"}`
                                 : "No messages yet"}

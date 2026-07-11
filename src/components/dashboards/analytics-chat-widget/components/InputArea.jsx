@@ -4,7 +4,7 @@ import { cn } from "../utils/cn";
 import { Badge } from "./ui/Badge";
 import Composer from "./Composer";
 import EventLog from "./EventLog";
-import { Tooltip } from "@/common-components";
+import { Tooltip } from "@/ui";
 
 const AI_DISCLAIMER = "AI can make mistakes. Ask how a result was calculated to verify the response.";
 
@@ -56,7 +56,7 @@ export default function InputArea({
               {/* Left slot (e.g., chat history) */}
               {leftSlot}
               {/* Divider */}
-              {leftSlot && filesTraySlot && <div className="w-px h-5 bg-[var(--pv-neutral-grey-200)]" />}
+              {leftSlot && filesTraySlot && <div className="w-px h-5 bg-[var(--color-grey-200)]" />}
               {/* Right slot (e.g., files tray) */}
               {filesTraySlot}
             </div>
@@ -66,7 +66,7 @@ export default function InputArea({
         {/* Input row with composer */}
         <div>
           {readOnly ? (
-            <div className="flex items-center justify-center h-full min-h-[54px] rounded-lg border border-[var(--pv-neutral-grey-200)] bg-[var(--pv-neutral-grey-50)] text-sm text-[var(--pv-text-secondary-text)]">
+            <div className="flex items-center justify-center h-full min-h-[54px] rounded-lg border border-[var(--color-grey-200)] bg-[var(--color-grey-50)] text-sm text-[var(--color-text-secondary)]">
               This is an older session and cannot be resumed.
             </div>
           ) : (

@@ -4,9 +4,9 @@ import {
   CheckCircle2, Circle, AlertCircle, AlertOctagon,
   Sparkles, Check, LayoutDashboard, FileText, Calculator, X, ChevronDown, Pencil, Eye,
 } from 'lucide-react'
-import { Button as PvButton } from '../../petavue'
-import { Spinner } from '../../components/ui/Spinner'
-import MarkdownRenderer from '../../common-utils/MarkdownRenderer'
+import { Button as PvButton } from '@/ui'
+import { Spinner } from '@/ui'
+import MarkdownRenderer from '../../utils/MarkdownRenderer'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
@@ -160,7 +160,7 @@ function SaveAnswersModal({ answers, onClose }) {
         <div className="flex items-center justify-between px-4 h-12 shrink-0 border-b border-[var(--border-primary)]">
           <div className="flex items-center gap-2 min-w-0">
             <Sparkles size={15} className="text-[var(--accent)] shrink-0" />
-            <span className="text-[13px] font-semibold text-[var(--text-primary)] truncate">Save answers as reusable context</span>
+            <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">Save answers as reusable context</span>
           </div>
           <button onClick={onClose} aria-label="Close" className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] border-none bg-transparent cursor-pointer transition-colors shrink-0">
             <X size={16} />
@@ -203,7 +203,7 @@ function SaveAnswersModal({ answers, onClose }) {
                         <span className="text-[12.5px] font-medium text-[var(--text-primary)]">{draft.title || a.title}</span>
                         <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${isKD ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-[var(--bg-hover)] text-[var(--text-muted)]'}`}>{a.kind}</span>
                       </span>
-                      <span className="block text-[11px] text-[var(--text-muted)] mt-0.5 truncate">{a.target}</span>
+                      <span className="block text-[12px] text-[var(--text-muted)] mt-0.5 truncate">{a.target}</span>
                     </span>
                     <ChevronDown size={16} className={`shrink-0 mt-0.5 text-[var(--text-muted)] transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                   </button>
@@ -213,36 +213,36 @@ function SaveAnswersModal({ answers, onClose }) {
                 {isExpanded ? (
                   <div className="px-3 pb-3 pt-1 flex flex-col gap-3 border-t border-[var(--border-primary)] bg-[var(--bg-tertiary)]">
                     <div>
-                      <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">Title</label>
+                      <label className="block text-[12px] font-medium text-[var(--text-muted)] mb-1">Title</label>
                       <input
                         value={draft.title}
                         onChange={(e) => updateDraft(a.id, 'title', e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[14px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-[var(--text-muted)] mb-1">Description</label>
+                      <label className="block text-[12px] font-medium text-[var(--text-muted)] mb-1">Description</label>
                       <textarea
                         value={draft.description}
                         onChange={(e) => updateDraft(a.id, 'description', e.target.value)}
                         rows={2}
-                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)] resize-none focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                        className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[14px] text-[var(--text-primary)] resize-none focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
                       />
                     </div>
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <label className="text-[11px] font-medium text-[var(--text-muted)]">Content (markdown)</label>
+                        <label className="text-[12px] font-medium text-[var(--text-muted)]">Content (markdown)</label>
                         <div className="flex items-center gap-0.5 p-0.5 rounded-md bg-[var(--bg-hover)]">
-                          <button type="button" onClick={() => setPreview(a.id, false)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border-none cursor-pointer transition-colors ${!isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
+                          <button type="button" onClick={() => setPreview(a.id, false)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-medium border-none cursor-pointer transition-colors ${!isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
                             <Pencil size={11} /> Edit
                           </button>
-                          <button type="button" onClick={() => setPreview(a.id, true)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border-none cursor-pointer transition-colors ${isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
+                          <button type="button" onClick={() => setPreview(a.id, true)} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-medium border-none cursor-pointer transition-colors ${isPreview ? 'bg-white text-[var(--accent)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}>
                             <Eye size={11} /> Preview
                           </button>
                         </div>
                       </div>
                       {isPreview ? (
-                        <div className="w-full max-h-[240px] overflow-y-auto px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[13px] text-[var(--text-primary)]">
+                        <div className="w-full max-h-[240px] overflow-y-auto px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[14px] text-[var(--text-primary)]">
                           <MarkdownRenderer content={draft.content || '_Nothing yet._'} />
                         </div>
                       ) : (
@@ -282,7 +282,7 @@ function BuildTile({ widget, status }) {
     <div className={`rounded-xl border p-3.5 transition-all ${status === 'done' ? 'border-[var(--border-primary)] bg-white' : status === 'building' ? 'border-[var(--accent)]/40 bg-[var(--accent)]/[0.03]' : 'border-[var(--border-primary)] bg-[var(--bg-primary)]'}`}>
       <div className="flex items-center gap-1.5 mb-2.5">
         {status === 'done' ? (
-          <CheckCircle2 size={13} className="text-[var(--pv-success-text)] shrink-0" />
+          <CheckCircle2 size={13} className="text-[var(--color-green)] shrink-0" />
         ) : status === 'building' ? (
           <Spinner size={13} className="shrink-0" />
         ) : (
@@ -338,7 +338,7 @@ function StepResultsPane({ rows }) {
             >
               <div className="flex items-center gap-2">
                 {done ? (
-                  <CheckCircle2 size={14} className="text-[var(--pv-success-text)] shrink-0" />
+                  <CheckCircle2 size={14} className="text-[var(--color-green)] shrink-0" />
                 ) : running ? (
                   <Spinner size={14} className="shrink-0" />
                 ) : (
@@ -394,7 +394,7 @@ function StepRow({ step, status, title }) {
             style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
           >
             <div className="overflow-hidden">
-              <p className={`text-[12px] leading-snug mt-1 ${status === 'failed' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'failed' ? 'text-[var(--color-red)]/90' : 'text-[var(--color-text-secondary)]'}`}>
                 {step.purpose}
               </p>
             </div>
@@ -441,7 +441,7 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
+                className="text-[10.5px] shrink-0 underline text-[var(--color-red)] hover:text-[var(--color-red)]/80"
               >
                 Cancel
               </button>
@@ -452,7 +452,7 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
             style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
           >
             <div className="overflow-hidden">
-              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--color-red)]/90' : 'text-[var(--color-text-secondary)]'}`}>
                 {desc}
               </p>
             </div>
@@ -476,7 +476,7 @@ function PlanSummaryPane({ summary }) {
   return (
     <div className="h-full overflow-y-auto px-4 py-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-3">
+        <div className="flex items-center gap-2 text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-3">
           <HeaderIcon size={12} />
           {headerLabel}
         </div>
@@ -484,7 +484,7 @@ function PlanSummaryPane({ summary }) {
           {summary?.title || 'Your run'}
         </h2>
         {summary?.plan_outcome ? (
-          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-6">
+          <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-6">
             {summary.plan_outcome}
           </p>
         ) : null}
@@ -493,16 +493,16 @@ function PlanSummaryPane({ summary }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-5">
             {willDeliver.length ? (
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
+                <div className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
                   Includes
                 </div>
                 <ul className="space-y-1.5">
                   {willDeliver.map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2 text-[13px] text-[var(--text-primary)] leading-snug"
+                      className="flex items-start gap-2 text-[14px] text-[var(--text-primary)] leading-snug"
                     >
-                      <Check size={13} className="shrink-0 mt-0.5 text-[var(--pv-success-text)]" />
+                      <Check size={13} className="shrink-0 mt-0.5 text-[var(--color-green)]" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -511,14 +511,14 @@ function PlanSummaryPane({ summary }) {
             ) : null}
             {wontDeliver.length ? (
               <div>
-                <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
+                <div className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
                   Won't include
                 </div>
                 <ul className="space-y-1.5">
                   {wontDeliver.map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2 text-[13px] text-[var(--text-primary)] leading-snug"
+                      className="flex items-start gap-2 text-[14px] text-[var(--text-primary)] leading-snug"
                     >
                       <X size={13} className="shrink-0 mt-0.5 text-[var(--text-muted)]" />
                       <span>{item}</span>
@@ -532,7 +532,7 @@ function PlanSummaryPane({ summary }) {
 
         {keyFormulas.length ? (
           <div className="mb-5">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
+            <div className="flex items-center gap-1.5 text-[12px] uppercase tracking-wider text-[var(--text-muted)] mb-2">
               <Calculator size={11} />
               Key formulas applied
             </div>
@@ -574,7 +574,7 @@ function FinalArtifactPane({ sessionId, outputType, memoPath }) {
     if (!memoPath) {
       return (
         <div className="h-full flex items-center justify-center p-8 text-center">
-          <p className="text-[13px] text-[var(--text-secondary)]">
+          <p className="text-[14px] text-[var(--text-secondary)]">
             Your memo will appear here when ready.
           </p>
         </div>
@@ -708,11 +708,11 @@ export default function ExecutionProgress({
   return (
     <div className="flex-1 flex min-h-0 h-full">
       {/* ── Left pane: step list ── */}
-      <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+      <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] border-r-0 rounded-l-2xl overflow-hidden">
         <div className="flex items-center h-12 px-4 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             {isBlocked ? (
-              <AlertOctagon size={15} className="text-[var(--pv-error-text)] shrink-0" />
+              <AlertOctagon size={15} className="text-[var(--color-red)] shrink-0" />
             ) : null}
             <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
               {headingLabel}
@@ -740,7 +740,7 @@ export default function ExecutionProgress({
           the Plan step's two-pane so the two read as one seamless unit. The
           disclosure callout (when enabled) rides at the top of the card as a
           shrink-0 banner rather than a free-standing card above it. */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+      <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] rounded-r-2xl overflow-hidden">
         {disclosureEnabled && disclosureSummary && !isBlocked ? (
           <div className="shrink-0">
             <DisclosureCallout
@@ -751,7 +751,7 @@ export default function ExecutionProgress({
         ) : null}
         {isBlocked ? (
           <>
-            <div className="flex items-center gap-2 px-4 py-2 bg-[var(--pv-error-bg)] border-b border-[var(--pv-error-text)]/30 text-[12px] text-[var(--pv-error-text)] shrink-0">
+            <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-red-bg)] border-b border-[var(--color-red)]/30 text-[12px] text-[var(--color-red)] shrink-0">
               <AlertCircle size={13} className="shrink-0" />
               <span className="font-medium">Run blocked.</span>
             </div>
@@ -772,9 +772,9 @@ export default function ExecutionProgress({
                 success chip. The primary "Verify & refine in chat" lives in the
                 run-page footer; "Review & save answers" sits here, next to the
                 finished draft. (Publish stays parked behind SHOW_PUBLISH_BUTTON.) */}
-            <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--pv-neutral-grey-150)] bg-white shrink-0">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--pv-success-bg)] shrink-0">
-                <Check size={13} className="text-[var(--pv-success-text)]" strokeWidth={3} />
+            <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--color-grey-100)] bg-white shrink-0">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-green-bg)] shrink-0">
+                <Check size={13} className="text-[var(--color-green)]" strokeWidth={3} />
               </span>
               <span className="flex-1 min-w-0 truncate text-[12.5px] leading-tight">
                 <span className="font-semibold text-[var(--text-primary)]">{outputType === 'memo' ? 'Draft memo built' : 'Draft dashboard built'}.</span>{' '}
@@ -806,7 +806,7 @@ export default function ExecutionProgress({
                 <Sparkles size={13} className="text-[var(--accent)] shrink-0" />
                 <span className="font-medium truncate">Your {outputType === 'memo' ? 'memo' : 'dashboard'}, taking shape</span>
               </div>
-              <span className="text-[11px] text-[var(--text-muted)] shrink-0">Sample layout</span>
+              <span className="text-[12px] text-[var(--text-muted)] shrink-0">Sample layout</span>
             </div>
             <div className="flex-1 min-h-0">
               {planSummary?.widgets?.length ? (

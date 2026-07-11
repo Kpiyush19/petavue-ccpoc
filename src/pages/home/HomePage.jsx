@@ -7,8 +7,8 @@ import { getCurrentUser } from "../../api";
 import { cn } from "../../utils/cn";
 import { useSessionContext } from "../../contexts/SessionContext";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../utils/upload";
-import { Tooltip, Button, Input } from "../../common-components";
-import { useScrollCleanup } from "../../common-components/Tooltip/useScrollCleanup";
+import { Tooltip, Button, Input } from "@/ui";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import workstreamsData from "./data/workstreams/workstreams.json";
 import { getSkillById } from "./data/workstreams/skills";
 
@@ -201,26 +201,26 @@ export default function HomePage() {
     <div className="flex h-full w-full overflow-x-auto scrollbar-hide">
       <div
         ref={scrollContainerRef}
-        className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-pv-neutral-grey-50 pb-4"
+        className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-grey-50 pb-4"
       >
         <div className="flex flex-col w-full max-w-[1400px] mx-auto px-8 py-8">
           <motion.div {...fadeUp(0)} className="flex flex-col gap-1 mb-6">
             <h1 className="text-[28px] font-semibold text-[var(--text-primary)]">
               {getGreeting()}, {getFirstName()}.
             </h1>
-            <p className="text-[15px] text-[var(--text-secondary)]">Ask the agent, or pick up a workstream.</p>
-            <p className="text-[13px] text-[var(--text-muted)] mt-1">
-              <span className="text-pv-primary-primary-600 font-medium">{workstreamsData.length}</span> workstreams
+            <p className="text-[16px] text-[var(--text-secondary)]">Ask the agent, or pick up a workstream.</p>
+            <p className="text-[14px] text-[var(--text-muted)] mt-1">
+              <span className="text-primary-600 font-medium">{workstreamsData.length}</span> workstreams
               active
               <span className="mx-2">·</span>
-              <span className="text-pv-primary-primary-600 font-medium">{totalSkills}</span> skills available
+              <span className="text-primary-600 font-medium">{totalSkills}</span> skills available
             </p>
           </motion.div>
 
           <motion.div {...fadeUp(0.05)} className="flex flex-col gap-3 pt-6 border-t border-neutral-200">
             <div
               className={cn(
-                "relative flex flex-col bg-white border shadow-sm transition-colors hover:border-pv-primary-primary-300 focus-within:!border-pv-primary-primary-500",
+                "relative flex flex-col bg-white border shadow-sm transition-colors hover:border-primary-300 focus-within:!border-primary-500",
                 dragOver ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[var(--border-primary)]"
               )}
               onDragOver={handleDragOver}
@@ -228,15 +228,15 @@ export default function HomePage() {
               onDrop={handleDrop}
             >
               <div className="flex items-center gap-2 px-4 pt-3 pb-0">
-                <div className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                <span className="text-[13px] text-[var(--text-secondary)]">Ask the Petavue agent</span>
+                <div className="w-2 h-2 rounded-full bg-primary-500" />
+                <span className="text-[14px] text-[var(--text-secondary)]">Ask the Petavue agent</span>
               </div>
               {files.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 px-4 pt-3 pb-0">
                   {files.map((file, i) => (
                     <span
                       key={`${file.name}-${i}`}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[12px] font-mono
                     bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]"
                     >
                       <span className="truncate max-w-[140px]">{file.name}</span>
@@ -264,9 +264,9 @@ export default function HomePage() {
 
               <div className="flex items-center min-h-[52px] gap-2 px-2">
                 <Button
-                  btnColor="ghost"
-                  btnSize="sm"
-                  mainBtnClassName="!rounded-xl !w-10 !h-10 !p-0"
+                  variant="ghost"
+                  size="sm"
+                  className="!rounded-xl !w-10 !h-10 !p-0"
                   onClick={() => fileInputRef.current?.click()}
                   title="Attach files"
                 >
@@ -301,9 +301,9 @@ export default function HomePage() {
                 />
 
                 <Button
-                  btnColor="primary"
-                  btnSize="sm"
-                  mainBtnClassName="!rounded-xl !w-10 !h-10 !p-0 mr-2"
+                  variant="primary"
+                  size="sm"
+                  className="!rounded-xl !w-10 !h-10 !p-0 mr-2"
                   onClick={handleSend}
                   disabled={!canSend}
                 >
@@ -319,7 +319,7 @@ export default function HomePage() {
                       setMessage(suggestion);
                       messageInputRef.current?.focus();
                     }}
-                    className="px-3 py-1.5 text-[13px] text-[var(--text-secondary)] bg-white border border-[var(--border-primary)] rounded-full
+                    className="px-3 py-1.5 text-[14px] text-[var(--text-secondary)] bg-white border border-[var(--border-primary)] rounded-full
                   hover:bg-[var(--bg-hover)] hover:border-[var(--border-secondary)] transition-colors cursor-pointer"
                   >
                     {suggestion}
@@ -331,12 +331,12 @@ export default function HomePage() {
 
           <motion.div {...fadeUp(0.1)} className="flex flex-col gap-4 pt-6 mt-6 border-t border-neutral-200">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+              <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
+                <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                   Pick up where you left off
                 </span>
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
               </div>
               <span className="text-[12px] text-[var(--text-muted)]">Last 14 days</span>
             </div>
@@ -346,7 +346,7 @@ export default function HomePage() {
                 <div
                   key={item.id}
                   className={cn(
-                    "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-pv-primary-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
+                    "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
                     index > 0 && "-ml-px"
                   )}
                 >
@@ -363,7 +363,7 @@ export default function HomePage() {
                     </span>
                     <span className="text-[12px] text-[var(--text-muted)]">{item.timestamp}</span>
                   </div>
-                  <h3 className="text-[15px] font-medium text-[var(--text-primary)] leading-snug">{item.title}</h3>
+                  <h3 className="text-[16px] font-medium text-[var(--text-primary)] leading-snug">{item.title}</h3>
                   <div className="flex items-center text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                     {item.tags.map((tag, i) => (
                       <span key={tag}>
@@ -379,12 +379,12 @@ export default function HomePage() {
 
           <motion.div {...fadeUp(0.15)} className="flex flex-col gap-4 pt-6 mt-6 border-t border-neutral-200">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+              <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
+                <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                   Your Workstreams
                 </span>
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
               </div>
             </div>
 
@@ -400,23 +400,23 @@ export default function HomePage() {
                     key={ws.id}
                     onClick={() => navigate(`/home/workstreams/${ws.id}`)}
                     className={cn(
-                      "flex flex-col gap-3 p-5 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-pv-primary-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
+                      "flex flex-col gap-3 p-5 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
                       isRightColumn && "-ml-px",
                       isNotFirstRow && "-mt-px"
                     )}
                   >
                     <div className="flex items-start justify-between">
-                      <h3 className="text-[17px] font-semibold text-[var(--text-primary)]">{ws.name}</h3>
-                      <span className="text-[12px] text-pv-primary-primary-600 font-medium whitespace-nowrap">
+                      <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{ws.name}</h3>
+                      <span className="text-[12px] text-primary-600 font-medium whitespace-nowrap">
                         {ws.skillCount} SKILLS
                       </span>
                     </div>
-                    <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{ws.description}</p>
+                    <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed">{ws.description}</p>
                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
                       {visibleTags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 text-[11px] rounded border transition-colors cursor-pointer bg-white text-[var(--text-secondary)] border-[var(--border-primary)] hover:bg-pv-primary-primary-100"
+                          className="px-2 py-1 text-[12px] rounded border transition-colors cursor-pointer bg-white text-[var(--text-secondary)] border-[var(--border-primary)] hover:bg-primary-100"
                         >
                           {tag}
                         </span>
@@ -424,7 +424,7 @@ export default function HomePage() {
                       {remainingTags.length > 0 && (
                         <Tooltip title={remainingTags.join(", ")} placement="top" arrow tooltipActive={tooltipShow}>
                           <span
-                            className="px-2 py-1 text-[11px] text-[var(--text-muted)] cursor-default"
+                            className="px-2 py-1 text-[12px] text-[var(--text-muted)] cursor-default"
                             onMouseEnter={() => setTooltipShow(true)}
                           >
                             +{remainingTags.length}
@@ -440,12 +440,12 @@ export default function HomePage() {
 
           <motion.div {...fadeUp(0.2)} className="flex flex-col gap-4 pt-6 mt-6 border-t border-neutral-200 pb-8">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 py-1.5 px-3 border border-pv-primary-primary-500 rounded-full bg-white">
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
-                <span className="text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+              <div className="flex items-center gap-2 py-1.5 px-3 border border-primary-500 rounded-full bg-white">
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
+                <span className="text-[12px] font-semibold text-[var(--text-primary)] uppercase tracking-wider">
                   Most Used
                 </span>
-                <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />
+                <span className="w-2 h-2 rounded-full bg-primary-500" />
               </div>
               <span className="text-[12px] text-[var(--text-muted)]">You opened · last 30 days</span>
             </div>
@@ -459,7 +459,7 @@ export default function HomePage() {
                     key={skill.uid}
                     onClick={() => navigate(`/home/skill/${skill.uid}`)}
                     className={cn(
-                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-pv-primary-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
+                      "flex flex-col gap-3 p-4 bg-white border border-[var(--border-primary)] cursor-pointer transition-all duration-300 hover:border-primary-500 hover:scale-102 hover:z-10 hover:shadow-lg",
                       index > 0 && "-ml-px"
                     )}
                   >
@@ -476,7 +476,7 @@ export default function HomePage() {
                       </span>
                       <span className="text-[12px] text-[var(--text-muted)]">{item.opens} opens</span>
                     </div>
-                    <h3 className="text-[15px] font-medium text-[var(--text-primary)] leading-snug">{skill.title}</h3>
+                    <h3 className="text-[16px] font-medium text-[var(--text-primary)] leading-snug">{skill.title}</h3>
                     <div className="flex items-center text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                       {item.tags.map((tag, i) => (
                         <span key={tag}>

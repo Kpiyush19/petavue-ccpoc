@@ -155,7 +155,7 @@ export default function SlackChannelPicker({
       {!slackConnected && !channelsLoading && (
         <div className="flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
           <AlertCircle size={13} className="text-amber-600 shrink-0 mt-0.5" />
-          <div className="text-[11px] text-amber-800 leading-relaxed">
+          <div className="text-[12px] text-amber-800 leading-relaxed">
             Slack is not connected. <a href="/settings/integrations" className="text-[var(--accent)] font-semibold underline">Connect your workspace</a> first.
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function SlackChannelPicker({
 
       {/* ── Channels ── */}
       <div>
-        <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+        <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
           <Hash size={11} />
           Channels
         </label>
@@ -184,7 +184,7 @@ export default function SlackChannelPicker({
                 <span className="text-[var(--text-muted)]">Loading channels...</span>
               ) : selectedChannels.length > 0 ? (
                 selectedChannels.map((ch) => (
-                  <span key={ch.id} className="inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 text-[11px] font-medium rounded bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]">
+                  <span key={ch.id} className="inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 text-[12px] font-medium rounded bg-[var(--color-primary-50)] text-[var(--accent)] border border-[var(--color-primary-200)]">
                     <Hash size={9} />{ch.name}
                     <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); if (!isDisabled) onChannelsChange(selectedChannels.filter(c => c.id !== ch.id)) }} className="ml-0.5 cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors inline-flex"><X size={10} /></span>
                   </span>
@@ -218,10 +218,10 @@ export default function SlackChannelPicker({
                 {channelsLoading ? (
                   <div className="px-3 py-3 flex items-center justify-center gap-2">
                     <Loader2 size={14} className="text-[var(--text-muted)] animate-spin" />
-                    <span className="text-[11px] text-[var(--text-muted)]">Loading channels...</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Loading channels...</span>
                   </div>
                 ) : channels.filter(ch => !selectedChannels.some(sc => sc.id === ch.id)).length === 0 ? (
-                  <div className="px-3 py-3 text-[11px] text-[var(--text-muted)] text-center">
+                  <div className="px-3 py-3 text-[12px] text-[var(--text-muted)] text-center">
                     {channels.length === 0 ? 'No channels found' : 'All channels selected'}
                   </div>
                 ) : (
@@ -239,7 +239,7 @@ export default function SlackChannelPicker({
                         <Hash size={13} className="text-[var(--text-muted)] shrink-0" />
                         <span className="text-[12px] text-[var(--text-primary)] flex-1">{ch.name}</span>
                         {ch.is_private && (
-                          <span className="text-[9px] text-[var(--text-muted)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">Private</span>
+                          <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded">Private</span>
                         )}
                         <span className="text-[10px] text-[var(--text-muted)]">{ch.num_members} members</span>
                       </button>
@@ -249,7 +249,7 @@ export default function SlackChannelPicker({
                         type="button"
                         disabled={channelsLoadingMore}
                         onClick={(e) => { e.stopPropagation(); fetchChannels(channelSearch, channelNextCursor) }}
-                        className="w-full py-2 text-[11px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
+                        className="w-full py-2 text-[12px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
                       >
                         {channelsLoadingMore ? (
                           <span className="flex items-center justify-center gap-1.5">
@@ -269,7 +269,7 @@ export default function SlackChannelPicker({
 
       {/* ── DM Recipients ── */}
       <div>
-        <label className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+        <label className="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
           <Users size={11} />
           Direct Messages
         </label>
@@ -299,7 +299,7 @@ export default function SlackChannelPicker({
                 <span className="text-[var(--text-muted)]">Loading users...</span>
               ) : selectedDmUsers.length > 0 ? (
                 selectedDmUsers.map((u) => (
-                  <span key={u.id} className="inline-flex items-center gap-1 pl-1 pr-1 py-0.5 text-[11px] font-medium rounded bg-[var(--pv-primary-50)] text-[var(--accent)] border border-[var(--pv-primary-200)]">
+                  <span key={u.id} className="inline-flex items-center gap-1 pl-1 pr-1 py-0.5 text-[12px] font-medium rounded bg-[var(--color-primary-50)] text-[var(--accent)] border border-[var(--color-primary-200)]">
                     {u.avatar_url && <img src={u.avatar_url} alt="" className="w-3.5 h-3.5 rounded-full" />}
                     {u.real_name || u.display_name || u.name}
                     <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); if (!isDisabled) onDmUsersChange(selectedDmUsers.filter(su => su.id !== u.id)) }} className="ml-0.5 cursor-pointer text-[var(--text-muted)] hover:text-red-500 transition-colors inline-flex"><X size={10} /></span>
@@ -334,13 +334,13 @@ export default function SlackChannelPicker({
                 {usersLoading ? (
                   <div className="px-3 py-3 flex items-center justify-center gap-2">
                     <Loader2 size={14} className="text-[var(--text-muted)] animate-spin" />
-                    <span className="text-[11px] text-[var(--text-muted)]">Loading users...</span>
+                    <span className="text-[12px] text-[var(--text-muted)]">Loading users...</span>
                   </div>
                 ) : (() => {
                   const filtered = slackUsers.filter(u => !selectedDmUsers.some(su => su.id === u.id))
                   if (filtered.length === 0) {
                     return (
-                      <div className="px-3 py-3 text-[11px] text-[var(--text-muted)] text-center">
+                      <div className="px-3 py-3 text-[12px] text-[var(--text-muted)] text-center">
                         {userSearch ? 'No users found' : 'All users already added'}
                       </div>
                     )
@@ -380,7 +380,7 @@ export default function SlackChannelPicker({
                           type="button"
                           disabled={usersLoadingMore}
                           onClick={(e) => { e.stopPropagation(); fetchUsers(userSearch, userNextCursor) }}
-                          className="w-full py-2 text-[11px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
+                          className="w-full py-2 text-[12px] font-medium text-[var(--accent)] hover:bg-[var(--bg-hover)] bg-transparent border-none border-t border-[var(--border-primary)] cursor-pointer transition-colors disabled:opacity-50"
                         >
                           {usersLoadingMore ? (
                             <span className="flex items-center justify-center gap-1.5">

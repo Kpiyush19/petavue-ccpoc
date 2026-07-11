@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Button, Modal, Input } from "@/common-components";
+import { Button, Modal, Input } from "@/ui";
 
 export const RenameDashboardModal = ({ dashboard, onClose, onRename }) => {
   const [value, setValue] = useState("");
@@ -39,7 +39,7 @@ export const RenameDashboardModal = ({ dashboard, onClose, onRename }) => {
       onClose={handleClose}
       title="Rename Dashboard"
       topStripClassName="hidden"
-      topBorderClassname="border-t-5 border-[var(--pv-primary-500)]"
+      topBorderClassname="border-t-5 border-[var(--color-primary-500)]"
       headerClassName="py-3 px-4"
       titleClassName="text-[14px] font-medium"
       closeClassName=""
@@ -64,14 +64,14 @@ export const RenameDashboardModal = ({ dashboard, onClose, onRename }) => {
             disabled={isRenaming}
           />
         </div>
-        <div className="border-t border-[var(--pv-neutral-grey-150)]">
+        <div className="border-t border-[var(--color-grey-100)]">
           <div className="flex justify-between items-center py-3 px-4">
-            <Button btnColor="ghost" btnSize="lg" onClick={handleClose} disabled={isRenaming}>
+            <Button variant="ghost" size="lg" onClick={handleClose} disabled={isRenaming}>
               Cancel
             </Button>
             <Button
-              btnColor="primary"
-              btnSize="lg"
+              variant="primary"
+              size="lg"
               onClick={handleSubmit}
               disabled={isRenaming || !value.trim() || value.trim() === dashboard?.name}
             >

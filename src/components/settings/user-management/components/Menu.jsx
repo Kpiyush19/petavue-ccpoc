@@ -40,7 +40,7 @@ const Menu = ({ trigger, items }) => {
           <div className="fixed inset-0 z-40" onClick={handleClose} />
           <div
             style={menuStyle}
-            className="w-36 bg-white border border-[var(--pv-neutral-grey-200)] rounded-lg shadow-lg overflow-hidden"
+            className="w-36 bg-white border border-[var(--color-grey-200)] rounded-lg shadow-lg overflow-hidden"
           >
             {items.map((item, index) => (
               <button
@@ -49,7 +49,7 @@ const Menu = ({ trigger, items }) => {
                   item.onClick(e);
                   handleClose();
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--pv-neutral-grey-50)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--color-grey-50)]"
               >
                 {item.label}
               </button>

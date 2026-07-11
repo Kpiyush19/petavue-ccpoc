@@ -53,7 +53,7 @@ export { useDataTable } from './hooks/useDataTable';
 export { useArtifactPanel } from './hooks/useArtifactPanel';
 
 // UI Components (for customization)
-export { Button, Tooltip } from '@/common-components';
+export { Button, Tooltip } from '@/ui';
 export { Badge } from './components/ui/Badge';
 export { Input, Textarea, Select, Label } from './components/ui/Input';
 export { default as TextareaAutosize } from './components/ui/TextareaAutosize';

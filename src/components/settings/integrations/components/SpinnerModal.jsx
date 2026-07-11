@@ -42,11 +42,11 @@ export const SpinnerModal = ({ isModalOpen, onClose, onNavigate }) => {
   return (
     <Modal isOpen={isModalOpen} onClose={onClose} showCloseBtn={false}>
       <div className="mx-auto flex flex-col gap-3 items-center justify-center py-8">
-        <h1 className="text-lg font-semibold text-[var(--pv-text-primary-text)]">
+        <h1 className="text-lg font-semibold text-[var(--color-text-primary)]">
           Connecting to Gainsight
         </h1>
         <svg
-          className="animate-spin h-8 w-8 text-[var(--pv-primary-500)]"
+          className="animate-spin h-8 w-8 text-[var(--color-primary-500)]"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -65,7 +65,7 @@ export const SpinnerModal = ({ isModalOpen, onClose, onNavigate }) => {
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <div className="text-[var(--pv-neutral-grey-600)]">{text}</div>
+        <div className="text-[var(--color-grey-600)]">{text}</div>
       </div>
     </Modal>
   );

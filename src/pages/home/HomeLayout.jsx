@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Tabs } from "@/common-components";
+import { Tabs } from "@/ui";
 import workstreamsData from "./data/workstreams/workstreams.json";
 
 export default function HomeLayout() {
@@ -24,7 +24,7 @@ export default function HomeLayout() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-pv-neutral-grey-50">
+    <div className="flex-1 flex flex-col overflow-hidden bg-grey-50">
       <div className="bg-white border-b border-neutral-300">
         <Tabs
           activeIndex={activeIndex}

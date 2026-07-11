@@ -7,11 +7,11 @@ import { getCurrentUser } from "../../../api";
 import { cn } from "../../../utils/cn";
 import { useSessionContext } from "../../../contexts/SessionContext";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../utils/upload";
-import { Input, Tooltip } from "../../../common-components";
+import { Input, Tooltip } from "@/ui";
 import { NAV_ROUTES } from "../../../components/MenuBarNav";
-import { useScrollCleanup } from "../../../common-components/Tooltip/useScrollCleanup";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import { formatSkillName } from "./utils/formatSkillName";
-import { SparkleIcon } from "../../../petavue/pages/workbook_home/icons/SparkleIcon";
+import { SparkleIcon } from "./SparkleIcon";
 import { SKILLS_CATALOG } from "../../../skills/skillsCatalog";
 
 // Connector logos (src/assets/integrations). Glob handles filenames with spaces.
@@ -141,7 +141,7 @@ export default function HomePage() {
 
   return (
     <div className="flex h-full w-full overflow-x-auto scrollbar-hide">
-      <div ref={scrollContainerRef} className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-pv-neutral-grey-50">
+      <div ref={scrollContainerRef} className="flex flex-col h-full w-full min-w-[900px] overflow-y-auto bg-grey-50">
         <div className="flex flex-col w-full max-w-[900px] mx-auto px-8 min-h-full justify-center py-16">
 
           {/* Greeting */}
@@ -162,8 +162,8 @@ export default function HomePage() {
             <div className="relative">
               <div
                 className={cn(
-                  "flex flex-col bg-white border rounded-[18px] transition-colors focus-within:!border-pv-primary-primary-500",
-                  dragOver ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[#d4d9ea] hover:border-pv-primary-primary-300"
+                  "flex flex-col bg-white border rounded-[18px] transition-colors focus-within:!border-primary-500",
+                  dragOver ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[#d4d9ea] hover:border-primary-300"
                 )}
                 style={{ boxShadow: "0px 18px 40px -20px rgba(54,97,237,0.18), 0px 2px 8px rgba(16,24,40,0.04)" }}
                 onDragOver={handleDragOver}
@@ -173,7 +173,7 @@ export default function HomePage() {
                 {files.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 px-5 pt-4">
                     {files.map((file, i) => (
-                      <span key={`${file.name}-${i}`} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
+                      <span key={`${file.name}-${i}`} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[12px] font-mono bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
                         <span className="truncate max-w-[140px]">{file.name}</span>
                         <span className="text-[var(--text-muted)]">{formatSize(file.size)}</span>
                         <button onClick={() => removeFile(i)} className="ml-0.5 p-0.5 rounded hover:bg-[var(--border-primary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer transition-colors"><X size={10} /></button>
@@ -229,7 +229,7 @@ export default function HomePage() {
                     aria-label="Send"
                     className={cn(
                       "flex items-center justify-center w-9 h-9 rounded-full shrink-0 border-none transition-colors",
-                      canSend ? "bg-pv-primary-primary-500 text-white cursor-pointer hover:bg-pv-primary-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed"
+                      canSend ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed"
                     )}
                   >
                     <ArrowUp size={16} strokeWidth={2.75} />
@@ -252,7 +252,7 @@ export default function HomePage() {
                   <Tooltip key={slug} title={hint} arrow placement="top">
                     <button
                       onClick={() => openSkill(slug)}
-                      className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full bg-white border border-[#e1e5f1] text-[12px] font-normal text-[var(--text-primary)] cursor-pointer transition-colors hover:border-pv-primary-primary-300 hover:bg-pv-primary-primary-50 hover:text-pv-primary-primary-600"
+                      className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full bg-white border border-[#e1e5f1] text-[12px] font-normal text-[var(--text-primary)] cursor-pointer transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-600"
                     >
                       <Icon size={14} className={isMemo ? "text-amber-600" : "text-blue-600"} />
                       {formatSkillName(s.name)}
@@ -263,7 +263,7 @@ export default function HomePage() {
             </div>
             <button
               onClick={() => navigate(NAV_ROUTES.skills)}
-              className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-dashed border-pv-primary-primary-300 bg-pv-primary-primary-50/40 text-[12px] font-normal text-pv-primary-primary-600 cursor-pointer transition-colors hover:bg-pv-primary-primary-50 hover:border-pv-primary-primary-400 hover:text-pv-primary-primary-700"
+              className="group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-dashed border-primary-300 bg-primary-50/40 text-[12px] font-normal text-primary-600 cursor-pointer transition-colors hover:bg-primary-50 hover:border-primary-400 hover:text-primary-700"
             >
               Browse all {SKILLS_CATALOG.length} skills
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />

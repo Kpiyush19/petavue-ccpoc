@@ -1,5 +1,5 @@
-import { Modal } from "../../../../common-components/Modal";
-import { Button } from "../../../../common-components/Button";
+import { Modal } from "@/ui";
+import { Button } from "@/ui";
 import { useDisconnectDatabase } from "../api/disconnectDatabase";
 import { queryClient } from "../../../../lib/queryClient";
 
@@ -56,18 +56,18 @@ export const DisconnectIntegrationModal = ({
     >
       <div className="flex flex-col">
         <div className="px-4 pb-4 pt-2 flex flex-col gap-2">
-          <p className="text-sm text-[var(--pv-neutral-grey-600)]">
+          <p className="text-sm text-[var(--color-grey-600)]">
             Disconnecting {database === "Google Sheets" ? "Google Sheets" : "this connection"} will result in the loss
             of access to associated services and data.
           </p>
-          <p className="text-sm font-medium text-[var(--pv-text-primary-text)]">Are you sure you want to disconnect?</p>
+          <p className="text-sm font-medium text-[var(--color-text-primary)]">Are you sure you want to disconnect?</p>
         </div>
-        <div className="border-t border-[var(--pv-neutral-grey-150)]">
+        <div className="border-t border-[var(--color-grey-100)]">
           <div className="flex justify-between items-center py-3 px-4">
-            <Button btnColor="ghost" btnSize="lg" onClick={onClose}>
+            <Button variant="ghost" size="lg" onClick={onClose}>
               Cancel
             </Button>
-            <Button btnColor="primary red" btnSize="lg" onClick={disconnect}>
+            <Button variant="red" size="lg" onClick={disconnect}>
               Disconnect
             </Button>
           </div>

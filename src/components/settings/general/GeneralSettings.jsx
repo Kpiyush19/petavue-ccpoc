@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button } from "../../../common-components/Button";
-import Skeleton from "../../../common-components/Skeleton";
+import { Button } from "@/ui";
+import { Skeleton } from "@/ui";
 import { useNotificationStore } from "../integrations/stores/notifications";
 import { useGetTenantSettings } from "./api/getTenantSettings";
 import { usePatchTenantSettings } from "./api/patchTenantSettings";
@@ -22,9 +22,9 @@ const TZ_CARDS = [
 
 const cardBase =
   "flex flex-col items-start gap-1 px-4 py-3 rounded-lg border cursor-pointer transition-colors select-none";
-const cardSelected = "border-[var(--pv-primary-500)] bg-[var(--pv-primary-50)]";
+const cardSelected = "border-[var(--color-primary-500)] bg-[var(--color-primary-50)]";
 const cardIdle =
-  "border-[var(--pv-neutral-grey-200)] bg-white hover:border-[var(--pv-primary-300)] hover:bg-[var(--pv-neutral-grey-50)]";
+  "border-[var(--color-grey-200)] bg-white hover:border-[var(--color-primary-300)] hover:bg-[var(--color-grey-50)]";
 
 export default function GeneralSettings() {
   const queryClient = useQueryClient();
@@ -75,21 +75,21 @@ export default function GeneralSettings() {
 
   return (
     <div className="px-6 py-5 flex flex-col gap-6 max-w-3xl">
-      <section className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
+      <section className="border border-[var(--color-grey-200)] rounded-lg bg-white p-5 flex flex-col gap-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+            <h2 className="text-sm font-medium text-[var(--color-text-primary)]">
               Sync timezone
             </h2>
-            <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+            <p className="text-xs text-[var(--color-grey-500)] mt-1">
               Daily syncs run near midnight in this timezone. Applies to every
               integration on your tenant.
             </p>
           </div>
           {tzDirty && (
             <Button
-              btnColor="primary"
-              btnSize="md"
+              variant="primary"
+              size="md"
               onClick={handleSave}
               disabled={save.isPending}
             >
@@ -118,13 +118,13 @@ export default function GeneralSettings() {
                   <span
                     className={`text-base font-semibold ${
                       isSelected
-                        ? "text-[var(--pv-primary-500)]"
-                        : "text-[var(--pv-text-primary-text)]"
+                        ? "text-[var(--color-primary-500)]"
+                        : "text-[var(--color-text-primary)]"
                     }`}
                   >
                     {card.tz}
                   </span>
-                  <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+                  <span className="text-xs text-[var(--color-grey-500)]">
                     {card.name}
                   </span>
                 </button>

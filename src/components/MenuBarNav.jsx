@@ -19,12 +19,12 @@ export const NAV_ITEMS = [
 export const NAV_ROUTES = {
   new: "/new",
   "dashboard-live": "/dashboards",
-  "dashboards-pv": "/petavue/dashboards",
-  "data-hub": "/petavue/data-hub",
+  "dashboards-pv": "/dashboards",
+  "data-hub": "/data-hub",
   skills: "/skills",
   goals: "/goals",
   workflows: "/workflows",
-  settings: "/petavue/settings",
+  settings: "/settings",
 };
 
 export default function MenuBarNav() {
@@ -107,8 +107,8 @@ export default function MenuBarNav() {
         historyGroups={historyGroups}
         user={user}
         onNewChat={() => navigate("/new")}
-        onProfile={() => navigate("/petavue/profile")}
-        onSettings={() => navigate("/petavue/settings")}
+        onProfile={() => navigate("/profile")}
+        onSettings={() => navigate("/settings")}
         defaultOpen={false}
         beforeFooter={(isOpen) => <RunsActivity expanded={isOpen} />}
       />

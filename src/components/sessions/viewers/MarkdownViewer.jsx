@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getApiBase, getAuthToken } from '../../../api'
-import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
+import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 
 export default function MarkdownViewer({ sessionId, path, onLoadComplete }) {
   const [content, setContent] = useState('')

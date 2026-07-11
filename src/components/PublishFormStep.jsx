@@ -1,6 +1,6 @@
-import { Input, Select, Label } from './ui/Input'
-import { Button } from './ui/Button'
-import { DialogContent, DialogFooter } from './ui/Dialog'
+import { Input, Select, Label } from '@/ui/components/FormControls/FormControls'
+import { Button } from '@/ui'
+import { DialogContent, DialogFooter } from '@/ui/components/OverlayDialog/OverlayDialog'
 
 const CRON_PRESETS = [
   { label: 'Daily at 9:00 AM', value: '0 9 * * *' },

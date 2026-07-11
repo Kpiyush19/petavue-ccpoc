@@ -1,4 +1,4 @@
-import { Skeleton } from "@/common-components";
+import { Skeleton } from "@/ui";
 
 function UserMessageSkeleton({ width = 200 }) {
   return (
@@ -27,7 +27,7 @@ function AssistantMessageSkeleton({ lines = [320, 280, 200] }) {
 function ToolCallSkeleton({ toolCount = 2 }) {
   return (
     <div className="ml-9">
-      <div className="border border-[var(--pv-neutral-grey-200)] rounded-md overflow-hidden">
+      <div className="border border-[var(--color-grey-200)] rounded-md overflow-hidden">
         <div className="flex items-center gap-2 p-2.5 bg-white">
           <Skeleton width={16} height={16} className="rounded shrink-0" />
           <Skeleton width={100} height={12} className="rounded" />
@@ -35,7 +35,7 @@ function ToolCallSkeleton({ toolCount = 2 }) {
             <Skeleton width={28} height={16} className="rounded-md" />
           </div>
         </div>
-        <div className="border-t border-[var(--pv-neutral-grey-200)] p-3 flex flex-col gap-2">
+        <div className="border-t border-[var(--color-grey-200)] p-3 flex flex-col gap-2">
           {Array.from({ length: toolCount }).map((_, i) => (
             <div key={i} className="flex items-center gap-2">
               <Skeleton width={14} height={14} className="rounded shrink-0" />
@@ -63,7 +63,7 @@ export default function ChatSkeleton({ showHeader = false }) {
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-white">
       {showHeader && (
-        <div className="h-[58px] border-b border-[var(--pv-neutral-grey-200)] flex items-center px-4 gap-3 shrink-0">
+        <div className="h-[58px] border-b border-[var(--color-grey-200)] flex items-center px-4 gap-3 shrink-0">
           <Skeleton width={24} height={24} className="rounded" />
           <Skeleton width={180} height={18} className="rounded" />
           <div className="ml-auto flex items-center gap-2">

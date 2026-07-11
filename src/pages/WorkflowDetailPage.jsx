@@ -24,18 +24,18 @@ import {
   Play,
   PencilSimple
 } from "@phosphor-icons/react";
-import { Button as UIButton } from "../components/ui/Button";
-import { Badge } from "../components/ui/Badge";
-import { Button, Tooltip, Toggle, Skeleton } from "../common-components";
-import { useScrollCleanup } from "../common-components/Tooltip/useScrollCleanup";
+import { Button as UIButton } from "@/ui";
+import { Badge } from "@/ui";
+import { Button, Tooltip, Toggle, Skeleton } from "@/ui";
+import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import WorkflowDropdown from "../components/WorkflowDropdown";
 import { RenameWorkflowModal } from "./workflows/components/RenameWorkflowModal";
 import { apiGet, apiPost, apiPut, getCurrentUser } from "../api";
-import { timeAgo } from "@/common-utils/relativeTimeDiff";
-import { formatDateTime } from "@/common-utils/formatDateTime";
+import { timeAgo } from "@/utils/relativeTimeDiff";
+import { formatDateTime } from "@/utils/formatDateTime";
 import { useSessionContext } from "../contexts/SessionContext";
-import MarkdownRenderer from "@/common-utils/MarkdownRenderer";
-import spinner from "../common-components/assets/spinner.gif";
+import MarkdownRenderer from "@/utils/MarkdownRenderer";
+import spinner from "@/ui/assets/spinner.gif";
 
 const BLOCK_ICONS = {
   athena_query: Database,
@@ -52,30 +52,30 @@ const BLOCK_ICONS = {
 };
 
 const BLOCK_COLORS = {
-  athena_query: "text-pv-neutral-grey-500",
-  python_code: "text-pv-neutral-grey-500",
-  write_file: "text-pv-neutral-grey-500",
-  save_output: "text-pv-neutral-grey-500",
-  ai_summarize: "text-pv-neutral-grey-500",
-  ai_analyze: "text-pv-neutral-grey-500",
-  ai_condition: "text-pv-neutral-grey-500",
-  ai_generate: "text-pv-neutral-grey-500",
-  send_email: "text-pv-neutral-grey-500",
-  webhook: "text-pv-neutral-grey-500",
+  athena_query: "text-grey-500",
+  python_code: "text-grey-500",
+  write_file: "text-grey-500",
+  save_output: "text-grey-500",
+  ai_summarize: "text-grey-500",
+  ai_analyze: "text-grey-500",
+  ai_condition: "text-grey-500",
+  ai_generate: "text-grey-500",
+  send_email: "text-grey-500",
+  webhook: "text-grey-500",
   send_slack: "text-[#4A154B]"
 };
 
 const BLOCK_BG = {
-  athena_query: "bg-pv-neutral-grey-100",
-  python_code: "bg-pv-neutral-grey-100",
-  write_file: "bg-pv-neutral-grey-100",
-  save_output: "bg-pv-neutral-grey-100",
-  ai_summarize: "bg-pv-neutral-grey-100",
-  ai_analyze: "bg-pv-neutral-grey-100",
-  ai_condition: "bg-pv-neutral-grey-100",
-  ai_generate: "bg-pv-neutral-grey-100",
-  send_email: "bg-pv-neutral-grey-100",
-  webhook: "bg-pv-neutral-grey-100",
+  athena_query: "bg-grey-100",
+  python_code: "bg-grey-100",
+  write_file: "bg-grey-100",
+  save_output: "bg-grey-100",
+  ai_summarize: "bg-grey-100",
+  ai_analyze: "bg-grey-100",
+  ai_condition: "bg-grey-100",
+  ai_generate: "bg-grey-100",
+  send_email: "bg-grey-100",
+  webhook: "bg-grey-100",
   send_slack: "bg-[#4A154B]/10"
 };
 
@@ -399,10 +399,10 @@ export default function WorkflowDetailPage() {
     return (
       <div className="flex-1 flex min-h-0 overflow-x-auto scrollbar-hide">
         <div className="flex flex-col h-full w-full min-w-[900px]">
-          <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
+          <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--color-grey-100)]">
             <div className="flex items-center gap-2">
               <Skeleton width={80} height={20} className="rounded" />
-              <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)]" />
+              <CaretRight size={14} className="text-[var(--color-grey-400)]" />
               <Skeleton width={150} height={20} className="rounded" />
             </div>
             <div className="flex items-center gap-3">
@@ -411,7 +411,7 @@ export default function WorkflowDetailPage() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
+          <div className="flex-1 overflow-y-auto bg-[var(--color-grey-50)]">
             <div className="flex flex-col max-w-[1100px] mx-auto px-10 py-6 gap-6">
               <div className="flex items-center justify-between">
                 <Skeleton width={280} height={28} className="rounded" />
@@ -434,10 +434,10 @@ export default function WorkflowDetailPage() {
                 <div className="relative pl-14 space-y-6">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div key={i} className="relative">
-                      <div className="absolute -left-14 top-[18px] w-9 h-9 rounded-full border-2 border-[var(--pv-neutral-grey-200)] bg-white flex items-center justify-center">
+                      <div className="absolute -left-14 top-[18px] w-9 h-9 rounded-full border-2 border-[var(--color-grey-200)] bg-white flex items-center justify-center">
                         <Skeleton width={16} height={16} className="rounded" />
                       </div>
-                      <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white p-2.5">
+                      <div className="border border-[var(--color-grey-200)] rounded-lg bg-white p-2.5">
                         <div className="flex items-center gap-3">
                           <Skeleton width={48} height={48} className="rounded-lg shrink-0" />
                           <div className="flex-1">
@@ -456,7 +456,7 @@ export default function WorkflowDetailPage() {
                 <Skeleton width={90} height={16} className="rounded mb-4" />
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white px-4 py-3.5">
+                    <div key={i} className="border border-[var(--color-grey-200)] rounded-lg bg-white px-4 py-3.5">
                       <div className="flex items-center gap-4">
                         <Skeleton width={20} height={20} className="rounded-full shrink-0" />
                         <div className="flex-1">
@@ -488,18 +488,18 @@ export default function WorkflowDetailPage() {
   return (
     <div className="flex-1 flex min-h-0 overflow-x-auto scrollbar-hide">
       <div className="flex flex-col h-full w-full min-w-[900px]">
-        <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--pv-neutral-grey-150)]">
+        <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--color-grey-100)]">
           <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => navigate("/workflows")}
-              className="text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none"
+              className="text-[16px] leading-[24px] font-medium text-[var(--color-grey-500)] hover:text-[var(--color-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none"
             >
               Workflows
             </button>
-            <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
+            <CaretRight size={14} className="text-[var(--color-grey-400)] shrink-0" />
             {workflowsError ? (
               <Tooltip title="Failed to load workflows list" placement="bottom">
-                <span className="text-[16px] font-medium text-[var(--pv-error-text)] cursor-help">
+                <span className="text-[16px] font-medium text-[var(--color-red)] cursor-help">
                   {workflow?.name || "Current Workflow"}
                 </span>
               </Tooltip>
@@ -508,7 +508,7 @@ export default function WorkflowDetailPage() {
             )}
           </div>
           <div className="flex items-center gap-5 shrink-0">
-            <span className="text-sm text-[var(--pv-neutral-grey-500)] whitespace-nowrap">
+            <span className="text-sm text-[var(--color-grey-500)] whitespace-nowrap">
               {blocks.length} block{blocks.length !== 1 ? "s" : ""}
               {workflow.latest_run && (
                 <>
@@ -523,7 +523,7 @@ export default function WorkflowDetailPage() {
               )}
             </span>
             {workflow.shared && !isOwner ? (
-              <div className="flex items-center justify-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg bg-pv-neutral-grey-100 text-pv-neutral-grey-300 border border-pv-neutral-grey-100 cursor-not-allowed">
+              <div className="flex items-center justify-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg bg-grey-100 text-grey-300 border border-grey-100 cursor-not-allowed">
                 <span>Shared</span>
               </div>
             ) : (
@@ -539,8 +539,8 @@ export default function WorkflowDetailPage() {
                   placement="bottom"
                 >
                   <Button
-                    btnColor="primary"
-                    btnSize="lg"
+                    variant="primary"
+                    size="lg"
                     onClick={handleTriggerRun}
                     disabled={triggerRunMutation.isPending || isRunning || workflow.status !== "active"}
                   >
@@ -557,7 +557,7 @@ export default function WorkflowDetailPage() {
           </div>
         </div>
 
-        <div ref={pageScrollContainerRef} className="flex-1 overflow-y-auto bg-[var(--pv-neutral-grey-50)]">
+        <div ref={pageScrollContainerRef} className="flex-1 overflow-y-auto bg-[var(--color-grey-50)]">
           <div className="flex flex-col max-w-[1100px] mx-auto px-10 py-6 gap-6">
             <div className="flex items-center justify-between w-full gap-3">
               <div className="flex items-center gap-2 min-w-0 w-full">
@@ -571,11 +571,11 @@ export default function WorkflowDetailPage() {
                 </Tooltip>
                 {isOwner && (
                   <Button
-                    btnColor="transparent"
-                    btnSize="sm"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setRenaming(true)}
                     aria-label="Rename workflow"
-                    mainBtnClassName="p-1"
+                    className="p-1"
                   >
                     <PencilSimple size={16} />
                   </Button>
@@ -584,8 +584,8 @@ export default function WorkflowDetailPage() {
               <div className="flex items-center gap-3">
                 {workflow.source_session_id && (
                   <Button
-                    btnColor="secondary"
-                    btnSize="md"
+                    variant="secondary"
+                    size="md"
                     disabled={!isOwner}
                     onClick={() => navigate(`/session/${workflow.source_session_id}`)}
                   >
@@ -594,8 +594,8 @@ export default function WorkflowDetailPage() {
                 )}
                 {workflow.dashboard_id && (
                   <Button
-                    btnColor="primary"
-                    btnSize="md"
+                    variant="primary"
+                    size="md"
                     disabled={!isOwner}
                     onClick={() => navigate(`/dashboards/${workflow.dashboard_id}`)}
                   >
@@ -606,8 +606,8 @@ export default function WorkflowDetailPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="text-sm text-[var(--pv-neutral-grey-600)]">
-                <span className="font-medium text-[var(--pv-neutral-grey-900)]">Trigger: </span>
+              <div className="text-sm text-[var(--color-grey-600)]">
+                <span className="font-medium text-[var(--color-grey-900)]">Trigger: </span>
                 {trigger.type === "cron" ? (
                   <>
                     {trigger.cron_expression} ({trigger.timezone || "UTC"})
@@ -625,7 +625,7 @@ export default function WorkflowDetailPage() {
                     disabled={!isOwner || updateStatusMutation.isPending}
                   />
                 </div>
-                <div className="text-[var(--pv-neutral-grey-300)]">|</div>
+                <div className="text-[var(--color-grey-300)]">|</div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-normal text-black">Share with Team</span>
                   <Toggle
@@ -639,11 +639,11 @@ export default function WorkflowDetailPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-[var(--pv-neutral-grey-900)] mb-4">Pipeline Flow</h3>
+              <h3 className="text-sm font-semibold text-[var(--color-grey-900)] mb-4">Pipeline Flow</h3>
               <div ref={timelineContainerRef} className="relative pl-14">
                 {blocks.length > 1 && timelineHeight.height > 0 && (
                   <div
-                    className="absolute left-[17px] w-[2px] bg-pv-primary-primary-200"
+                    className="absolute left-[17px] w-[2px] bg-primary-200"
                     style={{
                       top: `${timelineHeight.top}px`,
                       height: `${timelineHeight.height}px`
@@ -653,8 +653,8 @@ export default function WorkflowDetailPage() {
 
                 {blocks.map((block, i) => {
                   const Icon = BLOCK_ICONS[block.type] || Lightning;
-                  const color = BLOCK_COLORS[block.type] || "text-[var(--pv-neutral-grey-500)]";
-                  const bg = BLOCK_BG[block.type] || "bg-[var(--pv-neutral-grey-100)]";
+                  const color = BLOCK_COLORS[block.type] || "text-[var(--color-grey-500)]";
+                  const bg = BLOCK_BG[block.type] || "bg-[var(--color-grey-100)]";
                   const isExpanded = expandedBlocks.has(block.id);
 
                   const latestRun = runs[0];
@@ -681,14 +681,14 @@ export default function WorkflowDetailPage() {
                     >
                       <div
                         ref={i === 0 ? firstCircleRef : i === blocks.length - 1 ? lastCircleRef : null}
-                        className="absolute -left-14 top-[18px] w-9 h-9 rounded-full bg-white border-[2px] border-pv-primary-primary-500 flex items-center justify-center text-sm font-semibold text-pv-neutral-grey-500 z-10"
+                        className="absolute -left-14 top-[18px] w-9 h-9 rounded-full bg-white border-[2px] border-primary-500 flex items-center justify-center text-sm font-semibold text-grey-500 z-10"
                       >
                         {i + 1}
                       </div>
 
-                      <div className="border border-[var(--pv-neutral-grey-200)] rounded-lg bg-white overflow-hidden cursor-pointer hover:shadow-md transition-all">
+                      <div className="border border-[var(--color-grey-200)] rounded-lg bg-white overflow-hidden cursor-pointer hover:shadow-md transition-all">
                         <div
-                          className="flex items-center gap-3 p-2.5 hover:bg-pv-primary-primary-50"
+                          className="flex items-center gap-3 p-2.5 hover:bg-primary-50"
                           onClick={() => toggleBlock(block.id)}
                         >
                           <div
@@ -697,10 +697,10 @@ export default function WorkflowDetailPage() {
                             <Icon size={24} className={color} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-[14px] font-medium text-[var(--pv-neutral-grey-900)] mb-0.5">
+                            <div className="text-[14px] font-medium text-[var(--color-grey-900)] mb-0.5">
                               {blockMeta?.title || blockMeta?.step_id || block.label || block.type}
                             </div>
-                            <div className="flex items-center gap-2 text-[11px] text-[var(--pv-neutral-grey-500)]">
+                            <div className="flex items-center gap-2 text-[12px] text-[var(--color-grey-500)]">
                               <span>{block.type}</span>
                               {duration && <span>• {duration}ms</span>}
                             </div>
@@ -709,10 +709,10 @@ export default function WorkflowDetailPage() {
                             <div
                               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
                                 status === "success"
-                                  ? "bg-[var(--pv-success-bg)] text-[var(--pv-success-text)] border border-[var(--pv-success-text)]"
+                                  ? "bg-[var(--color-green-bg)] text-[var(--color-green)] border border-[var(--color-green)]"
                                   : status === "failed"
-                                    ? "bg-[var(--pv-error-bg)] text-[var(--pv-error-text)] border border-[var(--pv-error-text)]"
-                                    : "bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)] border border-[var(--pv-neutral-grey-500)]"
+                                    ? "bg-[var(--color-red-bg)] text-[var(--color-red)] border border-[var(--color-red)]"
+                                    : "bg-[var(--color-grey-100)] text-[var(--color-grey-500)] border border-[var(--color-grey-500)]"
                               }`}
                             >
                               <div className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -721,7 +721,7 @@ export default function WorkflowDetailPage() {
                           )}
                           <CaretDown
                             size={16}
-                            className="text-[var(--pv-neutral-grey-400)] transition-transform duration-300 ease-in-out"
+                            className="text-[var(--color-grey-400)] transition-transform duration-300 ease-in-out"
                             style={{
                               transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)"
                             }}
@@ -729,17 +729,17 @@ export default function WorkflowDetailPage() {
                         </div>
 
                         {isExpanded && (
-                          <div className="flex flex-col px-2.5 pb-3 border-t border-[var(--pv-neutral-grey-150)]">
+                          <div className="flex flex-col px-2.5 pb-3 border-t border-[var(--color-grey-100)]">
                             {blockMeta?.explanation && (
                               <div className="flex flex-col w-full mt-3">
-                                <div className="text-[11px] font-medium text-[var(--pv-neutral-grey-700)] mb-2 uppercase tracking-wide">
+                                <div className="text-[12px] font-medium text-[var(--color-grey-700)] mb-2 uppercase tracking-wide">
                                   Explanation
                                 </div>
                                 <div className="flex w-full max-h-60 overflow-y-auto border border-neutral-300 rounded-lg p-2">
                                   <div className="w-full after:content-[''] after:block after:h-2">
                                     <MarkdownRenderer
                                       content={blockMeta.explanation}
-                                      className="text-[12px] text-[var(--pv-neutral-grey-700)]"
+                                      className="text-[12px] text-[var(--color-grey-700)]"
                                     />
                                   </div>
                                 </div>
@@ -747,10 +747,10 @@ export default function WorkflowDetailPage() {
                             )}
                             {(block.type === "python_code" || block.type === "athena_query") && (
                               <div className="mt-3">
-                                <div className="text-[11px] font-medium text-[var(--pv-neutral-grey-700)] mb-2 uppercase tracking-wide">
+                                <div className="text-[12px] font-medium text-[var(--color-grey-700)] mb-2 uppercase tracking-wide">
                                   {block.type === "athena_query" ? "Query" : "Code"}
                                 </div>
-                                <div className="text-[12px] font-mono text-[var(--pv-neutral-grey-700)] bg-[var(--pv-neutral-grey-50)] rounded-md p-3 max-h-60 overflow-y-auto border border-[var(--pv-neutral-grey-150)]">
+                                <div className="text-[12px] font-mono text-[var(--color-grey-700)] bg-[var(--color-grey-50)] rounded-md p-3 max-h-60 overflow-y-auto border border-[var(--color-grey-100)]">
                                   <pre className="whitespace-pre-wrap break-words">
                                     {block.type === "python_code"
                                       ? block.config?.code || "No code"
@@ -760,11 +760,11 @@ export default function WorkflowDetailPage() {
                               </div>
                             )}
                             {blockResult?.output_files && blockResult.output_files.length > 0 && (
-                              <div className="mt-3 flex items-center gap-4 text-xs text-[var(--pv-neutral-grey-500)]">
+                              <div className="mt-3 flex items-center gap-4 text-xs text-[var(--color-grey-500)]">
                                 <span className="flex items-center gap-1.5">
                                   <FileText size={12} />
                                   Output:{" "}
-                                  <strong className="text-[var(--pv-neutral-grey-900)] font-medium">
+                                  <strong className="text-[var(--color-grey-900)] font-medium">
                                     {blockResult.output_files[0]}
                                   </strong>
                                 </span>
@@ -772,10 +772,10 @@ export default function WorkflowDetailPage() {
                             )}
                             {blockResult?.tokens_used &&
                               (blockResult.tokens_used.input > 0 || blockResult.tokens_used.output > 0) && (
-                                <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--pv-neutral-grey-500)]">
+                                <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--color-grey-500)]">
                                   <Brain size={12} />
                                   Tokens:{" "}
-                                  <strong className="text-[var(--pv-neutral-grey-900)] font-medium">
+                                  <strong className="text-[var(--color-grey-900)] font-medium">
                                     {blockResult.tokens_used.input} in / {blockResult.tokens_used.output} out
                                   </strong>
                                 </div>
@@ -785,10 +785,10 @@ export default function WorkflowDetailPage() {
                               block.type !== "python_code" &&
                               block.type !== "athena_query" && (
                                 <div className="mt-3">
-                                  <div className="text-[11px] font-medium text-[var(--pv-neutral-grey-700)] mb-2 uppercase tracking-wide">
+                                  <div className="text-[12px] font-medium text-[var(--color-grey-700)] mb-2 uppercase tracking-wide">
                                     Configuration
                                   </div>
-                                  <div className="text-[12px] font-mono text-[var(--pv-neutral-grey-700)] bg-[var(--pv-neutral-grey-50)] rounded-md p-3 max-h-60 overflow-y-auto border border-[var(--pv-neutral-grey-150)]">
+                                  <div className="text-[12px] font-mono text-[var(--color-grey-700)] bg-[var(--color-grey-50)] rounded-md p-3 max-h-60 overflow-y-auto border border-[var(--color-grey-100)]">
                                     <pre className="whitespace-pre-wrap break-words">
                                       {JSON.stringify(block.config, null, 2)}
                                     </pre>
@@ -805,15 +805,15 @@ export default function WorkflowDetailPage() {
             </div>
 
             <div ref={runHistoryRef}>
-              <h3 className="text-sm font-semibold text-[var(--pv-neutral-grey-900)] mb-4">Run History</h3>
+              <h3 className="text-sm font-semibold text-[var(--color-grey-900)] mb-4">Run History</h3>
               {runsError ? (
-                <div className="py-6 px-4 bg-[var(--pv-error-bg)] border border-[var(--pv-error-text)]/20 rounded-lg">
-                  <p className="text-sm text-[var(--pv-error-text)]">
+                <div className="py-6 px-4 bg-[var(--color-red-bg)] border border-[var(--color-red)]/20 rounded-lg">
+                  <p className="text-sm text-[var(--color-red)]">
                     Failed to load run history. Please refresh the page.
                   </p>
                 </div>
               ) : runs.length === 0 ? (
-                <p className="text-sm text-pv-neutral-grey-400 py-6">
+                <p className="text-sm text-grey-400 py-6">
                   No runs yet. Click "Run Now" to execute this workflow.
                 </p>
               ) : (
@@ -824,19 +824,19 @@ export default function WorkflowDetailPage() {
                     const isActive = run.status === "running";
                     const StatusIcon = isSuccess ? CheckCircle : isFailed ? XCircle : null;
                     const statusColor = isSuccess
-                      ? "text-[var(--pv-success-text)]"
+                      ? "text-[var(--color-green)]"
                       : isFailed
-                        ? "text-[var(--pv-error-text)]"
+                        ? "text-[var(--color-red)]"
                         : "text-[var(--accent)]";
                     const isRunExpanded = expandedRun === run.run_id;
 
                     return (
                       <div
                         key={run.run_id}
-                        className="border border-pv-neutral-grey-200 rounded-lg bg-white overflow-hidden cursor-pointer hover:shadow-md transition-all"
+                        className="border border-grey-200 rounded-lg bg-white overflow-hidden cursor-pointer hover:shadow-md transition-all"
                       >
                         <div
-                          className="flex items-center gap-4 px-4 py-3.5 hover:bg-pv-primary-primary-50"
+                          className="flex items-center gap-4 px-4 py-3.5 hover:bg-primary-50"
                           onClick={() => setExpandedRun(isRunExpanded ? null : run.run_id)}
                         >
                           {isActive ? (
@@ -846,15 +846,15 @@ export default function WorkflowDetailPage() {
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2.5">
-                              <span className="text-[15px] font-medium text-pv-neutral-grey-900">
+                              <span className="text-[16px] font-medium text-grey-900">
                                 {isSuccess ? "Success" : isFailed ? "Failed" : "Running"}
                               </span>
-                              <span className="text-xs px-2.5 py-1 rounded bg-pv-neutral-grey-100 text-pv-neutral-grey-600">
+                              <span className="text-xs px-2.5 py-1 rounded bg-grey-100 text-grey-600">
                                 {run.trigger_type}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 text-[13px] text-pv-neutral-grey-500 shrink-0">
+                          <div className="flex items-center gap-3 text-[14px] text-grey-500 shrink-0">
                             {run.total_duration_ms != null && (
                               <span className="font-medium">{(run.total_duration_ms / 1000).toFixed(1)}s</span>
                             )}
@@ -870,7 +870,7 @@ export default function WorkflowDetailPage() {
                             </Tooltip>
                             <CaretDown
                               size={16}
-                              className="text-pv-neutral-grey-400 transition-transform duration-300 ease-in-out"
+                              className="text-grey-400 transition-transform duration-300 ease-in-out"
                               style={{
                                 transform: isRunExpanded ? "rotate(180deg)" : "rotate(0deg)"
                               }}
@@ -879,9 +879,9 @@ export default function WorkflowDetailPage() {
                         </div>
 
                         {isRunExpanded && (
-                          <div className="px-4 pb-4 border-t border-pv-neutral-grey-150 overflow-y-auto max-h-[350px] mb-2">
+                          <div className="px-4 pb-4 border-t border-grey-100 overflow-y-auto max-h-[350px] mb-2">
                             {run.error && (
-                              <div className="mt-4 text-[13px] text-[var(--pv-error-text)] bg-[var(--pv-error-bg)] rounded-md px-4 py-3 border border-[var(--pv-error-text)]/20">
+                              <div className="mt-4 text-[14px] text-[var(--color-red)] bg-[var(--color-red-bg)] rounded-md px-4 py-3 border border-[var(--color-red)]/20">
                                 {run.error}
                               </div>
                             )}
@@ -893,21 +893,21 @@ export default function WorkflowDetailPage() {
                                   return (
                                     <div
                                       key={i}
-                                      className="flex items-center gap-3 text-[13px] py-2.5 px-3 rounded-md bg-pv-neutral-grey-50"
+                                      className="flex items-center gap-3 text-[14px] py-2.5 px-3 rounded-md bg-grey-50"
                                     >
-                                      <BrIcon size={16} className="text-pv-neutral-grey-500 shrink-0" />
-                                      <span className="text-pv-neutral-grey-700 flex-1 truncate font-medium">
+                                      <BrIcon size={16} className="text-grey-500 shrink-0" />
+                                      <span className="text-grey-700 flex-1 truncate font-medium">
                                         {br.label || br.block_id}
                                       </span>
                                       <span
                                         className={`text-xs ${
-                                          brSuccess ? "text-[var(--pv-success-text)]" : "text-[var(--pv-error-text)]"
+                                          brSuccess ? "text-[var(--color-green)]" : "text-[var(--color-red)]"
                                         }`}
                                       >
                                         {br.status}
                                       </span>
                                       {br.duration_ms != null && (
-                                        <span className="text-pv-neutral-grey-400 font-mono text-xs">
+                                        <span className="text-grey-400 font-mono text-xs">
                                           {br.duration_ms}ms
                                         </span>
                                       )}
@@ -918,7 +918,7 @@ export default function WorkflowDetailPage() {
                             )}
                             {run.total_llm_tokens &&
                               (run.total_llm_tokens.input > 0 || run.total_llm_tokens.output > 0) && (
-                                <div className="mt-3 text-xs text-pv-neutral-grey-500">
+                                <div className="mt-3 text-xs text-grey-500">
                                   LLM tokens: {run.total_llm_tokens.input?.toLocaleString()} in /{" "}
                                   {run.total_llm_tokens.output?.toLocaleString()} out
                                 </div>
@@ -927,7 +927,7 @@ export default function WorkflowDetailPage() {
                               (!run.block_results || run.block_results.length === 0) &&
                               (!run.total_llm_tokens ||
                                 (run.total_llm_tokens.input === 0 && run.total_llm_tokens.output === 0)) && (
-                                <div className="mt-4 py-6 text-center text-[13px] text-pv-neutral-grey-400">
+                                <div className="mt-4 py-6 text-center text-[14px] text-grey-400">
                                   {isActive ? "Workflow is running..." : "No execution details available"}
                                 </div>
                               )}

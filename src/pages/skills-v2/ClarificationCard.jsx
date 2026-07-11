@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   ChevronLeft, ChevronRight, Info, X, Plus, ArrowUp, ArrowDown, Pencil, Check, HelpCircle,
 } from 'lucide-react'
-import { Button as PvButton } from '../../petavue'
+import { Button as PvButton } from '@/ui'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 
@@ -147,7 +147,7 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
                     value={typeof value === 'string' ? value : ''}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder="Type your answer…"
-                    className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                    className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
                   />
                 </div>
               )}
@@ -166,7 +166,7 @@ function SingleSelect({ options = [], value, onChange, allowCustom = false }) {
               checked={selected}
               onChange={() => selectOption(opt.value)}
             />
-            <span className={`shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[var(--accent)]' : 'border-[var(--pv-neutral-grey-300)]'}`}>
+            <span className={`shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[var(--accent)]' : 'border-[var(--color-grey-300)]'}`}>
               {selected && <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />}
             </span>
             <span className="flex-1 text-[12px] text-[var(--text-primary)] leading-snug">
@@ -281,7 +281,7 @@ function MultiSelect({ options = [], value = [], onChange, allowCustom = false }
                 value={customText}
                 onChange={(e) => onCustomTextChange(e.target.value)}
                 placeholder="Type your custom value…"
-                className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+                className="w-full px-3 py-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
               />
             </div>
           )}
@@ -298,7 +298,7 @@ function FreeText({ value, onChange }) {
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
       rows={3}
-      className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[13px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y"
+      className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[14px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-y"
       placeholder="Type your answer…"
     />
   )
@@ -359,7 +359,7 @@ function EditableList({ value = [], onChange }) {
                     if (e.key === 'Enter') commitEdit()
                     if (e.key === 'Escape') cancelEdit()
                   }}
-                  className="flex-1 min-w-0 bg-transparent text-[13px] text-[var(--text-primary)] focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent text-[14px] text-[var(--text-primary)] focus:outline-none"
                 />
                 <button
                   type="button"
@@ -372,7 +372,7 @@ function EditableList({ value = [], onChange }) {
               </>
             ) : (
               <>
-                <span className="flex-1 min-w-0 text-[13px] text-[var(--text-primary)] truncate">
+                <span className="flex-1 min-w-0 text-[14px] text-[var(--text-primary)] truncate">
                   {item}
                 </span>
                 <button
@@ -386,7 +386,7 @@ function EditableList({ value = [], onChange }) {
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--pv-error-text)] hover:bg-[var(--bg-hover)]"
+                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--color-red)] hover:bg-[var(--bg-hover)]"
                   aria-label="Remove item"
                 >
                   <X size={14} />
@@ -408,7 +408,7 @@ function EditableList({ value = [], onChange }) {
               if (e.key === 'Escape') { setAdding(false); setNewItem('') }
             }}
             placeholder="Add an item…"
-            className="flex-1 min-w-0 bg-transparent text-[13px] text-[var(--text-primary)] focus:outline-none"
+            className="flex-1 min-w-0 bg-transparent text-[14px] text-[var(--text-primary)] focus:outline-none"
           />
           <button
             type="button"
@@ -470,10 +470,10 @@ function OrderedList({ value = [], onChange, allowAddCustom = false }) {
             key={`${item}-${i}`}
             className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)]"
           >
-            <span className="w-5 shrink-0 text-[11px] text-[var(--text-muted)] tabular-nums">
+            <span className="w-5 shrink-0 text-[12px] text-[var(--text-muted)] tabular-nums">
               {i + 1}.
             </span>
-            <span className="flex-1 min-w-0 text-[13px] text-[var(--text-primary)] truncate">
+            <span className="flex-1 min-w-0 text-[14px] text-[var(--text-primary)] truncate">
               {item}
             </span>
             <button
@@ -498,7 +498,7 @@ function OrderedList({ value = [], onChange, allowAddCustom = false }) {
               <button
                 type="button"
                 onClick={() => remove(i)}
-                className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--pv-error-text)] hover:bg-[var(--bg-hover)]"
+                className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--color-red)] hover:bg-[var(--bg-hover)]"
                 aria-label="Remove item"
               >
                 <X size={13} />
@@ -520,7 +520,7 @@ function OrderedList({ value = [], onChange, allowAddCustom = false }) {
                 if (e.key === 'Escape') { setAdding(false); setDraft('') }
               }}
               placeholder="Add a custom item…"
-              className="flex-1 min-w-0 bg-transparent text-[13px] text-[var(--text-primary)] focus:outline-none"
+              className="flex-1 min-w-0 bg-transparent text-[14px] text-[var(--text-primary)] focus:outline-none"
             />
             <button
               type="button"
@@ -554,7 +554,7 @@ function UnknownTypeFallback({ type, value, onChange }) {
   // fallback + small note so they (and any debugger) know.
   return (
     <div>
-      <p className="flex items-start gap-1.5 text-[11px] text-[var(--text-muted)] mb-2">
+      <p className="flex items-start gap-1.5 text-[12px] text-[var(--text-muted)] mb-2">
         <Info size={11} className="shrink-0 mt-0.5" />
         <span>
           Unrecognized answer type <code className="font-mono">{type || '(missing)'}</code>. Falling back to free text.

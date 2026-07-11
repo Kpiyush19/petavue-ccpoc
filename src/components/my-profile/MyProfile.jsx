@@ -18,9 +18,9 @@ export const MyProfile = () => {
   }, []);
 
   return (
-    <div className="h-screen overflow-y-hidden flex flex-col bg-[var(--pv-neutral-grey-50)]">
-      <div className="bg-white border-b border-[var(--pv-neutral-grey-200)] px-6 h-[64px] flex items-center">
-        <h1 className="flex items-center text-base font-medium leading-7 text-[var(--pv-text-primary-text)]">
+    <div className="h-screen overflow-y-hidden flex flex-col bg-[var(--color-grey-50)]">
+      <div className="bg-white border-b border-[var(--color-grey-200)] px-6 h-[64px] flex items-center">
+        <h1 className="flex items-center text-base font-medium leading-7 text-[var(--color-text-primary)]">
           My Profile
         </h1>
       </div>

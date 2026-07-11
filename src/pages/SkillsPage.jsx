@@ -6,9 +6,9 @@ import {
   Search, Trash2, MoreVertical, Pencil, Inbox, Zap, BookOpen, Plus,
   ToggleLeft, ToggleRight, Shield, User, Globe,
 } from 'lucide-react'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
-import { Input } from '../components/ui/Input'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
+import { Input } from '@/ui/components/FormControls/FormControls'
 import { apiGet, apiPost, apiPut, apiDelete, apiPatch, getCurrentUser } from '../api'
 import SkillEditorModal from '../components/SkillEditorModal'
 import KeyDefinitionEditorModal from '../components/KeyDefinitionEditorModal'

@@ -9,7 +9,7 @@ import {
   Clock, UserCircle, TrendUp, ChartPieSlice, PaperPlaneTilt, PaperPlaneRight, ArrowsClockwise, Info,
   CurrencyDollar, Fire, Funnel, Tag, Code, CaretDown, ChatCircle, Sparkle,
 } from "@phosphor-icons/react";
-import { Tooltip } from "@/common-components";
+import { Tooltip } from "@/ui";
 
 // Category icon + accent per finding type. Paid-media keys first, legacy
 // deal-tracking keys kept as a fallback for any older seeded data.
@@ -21,7 +21,7 @@ const REC_ICONS = {
 import { toast } from "sonner";
 import SageWidget, { SAGE_GRADIENT } from "./SageWidget";
 import { ChatOverlay } from "../../components/dashboards/dashboard-viewer-widget";
-import { Button as PvButton } from "../../petavue";
+import { Button as PvButton } from "@/ui";
 import { apiGet, apiPost } from "../../api";
 import { cn } from "../../utils/cn";
 import RecommendationDrawer from "./RecommendationDrawer";
@@ -50,18 +50,18 @@ function WizardSteps({ current }) {
         const active = i === current;
         return (
           <div key={label} className="flex items-center gap-2 shrink-0">
-            {i > 0 && <span className={cn("w-5 h-[2px] rounded-full", done ? "bg-pv-primary-primary-400" : "bg-[var(--border-primary)]")} />}
+            {i > 0 && <span className={cn("w-5 h-[2px] rounded-full", done ? "bg-primary-400" : "bg-[var(--border-primary)]")} />}
             <span className="flex items-center gap-1.5">
               {done ? (
-                <CheckCircle size={16} weight="fill" className="text-pv-primary-primary-600 shrink-0" />
+                <CheckCircle size={16} weight="fill" className="text-primary-600 shrink-0" />
               ) : active ? (
-                <span className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-pv-primary-primary-500 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-pv-primary-primary-500" />
+                <span className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-primary-500 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
                 </span>
               ) : (
                 <span className="w-4 h-4 rounded-full border-2 border-[var(--border-primary)] shrink-0" />
               )}
-              <span className={cn("text-[13px] whitespace-nowrap", active ? "text-pv-primary-primary-600 font-medium" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{label}</span>
+              <span className={cn("text-[14px] whitespace-nowrap", active ? "text-primary-600 font-medium" : done ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{label}</span>
             </span>
           </div>
         );
@@ -80,7 +80,7 @@ function WizardFooter({ left, right }) {
   const slot = useContext(FooterSlot);
   const bar = (
     <div className="w-full px-6 py-3 border-t border-[var(--border-primary)] bg-white flex items-center justify-between gap-4">
-      <div className="flex items-center gap-2 min-w-0 text-[13px] text-[var(--text-secondary)]">{left}</div>
+      <div className="flex items-center gap-2 min-w-0 text-[14px] text-[var(--text-secondary)]">{left}</div>
       <div className="flex items-center gap-2 shrink-0">{right}</div>
     </div>
   );
@@ -91,7 +91,7 @@ function WizardFooter({ left, right }) {
 function WizardScaffold({ title, subtitle, children, footer }) {
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      <div className="flex-1 min-h-0 overflow-y-auto bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl px-6 py-5">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-white border border-[var(--color-grey-100)] rounded-xl px-6 py-5">
         <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">{title}</h1>
         <p className="text-[14px] text-[var(--text-secondary)] mb-6">{subtitle}</p>
         {children}
@@ -115,10 +115,10 @@ function Calibrating({ goal, onCancel }) {
       }
     >
       <div className="flex items-start gap-3 p-5 bg-white border border-[var(--border-primary)] rounded-xl">
-        <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+        <Spinner size={20} className="text-primary-500 shrink-0 mt-0.5" />
         <div className="flex flex-col gap-0.5">
-          <p className="text-[15px] font-semibold text-[var(--text-primary)]">Reading your paid spend and demo history…</p>
-          <p className="text-[13px] text-[var(--text-secondary)]">92 days of Google &amp; Meta spend · 12,480 rows in google_ads_campaigns.csv</p>
+          <p className="text-[16px] font-semibold text-[var(--text-primary)]">Reading your paid spend and demo history…</p>
+          <p className="text-[14px] text-[var(--text-secondary)]">92 days of Google &amp; Meta spend · 12,480 rows in google_ads_campaigns.csv</p>
         </div>
       </div>
     </WizardScaffold>
@@ -151,7 +151,7 @@ function Building({ goal, onCancel }) {
           return (
             <div key={s.label} className="flex items-start gap-3">
               {done ? <CheckCircle size={20} weight="fill" className="text-green-600 shrink-0 mt-0.5" />
-                : active ? <Spinner size={20} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+                : active ? <Spinner size={20} className="text-primary-500 shrink-0 mt-0.5" />
                 : <span className="w-5 h-5 rounded-full border-2 border-[var(--border-primary)] shrink-0 mt-0.5" />}
               <div>
                 <p className={cn("text-[14px] font-semibold", done || active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>{s.label}</p>
@@ -209,11 +209,11 @@ function Decisions({ goal, refetch, onCancel }) {
             const opt = qq.options.find((o) => o.id === ansId);
             const label = opt ? opt.label : ansId === "other" ? "Something else…" : "—";
             return (
-              <button key={qq.id} onClick={() => setIdx(i)} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg border border-[var(--border-primary)] bg-pv-neutral-grey-50 text-left cursor-pointer hover:border-pv-primary-primary-300 transition-colors">
+              <button key={qq.id} onClick={() => setIdx(i)} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg border border-[var(--border-primary)] bg-grey-50 text-left cursor-pointer hover:border-primary-300 transition-colors">
                 <CheckCircle size={16} weight="fill" className="text-green-600 shrink-0 mt-0.5" />
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Question {i + 1}</p>
-                  <p className="text-[13px] text-[var(--text-primary)] leading-snug line-clamp-1">{label}</p>
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Question {i + 1}</p>
+                  <p className="text-[14px] text-[var(--text-primary)] leading-snug line-clamp-1">{label}</p>
                 </div>
               </button>
             );
@@ -221,10 +221,10 @@ function Decisions({ goal, refetch, onCancel }) {
         </div>
       )}
 
-      <p className="text-[12px] font-semibold text-pv-primary-primary-600 mb-2">Question {idx + 1} of {total}</p>
+      <p className="text-[12px] font-semibold text-primary-600 mb-2">Question {idx + 1} of {total}</p>
       <p className="text-[14px] text-[var(--text-primary)] leading-relaxed mb-4">{q.text}</p>
-      <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-pv-primary-primary-50 border border-pv-primary-primary-100">
-        <Question size={16} className="text-pv-primary-primary-500 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2 px-4 py-3 mb-5 rounded-lg bg-primary-50 border border-primary-100">
+        <Question size={16} className="text-primary-500 shrink-0 mt-0.5" />
         <p className="text-[12px] text-[var(--text-secondary)]"><span className="font-semibold text-[var(--text-primary)]">What we found:</span> {q.found}</p>
       </div>
 
@@ -235,25 +235,25 @@ function Decisions({ goal, refetch, onCancel }) {
             onClick={() => choose(o.id)}
             className={cn(
               "flex items-start gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
-              chosen === o.id ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
+              chosen === o.id ? "border-primary-500 bg-primary-50" : "border-[var(--border-primary)] hover:border-primary-300 bg-white"
             )}
           >
-            <span className={cn("shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === o.id ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-              {chosen === o.id && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+            <span className={cn("shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === o.id ? "border-primary-500" : "border-[var(--border-primary)]")}>
+              {chosen === o.id && <span className="w-2 h-2 rounded-full bg-primary-500" />}
             </span>
             <span className="flex-1 text-[14px] text-[var(--text-primary)] leading-relaxed">{o.label}</span>
-            {o.recommended && <span className="shrink-0 px-2 py-0.5 text-[11px] font-medium rounded-full bg-violet-50 text-violet-700 border border-violet-200">recommended</span>}
+            {o.recommended && <span className="shrink-0 px-2 py-0.5 text-[12px] font-medium rounded-full bg-violet-50 text-violet-700 border border-violet-200">recommended</span>}
           </button>
         ))}
         <button
           onClick={() => choose("other")}
           className={cn(
             "flex items-center gap-3 px-4 py-3.5 rounded-lg border text-left transition-colors",
-            chosen === "other" ? "border-pv-primary-primary-500 bg-pv-primary-primary-50" : "border-[var(--border-primary)] hover:border-pv-primary-primary-300 bg-white"
+            chosen === "other" ? "border-primary-500 bg-primary-50" : "border-[var(--border-primary)] hover:border-primary-300 bg-white"
           )}
         >
-          <span className={cn("shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === "other" ? "border-pv-primary-primary-500" : "border-[var(--border-primary)]")}>
-            {chosen === "other" && <span className="w-2 h-2 rounded-full bg-pv-primary-primary-500" />}
+          <span className={cn("shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center", chosen === "other" ? "border-primary-500" : "border-[var(--border-primary)]")}>
+            {chosen === "other" && <span className="w-2 h-2 rounded-full bg-primary-500" />}
           </span>
           <span className="text-[14px] text-[var(--text-secondary)]">Something else…</span>
         </button>
@@ -308,7 +308,7 @@ function Review({ goal, refetch, onCancel }) {
 
   return (
     <>
-      <div className="flex-1 flex min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl overflow-hidden">
+      <div className="flex-1 flex min-h-0 bg-white border border-[var(--color-grey-100)] rounded-xl overflow-hidden">
         {/* Left: titled content */}
         <div className="flex-1 min-w-0 overflow-y-auto p-4">
           <h1 className="text-[16px] font-semibold text-[var(--text-primary)]">Review your goal</h1>
@@ -317,21 +317,21 @@ function Review({ goal, refetch, onCancel }) {
             {/* Targets */}
             <section>
               <div className="flex items-center gap-2 mb-1">
-                <Target size={16} className="text-pv-neutral-grey-600" />
-                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Targets</h2>
-                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
+                <Target size={16} className="text-grey-600" />
+                <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Targets</h2>
+                <span className="px-1.5 py-0.5 text-[12px] font-semibold rounded-full bg-grey-100 text-[var(--text-muted)]">{goal.targets.length}</span>
               </div>
-              <p className="text-[13px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal: we check each target every run.</p>
+              <p className="text-[14px] text-[var(--text-secondary)] mb-3">How we'll know you hit the goal: we check each target every run.</p>
               {goal.targets.map((t) => (
                 <div key={t.id} className="p-4 bg-white border border-[var(--border-primary)] rounded-xl">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-[15px] font-medium text-[var(--text-primary)] leading-relaxed">{t.label}</p>
-                    {t.target && <span className="shrink-0 px-2.5 py-1 text-[13px] font-semibold rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700">{t.target}</span>}
+                    <p className="text-[16px] font-medium text-[var(--text-primary)] leading-relaxed">{t.label}</p>
+                    {t.target && <span className="shrink-0 px-2.5 py-1 text-[14px] font-semibold rounded-md bg-primary-50 text-primary-700">{t.target}</span>}
                   </div>
                   <button onClick={() => setWhyOpen((v) => !v)} className="flex items-center gap-1 mt-3 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer">
                     <CaretRight size={12} className={cn("transition-transform", whyOpen && "rotate-90")} /> Why this, and where it comes from
                   </button>
-                  {whyOpen && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)] leading-relaxed pl-4 border-l-2 border-pv-primary-primary-100">{t.why}</p>}
+                  {whyOpen && <p className="mt-1.5 text-[14px] text-[var(--text-secondary)] leading-relaxed pl-4 border-l-2 border-primary-100">{t.why}</p>}
                 </div>
               ))}
             </section>
@@ -339,15 +339,15 @@ function Review({ goal, refetch, onCancel }) {
             {/* Conditions we'll watch */}
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <WaveSine size={16} className="text-pv-neutral-grey-600" />
-                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Conditions we'll watch each run</h2>
-                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.conditions.length}</span>
+                <WaveSine size={16} className="text-grey-600" />
+                <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Conditions we'll watch each run</h2>
+                <span className="px-1.5 py-0.5 text-[12px] font-semibold rounded-full bg-grey-100 text-[var(--text-muted)]">{goal.conditions.length}</span>
               </div>
               <div className="flex flex-col">
                 {goal.conditions.map((c, i) => (
                   <div key={c.id} className="flex items-start gap-2.5 py-2">
-                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
-                    <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
+                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-grey-100 text-[12px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
+                    <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed">{c.label}</p>
                   </div>
                 ))}
               </div>
@@ -356,15 +356,15 @@ function Review({ goal, refetch, onCancel }) {
             {/* Moves we may recommend */}
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <Lightning size={16} className="text-pv-neutral-grey-600" />
-                <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
-                <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-pv-neutral-grey-100 text-[var(--text-muted)]">{goal.moves.length}</span>
+                <Lightning size={16} className="text-grey-600" />
+                <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Moves we may recommend</h2>
+                <span className="px-1.5 py-0.5 text-[12px] font-semibold rounded-full bg-grey-100 text-[var(--text-muted)]">{goal.moves.length}</span>
               </div>
               <div className="flex flex-col">
                 {goal.moves.map((m, i) => (
                   <div key={m.id} className="flex items-start gap-2.5 py-2">
-                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-pv-neutral-grey-100 text-[11px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
-                    <p className="text-[13px] text-[var(--text-primary)] leading-relaxed">{m.label}</p>
+                    <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-grey-100 text-[12px] font-semibold text-[var(--text-muted)] mt-0.5">{i + 1}</span>
+                    <p className="text-[14px] text-[var(--text-primary)] leading-relaxed">{m.label}</p>
                   </div>
                 ))}
               </div>
@@ -373,7 +373,7 @@ function Review({ goal, refetch, onCancel }) {
         </div>
 
         {/* Right rail: adjust chat (always open) */}
-        <div style={{ width: chatWidth }} className="relative shrink-0 border-l border-[var(--pv-neutral-grey-150)] flex flex-col">
+        <div style={{ width: chatWidth }} className="relative shrink-0 border-l border-[var(--color-grey-100)] flex flex-col">
             {/* Drag handle to resize the panel width */}
             <div
               onMouseDown={startResize}
@@ -382,19 +382,19 @@ function Review({ goal, refetch, onCancel }) {
               aria-orientation="vertical"
               aria-label="Resize panel"
             >
-              <span className="w-[2px] h-full bg-transparent group-hover:bg-pv-primary-primary-300 transition-colors" />
+              <span className="w-[2px] h-full bg-transparent group-hover:bg-primary-300 transition-colors" />
             </div>
             <div className="shrink-0 flex items-start gap-2 px-4 py-3.5">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <PencilSimple size={16} className="text-pv-primary-primary-500 shrink-0" />
+                  <PencilSimple size={16} className="text-primary-500 shrink-0" />
                   <p className="text-[14px] font-medium text-[var(--text-primary)]">Want to adjust anything?</p>
                 </div>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
               {chat.map((m, i) => (
-                <div key={i} className={cn("text-[13px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]", m.role === "user" ? "self-end bg-pv-primary-primary-500 text-white rounded-br-md" : "self-start bg-pv-neutral-grey-100 text-[var(--text-primary)] rounded-bl-md")}>
+                <div key={i} className={cn("text-[14px] leading-relaxed px-3 py-2 rounded-2xl max-w-[85%]", m.role === "user" ? "self-end bg-primary-500 text-white rounded-br-md" : "self-start bg-grey-100 text-[var(--text-primary)] rounded-bl-md")}>
                   {m.text}
                 </div>
               ))}
@@ -406,9 +406,9 @@ function Review({ goal, refetch, onCancel }) {
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAdjust(); } }}
                 rows={1}
                 placeholder="Tell us what to adjust…"
-                className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+                className="flex-1 text-[14px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
               />
-              <button onClick={sendAdjust} disabled={!draft.trim() || adjust.isPending} className="flex items-center justify-center w-9 h-9 rounded-full bg-pv-primary-primary-500 text-white disabled:opacity-40 shrink-0 cursor-pointer border-none transition-opacity" aria-label="Send">
+              <button onClick={sendAdjust} disabled={!draft.trim() || adjust.isPending} className="flex items-center justify-center w-9 h-9 rounded-full bg-primary-500 text-white disabled:opacity-40 shrink-0 cursor-pointer border-none transition-opacity" aria-label="Send">
                 {adjust.isPending ? <Spinner size={16} /> : <PaperPlaneTilt size={16} weight="fill" />}
               </button>
             </div>
@@ -440,12 +440,12 @@ function Review({ goal, refetch, onCancel }) {
               <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">Save goal</h3>
               <PvButton variant="ghost" size="sm" icon={X} aria-label="Close" onClick={() => setShowSave(false)} />
             </div>
-            <label className="block text-[13px] font-semibold text-[var(--text-primary)] mb-1.5">Name this goal</label>
+            <label className="block text-[14px] font-semibold text-[var(--text-primary)] mb-1.5">Name this goal</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
-              className="w-full text-[14px] px-3.5 py-2.5 rounded-lg border border-pv-primary-primary-500 outline-none mb-4"
+              className="w-full text-[14px] px-3.5 py-2.5 rounded-lg border border-primary-500 outline-none mb-4"
             />
             <div className="flex justify-end gap-2">
               <PvButton variant="secondary" size="md" label="Cancel" onClick={() => setShowSave(false)} />
@@ -475,7 +475,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
   const actNow = rec.severity === "act-now";
   const Icon = REC_ICONS[rec.iconKey] || Lightning;
   const tint = done
-    ? { chip: "bg-pv-neutral-grey-100 text-[var(--text-muted)]" }
+    ? { chip: "bg-grey-100 text-[var(--text-muted)]" }
     : actNow
       ? { chip: "bg-rose-50 text-rose-600" }
       : { chip: "bg-amber-50 text-amber-600" };
@@ -486,7 +486,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
   }[rec.status];
 
   return (
-    <div onClick={() => onOpen?.(rec.id)} className={cn("flex flex-col h-full p-4 rounded-xl border border-pv-neutral-grey-150/50 transition-colors bg-white cursor-pointer dropshadow-card", done ? "opacity-80" : "hover:border-pv-primary-primary-300 hover:bg-pv-primary-primary-50")}>
+    <div onClick={() => onOpen?.(rec.id)} className={cn("flex flex-col h-full p-4 rounded-xl border border-grey-100/50 transition-colors bg-white cursor-pointer dropshadow-card", done ? "opacity-80" : "hover:border-primary-300 hover:bg-primary-50")}>
       {/* Header: category + severity */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2 min-w-0">
@@ -504,28 +504,28 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
 
       {/* Headline + body */}
       <p className={cn("text-[14px] font-semibold leading-snug mb-1.5", done ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]")}>{rec.title}</p>
-      <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">{rec.body}</p>
+      <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">{rec.body}</p>
 
       {/* Impact strip */}
       {rec.impact && (
-        <div className="flex items-baseline gap-2 px-3 py-2 mb-3 rounded-lg bg-pv-neutral-grey-50 border border-[var(--pv-neutral-grey-100)]">
+        <div className="flex items-baseline gap-2 px-3 py-2 mb-3 rounded-lg bg-grey-50 border border-[var(--color-grey-100)]">
           <span className="text-[16px] font-semibold text-[var(--text-primary)] leading-none">{rec.impact.value}</span>
           <span className="text-[12px] text-[var(--text-secondary)]">{rec.impact.label}</span>
-          {rec.impact.sub && <span className="ml-auto text-[11px] text-[var(--text-muted)] whitespace-nowrap">{rec.impact.sub}</span>}
+          {rec.impact.sub && <span className="ml-auto text-[12px] text-[var(--text-muted)] whitespace-nowrap">{rec.impact.sub}</span>}
         </div>
       )}
 
       {/* Actions pinned to the bottom so cards align in the grid */}
-      <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-3 border-t border-[var(--pv-neutral-grey-100)]">
+      <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-3 border-t border-[var(--color-grey-100)]">
         {done ? (
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <span className={cn("inline-flex items-center gap-1.5 text-[12px] font-medium", resolved.cls)}>
                 {(() => { const I = resolved.icon; return <I size={14} weight="fill" />; })()} {resolved.label}
               </span>
-              <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-pv-primary-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
+              <button onClick={() => act.mutate({ action: "open" })} className="text-[12px] font-medium text-[var(--text-muted)] hover:text-primary-600 bg-transparent border-none cursor-pointer">Undo</button>
             </div>
-            {rec.reason && <p className="text-[11px] text-[var(--text-muted)] italic leading-snug">“{rec.reason}”</p>}
+            {rec.reason && <p className="text-[12px] text-[var(--text-muted)] italic leading-snug">“{rec.reason}”</p>}
           </div>
         ) : pending ? (
           <div className="flex flex-col gap-2">
@@ -537,13 +537,13 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
                   onChange={(e) => setSnoozeFor(e.target.value)}
                   autoFocus
                   placeholder="e.g. 2 weeks · until next month · after the launch"
-                  className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none"
+                  className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none"
                 />
                 <div className="flex flex-wrap gap-1.5">
                   {SNOOZE_OPTIONS.map((opt) => (
                     <button key={opt} type="button" onClick={() => setSnoozeFor(opt)}
-                      className={cn("text-[11px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
-                        snoozeFor === opt ? "border-pv-primary-primary-400 text-pv-primary-primary-600 bg-pv-primary-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-pv-primary-primary-400")}>
+                      className={cn("text-[12px] px-2 py-1 rounded-full border cursor-pointer transition-colors",
+                        snoozeFor === opt ? "border-primary-400 text-primary-600 bg-primary-50" : "border-[var(--border-primary)] text-[var(--text-secondary)] bg-white hover:border-primary-400")}>
                       {opt}
                     </button>
                   ))}
@@ -561,7 +561,7 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
               rows={2}
               autoFocus={pending.action !== "snoozed"}
               placeholder={pending.action === "rejected" ? "e.g. Never pause Brand Search, it's our best demo source" : "Add context for the next run…"}
-              className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+              className="w-full text-[12px] px-2.5 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
             />
             <div className="flex items-center gap-2">
               <PvButton
@@ -576,15 +576,15 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
         ) : (
           <div className="flex items-center gap-1.5">
             <button onClick={() => { setReason(""); setPending({ action: "acted" }); }} disabled={act.isPending}
-              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[14px] font-medium text-green-600 hover:bg-green-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <CheckCircle size={14} /> Acted
             </button>
             <button onClick={() => { setReason(""); setPending({ action: "rejected" }); }} disabled={act.isPending}
-              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[14px] font-medium text-rose-600 hover:bg-rose-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <XCircle size={14} /> Reject
             </button>
             <button onClick={() => { setReason(""); setSnoozeFor(""); setPending({ action: "snoozed" }); }} disabled={act.isPending}
-              className="ml-auto inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[13px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
+              className="ml-auto inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[14px] font-medium text-amber-600 hover:bg-amber-50 bg-transparent border border-[var(--border-primary)] cursor-pointer disabled:opacity-50 transition-colors">
               <ClockCounterClockwise size={14} /> Snooze
             </button>
           </div>
@@ -598,8 +598,8 @@ function RecommendationCard({ goal, rec, refetch, onOpen }) {
    tab opens with a scannable status line before any detail. */
 function StatTile({ icon: Icon, tone, value, label }) {
   return (
-    <div className="flex items-center gap-3 px-3.5 py-3 bg-white border border-[var(--pv-neutral-grey-150)] rounded-xl">
-      <span className={cn("flex items-center justify-center w-9 h-9 rounded-lg shrink-0", tone || "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>
+    <div className="flex items-center gap-3 px-3.5 py-3 bg-white border border-[var(--color-grey-100)] rounded-xl">
+      <span className={cn("flex items-center justify-center w-9 h-9 rounded-lg shrink-0", tone || "bg-grey-100 text-[var(--text-muted)]")}>
         <Icon size={18} weight="fill" />
       </span>
       <div className="min-w-0">
@@ -614,7 +614,7 @@ function StatTile({ icon: Icon, tone, value, label }) {
    one-line read of what it means. Drives the Overview status strip. */
 function OverviewStat({ label, icon: Icon, iconClass, num, numClass, word, desc }) {
   return (
-    <div className="flex flex-col bg-white border border-pv-neutral-grey-150/50 rounded-lg px-4 py-3.5 dropshadow-card">
+    <div className="flex flex-col bg-white border border-grey-100/50 rounded-lg px-4 py-3.5 dropshadow-card">
       <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">{label}</span>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon size={20} weight="fill" className={iconClass} />}
@@ -631,7 +631,7 @@ function OverviewStat({ label, icon: Icon, iconClass, num, numClass, word, desc 
 function FindingStat({ label, value, sub }) {
   if (!value) return null;
   return (
-    <div className="rounded-lg border border-pv-neutral-grey-150/50 bg-pv-neutral-grey-50/50 px-3 py-2.5">
+    <div className="rounded-lg border border-grey-100/50 bg-grey-50/50 px-3 py-2.5">
       <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{label}</p>
       <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug mt-1">{value}</p>
     </div>
@@ -645,7 +645,7 @@ function TopFindingPanel({ rec, onOpen }) {
   const actNow = rec.severity === "act-now";
   const Icon = REC_ICONS[rec.iconKey] || Lightning;
   return (
-    <div className="rounded-xl border border-pv-neutral-grey-150/50 bg-white overflow-hidden dropshadow-card">
+    <div className="rounded-xl border border-grey-100/50 bg-white overflow-hidden dropshadow-card">
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className={cn("flex items-center justify-center w-7 h-7 rounded-full shrink-0", actNow ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600")}><Icon size={15} weight="fill" /></span>
@@ -666,7 +666,7 @@ function TopFindingPanel({ rec, onOpen }) {
           <FindingStat label="Signal" value={rec.signal} />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 pt-3 border-t border-[var(--pv-neutral-grey-100)]">
+        <div className="flex flex-wrap items-end gap-4 pt-3 border-t border-[var(--color-grey-100)]">
           <div className="min-w-[180px] flex-1">
             <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Next best action</p>
             <p className="text-[14px] text-[var(--text-primary)] leading-snug mt-1">{rec.tldr}</p>
@@ -718,7 +718,7 @@ function GoalStatusLine({ targets }) {
                 <span className={cn("text-[16px] font-semibold leading-none", t.met ? "text-green-600" : "text-amber-600")}>{t.current ?? "—"}</span>
                 <span className="text-[12px] text-[var(--text-muted)] tabular-nums">target {t.target}</span>
               </div>
-              <div className="h-1.5 w-full rounded-full bg-pv-neutral-grey-100 overflow-hidden">
+              <div className="h-1.5 w-full rounded-full bg-grey-100 overflow-hidden">
                 <div className={cn("h-full rounded-full transition-[width]", t.met ? "bg-green-500" : "bg-amber-500")} style={{ width: `${fill}%` }} />
               </div>
               <span className="text-[12px] text-[var(--text-secondary)] leading-snug line-clamp-2">{t.label}</span>
@@ -734,13 +734,13 @@ function GoalStatusLine({ targets }) {
    third tier so more findings / monitors are reachable without adding weight. */
 function OverviewLink({ icon: Icon, label, sub, onClick }) {
   return (
-    <button onClick={onClick} className="group flex items-center gap-3 px-3.5 py-3 rounded-lg border border-dashed border-pv-primary-primary-300 bg-pv-primary-primary-50/40 hover:bg-pv-primary-primary-50 hover:border-pv-primary-primary-400 text-left cursor-pointer transition-colors w-full">
-      <Icon size={17} weight="fill" className="text-pv-primary-primary-500 shrink-0" />
+    <button onClick={onClick} className="group flex items-center gap-3 px-3.5 py-3 rounded-lg border border-dashed border-primary-300 bg-primary-50/40 hover:bg-primary-50 hover:border-primary-400 text-left cursor-pointer transition-colors w-full">
+      <Icon size={17} weight="fill" className="text-primary-500 shrink-0" />
       <div className="min-w-0 flex-1">
         <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-snug">{label}</p>
         {sub && <p className="text-[12px] text-[var(--text-muted)] mt-0.5">{sub}</p>}
       </div>
-      <ArrowRight size={15} weight="bold" className="shrink-0 text-pv-primary-primary-500 group-hover:translate-x-0.5 transition-transform" />
+      <ArrowRight size={15} weight="bold" className="shrink-0 text-primary-500 group-hover:translate-x-0.5 transition-transform" />
     </button>
   );
 }
@@ -750,7 +750,7 @@ function OverviewLink({ icon: Icon, label, sub, onClick }) {
 function MonitorHealthPanel({ conditions, firingCount, onViewAll }) {
   const sorted = [...conditions].sort((a, b) => (b.state === "fired" ? 1 : 0) - (a.state === "fired" ? 1 : 0));
   return (
-    <div className="rounded-xl border border-pv-neutral-grey-150/50 bg-white overflow-hidden dropshadow-card">
+    <div className="rounded-xl border border-grey-100/50 bg-white overflow-hidden dropshadow-card">
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <p className="text-[14px] font-semibold text-[var(--text-primary)]">Monitor health</p>
         {firingCount > 0
@@ -769,7 +769,7 @@ function MonitorHealthPanel({ conditions, firingCount, onViewAll }) {
         })}
       </div>
       {onViewAll && (
-        <button onClick={onViewAll} className="w-full px-4 py-2.5 text-[12px] font-medium text-pv-primary-primary-600 hover:bg-pv-neutral-grey-50 bg-transparent border-none border-t border-[var(--pv-neutral-grey-100)] cursor-pointer text-left">
+        <button onClick={onViewAll} className="w-full px-4 py-2.5 text-[12px] font-medium text-primary-600 hover:bg-grey-50 bg-transparent border-none border-t border-[var(--color-grey-100)] cursor-pointer text-left">
           View all monitors →
         </button>
       )}
@@ -789,12 +789,12 @@ function NextStepCard({ rec, firingCount, onOpen }) {
     );
   }
   return (
-    <div className="bg-white border border-pv-neutral-grey-150/50 rounded-xl overflow-hidden dropshadow-card">
+    <div className="bg-white border border-grey-100/50 rounded-xl overflow-hidden dropshadow-card">
       <div className="px-4 py-3 flex items-center gap-2">
         <p className="text-[14px] font-semibold text-[var(--text-primary)]">Next step</p>
       </div>
       <div className="px-4 pb-3 flex flex-col gap-3">
-        <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug">{rec.title}</p>
+        <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug">{rec.title}</p>
         <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">{rec.tldr}</p>
         {rec.impact && <p className="text-[12px] text-[var(--text-muted)]">{rec.impact.label}: <span className="font-semibold text-[var(--text-primary)]">{rec.impact.value}</span></p>}
         <PvButton variant="primary" size="md" label="Open finding" icon={ArrowRight} iconPosition="suffix" onClick={() => onOpen(rec.id)} />
@@ -809,7 +809,7 @@ function NextStepCard({ rec, firingCount, onOpen }) {
 function renderRuleText(text) {
   return text.split(/(`[^`]+`)/g).map((p, i) =>
     p.startsWith("`") && p.endsWith("`")
-      ? <code key={i} className="px-1.5 py-0.5 rounded bg-pv-neutral-grey-100 text-[11px] font-mono text-[var(--text-primary)]">{p.slice(1, -1)}</code>
+      ? <code key={i} className="px-1.5 py-0.5 rounded bg-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{p.slice(1, -1)}</code>
       : <span key={i}>{p}</span>
   );
 }
@@ -819,7 +819,7 @@ function renderRuleText(text) {
 function MonitorDetail({ label, children }) {
   return (
     <div className="relative flex items-start gap-2 pl-4 py-1">
-      <span className="absolute left-0 top-0 bottom-1/2 w-3 border-l border-b border-[var(--pv-neutral-grey-200)] rounded-bl" />
+      <span className="absolute left-0 top-0 bottom-1/2 w-3 border-l border-b border-[var(--color-grey-200)] rounded-bl" />
       <span className="text-[12px] text-[var(--text-muted)] shrink-0 mt-0.5 min-w-[52px]">{label}</span>
       <div className="text-[12px] text-[var(--text-secondary)] leading-relaxed min-w-0">{children}</div>
     </div>
@@ -833,7 +833,7 @@ function MonitorRow({ condition, defaultOpen, onOpenFinding }) {
   return (
     <div>
       {/* Header — clickable, chevron on the right */}
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2.5 w-full px-4 py-3 bg-transparent border-none cursor-pointer text-left hover:bg-pv-neutral-grey-50 transition-colors">
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2.5 w-full px-4 py-3 bg-transparent border-none cursor-pointer text-left hover:bg-grey-50 transition-colors">
         {fired
           ? <Warning size={16} className="shrink-0 text-rose-500" />
           : <Eye size={16} className="shrink-0 text-[var(--text-muted)]" />}
@@ -850,7 +850,7 @@ function MonitorRow({ condition, defaultOpen, onOpenFinding }) {
               {condition.creates && (
                 <MonitorDetail label="Creates">
                   {condition.findingCategory ? (
-                    <button onClick={() => onOpenFinding?.(condition)} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-pv-primary-primary-50 text-pv-primary-primary-700 text-[12px] font-medium border-none cursor-pointer hover:bg-pv-primary-primary-100 transition-colors">
+                    <button onClick={() => onOpenFinding?.(condition)} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary-50 text-primary-700 text-[12px] font-medium border-none cursor-pointer hover:bg-primary-100 transition-colors">
                       {condition.creates} <ArrowRight size={12} weight="bold" />
                     </button>
                   ) : (
@@ -860,7 +860,7 @@ function MonitorRow({ condition, defaultOpen, onOpenFinding }) {
               )}
               {rule && (
                 <MonitorDetail label="Rule">
-                  {condition.rule ? renderRuleText(condition.rule) : <code className="px-1.5 py-0.5 rounded bg-pv-neutral-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{condition.logic}</code>}
+                  {condition.rule ? renderRuleText(condition.rule) : <code className="px-1.5 py-0.5 rounded bg-grey-100 text-[12px] font-mono text-[var(--text-primary)]">{condition.logic}</code>}
                 </MonitorDetail>
               )}
             </div>
@@ -905,7 +905,7 @@ function FeedbackTab({ goal }) {
       };
     }),
     ...comments.map((n) => ({
-      id: n.id, Icon: ChatCircle, cls: "text-pv-primary-primary-600", bg: "bg-pv-primary-primary-50",
+      id: n.id, Icon: ChatCircle, cls: "text-primary-600", bg: "bg-primary-50",
       label: "Comment", context: null, time: n.at, title: null,
       reason: n.text, needsReason: false,
     })),
@@ -920,24 +920,24 @@ function FeedbackTab({ goal }) {
           return (
             <li key={it.id} className="relative flex gap-3 pb-5 last:pb-0">
               {/* connector rail */}
-              {!last && <span aria-hidden className="absolute left-[13.5px] top-8 -bottom-1 w-px bg-[var(--pv-neutral-grey-150)]" />}
+              {!last && <span aria-hidden className="absolute left-[13.5px] top-8 -bottom-1 w-px bg-[var(--color-grey-100)]" />}
               <span className={cn("relative z-10 flex items-center justify-center w-7 h-7 rounded-full shrink-0 ring-4 ring-[#fcfcfc]", it.bg, it.cls)}><Icon size={15} weight="fill" /></span>
               <div className="min-w-0 flex-1 pt-0.5">
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className={cn("text-[13px] font-semibold", it.cls)}>{it.label}</span>
+                  <span className={cn("text-[14px] font-semibold", it.cls)}>{it.label}</span>
                   {it.context && <span className="text-[12px] text-[var(--text-muted)]">· {it.context}</span>}
                   {it.time && <span className="ml-auto text-[12px] text-[var(--text-muted)] shrink-0">{it.time}</span>}
                 </div>
-                {it.title && <p className="text-[13px] font-medium text-[var(--text-primary)] leading-snug mt-1">{it.title}</p>}
+                {it.title && <p className="text-[14px] font-medium text-[var(--text-primary)] leading-snug mt-1">{it.title}</p>}
                 {it.reason
-                  ? <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed mt-1">{it.reason}</p>
+                  ? <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mt-1">{it.reason}</p>
                   : it.needsReason && <p className="text-[12px] text-[var(--text-muted)] mt-1">No reason captured.</p>}
               </div>
             </li>
           );
         })}
       </ol>
-      <p className="text-[12px] text-[var(--text-muted)] flex items-start gap-1.5 pt-3 border-t border-[var(--pv-neutral-grey-100)]"><Info size={14} className="mt-px shrink-0" /> The engine reads this on the next check-in: dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
+      <p className="text-[12px] text-[var(--text-muted)] flex items-start gap-1.5 pt-3 border-t border-[var(--color-grey-100)]"><Info size={14} className="mt-px shrink-0" /> The engine reads this on the next check-in: dismissed findings won't re-flag for the same reason, and snoozed ones return when their timer is up.</p>
     </div>
   );
 }
@@ -996,7 +996,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
       </div>
 
       {/* Tab bar — Overview · Recommendations · Monitor */}
-      <div className="flex w-full shrink-0 border-b border-[var(--pv-neutral-grey-150)] mt-5">
+      <div className="flex w-full shrink-0 border-b border-[var(--color-grey-100)] mt-5">
         <div className="flex items-start gap-6">
           {[
             { k: "overview", label: "Overview" },
@@ -1009,17 +1009,17 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               onClick={() => setTab(t.k)}
               className={cn(
                 "relative flex items-center gap-2 h-11 px-1 bg-transparent border-none cursor-pointer text-[14px] transition-colors",
-                tab === t.k ? "text-pv-primary-primary-500 font-medium" : "text-[var(--text-primary)] hover:text-pv-primary-primary-500"
+                tab === t.k ? "text-primary-500 font-medium" : "text-[var(--text-primary)] hover:text-primary-500"
               )}
             >
               {t.label}
               {t.badge > 0 && (
-                <span className={cn("px-1.5 py-0.5 text-[11px] font-semibold rounded-full", tab === t.k ? "bg-pv-primary-primary-500 text-white" : "bg-pv-neutral-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
+                <span className={cn("px-1.5 py-0.5 text-[12px] font-semibold rounded-full", tab === t.k ? "bg-primary-500 text-white" : "bg-grey-100 text-[var(--text-muted)]")}>{t.badge}</span>
               )}
               {tab === t.k && (
                 <motion.span
                   layoutId="goalTabUnderline"
-                  className="absolute left-0 right-0 -bottom-px h-[2px] rounded-full bg-pv-primary-primary-500"
+                  className="absolute left-0 right-0 -bottom-px h-[2px] rounded-full bg-primary-500"
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
@@ -1077,7 +1077,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
           <div>
             <div className="flex items-center justify-between mb-3">
               {lastCheckIn ? (
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>
+                <p className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Check-in · {lastCheckIn.at}</p>
               ) : <span />}
               <div className="flex items-center gap-3 text-[12px]">
                 <span className="inline-flex items-center gap-1.5"><Lightning size={13} weight="fill" className="text-rose-500" />{actNow} act now</span>
@@ -1123,7 +1123,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                   desc={`${quietCount} monitor${quietCount !== 1 ? "s are" : " is"} healthy and still watching.`}
                 />
                 <OverviewStat
-                  label="Last run" icon={ClockCounterClockwise} iconClass="text-pv-primary-primary-500"
+                  label="Last run" icon={ClockCounterClockwise} iconClass="text-primary-500"
                   num={lastCheckIn ? lastCheckIn.at : "—"} numClass="text-[var(--text-primary)]" word=""
                   desc="Every rule was evaluated against this run's campaign and demo data."
                 />
@@ -1148,7 +1148,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                       <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Firing</span>
                       <span className="text-[12px] tabular-nums text-[var(--text-muted)]">{fired.length}</span>
                     </div>
-                    <div className="rounded-lg border border-pv-neutral-grey-150/70 bg-white overflow-hidden divide-y divide-[var(--pv-neutral-grey-100)]">
+                    <div className="rounded-lg border border-grey-100/70 bg-white overflow-hidden divide-y divide-[var(--color-grey-100)]">
                       {fired.map((c) => <MonitorRow key={c.id} condition={c} defaultOpen onOpenFinding={openFinding} />)}
                     </div>
                   </div>
@@ -1161,7 +1161,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
                       <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Quiet</span>
                       <span className="text-[12px] tabular-nums text-[var(--text-muted)]">{quietList.length}</span>
                     </div>
-                    <div className="rounded-lg border border-pv-neutral-grey-150/70 bg-white overflow-hidden divide-y divide-[var(--pv-neutral-grey-100)]">
+                    <div className="rounded-lg border border-grey-100/70 bg-white overflow-hidden divide-y divide-[var(--color-grey-100)]">
                       {quietList.map((c) => <MonitorRow key={c.id} condition={c} onOpenFinding={openFinding} />)}
                     </div>
                   </div>
@@ -1182,12 +1182,12 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
         <div className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
             {goal.notes.length === 0 ? (
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal. It stays attached to its monitors and carries into future check-ins.</p>
+              <p className="text-[14px] text-[var(--text-muted)] leading-relaxed">Leave a comment or instruction for this goal. It stays attached to its monitors and carries into future check-ins.</p>
             ) : (
               goal.notes.map((n) => (
-                <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-pv-neutral-grey-50 rounded-lg">
-                  <p className="text-[13px] text-[var(--text-primary)] leading-snug">{n.text}</p>
-                  <span className="text-[11px] text-[var(--text-muted)]">{n.at}</span>
+                <div key={n.id} className="flex flex-col gap-1 px-3 py-2 bg-grey-50 rounded-lg">
+                  <p className="text-[14px] text-[var(--text-primary)] leading-snug">{n.text}</p>
+                  <span className="text-[12px] text-[var(--text-muted)]">{n.at}</span>
                 </div>
               ))
             )}
@@ -1202,7 +1202,7 @@ function ActiveGoal({ goal, refetch, showComment, setShowComment }) {
               autoFocus
               placeholder="Add a comment, e.g. “Never pause Brand Search”"
               style={{ minHeight: "36px", maxHeight: `${MAX_COMMENT_H}px` }}
-              className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-pv-primary-primary-500 outline-none resize-none"
+              className="flex-1 text-[14px] px-3 py-2 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
             />
             <PvButton variant="primary" size="md" icon={PaperPlaneRight} disabled={!note.trim() || addNote.isPending} onClick={() => addNote.mutate()} aria-label="Send" className="shrink-0" />
           </div>
@@ -1235,11 +1235,11 @@ export default function GoalDetailPage() {
   return (
     <div className="flex flex-col w-full h-full">
       {/* Standard app header bar with breadcrumb (consistent with Dashboards) */}
-      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+      <div className="flex w-full px-6 items-center justify-between h-[60px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
         <div className="flex items-center gap-2 min-w-0">
-          <button onClick={() => navigate("/goals")} className="text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0">Goals</button>
-          <CaretRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
-          <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[420px] text-pv-neutral-grey-900">{crumb}</span>
+          <button onClick={() => navigate("/goals")} className="text-[16px] leading-[24px] font-medium text-[var(--color-grey-500)] hover:text-[var(--color-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0">Goals</button>
+          <CaretRight size={14} className="text-[var(--color-grey-400)] shrink-0" />
+          <span className="block truncate text-[16px] leading-[24px] font-medium max-w-[420px] text-grey-900">{crumb}</span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {goalIsActive && lastCheckIn && (
@@ -1265,7 +1265,7 @@ export default function GoalDetailPage() {
       </div>
 
       <FooterSlot.Provider value={footerEl}>
-        <div className="flex-1 min-h-0 overflow-y-auto bg-pv-neutral-grey-50 p-4">
+        <div className="flex-1 min-h-0 overflow-y-auto bg-grey-50 p-4">
           <div className={cn(
             // The active goal grows to contain all its content (Goal rules included)
             // and the outer area scrolls; the wizard phases keep h-full so their own
@@ -1273,7 +1273,7 @@ export default function GoalDetailPage() {
             "flex flex-col min-h-full w-full bg-[#fcfcfc] rounded-xl",
             goal && ["calibrating", "decisions", "building", "review"].includes(goal.status)
               ? "h-full"
-              : "border border-[var(--pv-neutral-grey-150)] p-3"
+              : "border border-[var(--color-grey-100)] p-3"
           )}>
             {isLoading || !goal ? (
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-8"><Spinner size={18} /> Loading…</div>

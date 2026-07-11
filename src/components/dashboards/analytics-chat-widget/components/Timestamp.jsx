@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { cn } from '../utils/cn';
-import { Tooltip } from '@/common-components';
+import { Tooltip } from '@/ui';
 
 function getRelativeTime(timestamp) {
   const now = Date.now();

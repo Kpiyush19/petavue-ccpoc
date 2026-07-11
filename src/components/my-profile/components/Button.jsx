@@ -11,13 +11,13 @@ const Button = ({
 
   const variants = {
     primary:
-      'bg-[var(--pv-primary-500)] text-white hover:bg-[var(--pv-primary-700)] focus:ring-[var(--pv-primary-500)]',
+      'bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-700)] focus:ring-[var(--color-primary-500)]',
     secondary:
-      'bg-white text-[var(--pv-neutral-grey-700)] border border-[var(--pv-neutral-grey-300)] hover:bg-[var(--pv-neutral-grey-50)] focus:ring-[var(--pv-neutral-grey-500)]',
+      'bg-white text-[var(--color-grey-700)] border border-[var(--color-grey-300)] hover:bg-[var(--color-grey-50)] focus:ring-[var(--color-grey-500)]',
     ghost:
-      'bg-transparent text-[var(--pv-neutral-grey-600)] hover:bg-[var(--pv-neutral-grey-100)] hover:text-[var(--pv-neutral-grey-900)]',
+      'bg-transparent text-[var(--color-grey-600)] hover:bg-[var(--color-grey-100)] hover:text-[var(--color-grey-900)]',
     danger:
-      'bg-[var(--pv-error-text)] text-white hover:bg-[var(--pv-error-text)] focus:ring-[var(--pv-error-text)]',
+      'bg-[var(--color-red)] text-white hover:bg-[var(--color-red)] focus:ring-[var(--color-red)]',
   };
 
   return (

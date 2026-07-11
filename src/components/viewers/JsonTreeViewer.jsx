@@ -7,12 +7,12 @@ const PAGE_SIZE = 100
 
 function JsonValue({ value, depth = 0 }) {
   if (depth > MAX_DEPTH) return <span className="text-[var(--text-muted)] italic">... (max depth)</span>
-  if (value === null) return <span className="text-[var(--pv-warning-text)] italic">null</span>
-  if (typeof value === 'boolean') return <span className="text-[var(--pv-warning-text)]">{value ? 'true' : 'false'}</span>
-  if (typeof value === 'number') return <span className="text-[var(--pv-primary-500)]">{value}</span>
+  if (value === null) return <span className="text-[var(--color-orange)] italic">null</span>
+  if (typeof value === 'boolean') return <span className="text-[var(--color-orange)]">{value ? 'true' : 'false'}</span>
+  if (typeof value === 'number') return <span className="text-[var(--color-primary-500)]">{value}</span>
   if (typeof value === 'string') {
     const display = value.length > 300 ? value.slice(0, 300) + '...' : value
-    return <span className="text-[var(--pv-success-text)]">"{display}"</span>
+    return <span className="text-[var(--color-green)]">"{display}"</span>
   }
   if (Array.isArray(value)) return <JsonArray items={value} depth={depth} />
   if (typeof value === 'object') return <JsonObject data={value} depth={depth} />
@@ -51,7 +51,7 @@ function JsonObject({ data, depth = 0 }) {
       <div style={{ paddingLeft: 16 }}>
         {keys.map((key, i) => (
           <div key={key}>
-            <span className="text-[var(--pv-warning-700)]">"{key}"</span>
+            <span className="text-[var(--color-orange)]">"{key}"</span>
             <span className="text-[var(--text-muted)]">: </span>
             <JsonValue value={data[key]} depth={depth + 1} />
             {i < keys.length - 1 && <span className="text-[var(--text-muted)]">,</span>}
@@ -105,7 +105,7 @@ function JsonArray({ items, depth = 0 }) {
         {remaining > 0 && (
           <button
             onClick={(e) => { e.stopPropagation(); setVisibleCount((c) => c + PAGE_SIZE) }}
-            className="text-[11px] text-[var(--accent)] hover:underline bg-transparent border-none cursor-pointer py-0.5"
+            className="text-[12px] text-[var(--accent)] hover:underline bg-transparent border-none cursor-pointer py-0.5"
           >
             Show {Math.min(remaining, PAGE_SIZE)} more ({remaining} remaining)
           </button>
@@ -146,7 +146,7 @@ export default function JsonTreeViewer({ sessionId, path }) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full text-sm text-[var(--pv-error-text)] bg-[var(--bg-primary)]">
+      <div className="flex items-center justify-center h-full text-sm text-[var(--color-red)] bg-[var(--bg-primary)]">
         Failed to load JSON: {error}
       </div>
     )

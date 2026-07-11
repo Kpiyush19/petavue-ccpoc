@@ -109,7 +109,7 @@ function BlockKitRenderer({ blocks }) {
       {blocks.map((block, i) => {
         if (block.type === 'header') {
           return (
-            <div key={i} className="text-[15px] font-bold text-[#1d1c1d]">
+            <div key={i} className="text-[16px] font-semibold text-[#1d1c1d]">
               {block.text?.text || ''}
             </div>
           )
@@ -122,12 +122,12 @@ function BlockKitRenderer({ blocks }) {
           // Handle mrkdwn: bold, blockquotes, bullet lists
           const lines = text.split('\n')
           return (
-            <div key={i} className="text-[15px] text-[#1d1c1d]">
+            <div key={i} className="text-[16px] text-[#1d1c1d]">
               {lines.map((line, li) => {
                 if (line.startsWith('>')) {
                   return (
                     <div key={li} className="border-l-[4px] border-[#3661ED] pl-3 py-0.5">
-                      <p className="text-[15px] text-[#616061] italic">{line.slice(1).trim()}</p>
+                      <p className="text-[16px] text-[#616061] italic">{line.slice(1).trim()}</p>
                     </div>
                   )
                 }
@@ -152,7 +152,7 @@ function BlockKitRenderer({ blocks }) {
                   <p key={li}>
                     {parts.map((p, pi) => {
                       const bold = p.match(/^\*(.+)\*$/)
-                      if (bold) return <span key={pi} className="font-bold">{bold[1]}</span>
+                      if (bold) return <span key={pi} className="font-semibold">{bold[1]}</span>
                       return <span key={pi}>{p}</span>
                     })}
                   </p>
@@ -169,7 +169,7 @@ function BlockKitRenderer({ blocks }) {
                 return (
                   <button
                     key={bi}
-                    className={`inline-flex items-center gap-1.5 px-3 py-[6px] text-[13px] font-medium rounded-[4px] cursor-default shadow-sm ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-[6px] text-[14px] font-medium rounded-[4px] cursor-default shadow-sm ${
                       isPrimary
                         ? 'text-white bg-[#007a5a] border border-[#007a5a]'
                         : 'text-[#1d1c1d] bg-white border border-[#d0d0d0]'
@@ -249,7 +249,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
             <path d="M34.048 54a5.381 5.381 0 0 0 5.376-5.387 5.381 5.381 0 0 0-5.376-5.386h-5.376v5.386A5.381 5.381 0 0 0 34.048 54m0-14.365h14.336a5.381 5.381 0 0 0 5.376-5.386 5.381 5.381 0 0 0-5.376-5.387H34.048a5.381 5.381 0 0 0-5.376 5.387 5.381 5.381 0 0 0 5.376 5.386" fill="#ECB22E"/>
             <path d="M0 34.249a5.381 5.381 0 0 0 5.376 5.386 5.381 5.381 0 0 0 5.376-5.386v-5.387H5.376A5.381 5.381 0 0 0 0 34.25m14.336-.001v14.364A5.381 5.381 0 0 0 19.712 54a5.381 5.381 0 0 0 5.376-5.387V34.249a5.381 5.381 0 0 0-5.376-5.387 5.381 5.381 0 0 0-5.376 5.387" fill="#E01E5A"/>
           </svg>
-          <span className="text-[13px] font-bold">{displayChannel}</span>
+          <span className="text-[14px] font-semibold">{displayChannel}</span>
         </div>
 
         {/* Message content area */}
@@ -261,8 +261,8 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[15px] font-bold text-[#1d1c1d]">{displayUsername}</span>
-                <span className="text-[11px] font-medium text-[#616061] bg-[#ecedee] px-1.5 py-[1px] rounded">APP</span>
+                <span className="text-[16px] font-semibold text-[#1d1c1d]">{displayUsername}</span>
+                <span className="text-[12px] font-medium text-[#616061] bg-[#ecedee] px-1.5 py-[1px] rounded">APP</span>
                 <span className="text-[12px] text-[#616061]">{timestamp}</span>
               </div>
 
@@ -275,7 +275,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                 <div className="space-y-2">
                   {/* Header */}
                   {sections.header && (
-                    <div className="text-[15px] font-bold text-[#1d1c1d]">
+                    <div className="text-[16px] font-semibold text-[#1d1c1d]">
                       <TemplatePillText text={sections.header} />
                     </div>
                   )}
@@ -291,7 +291,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                         if (line.trim().startsWith('>')) {
                           return (
                             <div key={i} className="border-l-[4px] border-[#3661ED] pl-3 py-0.5">
-                              <p className="text-[15px] text-[#616061] italic">
+                              <p className="text-[16px] text-[#616061] italic">
                                 <TemplatePillText text={line.trim().slice(1).trim()} />
                               </p>
                             </div>
@@ -300,7 +300,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                         // Bullet point
                         if (line.trim().startsWith('- ') || line.trim().startsWith('• ')) {
                           return (
-                            <p key={i} className="text-[15px] text-[#1d1c1d]">
+                            <p key={i} className="text-[16px] text-[#1d1c1d]">
                               {'• '}<TemplatePillText text={line.trim().slice(2)} />
                             </p>
                           )
@@ -308,14 +308,14 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                         // Bold header within body
                         if (line.trim().startsWith('**') && line.trim().endsWith('**')) {
                           return (
-                            <p key={i} className="text-[15px] font-bold text-[#1d1c1d] mt-1">
+                            <p key={i} className="text-[16px] font-semibold text-[#1d1c1d] mt-1">
                               <TemplatePillText text={line.trim()} />
                             </p>
                           )
                         }
                         // Regular line
                         return (
-                          <p key={i} className="text-[15px] text-[#1d1c1d]">
+                          <p key={i} className="text-[16px] text-[#1d1c1d]">
                             <TemplatePillText text={line.trim()} />
                           </p>
                         )
@@ -340,7 +340,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                         return (
                           <button
                             key={i}
-                            className={`inline-flex items-center gap-1.5 px-3 py-[6px] text-[13px] font-medium rounded-[4px] cursor-default shadow-sm ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-[6px] text-[14px] font-medium rounded-[4px] cursor-default shadow-sm ${
                               isPrimary
                                 ? 'text-white bg-[#007a5a] border border-[#007a5a]'
                                 : 'text-[#1d1c1d] bg-white border border-[#d0d0d0]'
@@ -357,18 +357,18 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
               ) : (
                 /* Fallback: hardcoded demo preview */
                 <div className="space-y-2">
-                  <div className="text-[15px] font-bold text-[#1d1c1d]">
+                  <div className="text-[16px] font-semibold text-[#1d1c1d]">
                     [PETAVUE ALERT] {workflow_name || 'Weekly Revenue Report'}, {timestamp}
                   </div>
                   <div className="border-t border-[#ddd]" />
                   <div className="border-l-[4px] border-[#3661ED] pl-3 py-0.5">
-                    <p className="text-[15px] text-[#616061] italic">
+                    <p className="text-[16px] text-[#616061] italic">
                       Revenue metrics for the week ending {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} show a strong upward trend with 3 anomalies detected.
                     </p>
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold text-[#1d1c1d] mb-1">Key Metrics:</p>
-                    <div className="space-y-0.5 text-[15px] text-[#1d1c1d]">
+                    <p className="text-[16px] font-semibold text-[#1d1c1d] mb-1">Key Metrics:</p>
+                    <div className="space-y-0.5 text-[16px] text-[#1d1c1d]">
                       <p>• Revenue: <span className="font-semibold text-[#2EB67D]">$1,247,832</span></p>
                       <p>• MoM Change: <span className="font-semibold text-[#2EB67D]">+12.4%</span></p>
                       <p>• Anomalies: <span className="font-semibold text-[#E01E5A]">3</span></p>
@@ -381,11 +381,11 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
                     <span>{workflow_name || 'Weekly Revenue Report'}</span>
                   </div>
                   <div className="flex items-center gap-2 pt-1">
-                    <button className="inline-flex items-center gap-1.5 px-3 py-[6px] text-[13px] font-medium text-white bg-[#007a5a] border border-[#007a5a] rounded-[4px] cursor-default shadow-sm">
+                    <button className="inline-flex items-center gap-1.5 px-3 py-[6px] text-[14px] font-medium text-white bg-[#007a5a] border border-[#007a5a] rounded-[4px] cursor-default shadow-sm">
                       <ExternalLink size={13} />
                       View Dashboard
                     </button>
-                    <button className="inline-flex items-center gap-1.5 px-3 py-[6px] text-[13px] font-medium text-[#1d1c1d] bg-white border border-[#d0d0d0] rounded-[4px] cursor-default shadow-sm">
+                    <button className="inline-flex items-center gap-1.5 px-3 py-[6px] text-[14px] font-medium text-[#1d1c1d] bg-white border border-[#d0d0d0] rounded-[4px] cursor-default shadow-sm">
                       <RotateCcw size={13} />
                       Run Follow-Up Analysis
                     </button>
@@ -398,7 +398,7 @@ export default function SlackMessagePreview({ config = {}, livePreview = false }
 
         {/* Slack-style footer */}
         <div className="px-4 py-2 bg-[#f8f8f8] border-t border-[#e1e1e1]">
-          <div className="flex items-center gap-2 text-[11px] text-[#616061]">
+          <div className="flex items-center gap-2 text-[12px] text-[#616061]">
             <span className="inline-flex items-center gap-1 text-[#1264a3] font-medium cursor-default">
               1 reply
             </span>

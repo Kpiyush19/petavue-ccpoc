@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X } from '@phosphor-icons/react';
-import { Button } from '../../../../common-components/Button';
-import Input from '../../../../common-components/Input';
+import { Button } from '@/ui';
+import { Input } from '@/ui';
 
 const IntegrationDetailDatabase = ({
   connectionName,
@@ -58,14 +58,14 @@ const IntegrationDetailDatabase = ({
       <div className="flex gap-3 justify-end mt-9">
         {showDisconnect && (
           <Button
-            btnColor="secondary"
-            btnSize="lg"
+            variant="secondary"
+            size="lg"
             onClick={() => handleDisconnection(integrationDetail.id)}
           >
             Disconnect
           </Button>
         )}
-        <Button btnColor="primary" btnSize="lg" onClick={() => handleTestConnection(integrationDetail.id)}>
+        <Button variant="primary" size="lg" onClick={() => handleTestConnection(integrationDetail.id)}>
           Test Connection
         </Button>
       </div>
@@ -74,7 +74,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Salesforce') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -101,7 +101,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Gong') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-9">
             <Input
@@ -133,7 +133,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Google Sheets' || connectionName === 'Google Analytics') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -154,7 +154,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Slack') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -170,7 +170,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Marketo') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-9">
             <Input
@@ -202,7 +202,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Jira') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -235,7 +235,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Freshdesk') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6 px-3">
           <div className="flex items-center gap-9">
             <Input
@@ -261,7 +261,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Aircall') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6 px-3">
           <div className="flex items-center gap-9">
             <Input
@@ -287,7 +287,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'HubSpot') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -308,7 +308,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Mixpanel') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -342,7 +342,7 @@ const IntegrationDetailDatabase = ({
 
   if (connectionName === 'Apollo') {
     return (
-      <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+      <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
         <div className="flex flex-col gap-6">
           <Input
             type="text"
@@ -357,12 +357,12 @@ const IntegrationDetailDatabase = ({
   }
 
   return (
-    <div className={`${index === 0 ? '' : 'border-t border-[var(--pv-neutral-grey-200)] pt-4'}`}>
+    <div className={`${index === 0 ? '' : 'border-t border-[var(--color-grey-200)] pt-4'}`}>
       <div className="flex justify-between mb-6">
-        <label className="block text-sm text-[var(--pv-text-primary-text)]">Database {index + 1}</label>
+        <label className="block text-sm text-[var(--color-text-primary)]">Database {index + 1}</label>
         {integrationDetail.enableEditing && (
           <p
-            className="flex items-center gap-2 cursor-pointer text-[var(--pv-primary-500)]"
+            className="flex items-center gap-2 cursor-pointer text-[var(--color-primary-500)]"
             onClick={() => removeConnection(index)}
           >
             <X />

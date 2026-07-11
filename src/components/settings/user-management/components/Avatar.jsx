@@ -6,11 +6,11 @@ const Avatar = ({ name, fullName, size = 'md', className = '' }) => {
   };
 
   const colors = [
-    'bg-[var(--pv-primary-100)] text-[var(--pv-primary-700)]',
-    'bg-[var(--pv-success-bg)] text-[var(--pv-success-text)]',
-    'bg-[var(--pv-tags-purple)] text-[var(--pv-accent-text)]',
-    'bg-[var(--pv-tags-yellow)] text-[var(--pv-warning-text)]',
-    'bg-[var(--pv-tags-pink)] text-[var(--pv-error-text)]',
+    'bg-[var(--color-primary-100)] text-[var(--color-primary-700)]',
+    'bg-[var(--color-green-bg)] text-[var(--color-green)]',
+    'bg-[var(--color-tag-purple)] text-[var(--color-purple-400)]',
+    'bg-[var(--color-tag-orange)] text-[var(--color-orange)]',
+    'bg-[var(--color-tag-pink)] text-[var(--color-red)]',
   ];
 
   const colorIndex = (name?.charCodeAt(0) || 0) % colors.length;

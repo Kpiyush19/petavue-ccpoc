@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { FileHtml, Table, Image, FileText, File, DownloadSimple, Article } from "@phosphor-icons/react";
-import { Button, Tooltip } from "@/common-components";
+import { Button, Tooltip } from "@/ui";
 import { inferContentType } from "../utils/fileTypes";
 import { getApiBase, getAuthToken } from "../../../api";
 
@@ -119,11 +119,11 @@ export default function OutputCard({ path, title, sessionId, isSelected, isLoadi
 
       {/* {!isLoading && (
         <>
-          <span className="flex h-full w-[1px] bg-pv-neutral-grey-300 shrink-0" />
+          <span className="flex h-full w-[1px] bg-grey-300 shrink-0" />
           <Button
-            btnColor="secondary ghost"
-            btnSize="sm"
-            mainBtnClassName="h-[67px] w-[46px] border-none rounded-r-lg rounded-l-none"
+            variant="secondaryGhost"
+            size="sm"
+            className="h-[67px] w-[46px] border-none rounded-r-lg rounded-l-none"
             onClick={handleDownload}
           >
             <DownloadSimple size={16} weight="bold" />

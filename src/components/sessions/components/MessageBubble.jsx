@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { File, ChevronRight, ChevronDown, GitBranch, LayoutDashboard, Sparkles, ArrowRight } from 'lucide-react'
-import MarkdownRenderer from '../../../common-utils/MarkdownRenderer'
+import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 import Timestamp from './Timestamp'
 
 /**
@@ -150,11 +150,11 @@ export default function MessageBubble({
               {/* Green "Ready" pill — semantic success signal, distinct
                   from the surrounding accent wash so it pops as the
                   completion marker. */}
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-[var(--pv-success-bg)] text-[var(--pv-success-text)] border border-[var(--pv-success-text)]/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-[var(--color-green-bg)] text-[var(--color-green)] border border-[var(--color-green)]/30">
                 Ready
               </span>
             </div>
-            <div className="text-[13px] text-[var(--text-secondary)] leading-relaxed mb-3">
+            <div className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-3">
               {invitation}
             </div>
             {outputPath && (

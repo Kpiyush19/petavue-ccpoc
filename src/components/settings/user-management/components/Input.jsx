@@ -20,11 +20,11 @@ const Input = ({
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        className={`w-full px-3 py-2 border border-[var(--pv-neutral-grey-300)] rounded-lg text-sm
+        className={`w-full px-3 py-2 border border-[var(--color-grey-300)] rounded-lg text-sm
           ${icon ? 'pl-10' : ''}
           ${clearIcon && value ? 'pr-10' : ''}
-          ${disabled ? 'bg-[var(--pv-neutral-grey-50)] cursor-not-allowed' : 'bg-white'}
-          focus:outline-none focus:ring-1 focus:ring-[var(--pv-primary-500)] focus:border-[var(--pv-primary-500)]
+          ${disabled ? 'bg-[var(--color-grey-50)] cursor-not-allowed' : 'bg-white'}
+          focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)]
           ${className}`}
       />
       {clearIcon && value && (

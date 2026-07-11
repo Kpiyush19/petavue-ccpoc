@@ -1,6 +1,6 @@
 /* All navigation icons — inline SVGs matching Figma Phosphor icons at 20x20 */
 
-const DEFAULT_COLOR = 'var(--color-neutral-500, #757A97)';
+const DEFAULT_COLOR = 'var(--color-grey-500, #757A97)';
 const ACTIVE_COLOR = 'var(--color-primary-500, #3661ED)';
 
 function iconColor(isActive, isAccent) {

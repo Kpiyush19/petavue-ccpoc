@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSlackCallback } from './api';
-import spinner from '../../common-components/assets/spinner.gif';
+import spinner from '@/ui/assets/spinner.gif';
 
 export default function SlackCallback() {
   const navigate = useNavigate();

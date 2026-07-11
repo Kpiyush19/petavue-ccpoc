@@ -12,11 +12,11 @@ import ExecutionProgress from './ExecutionProgress'
 import BlockedCallout from './BlockedCallout'
 import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
-import { Button } from '../../components/ui/Button'
-import { Button as PvButton } from '../../petavue'
+import { Button } from '@/ui'
+import { Button as PvButton } from '@/ui'
 import { Sparkle, ArrowRight, Check } from '@phosphor-icons/react'
-import { Spinner } from '../../components/ui/Spinner'
-import { Dialog, DialogHeader, DialogContent, DialogFooter } from '../../components/ui/Dialog'
+import { Spinner } from '@/ui'
+import { Dialog, DialogHeader, DialogContent, DialogFooter } from '@/ui/components/OverlayDialog/OverlayDialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { apiPost } from '../../api'
 import { SKILLS_CATALOG } from '../../skills/skillsCatalog'
@@ -148,7 +148,7 @@ function PhaseContent({
   if (state.errorMessage) {
     return (
       <div className="max-w-md mx-auto mt-16 text-center">
-        <AlertCircle size={36} className="text-[var(--pv-error-text)] mx-auto mb-3" />
+        <AlertCircle size={36} className="text-[var(--color-red)] mx-auto mb-3" />
         <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">Something went wrong</h2>
         <p className="text-sm text-[var(--text-secondary)]">{state.errorMessage}</p>
       </div>
@@ -191,7 +191,7 @@ function PhaseContent({
           paused={pusherPaused}
           onCancel={onCancelPlan}
         />
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] rounded-r-2xl overflow-hidden">
           {/* Current-step header so you know where you are in the plan. */}
           <div className="flex items-center h-12 px-4 shrink-0">
             <span className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
@@ -237,7 +237,7 @@ function PhaseContent({
           paused
           blocked
         />
-        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] rounded-r-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] rounded-r-2xl overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
             <BlockedCallout
               summary={state.blockedSummary}
@@ -523,18 +523,18 @@ export default function SkillsV2RunPage() {
       {/* Header — app-standard 60px white bar, matching the skill detail page
           and Dashboards / Goals so Activate → run reads as one continuous
           product instead of a jump between two. */}
-      <div className="flex w-full px-6 items-center justify-between gap-4 h-[60px] shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+      <div className="flex w-full px-6 items-center justify-between gap-4 h-[60px] shrink-0 border-b border-[var(--color-grey-100)] bg-white">
         <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => navigate('/skills')}
-            className="shrink-0 text-[16px] leading-[24px] font-medium text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-neutral-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
+            className="shrink-0 text-[16px] leading-[24px] font-medium text-[var(--color-grey-500)] hover:text-[var(--color-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
           >
             Skills
           </button>
-          <ChevronRight size={14} className="text-[var(--pv-neutral-grey-400)] shrink-0" />
+          <ChevronRight size={14} className="text-[var(--color-grey-400)] shrink-0" />
           <span
             title={skillDescription || undefined}
-            className="flex-1 min-w-0 truncate text-[16px] leading-[24px] font-medium text-pv-neutral-grey-900"
+            className="flex-1 min-w-0 truncate text-[16px] leading-[24px] font-medium text-grey-900"
           >
             {resolveRunTitle({ planSummary, session })}
           </span>
@@ -569,7 +569,7 @@ export default function SkillsV2RunPage() {
           editable chat, so neither the wait nor the transition surprises
           them. */}
       {showResumeHint && (
-        <div className="px-6 py-2 shrink-0 border-b border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="px-6 py-2 shrink-0 border-b border-[var(--color-grey-100)] bg-white">
           <p className="flex items-start gap-2 text-[12px] leading-snug text-[var(--text-secondary)]">
             <Info size={14} className="shrink-0 mt-0.5 text-[var(--accent)]" />
             <span>
@@ -598,7 +598,7 @@ export default function SkillsV2RunPage() {
         )}
         {isError && (
           <div className="max-w-md mx-auto mt-16 text-center">
-            <AlertCircle size={36} className="text-[var(--pv-error-text)] mx-auto mb-3" />
+            <AlertCircle size={36} className="text-[var(--color-red)] mx-auto mb-3" />
             <p className="text-sm text-[var(--text-secondary)]">
               Couldn&apos;t load this session.
             </p>
@@ -669,7 +669,7 @@ export default function SkillsV2RunPage() {
           Cancel run on the left, the 4-stage stepper centered, and the phase's
           primary action on the right. */}
       {!isLoading && !isError && state.progressHydrated ? (
-        <div className="flex items-center gap-4 px-6 py-2.5 shrink-0 border-t border-[var(--pv-neutral-grey-150)] bg-white">
+        <div className="flex items-center gap-4 px-6 py-2.5 shrink-0 border-t border-[var(--color-grey-100)] bg-white">
           <div className="w-[240px] shrink-0 flex justify-start">
             {showCancelButton ? (
               <PvButton
@@ -767,14 +767,14 @@ export default function SkillsV2RunPage() {
 
       {/* Cancel-run confirm dialog. Destructive action — discards the
           run and signals every agent to halt at the next safe point. */}
-      <Dialog open={cancelConfirmOpen} onClose={() => setCancelConfirmOpen(false)}>
+      <Dialog open={cancelConfirmOpen} onClose={() => setCancelConfirmOpen(false)} state="error">
         <DialogHeader onClose={() => setCancelConfirmOpen(false)}>
-          <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">
+          <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">
             Cancel this run?
           </h2>
         </DialogHeader>
         <DialogContent>
-          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed">
             Your progress will be discarded and the run will stop. This can&apos;t be undone.
           </p>
         </DialogContent>

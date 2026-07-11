@@ -3,8 +3,8 @@ import { toast } from 'sonner'
 import { Save, Trash2, RotateCcw, Maximize2, Minimize2, Pencil } from 'lucide-react'
 import Pusher from 'pusher-js'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../config'
-import { Dialog, DialogHeader } from './ui/Dialog'
-import { Button } from './ui/Button'
+import { Dialog, DialogHeader } from '@/ui/components/OverlayDialog/OverlayDialog'
+import { Button } from '@/ui'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken } from '../api'
 import PublishFormStep from './PublishFormStep'
 import RecipeVerifyStep from './RecipeVerifyStep'
@@ -420,7 +420,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
           </h3>
           {wizardStep === 2 && (
             <>
-              <span className="text-[11px] text-[var(--text-muted)] ml-2">
+              <span className="text-[12px] text-[var(--text-muted)] ml-2">
                 Step 2 of 2
               </span>
               <Button
@@ -443,7 +443,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
               <p className="text-[12px] font-semibold text-[var(--text-primary)]">
                 Already published as &ldquo;{existingCheck.artifacts[0].name}&rdquo;
               </p>
-              <p className="text-[11px] text-[var(--text-secondary)]">
+              <p className="text-[12px] text-[var(--text-secondary)]">
                 Update the existing dashboard or create a new one
               </p>
             </div>
@@ -464,7 +464,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
             <p className="text-[12px] font-semibold text-[var(--text-primary)] mb-1">
               This file has {existingCheck.artifacts.length} published dashboards
             </p>
-            <p className="text-[11px] text-[var(--text-secondary)] mb-2">
+            <p className="text-[12px] text-[var(--text-secondary)] mb-2">
               Choose one to update, or create a new dashboard
             </p>
             <div className="space-y-1.5 mb-2">
@@ -504,12 +504,12 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
         {wizardStep === 1 && republishId && !existingCheck.exists && (
           <div className="mx-5 mt-3 px-3 py-2 rounded-xl bg-[var(--accent)]/6 border border-[var(--accent)]/15 flex items-center gap-2">
             <Pencil size={12} className="text-[var(--accent)] shrink-0" />
-            <span className="text-[11px] text-[var(--text-secondary)]">
+            <span className="text-[12px] text-[var(--text-secondary)]">
               Updating existing dashboard: same URL will be preserved
             </span>
             <button
               onClick={() => setRepublishId(null)}
-              className="ml-auto text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer"
+              className="ml-auto text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer"
             >
               Switch to new
             </button>
@@ -523,7 +523,7 @@ export default function PublishModal({ targetFile, targetTitle, sessionId, onClo
               <p className="text-[12px] font-semibold text-[var(--text-primary)]">
                 Saved draft found
               </p>
-              <p className="text-[11px] text-[var(--text-secondary)]">
+              <p className="text-[12px] text-[var(--text-secondary)]">
                 {draftCheck.stepsCompleted}/{draftCheck.totalSteps} steps completed
               </p>
             </div>

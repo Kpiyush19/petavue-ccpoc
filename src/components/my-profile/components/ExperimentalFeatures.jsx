@@ -45,7 +45,7 @@ function ToggleSwitch({ enabled, disabled, onChange }) {
       disabled={disabled}
       onClick={() => onChange(!enabled)}
       className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-        enabled ? "bg-[var(--pv-primary-500)]" : "bg-[var(--pv-neutral-grey-300)]"
+        enabled ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-grey-300)]"
       } ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <span
@@ -127,13 +127,13 @@ export default function ExperimentalFeatures() {
     <div className="space-y-0.5 w-full">
       <p className="text-black font-semibold text-sm leading-5 mb-4">Experimental features</p>
       {isAdmin && (
-        <p className="text-xs text-[var(--pv-neutral-grey-500)] mb-3">
+        <p className="text-xs text-[var(--color-grey-500)] mb-3">
           Tenant-wide flags apply to all users. Personal flags apply only to you. Tenant-wide takes precedence.
         </p>
       )}
-      <div className="flex flex-col divide-y divide-[var(--pv-neutral-grey-200)] border border-[var(--pv-neutral-grey-200)] rounded-lg w-full">
+      <div className="flex flex-col divide-y divide-[var(--color-grey-200)] border border-[var(--color-grey-200)] rounded-lg w-full">
         {/* Header row */}
-        <div className="flex items-center gap-4 px-5 py-3 bg-[var(--pv-neutral-grey-50)]">
+        <div className="flex items-center gap-4 px-5 py-3 bg-[var(--color-grey-50)]">
           <div className="flex-1 min-w-0" />
           {isAdmin && (
             <div className="w-[72px] text-center">
@@ -143,7 +143,7 @@ export default function ExperimentalFeatures() {
             </div>
           )}
           <div className="w-[72px] text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--pv-primary-500)]">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary-500)]">
               Personal
             </span>
           </div>
@@ -160,16 +160,16 @@ export default function ExperimentalFeatures() {
             <div key={feat.flag} className="flex items-center gap-4 px-5 py-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[var(--pv-neutral-grey-900)]">
+                  <span className="text-sm font-medium text-[var(--color-grey-900)]">
                     {feat.label}
                   </span>
                   {userLocked && (
-                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-500)]">
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-grey-100)] text-[var(--color-grey-500)]">
                       Enabled by tenant
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-[var(--pv-neutral-grey-600)] mt-1 leading-snug">
+                <div className="text-xs text-[var(--color-grey-600)] mt-1 leading-snug">
                   {feat.description}
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function ExperimentalFeatures() {
               )}
               <div className="w-[72px] flex justify-center">
                 {feat.tenantOnly ? (
-                  <span className="text-[10px] text-[var(--pv-neutral-grey-400)]">—</span>
+                  <span className="text-[10px] text-[var(--color-grey-400)]">—</span>
                 ) : (
                   <ToggleSwitch
                     enabled={userEnabled}

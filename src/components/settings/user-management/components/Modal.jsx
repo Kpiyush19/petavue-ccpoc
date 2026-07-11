@@ -30,22 +30,22 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
         className={`relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-[90vh] overflow-hidden ${className}`}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--pv-neutral-grey-200)]">
-            <h2 className="text-base font-semibold text-[var(--pv-neutral-grey-900)]">{title}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-grey-200)]">
+            <h2 className="text-base font-semibold text-[var(--color-grey-900)]">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-[var(--pv-neutral-grey-100)] rounded-full transition-colors"
+              className="p-1 hover:bg-[var(--color-grey-100)] rounded-full transition-colors"
             >
-              <X size={20} className="text-[var(--pv-neutral-grey-500)]" />
+              <X size={20} className="text-[var(--color-grey-500)]" />
             </button>
           </div>
         )}
         {!title && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1 hover:bg-[var(--pv-neutral-grey-100)] rounded-full transition-colors"
+            className="absolute top-4 right-4 p-1 hover:bg-[var(--color-grey-100)] rounded-full transition-colors"
           >
-            <X size={20} className="text-[var(--pv-neutral-grey-500)]" />
+            <X size={20} className="text-[var(--color-grey-500)]" />
           </button>
         )}
         {children}

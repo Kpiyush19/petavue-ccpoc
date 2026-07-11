@@ -1,0 +1,305 @@
+@import '../../colorography/tokens.css';
+@import '../../typography/typography.css';
+
+/* ==========================================================================
+   Button Component
+   4 style variants: primary, secondary, blueGhost, ghost
+   3 sizes: sm, md, lg
+   States: default, hover, pressed/active, disabled
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-6);
+  border: var(--border-default) solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  cursor: pointer;
+  /* color/bg ease on hover; transform uses a fast strong ease-out for press */
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+  white-space: nowrap;
+  text-decoration: none;
+  outline: none;
+}
+
+/* Press feedback — the interface "heard" the click. */
+.btn:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+/* --------------------------------------------------------------------------
+   Sizes
+   -------------------------------------------------------------------------- */
+
+.btn--sm {
+  padding: var(--spacing-6) var(--spacing-12);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-metadata);
+}
+
+.btn--md {
+  height: 32px;
+  padding: var(--spacing-6) var(--spacing-12);
+  font-size: 12px;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-2);
+}
+
+.btn--lg {
+  height: 36px;
+  padding: var(--spacing-6) var(--spacing-16);
+  font-size: var(--font-size-body-1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body-1);
+}
+
+/* --------------------------------------------------------------------------
+   Icon-only modifier — square padding
+   -------------------------------------------------------------------------- */
+
+.btn--icon-only.btn--sm {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+.btn--icon-only.btn--md {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.btn--icon-only.btn--lg {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Primary (filled blue)
+   -------------------------------------------------------------------------- */
+
+.btn--primary {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: var(--color-white);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-800);
+  border-color: var(--color-primary-800);
+}
+
+.btn--primary:active:not(:disabled) {
+  background-color: var(--color-primary-300);
+  border-color: var(--color-primary-300);
+}
+
+.btn--primary:disabled {
+  background-color: var(--color-grey-100);
+  border-color: var(--color-grey-100);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Secondary (outlined blue)
+   -------------------------------------------------------------------------- */
+
+.btn--secondary {
+  background-color: var(--color-white);
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-500);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-500);
+}
+
+.btn--secondary:active:not(:disabled) {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+  color: var(--color-primary-300);
+}
+
+.btn--secondary:disabled {
+  background-color: var(--color-grey-100);
+  border-color: var(--color-grey-100);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Blue Ghost (text blue, no border)
+   -------------------------------------------------------------------------- */
+
+.btn--blueGhost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-primary-500);
+}
+
+.btn--blueGhost:hover:not(:disabled) {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-500);
+}
+
+.btn--blueGhost:active:not(:disabled) {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+  color: var(--color-primary-300);
+}
+
+.btn--blueGhost:disabled {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Ghost (neutral text, no border)
+   -------------------------------------------------------------------------- */
+
+.btn--ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-grey-600);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background-color: var(--color-grey-50);
+  color: var(--color-grey-800);
+}
+
+.btn--ghost:active:not(:disabled) {
+  background-color: var(--color-grey-100);
+  color: var(--color-grey-300);
+}
+
+.btn--ghost:disabled {
+  background-color: transparent;
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Secondary Ghost (Ghost with a neutral border)
+   -------------------------------------------------------------------------- */
+
+.btn--secondaryGhost {
+  background-color: var(--color-white);
+  border-color: var(--color-grey-300);
+  color: var(--color-grey-600);
+}
+
+.btn--secondaryGhost:hover:not(:disabled) {
+  background-color: var(--color-grey-50);
+  border-color: var(--color-grey-500);
+  color: var(--color-grey-800);
+}
+
+.btn--secondaryGhost:active:not(:disabled) {
+  background-color: var(--color-grey-100);
+  border-color: var(--color-grey-200);
+  color: var(--color-grey-300);
+}
+
+.btn--secondaryGhost:disabled {
+  background-color: var(--color-white);
+  border-color: var(--color-grey-200);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Red (destructive / error — solid)
+   -------------------------------------------------------------------------- */
+
+.btn--red {
+  background-color: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-white);
+}
+
+.btn--red:hover:not(:disabled) {
+  background-color: #d82828;
+  border-color: #d82828;
+}
+
+.btn--red:active:not(:disabled) {
+  background-color: #ffa8a8;
+  border-color: #ffa8a8;
+}
+
+.btn--red:disabled {
+  background-color: var(--color-grey-100);
+  border-color: var(--color-grey-100);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Variant: Green (positive / success — solid)
+   -------------------------------------------------------------------------- */
+
+.btn--green {
+  background-color: var(--color-green);
+  border-color: var(--color-green);
+  color: var(--color-white);
+}
+
+.btn--green:hover:not(:disabled) {
+  background-color: #069e43;
+  border-color: #069e43;
+}
+
+.btn--green:active:not(:disabled) {
+  background-color: #34d17f;
+  border-color: #34d17f;
+}
+
+.btn--green:disabled {
+  background-color: var(--color-grey-100);
+  border-color: var(--color-grey-100);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Icon sizing inside button
+   -------------------------------------------------------------------------- */
+
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn--sm .btn__icon {
+  font-size: 14px;
+}
+
+.btn--md .btn__icon {
+  font-size: 16px;
+}
+
+.btn--lg .btn__icon {
+  font-size: 18px;
+}

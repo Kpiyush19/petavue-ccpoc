@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { AlertOctagon, Lightbulb, ShieldOff } from 'lucide-react'
-import { Button as PvButton } from '../../petavue'
+import { Button as PvButton } from '@/ui'
 import { PaperPlaneRight, ArrowsClockwise } from '@phosphor-icons/react'
-import { Spinner } from '../../components/ui/Spinner'
+import { Spinner } from '@/ui'
 
 
 // Actions for a blocked run. When `onCorrect` is provided, the primary path
@@ -103,15 +103,15 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
       <div
         className="rounded-xl p-4 border"
         style={{
-          backgroundColor: 'var(--pv-error-bg)',
-          borderColor: 'var(--pv-error-text)',
+          backgroundColor: 'var(--color-red-bg)',
+          borderColor: 'var(--color-red)',
         }}
       >
         <div className="flex items-start gap-3">
           <AlertOctagon
             size={18}
             className="shrink-0 mt-0.5"
-            style={{ color: 'var(--pv-error-text)' }}
+            style={{ color: 'var(--color-red)' }}
           />
           <div className="flex-1 min-w-0">
             <div className="text-[13.5px] font-semibold leading-snug text-[var(--text-primary)]">
@@ -141,15 +141,15 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
     <div
       className="rounded-xl p-4 border"
       style={{
-        backgroundColor: 'var(--pv-error-bg)',
-        borderColor: 'var(--pv-error-text)',
+        backgroundColor: 'var(--color-red-bg)',
+        borderColor: 'var(--color-red)',
       }}
     >
       <div className="flex items-start gap-3">
         <AlertOctagon
           size={18}
           className="shrink-0 mt-0.5"
-          style={{ color: 'var(--pv-error-text)' }}
+          style={{ color: 'var(--color-red)' }}
         />
         <div className="flex-1 min-w-0">
           {headline && (
@@ -168,8 +168,8 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
       {options.length > 0 && (
         <div className="mt-3 pt-3 border-t border-[var(--border-primary)]">
           <div
-            className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold mb-2"
-            style={{ color: 'var(--pv-error-text)' }}
+            className="flex items-center gap-1.5 text-[12px] uppercase tracking-wider font-semibold mb-2"
+            style={{ color: 'var(--color-red)' }}
           >
             <Lightbulb size={11} />
             What you can do
@@ -182,7 +182,7 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
               >
                 <span
                   className="font-semibold mt-0.5 shrink-0"
-                  style={{ color: 'var(--pv-error-text)' }}
+                  style={{ color: 'var(--color-red)' }}
                 >
                   {i + 1}.
                 </span>
@@ -207,7 +207,7 @@ export default function BlockedCallout({ summary, fallbackReason, onRerun, rerun
           <ShieldOff
             size={12}
             className="shrink-0 mt-0.5"
-            style={{ color: 'var(--pv-error-text)' }}
+            style={{ color: 'var(--color-red)' }}
           />
           <span>{what_system_cannot_do}</span>
         </div>

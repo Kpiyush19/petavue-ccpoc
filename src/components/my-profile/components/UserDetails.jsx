@@ -151,7 +151,7 @@ export default function UserDetails({ userDetail }) {
                       <p className="text-black font-medium text-sm leading-5 mb-4">Profile Image</p>
                       <div
                         className={`h-16 w-16 flex justify-center items-center text-xl rounded-full ${
-                          userDetail.role === "admin" ? "bg-[var(--pv-primary-100)]" : "bg-[var(--pv-neutral-grey-100)]"
+                          userDetail.role === "admin" ? "bg-[var(--color-primary-100)]" : "bg-[var(--color-grey-100)]"
                         }`}
                         style={{ userSelect: "none" }}
                       >
@@ -199,18 +199,18 @@ export default function UserDetails({ userDetail }) {
                         </div>
                       </ToolTip>
                       <div className="flex gap-6 w-full">
-                        <div className="flex items-center gap-3 w-2/5 max-w-lg h-9 min-w-64 rounded-lg bg-[var(--pv-neutral-grey-50)] px-4 border border-[var(--pv-neutral-grey-200)]">
+                        <div className="flex items-center gap-3 w-2/5 max-w-lg h-9 min-w-64 rounded-lg bg-[var(--color-grey-50)] px-4 border border-[var(--color-grey-200)]">
                           {Boolean(userDetail?.apiKey) ? (
                             <>
                               <input
                                 type="text"
-                                className="h-full w-full bg-transparent border-0 text-sm text-[var(--pv-neutral-grey-500)]"
+                                className="h-full w-full bg-transparent border-0 text-sm text-[var(--color-grey-500)]"
                                 placeholder="●●●●●●●●●●●●●●"
                                 disabled={true}
                                 value={keyHidden ? "●●●●●●●●●●●●●●" : `ApiKey ${userDetail.apiKey}`}
                               />
                               <button
-                                className="p-[2px] rounded text-[var(--pv-neutral-grey-400)] hover:bg-[var(--pv-neutral-grey-100)]"
+                                className="p-[2px] rounded text-[var(--color-grey-400)] hover:bg-[var(--color-grey-100)]"
                                 onClick={() => setKeyHidden((prev) => !prev)}
                               >
                                 {keyHidden ? (
@@ -220,7 +220,7 @@ export default function UserDetails({ userDetail }) {
                                 )}
                               </button>
                               <button
-                                className="p-[2px] rounded text-[var(--pv-neutral-grey-400)] hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-50"
+                                className="p-[2px] rounded text-[var(--color-grey-400)] hover:bg-[var(--color-grey-100)] disabled:opacity-50"
                                 disabled={copyText === "Copied"}
                                 onClick={() => {
                                   navigator.clipboard.writeText(`ApiKey ${userDetail.apiKey}`);
@@ -237,7 +237,7 @@ export default function UserDetails({ userDetail }) {
                           ) : (
                             <input
                               type="text"
-                              className="h-full w-full bg-transparent border-0 text-sm text-[var(--pv-neutral-grey-400)]"
+                              className="h-full w-full bg-transparent border-0 text-sm text-[var(--color-grey-400)]"
                               placeholder="Generate an API Key"
                               disabled={true}
                               value=""

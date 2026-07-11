@@ -57,7 +57,7 @@ export const TextareaAutosize = forwardRef(
         rows={1}
         className={cn(
           'w-full resize-none bg-transparent border-none outline-none',
-          'text-sm leading-5 placeholder:text-[var(--pv-neutral-grey-400)]',
+          'text-sm leading-5 placeholder:text-[var(--color-grey-400)]',
           disabled && 'cursor-not-allowed opacity-50',
           className
         )}

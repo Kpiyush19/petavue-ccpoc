@@ -15,7 +15,7 @@ import {
   ClockCounterClockwise,
   Flask,
 } from "@phosphor-icons/react";
-import { Button, Skeleton } from "@/common-components";
+import { Button, Skeleton } from "@/ui";
 import { getCurrentUser } from "../api";
 import { MOCK_ENABLED } from "../mocks";
 import { useAuth } from "../providers/auth";
@@ -24,7 +24,7 @@ import { cn } from "../utils/cn";
 import { getSessionRowMeta, badgeDotClassname } from "./sessions/sessionRowMeta";
 import { useSessionContext } from "../contexts/SessionContext";
 import { useSessionsQuery } from "../hooks/useSessionsQuery";
-import { timeAgo } from "@/common-utils/relativeTimeDiff";
+import { timeAgo } from "@/utils/relativeTimeDiff";
 
 const STORAGE_KEY = "sidebar_state";
 
@@ -34,7 +34,7 @@ const NAV_ITEMS = [
   { to: "/workflows", icon: TreeStructure, label: "Workflows", petavueOnly: true },
   { to: "/skills", icon: Lightning, label: "Skills", petavueOnly: true },
   { to: "/data-hub", icon: Database, label: "Data Hub" },
-  { to: "/petavue/settings", icon: Gear, label: "Settings" }
+  { to: "/settings", icon: Gear, label: "Settings" }
 ];
 
 function getInitialState() {
@@ -125,7 +125,7 @@ export default function Sidebar() {
         >
           <div className={cn("h-14 flex items-center shrink-0", isRail ? "justify-center" : "px-3 justify-between")}>
             {isRail ? (
-              <Button btnColor="ghost" btnSize="md" onClick={toggleState} aria-label="Expand sidebar">
+              <Button variant="ghost" size="md" onClick={toggleState} aria-label="Expand sidebar">
                 <SidebarSimple size={18} />
               </Button>
             ) : (
@@ -133,13 +133,13 @@ export default function Sidebar() {
                 <div className="flex items-center gap-2">
                   <img src="/petavue-logo.svg" alt="Petavue" className="w-6 h-7 shrink-0" />
                   <span
-                    className="text-[15px] font-semibold tracking-[-0.02em]"
+                    className="text-[16px] font-semibold tracking-[-0.02em]"
                     style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     <span className="text-[var(--text-primary)]">Petavue</span>
                   </span>
                 </div>
-                <Button btnColor="ghost" btnSize="sm" onClick={toggleState} aria-label="Collapse sidebar">
+                <Button variant="ghost" size="sm" onClick={toggleState} aria-label="Collapse sidebar">
                   <SidebarSimple size={16} weight="fill" />
                 </Button>
               </>
@@ -149,7 +149,7 @@ export default function Sidebar() {
           <div className={cn("px-2 mb-1", isRail && "px-1.5")}>
             {isRail ? (
               <div className="group relative">
-                <Button btnColor="ghost" btnSize="md" onClick={handleNewChat} aria-label="New chat">
+                <Button variant="ghost" size="md" onClick={handleNewChat} aria-label="New chat">
                   <Plus size={16} />
                 </Button>
                 <div className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-primary)] shadow-float text-xs font-medium text-[var(--text-primary)] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
@@ -157,9 +157,9 @@ export default function Sidebar() {
                 </div>
               </div>
             ) : (
-              <Button btnColor="secondary ghost" btnSize="md" onClick={handleNewChat}>
+              <Button variant="secondaryGhost" size="md" onClick={handleNewChat}>
                 <Plus size={16} />
-                <span className="text-[13px] font-medium">New chat</span>
+                <span className="text-[14px] font-medium">New chat</span>
               </Button>
             )}
           </div>
@@ -182,7 +182,7 @@ export default function Sidebar() {
                     isRail ? "w-10 h-10 justify-center mx-auto" : "h-9 px-3",
                     MOCK_ENABLED && "cursor-default opacity-55 hover:bg-transparent",
                     isActive && !MOCK_ENABLED
-                      ? "bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)]"
+                      ? "bg-[var(--color-primary-100)] text-[var(--color-primary-500)]"
                       : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
                   )
                 }
@@ -190,7 +190,7 @@ export default function Sidebar() {
                 {({ isActive }) => (
                   <>
                     <Icon size={16} weight={isActive ? "fill" : "regular"} className="shrink-0" />
-                    {!isRail && <span className="text-[13px] font-medium whitespace-nowrap">{label}</span>}
+                    {!isRail && <span className="text-[14px] font-medium whitespace-nowrap">{label}</span>}
                     {isRail && (
                       <div className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-primary)] shadow-float text-xs font-medium text-[var(--text-primary)] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
                         {label}
@@ -205,7 +205,7 @@ export default function Sidebar() {
           {!isRail && (
             <div className="flex-1 flex flex-col min-h-0 my-2">
               <div className="px-4 py-1.5">
-                <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                <span className="text-[12px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                   Recents
                 </span>
               </div>
@@ -224,7 +224,7 @@ export default function Sidebar() {
                       const isActive = location.pathname === meta.route;
                       const IconComp = meta.isSkillRun ? Flask : ChatCircle;
                       const iconColor = meta.iconMuted
-                        ? "text-[var(--pv-text-disabled)]"
+                        ? "text-[var(--color-text-disabled)]"
                         : "text-[var(--text-muted)]";
                       const titleHint = meta.badge?.ariaLabel
                         ? `${s.name || "Session"}, ${meta.badge.ariaLabel}`
@@ -267,7 +267,7 @@ export default function Sidebar() {
                       );
                     })}
                     {sessionList.length === 0 && (
-                      <div className="px-2.5 py-4 text-[11px] text-[var(--text-muted)]">No recent sessions</div>
+                      <div className="px-2.5 py-4 text-[12px] text-[var(--text-muted)]">No recent sessions</div>
                     )}
                   </>
                 )}
@@ -275,8 +275,8 @@ export default function Sidebar() {
               {sessionList.length > 0 && (
                 <div className="shrink-0 px-2 pt-1">
                   <Button
-                    btnColor="secondary ghost"
-                    btnSize="md"
+                    variant="secondaryGhost"
+                    size="md"
                     onClick={() => {
                       setState("rail");
                       navigate("/sessions");
@@ -335,11 +335,11 @@ export default function Sidebar() {
                 </NavLink>
                 {!isRail && (
                   <Button
-                    btnColor="red ghost"
-                    btnSize="sm"
+                    variant="red"
+                    size="sm"
                     onClick={handleLogout}
                     aria-label="Logout"
-                    mainBtnClassName="p-1"
+                    className="p-1"
                   >
                     <SignOut size={14} />
                   </Button>

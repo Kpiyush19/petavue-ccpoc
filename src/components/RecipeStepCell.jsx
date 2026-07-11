@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Play, RotateCcw, ChevronDown, ChevronRight, Eye, Loader2, CheckCircle2, XCircle, Clock, Database, Code2, FileText, Trash2, Undo2, AlertTriangle, SkipForward, Shield, ShieldCheck } from 'lucide-react'
-import { Button } from './ui/Button'
+import { Button } from '@/ui'
 import { CardView, hasCardContent, stripPills } from './shared/CardRenderer'
 import DiffView from './sessions/components/DiffView'
 
 const TOOL_META = {
-  query_athena: { icon: Database, label: 'Athena Query', color: 'text-[var(--pv-primary-500)]' },
-  query_pg: { icon: Database, label: 'Postgres Query', color: 'text-[var(--pv-primary-500)]' },
-  query_snowflake: { icon: Database, label: 'Snowflake Query', color: 'text-[var(--pv-primary-500)]' },
-  execute_code: { icon: Code2, label: 'Python Code', color: 'text-[var(--pv-success-text)]' },
-  write_file: { icon: FileText, label: 'Write File', color: 'text-[var(--pv-warning-text)]' },
-  save_output: { icon: FileText, label: 'Save Output', color: 'text-[var(--pv-warning-text)]' },
+  query_athena: { icon: Database, label: 'Athena Query', color: 'text-[var(--color-primary-500)]' },
+  query_pg: { icon: Database, label: 'Postgres Query', color: 'text-[var(--color-primary-500)]' },
+  query_snowflake: { icon: Database, label: 'Snowflake Query', color: 'text-[var(--color-primary-500)]' },
+  execute_code: { icon: Code2, label: 'Python Code', color: 'text-[var(--color-green)]' },
+  write_file: { icon: FileText, label: 'Write File', color: 'text-[var(--color-orange)]' },
+  save_output: { icon: FileText, label: 'Save Output', color: 'text-[var(--color-orange)]' },
 }
 
 function getToolMeta(tool) {
@@ -84,9 +84,9 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
     <div className={`
       rounded-xl transition-all duration-200 overflow-hidden
       border border-[var(--border-primary)]
-      ${status === 'success' && !hideRunButton ? 'bg-[var(--pv-success-text)]/5' : ''}
+      ${status === 'success' && !hideRunButton ? 'bg-[var(--color-green)]/5' : ''}
       ${status === 'skipped' ? 'bg-[var(--bg-hover)]/30 opacity-60' : ''}
-      ${status === 'failed' ? 'bg-[var(--pv-error-text)]/5' : ''}
+      ${status === 'failed' ? 'bg-[var(--color-red)]/5' : ''}
       ${status === 'pending' && !isRunning ? 'bg-[var(--bg-secondary)]' : ''}
       ${isRunning ? 'bg-[var(--accent)]/5' : ''}
     `}>
@@ -113,7 +113,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
         {widgetTags.length > 0 && (
           <div className="flex items-center gap-1 shrink-0">
             {widgetTags.map(({ label }) => (
-              <span key={label} className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-[var(--pv-primary-100)] text-[var(--pv-primary-500)] border border-[var(--pv-primary-200)]">
+              <span key={label} className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-[var(--color-primary-100)] text-[var(--color-primary-500)] border border-[var(--color-primary-200)]">
                 {label}
               </span>
             ))}
@@ -127,7 +127,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           </span>
         )}
         {status === 'success' && !hideStatus && (
-          <span className="flex items-center gap-1 text-[12px] text-[var(--pv-success-text)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--color-green)]">
             <CheckCircle2 size={12} />{!hideRunButton && result?.duration_s != null ? ` ${result.duration_s}s` : ''}
           </span>
         )}
@@ -157,7 +157,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           </span>
         )}
         {status === 'failed' && (
-          <span className="flex items-center gap-1 text-[12px] text-[var(--pv-error-text)]">
+          <span className="flex items-center gap-1 text-[12px] text-[var(--color-red)]">
             <XCircle size={12} /> Failed
           </span>
         )}
@@ -187,7 +187,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
             size="icon-sm"
             onClick={(e) => { e.stopPropagation(); onRemove(step.id) }}
             title="Skip this step"
-            className="text-[var(--text-muted)] hover:text-[var(--pv-error-text)]"
+            className="text-[var(--text-muted)] hover:text-[var(--color-red)]"
           >
             <Trash2 size={12} />
           </Button>
@@ -275,7 +275,7 @@ export default function RecipeStepCell({ step, stepIndex, result, onRun, onViewO
           {(result?.output_files?.length > 0 || result?.error) && (
             <div className="border-t border-[var(--border-primary)]/50 px-3.5 py-2">
               {result.error && (
-                <p className="text-[12px] text-[var(--pv-error-text)] font-mono mb-1.5 whitespace-pre-wrap break-words max-h-[100px] overflow-y-auto">
+                <p className="text-[12px] text-[var(--color-red)] font-mono mb-1.5 whitespace-pre-wrap break-words max-h-[100px] overflow-y-auto">
                   {result.error}
                 </p>
               )}

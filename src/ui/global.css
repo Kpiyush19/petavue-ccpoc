@@ -1,0 +1,5 @@
+/* Global design-system CSS — tokens, Poppins, reset. Imported ONCE in main.jsx:
+       import './ui/global.css';
+   Loaded last so the design system is authoritative. */
+@import './style/typography.css';
+@import './reset.css';

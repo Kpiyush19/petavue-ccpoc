@@ -12,31 +12,31 @@
 
 .workspace-tray-widget {
   /* Backgrounds */
-  --bg-primary: var(--pv-white, #ffffff);
-  --bg-secondary: var(--pv-neutral-grey-50, #f8f9fc);
-  --bg-hover: var(--pv-neutral-grey-100, #eef0f7);
+  --bg-primary: var(#fff, #ffffff);
+  --bg-secondary: var(--color-grey-50, #f8f9fc);
+  --bg-hover: var(--color-grey-100, #eef0f7);
 
   /* Borders */
-  --border-primary: var(--pv-neutral-grey-200, #d4d9ea);
-  --border-muted: var(--pv-neutral-grey-200, #d4d9ea);
+  --border-primary: var(--color-grey-200, #d4d9ea);
+  --border-muted: var(--color-grey-200, #d4d9ea);
 
   /* Text */
-  --text-primary: var(--pv-text-primary-text, #232532);
-  --text-secondary: var(--pv-text-secondary-text, #757a97);
-  --text-muted: var(--pv-neutral-grey-400, #8e93af);
-  --text-accent: var(--pv-primary-500, #3661ed);
+  --text-primary: var(--color-text-primary, #232532);
+  --text-secondary: var(--color-text-secondary, #757a97);
+  --text-muted: var(--color-grey-400, #8e93af);
+  --text-accent: var(--color-primary-500, #3661ed);
 
   /* Accent */
-  --accent: var(--pv-primary-500, #3661ed);
-  --accent-subtle: var(--pv-primary-50, #f5f8ff);
+  --accent: var(--color-primary-500, #3661ed);
+  --accent-subtle: var(--color-primary-50, #f5f8ff);
 
   /* Status colors */
-  --status-success: var(--pv-success-text, #08bd50);
-  --status-warning: var(--pv-warning-text, #fbbf24);
-  --status-error: var(--pv-error-text, #f93d3d);
+  --status-success: var(--color-green, #08bd50);
+  --status-warning: var(--color-orange, #fbbf24);
+  --status-error: var(--color-red, #f93d3d);
 
   /* Tool accent */
-  --tool-accent: var(--pv-accent-text, #643bcf);
+  --tool-accent: var(--color-purple-400, #643bcf);
 }
 
 /* ─── Animations ─────────────────────────────────────────────── */

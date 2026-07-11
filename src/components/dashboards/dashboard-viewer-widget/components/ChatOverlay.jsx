@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { X } from "lucide-react";
 import { Sparkle } from "@phosphor-icons/react";
 import { ClickAwayListener } from "@mui/material";
-import { Button, Tooltip } from "@/common-components";
+import { Button, Tooltip } from "@/ui";
 
 const MIN_PERCENT = 40;
 const MAX_PERCENT = 80;
@@ -103,7 +103,7 @@ export default function ChatOverlay({
 
   const renderTitle = () => (
     <Tooltip title={title} placement="bottom" displayTooltipOnOverflow>
-      <span className="text-[var(--pv-text-primary-text)] truncate">{title}</span>
+      <span className="text-[var(--color-text-primary)] truncate">{title}</span>
     </Tooltip>
   );
 
@@ -120,11 +120,11 @@ export default function ChatOverlay({
           <div className="chat-overlay__panel">
             <div className="chat-overlay__header">
               <div className="flex items-center gap-2 w-full overflow-hidden">
-                <HeaderIcon weight={headerIconWeight} size={22} className="text-[var(--pv-primary-500)] shrink-0" />
-                <span className="font-medium text-[var(--pv-text-primary-text)]">{heading}</span>
+                <HeaderIcon weight={headerIconWeight} size={22} className="text-[var(--color-primary-500)] shrink-0" />
+                <span className="font-medium text-[var(--color-text-primary)]">{heading}</span>
                 {!floating && (
                   <>
-                    <span className="text-[var(--pv-neutral-grey-600)]">|</span>
+                    <span className="text-[var(--color-grey-600)]">|</span>
                     {renderTitle()}
                   </>
                 )}
@@ -134,13 +134,13 @@ export default function ChatOverlay({
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="flex items-center justify-center w-8 h-8 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-pv-neutral-grey-100 bg-transparent border-none cursor-pointer transition-colors shrink-0"
+                  className="flex items-center justify-center w-8 h-8 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-grey-100 bg-transparent border-none cursor-pointer transition-colors shrink-0"
                 >
                   <X size={18} />
                 </button>
               ) : (
                 <div className="flex items-center gap-3">
-                  <Button btnColor="ghost" btnSize="sm" onClick={onClose} mainBtnClassName="!p-1.5">
+                  <Button variant="ghost" size="sm" onClick={onClose} className="!p-1.5">
                     <X size={18} />
                   </Button>
                 </div>

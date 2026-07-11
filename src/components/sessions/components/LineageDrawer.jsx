@@ -41,7 +41,7 @@ function StepCard({ step, isLast }) {
         </button>
 
         {expanded && (
-          <div className="mt-1.5 ml-1 text-[11px] space-y-2">
+          <div className="mt-1.5 ml-1 text-[12px] space-y-2">
             {step.llm_description && (
               <ul className="m-0 pl-3.5 space-y-0.5 list-disc">
                 {step.llm_description.split('\n').filter(l => l.trim()).map((line, i) => (
@@ -82,7 +82,7 @@ function StepCard({ step, isLast }) {
 
 function SiblingChip({ sibling }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] text-[11px] text-[var(--accent)] font-medium">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] text-[12px] text-[var(--accent)] font-medium">
       {sibling.widget_name}
     </span>
   )
@@ -179,7 +179,7 @@ export default function LineageDrawer({
     <div className="flex flex-col h-full">
       <div className="shrink-0 flex items-center gap-2 px-4 py-3 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
         <Database size={15} className="text-[var(--accent)]" />
-        <span className="text-[13px] font-semibold text-[var(--text-primary)] flex-1 truncate">
+        <span className="text-[14px] font-semibold text-[var(--text-primary)] flex-1 truncate">
           How it's built
         </span>
       </div>
@@ -201,7 +201,7 @@ export default function LineageDrawer({
         {lineage && !loading && (
           <>
             <div className="mb-4">
-              <h4 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-3">
+              <h4 className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-3">
                 Data pipeline ({lineage.chain.length} steps)
               </h4>
               {lineage.chain.map((step, i) => (
@@ -211,7 +211,7 @@ export default function LineageDrawer({
 
             {lineage.also_feeds_into && lineage.also_feeds_into.length > 0 && (
               <div className="mb-4">
-                <h4 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-1">
+                <h4 className="text-[12px] uppercase tracking-wider text-[var(--text-muted)] font-semibold mb-1">
                   Related widgets
                 </h4>
                 <p className="text-[10px] text-[var(--text-muted)] mb-2 mt-0">

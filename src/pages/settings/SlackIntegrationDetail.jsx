@@ -5,7 +5,7 @@ import {
   ArrowLeft, Shield, Loader2, CheckCircle2, ExternalLink,
   Hash, Users, Bell, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Lock,
 } from 'lucide-react'
-import { Button } from '../../common-components/Button'
+import { Button } from '@/ui'
 import { apiGet } from '../../api'
 import { useTestConnection } from '../../components/settings/integrations/api/testConnection'
 import { DisconnectIntegrationModal } from '../../components/settings/integrations/components/DisconnectIntegrationModal'
@@ -168,32 +168,32 @@ export default function SlackIntegrationDetail({ onBack }) {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[var(--pv-neutral-grey-50)]">
-        <Loader2 className="animate-spin text-[var(--pv-neutral-grey-400)]" size={24} />
+      <div className="h-screen flex items-center justify-center bg-[var(--color-grey-50)]">
+        <Loader2 className="animate-spin text-[var(--color-grey-400)]" size={24} />
       </div>
     )
   }
 
   if (connection && connection.feature_enabled === false) {
     return (
-      <div className="h-screen flex flex-col bg-[var(--pv-neutral-grey-50)]">
-        <div className="flex items-center border-b border-[var(--pv-neutral-grey-200)] h-[64px] shrink-0 bg-white px-6 py-4">
+      <div className="h-screen flex flex-col bg-[var(--color-grey-50)]">
+        <div className="flex items-center border-b border-[var(--color-grey-200)] h-[64px] shrink-0 bg-white px-6 py-4">
           <div onClick={onBack} className="cursor-pointer flex items-center mr-4">
             <ArrowLeft size={20} />
           </div>
-          <h1 className="text-[var(--pv-text-primary-text)] text-lg leading-7 font-medium">
+          <h1 className="text-[var(--color-text-primary)] text-lg leading-7 font-medium">
             Slack Details
           </h1>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="rounded-xl border border-[var(--pv-neutral-grey-200)] bg-white p-8 text-center max-w-md">
-            <div className="w-12 h-12 rounded-lg bg-[var(--pv-neutral-grey-100)] flex items-center justify-center mx-auto mb-4">
-              <Lock size={20} className="text-[var(--pv-neutral-grey-400)]" />
+          <div className="rounded-xl border border-[var(--color-grey-200)] bg-white p-8 text-center max-w-md">
+            <div className="w-12 h-12 rounded-lg bg-[var(--color-grey-100)] flex items-center justify-center mx-auto mb-4">
+              <Lock size={20} className="text-[var(--color-grey-400)]" />
             </div>
-            <h3 className="text-[15px] font-semibold text-[var(--pv-neutral-grey-900)] mb-2">
+            <h3 className="text-[16px] font-semibold text-[var(--color-grey-900)] mb-2">
               Slack Integration Not Available
             </h3>
-            <p className="text-[13px] text-[var(--pv-neutral-grey-500)]">
+            <p className="text-[14px] text-[var(--color-grey-500)]">
               The Slack integration is not enabled for your organization.
               Please contact your administrator to enable this feature.
             </p>
@@ -205,14 +205,14 @@ export default function SlackIntegrationDetail({ onBack }) {
 
   return (
     <>
-      <div className="h-screen flex flex-col bg-[var(--pv-neutral-grey-50)]">
+      <div className="h-screen flex flex-col bg-[var(--color-grey-50)]">
         {/* Header */}
-        <div className="flex items-center border-b border-[var(--pv-neutral-grey-200)] h-[64px] shrink-0 bg-white px-6 py-4 justify-between">
+        <div className="flex items-center border-b border-[var(--color-grey-200)] h-[64px] shrink-0 bg-white px-6 py-4 justify-between">
           <div className="flex items-center gap-4">
             <div onClick={onBack} className="cursor-pointer flex items-center">
               <ArrowLeft size={20} />
             </div>
-            <h1 className="text-[var(--pv-text-primary-text)] text-lg leading-7 font-medium">
+            <h1 className="text-[var(--color-text-primary)] text-lg leading-7 font-medium">
               Slack Details
             </h1>
             {isConnected && (
@@ -226,16 +226,16 @@ export default function SlackIntegrationDetail({ onBack }) {
           {isConnected && (
             <div className="flex items-center gap-3">
               <Button
-                btnColor="secondary"
-                btnSize="lg"
+                variant="secondary"
+                size="lg"
                 onClick={handleTestConnection}
                 disabled={testConnection.isLoading}
               >
                 {testConnection.isLoading ? 'Testing...' : 'Test Connection'}
               </Button>
               <Button
-                btnColor="primary red"
-                btnSize="lg"
+                variant="red"
+                size="lg"
                 onClick={() => setShowDisconnect(true)}
               >
                 Disconnect
@@ -246,32 +246,32 @@ export default function SlackIntegrationDetail({ onBack }) {
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Bot Permissions Section */}
-          <section className="bg-white rounded-lg border border-[var(--pv-neutral-grey-200)] overflow-hidden">
-            <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-100)] flex items-center gap-2">
-              <Shield size={16} className="text-[var(--pv-neutral-grey-500)]" />
-              <h2 className="text-sm font-semibold text-[var(--pv-text-primary-text)]">
+          <section className="bg-white rounded-lg border border-[var(--color-grey-200)] overflow-hidden">
+            <div className="px-5 py-4 border-b border-[var(--color-grey-100)] flex items-center gap-2">
+              <Shield size={16} className="text-[var(--color-grey-500)]" />
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
                 Bot Permissions
               </h2>
               {scopes.length > 0 && (
-                <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+                <span className="text-xs text-[var(--color-grey-500)]">
                   ({scopes.length} scopes granted)
                 </span>
               )}
             </div>
             <div className="px-5 py-4">
               {!isConnected ? (
-                <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+                <p className="text-sm text-[var(--color-grey-500)]">
                   Slack is not connected. Connect via Settings to view permissions.
                 </p>
               ) : scopes.length > 0 ? (
                 <>
-                  <div className="divide-y divide-[var(--pv-neutral-grey-100)]">
+                  <div className="divide-y divide-[var(--color-grey-100)]">
                     {(showAllScopes ? scopes : scopes.slice(0, PREVIEW_SCOPE_COUNT)).map((scope) => (
                       <div key={scope} className="flex items-start gap-3 py-2.5 first:pt-0 last:pb-0">
-                        <span className="inline-flex items-center text-[11px] font-mono text-[var(--pv-neutral-grey-700)] bg-[var(--pv-neutral-grey-50)] border border-[var(--pv-neutral-grey-200)] px-2 py-0.5 rounded-md shrink-0 mt-0.5">
+                        <span className="inline-flex items-center text-[12px] font-mono text-[var(--color-grey-700)] bg-[var(--color-grey-50)] border border-[var(--color-grey-200)] px-2 py-0.5 rounded-md shrink-0 mt-0.5">
                           {scope}
                         </span>
-                        <span className="text-sm text-[var(--pv-neutral-grey-600)]">
+                        <span className="text-sm text-[var(--color-grey-600)]">
                           {SCOPE_DESCRIPTIONS[scope] || scope}
                         </span>
                       </div>
@@ -291,7 +291,7 @@ export default function SlackIntegrationDetail({ onBack }) {
                   )}
                 </>
               ) : (
-                <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+                <p className="text-sm text-[var(--color-grey-500)]">
                   No scope information available.
                 </p>
               )}
@@ -299,32 +299,32 @@ export default function SlackIntegrationDetail({ onBack }) {
           </section>
 
           {/* Configured Slack Alerts Section */}
-          <section className="bg-white rounded-lg border border-[var(--pv-neutral-grey-200)] overflow-hidden">
-            <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-100)] flex items-center gap-2">
-              <Bell size={16} className="text-[var(--pv-neutral-grey-500)]" />
-              <h2 className="text-sm font-semibold text-[var(--pv-text-primary-text)]">
+          <section className="bg-white rounded-lg border border-[var(--color-grey-200)] overflow-hidden">
+            <div className="px-5 py-4 border-b border-[var(--color-grey-100)] flex items-center gap-2">
+              <Bell size={16} className="text-[var(--color-grey-500)]" />
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
                 Configured Slack Alerts
               </h2>
               {workflows.length > 0 && (
-                <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+                <span className="text-xs text-[var(--color-grey-500)]">
                   ({workflows.length} workflow{workflows.length !== 1 ? 's' : ''})
                 </span>
               )}
             </div>
             <div className="px-5 py-4">
               {workflowsLoading ? (
-                <div className="flex items-center gap-2 text-sm text-[var(--pv-neutral-grey-500)]">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-grey-500)]">
                   <Loader2 size={14} className="animate-spin" />
                   Loading workflows...
                 </div>
               ) : workflows.length === 0 ? (
-                <p className="text-sm text-[var(--pv-neutral-grey-500)]">
+                <p className="text-sm text-[var(--color-grey-500)]">
                   No workflows with Slack alerts configured yet.
                 </p>
               ) : (
                 <>
                   {/* Table Header */}
-                  <div className="grid grid-cols-[1fr_1fr_100px_80px] gap-4 px-3 py-2 text-[11px] font-semibold text-[var(--pv-neutral-grey-500)] uppercase tracking-wider border-b border-[var(--pv-neutral-grey-100)]">
+                  <div className="grid grid-cols-[1fr_1fr_100px_80px] gap-4 px-3 py-2 text-[12px] font-semibold text-[var(--color-grey-500)] uppercase tracking-wider border-b border-[var(--color-grey-100)]">
                     <span>Workflow</span>
                     <span>Target</span>
                     <span>Status</span>
@@ -332,25 +332,25 @@ export default function SlackIntegrationDetail({ onBack }) {
                   </div>
 
                   {/* Rows */}
-                  <div className="divide-y divide-[var(--pv-neutral-grey-100)]">
+                  <div className="divide-y divide-[var(--color-grey-100)]">
                     {paginatedWorkflows.map((wf) => (
                       <div
                         key={wf.workflow_id}
-                        className="grid grid-cols-[1fr_1fr_100px_80px] gap-4 px-3 py-3 items-center hover:bg-[var(--pv-neutral-grey-50)] rounded"
+                        className="grid grid-cols-[1fr_1fr_100px_80px] gap-4 px-3 py-3 items-center hover:bg-[var(--color-grey-50)] rounded"
                       >
-                        <span className="text-sm text-[var(--pv-text-primary-text)] font-medium truncate">
+                        <span className="text-sm text-[var(--color-text-primary)] font-medium truncate">
                           {wf.name || 'Untitled Workflow'}
                         </span>
-                        <span className="text-sm text-[var(--pv-neutral-grey-600)] truncate flex items-center gap-1 flex-wrap">
+                        <span className="text-sm text-[var(--color-grey-600)] truncate flex items-center gap-1 flex-wrap">
                           {getSlackTargets(wf).map((t, i) => (
                             <span key={`${t.label}-${i}`} className="inline-flex items-center gap-0.5 shrink-0">
                               {t.type === 'channel' ? (
-                                <Hash size={11} className="text-[var(--pv-neutral-grey-400)]" />
+                                <Hash size={11} className="text-[var(--color-grey-400)]" />
                               ) : (
-                                <Users size={11} className="text-[var(--pv-neutral-grey-400)]" />
+                                <Users size={11} className="text-[var(--color-grey-400)]" />
                               )}
                               <span>{t.type === 'channel' ? t.label.replace(/^#/, '') : t.label}</span>
-                              {i < getSlackTargets(wf).length - 1 && <span className="text-[var(--pv-neutral-grey-300)] mx-0.5">,</span>}
+                              {i < getSlackTargets(wf).length - 1 && <span className="text-[var(--color-grey-300)] mx-0.5">,</span>}
                             </span>
                           ))}
                         </span>
@@ -360,7 +360,7 @@ export default function SlackIntegrationDetail({ onBack }) {
                               Active
                             </span>
                           ) : (
-                            <span className="inline-flex items-center text-xs font-medium text-[var(--pv-neutral-grey-600)] bg-[var(--pv-neutral-grey-100)] px-2 py-0.5 rounded-full">
+                            <span className="inline-flex items-center text-xs font-medium text-[var(--color-grey-600)] bg-[var(--color-grey-100)] px-2 py-0.5 rounded-full">
                               Paused
                             </span>
                           )}
@@ -383,7 +383,7 @@ export default function SlackIntegrationDetail({ onBack }) {
 
                   {/* Loading more indicator */}
                   {loadingMore && (
-                    <div className="flex items-center gap-2 text-xs text-[var(--pv-neutral-grey-500)] mt-3">
+                    <div className="flex items-center gap-2 text-xs text-[var(--color-grey-500)] mt-3">
                       <Loader2 size={12} className="animate-spin" />
                       Loading more...
                     </div>
@@ -391,15 +391,15 @@ export default function SlackIntegrationDetail({ onBack }) {
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--pv-neutral-grey-100)]">
-                      <span className="text-xs text-[var(--pv-neutral-grey-500)]">
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--color-grey-100)]">
+                      <span className="text-xs text-[var(--color-grey-500)]">
                         Page {page} of {totalPages}{hasMoreOnServer ? '+' : ''}
                       </span>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setPage((p) => Math.max(1, p - 1))}
                           disabled={page === 1}
-                          className="p-1.5 rounded hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="p-1.5 rounded hover:bg-[var(--color-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <ChevronLeft size={14} />
                         </button>
@@ -410,7 +410,7 @@ export default function SlackIntegrationDetail({ onBack }) {
                             className={`w-7 h-7 text-xs rounded font-medium ${
                               p === page
                                 ? 'bg-blue-600 text-white'
-                                : 'hover:bg-[var(--pv-neutral-grey-100)] text-[var(--pv-neutral-grey-700)]'
+                                : 'hover:bg-[var(--color-grey-100)] text-[var(--color-grey-700)]'
                             }`}
                           >
                             {p}
@@ -419,7 +419,7 @@ export default function SlackIntegrationDetail({ onBack }) {
                         <button
                           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                           disabled={page === totalPages && !hasMoreOnServer}
-                          className="p-1.5 rounded hover:bg-[var(--pv-neutral-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="p-1.5 rounded hover:bg-[var(--color-grey-100)] disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <ChevronRight size={14} />
                         </button>

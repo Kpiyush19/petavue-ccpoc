@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, RotateCw } from 'lucide-react'
-import { Button } from './ui/Button'
+import { Button } from '@/ui'
 import { getApiBase, getAuthToken } from '../api'
 import DataTableViewer from './viewers/DataTableViewer'
 import JsonTreeViewer from './viewers/JsonTreeViewer'

@@ -13,7 +13,7 @@ export default function HomeLayout() {
   }, [queryClient]);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-pv-neutral-grey-50">
+    <div className="flex-1 flex flex-col overflow-hidden bg-grey-50">
       <div className="flex-1 overflow-hidden">
         <Outlet />
       </div>

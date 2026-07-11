@@ -1,5 +1,5 @@
-import { Modal } from "../../../../common-components/Modal";
-import { Button } from "../../../../common-components/Button";
+import { Modal } from "@/ui";
+import { Button } from "@/ui";
 
 export const UnsavedChangesWarningModal = ({ isModalOpen, onClose, onExit, onSaveChanges }) => {
   return (
@@ -15,18 +15,18 @@ export const UnsavedChangesWarningModal = ({ isModalOpen, onClose, onExit, onSav
     >
       <div className="flex flex-col">
         <div className="px-4 pb-4 pt-2 flex flex-col gap-2">
-          <p className="text-sm text-[var(--pv-neutral-grey-600)]">
+          <p className="text-sm text-[var(--color-grey-600)]">
             You have unsaved changes that will be lost if you proceed
           </p>
-          <p className="text-sm font-medium text-[var(--pv-text-primary-text)]">
+          <p className="text-sm font-medium text-[var(--color-text-primary)]">
             Are you sure you want to leave this page?
           </p>
         </div>
-        <div className="border-t border-[var(--pv-neutral-grey-150)]">
+        <div className="border-t border-[var(--color-grey-100)]">
           <div className="flex justify-between items-center py-3 px-4">
             <Button
-              btnColor="ghost"
-              btnSize="lg"
+              variant="ghost"
+              size="lg"
               onClick={() => {
                 onClose();
                 onExit();
@@ -35,8 +35,8 @@ export const UnsavedChangesWarningModal = ({ isModalOpen, onClose, onExit, onSav
               Exit
             </Button>
             <Button
-              btnColor="primary"
-              btnSize="lg"
+              variant="primary"
+              size="lg"
               onClick={() => {
                 onClose();
                 onSaveChanges();

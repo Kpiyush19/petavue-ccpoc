@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { ChevronLeft, Inbox } from 'lucide-react'
-import { Badge } from './ui/Badge'
-import { Button } from './ui/Button'
+import { Badge } from '@/ui'
+import { Button } from '@/ui'
 
 const STATUS_VARIANT = {
   running: 'warning',
@@ -60,15 +60,15 @@ export default function ScheduleRunHistory({ runs, loading, onBack }) {
                 <Badge variant={STATUS_VARIANT[run.status] || 'muted'}>
                   {run.status}
                 </Badge>
-                <span className="text-[11px] text-[var(--text-muted)]">
+                <span className="text-[12px] text-[var(--text-muted)]">
                   {run.trigger_type === 'cron' ? 'Scheduled' : 'Manual'}
                 </span>
                 <span className="flex-1" />
-                <span className="text-[11px] text-[var(--text-muted)] font-mono">
+                <span className="text-[12px] text-[var(--text-muted)] font-mono">
                   {run.started_at ? new Date(run.started_at).toLocaleString() : '-'}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
+              <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)]">
                 <span>Duration: {formatDuration(run.duration_ms)}</span>
                 {run.total_input_tokens > 0 && (
                   <span className="font-mono">
@@ -84,7 +84,7 @@ export default function ScheduleRunHistory({ runs, loading, onBack }) {
                 )}
               </div>
               {run.error && (
-                <div className="mt-1 text-[11px] text-[var(--error)] bg-[var(--error)]/5 px-2 py-1 rounded font-mono">
+                <div className="mt-1 text-[12px] text-[var(--error)] bg-[var(--error)]/5 px-2 py-1 rounded font-mono">
                   {run.error}
                 </div>
               )}

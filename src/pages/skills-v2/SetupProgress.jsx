@@ -1,6 +1,6 @@
 import { Check, Sparkles, AlertOctagon, Database, ShieldCheck, PenLine, SearchCheck } from 'lucide-react'
 import { CheckCircle, Circle } from '@phosphor-icons/react'
-import { Spinner } from '../../components/ui/Spinner'
+import { Spinner } from '@/ui'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
@@ -74,12 +74,12 @@ export function StepIndicator({ status }) {
   }
   if (status === 'blocked' || status === 'failed') {
     return (
-      <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[var(--pv-error-bg)] shrink-0">
-        <AlertOctagon size={11} className="text-[var(--pv-error-text)]" strokeWidth={2.5} />
+      <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[var(--color-red-bg)] shrink-0">
+        <AlertOctagon size={11} className="text-[var(--color-red)]" strokeWidth={2.5} />
       </span>
     )
   }
-  return <Circle size={16} className="text-[var(--pv-neutral-grey-300)] shrink-0" />
+  return <Circle size={16} className="text-[var(--color-grey-300)] shrink-0" />
 }
 
 
@@ -120,7 +120,7 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-[10.5px] shrink-0 underline text-[var(--pv-error-text)] hover:text-[var(--pv-error-text)]/80"
+                className="text-[10.5px] shrink-0 underline text-[var(--color-red)] hover:text-[var(--color-red)]/80"
               >
                 Cancel
               </button>
@@ -131,7 +131,7 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
             style={{ gridTemplateRows: showDesc ? '1fr' : '0fr', opacity: showDesc ? 1 : 0, transitionTimingFunction: STEP_EASE }}
           >
             <div className="overflow-hidden">
-              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--pv-error-text)]/90' : 'text-[var(--color-text-secondary)]'}`}>
+              <p className={`text-[12px] leading-snug mt-1 ${status === 'blocked' ? 'text-[var(--color-red)]/90' : 'text-[var(--color-text-secondary)]'}`}>
                 {inlineDesc}
               </p>
             </div>
@@ -160,11 +160,11 @@ export function SetupSubStepList({ setupStage, hadClarifications, paused, onCanc
   const activeTimeHint = userGated || blocked ? null : getInlineTimeHint(setupStage, elapsed)
 
   return (
-    <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--pv-neutral-grey-150)] border-r-0 rounded-l-2xl overflow-hidden">
+    <div className="w-[340px] shrink-0 flex flex-col min-h-0 bg-white border border-[var(--color-grey-100)] border-r-0 rounded-l-2xl overflow-hidden">
       <div className="flex items-center justify-between h-12 px-4 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {blocked ? (
-            <AlertOctagon size={15} className="text-[var(--pv-error-text)] shrink-0" />
+            <AlertOctagon size={15} className="text-[var(--color-red)] shrink-0" />
           ) : null}
           <h2 className="text-[16px] font-semibold text-[var(--text-primary)] truncate">
             {blocked ? 'Plan halted' : 'Preparing the plan'}
@@ -223,7 +223,7 @@ export function SetupRightPaneCopy({ setupStage }) {
         <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] mb-3.5">
           <Icon size={20} strokeWidth={1.8} />
         </div>
-        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{content.copy}</p>
+        <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed">{content.copy}</p>
       </div>
     </div>
   )

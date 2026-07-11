@@ -3,7 +3,7 @@ import {
   NumberCircleOne, NumberCircleTwo, NumberCircleThree, NumberCircleFour,
   CheckCircle, WarningCircle,
 } from '@phosphor-icons/react'
-import { Spinner } from '../../components/ui/Spinner'
+import { Spinner } from '@/ui'
 
 // Numbered-circle glyph per stage index — the "number icon then step name"
 // treatment used by the verify-&-publish step nav.
@@ -71,7 +71,7 @@ function StageSegment({ stage, state, index, isLast, userGated }) {
   const accent = isDone || isActive
 
   const color = isBlocked
-    ? 'text-[var(--pv-error-text)]'
+    ? 'text-[var(--color-red)]'
     : accent
     ? 'text-[var(--accent)]'
     : 'text-[var(--text-muted)]'
@@ -84,7 +84,7 @@ function StageSegment({ stage, state, index, isLast, userGated }) {
   } else if (isActive) {
     icon = <Spinner size={16} className="shrink-0" />
   } else if (isBlocked) {
-    icon = <WarningCircle weight="fill" size={18} className="shrink-0 text-[var(--pv-error-text)]" />
+    icon = <WarningCircle weight="fill" size={18} className="shrink-0 text-[var(--color-red)]" />
   } else {
     const NumIcon = NUMBER_ICONS[index] || NumberCircleOne
     icon = <NumIcon size={18} className="shrink-0 text-[var(--text-muted)]" />
@@ -193,7 +193,7 @@ export default function RunProgressBar({
   if (bare) return segments
 
   return (
-    <div className="border-b border-[var(--pv-neutral-grey-150)] px-6 py-2.5 bg-white">
+    <div className="border-b border-[var(--color-grey-100)] px-6 py-2.5 bg-white">
       <div className="max-w-3xl mx-auto">{segments}</div>
     </div>
   )

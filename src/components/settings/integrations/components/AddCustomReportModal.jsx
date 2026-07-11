@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CREATING_MESSAGE_ROTATE_MS } from "../constants";
 import { X, MagnifyingGlass, Plus, Check, Lock, CaretDown, CaretRight } from "@phosphor-icons/react";
-import { Button } from "../../../../common-components/Button";
+import { Button } from "@/ui";
 import {
   useGetFivetranReportCatalog,
   usePostFivetranReport,
@@ -229,12 +229,12 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
         className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-5 py-4 border-b border-[var(--pv-neutral-grey-200)] flex items-start justify-between gap-3">
+        <div className="px-5 py-4 border-b border-[var(--color-grey-200)] flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+            <h2 className="text-base font-medium text-[var(--color-text-primary)]">
               {isEdit ? "Edit custom report" : "Add custom report"}{serviceLabel ? `: ${serviceLabel}` : ""}
             </h2>
-            <p className="text-xs text-[var(--pv-neutral-grey-500)] mt-1">
+            <p className="text-xs text-[var(--color-grey-500)] mt-1">
               {isEdit
                 ? "Adjust the dimensions, metrics, or settings. Changes apply on the next sync."
                 : "Pick the dimensions and metrics you want. We'll sync them as a new table on the next run."}
@@ -243,7 +243,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
           <button
             type="button"
             onClick={onClose}
-            className="text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)] -mt-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)] -mt-1 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Close"
             disabled={busy}
           >
@@ -257,7 +257,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
             tableName={tableName}
           />
         ) : catalogQuery.isLoading || !catalog ? (
-          <div className="p-8 text-center text-sm text-[var(--pv-neutral-grey-500)]">
+          <div className="p-8 text-center text-sm text-[var(--color-grey-500)]">
             Loading catalog…
           </div>
         ) : step === "review" ? (
@@ -289,10 +289,10 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                 value={tableName}
                 onChange={(e) => setTableName(e.target.value)}
                 placeholder="e.g. campaign_daily_sessions"
-                className="w-full h-9 px-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--pv-primary-100)] focus:border-[var(--pv-primary-500)]"
+                className="w-full h-9 px-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-100)] focus:border-[var(--color-primary-500)]"
               />
               {tableName.length > 0 && !nameValid && (
-                <p className="text-[11px] text-[var(--pv-status-error,#EF4444)] mt-1">
+                <p className="text-[12px] text-[var(--pv-status-error,#EF4444)] mt-1">
                   Only letters, numbers, and underscores.
                 </p>
               )}
@@ -330,7 +330,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                     max={catalog.constraints.rollbackWindow?.max}
                     value={rollback}
                     onChange={(e) => setRollback(e.target.value)}
-                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white"
+                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white"
                   />
                 </Field>
                 <Field
@@ -340,7 +340,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                   <select
                     value={granularity}
                     onChange={(e) => setGranularity(e.target.value)}
-                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white"
+                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white"
                   >
                     {catalog.constraints.aggregations.map((a) => (
                       <option key={a} value={a}>
@@ -349,9 +349,9 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                     ))}
                   </select>
                   {activeDateDim && (
-                    <p className="text-[11px] text-[var(--pv-neutral-grey-500)] mt-1">
+                    <p className="text-[12px] text-[var(--color-grey-500)] mt-1">
                       We'll add the matching date column automatically:{" "}
-                      <span className="font-medium text-[var(--pv-text-primary-text)]">
+                      <span className="font-medium text-[var(--color-text-primary)]">
                         {labelByName.get(activeDateDim) || activeDateDim}
                       </span>
                       .
@@ -366,7 +366,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                 <select
                   value={reportType}
                   onChange={(e) => setReportType(e.target.value)}
-                  className="w-full h-9 px-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white"
+                  className="w-full h-9 px-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white"
                 >
                   {GOOGLE_ADS_REPORT_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -383,7 +383,7 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                   <select
                     value={fbLevel}
                     onChange={(e) => setFbLevel(e.target.value)}
-                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--pv-neutral-grey-200)] bg-white"
+                    className="w-full h-9 px-3 text-sm rounded-md border border-[var(--color-grey-200)] bg-white"
                   >
                     <option value="account">Account</option>
                     <option value="campaign">Campaign</option>
@@ -400,10 +400,10 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
                           key={w}
                           type="button"
                           onClick={() => toggleAttribution(w)}
-                          className={`text-[11px] px-2 py-1 rounded-full border transition-colors ${
+                          className={`text-[12px] px-2 py-1 rounded-full border transition-colors ${
                             on
-                              ? "bg-[var(--pv-primary-100,#EEF2FF)] border-[var(--pv-primary-300,#A5B4FC)] text-[var(--pv-primary-700,#3730A3)]"
-                              : "bg-white border-[var(--pv-neutral-grey-200)] text-[var(--pv-neutral-grey-700)] hover:border-[var(--pv-primary-300,#A5B4FC)]"
+                              ? "bg-[var(--color-primary-100,#EEF2FF)] border-[var(--color-primary-300,#A5B4FC)] text-[var(--color-primary-700,#3730A3)]"
+                              : "bg-white border-[var(--color-grey-200)] text-[var(--color-grey-700)] hover:border-[var(--color-primary-300,#A5B4FC)]"
                           }`}
                         >
                           {w}
@@ -418,15 +418,15 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
         )}
 
         {!busy && (
-        <div className="px-5 py-3 border-t border-[var(--pv-neutral-grey-200)] flex items-center justify-end gap-2">
+        <div className="px-5 py-3 border-t border-[var(--color-grey-200)] flex items-center justify-end gap-2">
           {step === "edit" ? (
             <>
-              <Button btnColor="secondary" btnSize="md" onClick={onClose} disabled={busy}>
+              <Button variant="secondary" size="md" onClick={onClose} disabled={busy}>
                 Cancel
               </Button>
               <Button
-                btnColor="primary"
-                btnSize="md"
+                variant="primary"
+                size="md"
                 onClick={() => canSubmit && setStep("review")}
                 disabled={!canSubmit || busy}
               >
@@ -436,16 +436,16 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
           ) : (
             <>
               <Button
-                btnColor="secondary"
-                btnSize="md"
+                variant="secondary"
+                size="md"
                 onClick={() => setStep("edit")}
                 disabled={busy}
               >
                 Back
               </Button>
               <Button
-                btnColor="primary"
-                btnSize="md"
+                variant="primary"
+                size="md"
                 onClick={handleSubmit}
                 disabled={!canSubmit || busy}
               >
@@ -474,9 +474,9 @@ export const AddCustomReportModal = ({ integrationId, onClose, onCreated, editRe
 
 const Field = ({ label, hint, children }) => (
   <div className="flex flex-col gap-1">
-    <label className="text-xs font-medium text-[var(--pv-text-primary-text)]">{label}</label>
+    <label className="text-xs font-medium text-[var(--color-text-primary)]">{label}</label>
     {children}
-    {hint && <p className="text-[11px] text-[var(--pv-neutral-grey-500)]">{hint}</p>}
+    {hint && <p className="text-[12px] text-[var(--color-grey-500)]">{hint}</p>}
   </div>
 );
 
@@ -512,7 +512,7 @@ const CreatingState = ({ serviceLabel, tableName }) => {
   return (
     <div className="px-5 py-12 flex-1 flex flex-col items-center justify-center gap-4 text-center">
       <svg
-        className="animate-spin h-10 w-10 text-[var(--pv-primary-500)]"
+        className="animate-spin h-10 w-10 text-[var(--color-primary-500)]"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -533,15 +533,15 @@ const CreatingState = ({ serviceLabel, tableName }) => {
         />
       </svg>
       <div className="flex flex-col gap-1.5 max-w-md">
-        <p className="text-sm font-medium text-[var(--pv-text-primary-text)] transition-opacity duration-300">
+        <p className="text-sm font-medium text-[var(--color-text-primary)] transition-opacity duration-300">
           {messages[idx]}
         </p>
         {tableName && (
-          <p className="text-xs text-[var(--pv-neutral-grey-500)]">
+          <p className="text-xs text-[var(--color-grey-500)]">
             Creating <span className="font-mono">{tableName}</span>
           </p>
         )}
-        <p className="text-[11px] text-[var(--pv-neutral-grey-400)] mt-1">
+        <p className="text-[12px] text-[var(--color-grey-400)] mt-1">
           This usually takes a few seconds. Please don't close this window.
         </p>
       </div>
@@ -567,7 +567,7 @@ const ReviewSummary = ({
   isEdit
 }) => (
   <div className="px-5 py-4 flex-1 overflow-y-auto flex flex-col gap-3">
-    <div className="rounded-md border border-[var(--pv-primary-300,#A5B4FC)] bg-[var(--pv-primary-100,#EEF2FF)] px-3 py-2 text-[11px] text-[var(--pv-primary-700,#3730A3)]">
+    <div className="rounded-md border border-[var(--color-primary-300,#A5B4FC)] bg-[var(--color-primary-100,#EEF2FF)] px-3 py-2 text-[12px] text-[var(--color-primary-700,#3730A3)]">
       {isEdit
         ? `Review your changes before we send them to ${serviceLabel || "the source"}. Renaming the report creates a new table on the next sync; the old one stops updating.`
         : `Review the report before we send it to ${serviceLabel || "the source"}. Changes take effect on the next sync.`}
@@ -606,29 +606,29 @@ const ReviewSummary = ({
 
 const SummaryRow = ({ label, children, mono }) => (
   <div className="grid grid-cols-[140px_1fr] gap-3 items-start">
-    <div className="text-[11px] font-medium uppercase tracking-wide text-[var(--pv-neutral-grey-500)] pt-1">
+    <div className="text-[12px] font-medium uppercase tracking-wide text-[var(--color-grey-500)] pt-1">
       {label}
     </div>
     <div
-      className={`text-sm text-[var(--pv-text-primary-text)] ${
-        mono ? "font-mono text-[13px]" : ""
+      className={`text-sm text-[var(--color-text-primary)] ${
+        mono ? "font-mono text-[14px]" : ""
       }`}
     >
-      {children || <span className="text-[var(--pv-neutral-grey-400)]">—</span>}
+      {children || <span className="text-[var(--color-grey-400)]">—</span>}
     </div>
   </div>
 );
 
 const ChipList = ({ names, labelByName }) => {
   if (!names || names.length === 0) {
-    return <span className="text-[var(--pv-neutral-grey-400)]">—</span>;
+    return <span className="text-[var(--color-grey-400)]">—</span>;
   }
   return (
     <div className="flex flex-wrap gap-1">
       {names.map((n) => (
         <span
           key={n}
-          className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full bg-white border border-[var(--pv-primary-300,#A5B4FC)] text-[var(--pv-primary-700,#3730A3)]"
+          className="inline-flex items-center text-[12px] px-2 py-0.5 rounded-full bg-white border border-[var(--color-primary-300,#A5B4FC)] text-[var(--color-primary-700,#3730A3)]"
           title={n}
         >
           {labelByName?.get(n) || n}
@@ -714,24 +714,24 @@ const FieldPicker = ({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <label className="text-xs font-medium text-[var(--pv-text-primary-text)]">
+        <label className="text-xs font-medium text-[var(--color-text-primary)]">
           {title}
         </label>
         <span
-          className={`text-[11px] ${
+          className={`text-[12px] ${
             overLimit
               ? "text-[var(--pv-status-error,#EF4444)] font-medium"
-              : "text-[var(--pv-neutral-grey-500)]"
+              : "text-[var(--color-grey-500)]"
           }`}
         >
           {selected.size} / {limit}
         </span>
       </div>
-      <div className="border border-[var(--pv-neutral-grey-200)] rounded-md bg-white flex flex-col">
-        <div className="relative border-b border-[var(--pv-neutral-grey-100)]">
+      <div className="border border-[var(--color-grey-200)] rounded-md bg-white flex flex-col">
+        <div className="relative border-b border-[var(--color-grey-100)]">
           <MagnifyingGlass
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pv-neutral-grey-400)] pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-grey-400)] pointer-events-none"
           />
           <input
             type="text"
@@ -749,13 +749,13 @@ const FieldPicker = ({
                 <button
                   type="button"
                   onClick={() => toggleCat(category)}
-                  className="w-full flex items-center justify-between px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--pv-neutral-grey-500)] hover:text-[var(--pv-text-primary-text)]"
+                  className="w-full flex items-center justify-between px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-grey-500)] hover:text-[var(--color-text-primary)]"
                 >
                   <span className="flex items-center gap-1">
                     {open ? <CaretDown size={10} weight="bold" /> : <CaretRight size={10} weight="bold" />}
                     {category}
                   </span>
-                  <span className="text-[10px] text-[var(--pv-neutral-grey-400)]">
+                  <span className="text-[10px] text-[var(--color-grey-400)]">
                     {fs.length}
                   </span>
                 </button>
@@ -771,10 +771,10 @@ const FieldPicker = ({
                           onClick={() => onToggle(f.name)}
                           disabled={isLocked}
                           title={f.name}
-                          className={`inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
+                          className={`inline-flex items-center gap-1 text-[12px] px-2 py-1 rounded-full border transition-colors ${
                             checked
-                              ? "bg-[var(--pv-primary-100,#EEF2FF)] border-[var(--pv-primary-300,#A5B4FC)] text-[var(--pv-primary-700,#3730A3)]"
-                              : "bg-white border-[var(--pv-neutral-grey-200)] text-[var(--pv-neutral-grey-700)] hover:border-[var(--pv-primary-300,#A5B4FC)]"
+                              ? "bg-[var(--color-primary-100,#EEF2FF)] border-[var(--color-primary-300,#A5B4FC)] text-[var(--color-primary-700,#3730A3)]"
+                              : "bg-white border-[var(--color-grey-200)] text-[var(--color-grey-700)] hover:border-[var(--color-primary-300,#A5B4FC)]"
                           } ${isLocked ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                         >
                           {isLocked ? (
@@ -792,7 +792,7 @@ const FieldPicker = ({
             );
           })}
           {filtered.length === 0 && (
-            <div className="text-xs text-[var(--pv-neutral-grey-500)] text-center py-6">
+            <div className="text-xs text-[var(--color-grey-500)] text-center py-6">
               No matches.
             </div>
           )}

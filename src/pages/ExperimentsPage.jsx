@@ -10,9 +10,9 @@ export default function ExperimentsPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[var(--pv-neutral-grey-50)]">
-      <div className="bg-white border-b border-[var(--pv-neutral-grey-200)] px-6 h-[64px] flex items-center">
-        <h1 className="text-base font-medium text-[var(--pv-text-primary-text)]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[var(--color-grey-50)]">
+      <div className="bg-white border-b border-[var(--color-grey-200)] px-6 h-[64px] flex items-center">
+        <h1 className="text-base font-medium text-[var(--color-text-primary)]">
           Experiments
         </h1>
       </div>

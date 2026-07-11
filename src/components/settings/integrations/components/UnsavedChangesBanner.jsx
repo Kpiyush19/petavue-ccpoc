@@ -1,4 +1,4 @@
-import { Button } from "../../../../common-components/Button";
+import { Button } from "@/ui";
 
 // Unified sticky "unsaved changes" banner used across every integration's
 // schema-style tab (SF/HS Schema, HubSpot Associations, Fivetran Schema,
@@ -18,16 +18,16 @@ export const UnsavedChangesBanner = ({
   stickyTop = "top-[101px]"
 }) => (
   <div
-    className={`sticky ${stickyTop} z-20 -mx-6 px-6 py-3 bg-[var(--pv-primary-50,#EEF2FF)] border-y border-[var(--pv-primary-200,#C7D2FE)] flex items-center justify-between gap-3 flex-wrap`}
+    className={`sticky ${stickyTop} z-20 -mx-6 px-6 py-3 bg-[var(--color-primary-50,#EEF2FF)] border-y border-[var(--color-primary-200,#C7D2FE)] flex items-center justify-between gap-3 flex-wrap`}
   >
-    <span className="text-xs font-medium text-[var(--pv-primary-700,#3730A3)]">
+    <span className="text-xs font-medium text-[var(--color-primary-700,#3730A3)]">
       {message}
     </span>
     <div className="flex items-center gap-2">
-      <Button btnColor="secondary" btnSize="md" onClick={onDiscard} disabled={isSaving}>
+      <Button variant="secondary" size="md" onClick={onDiscard} disabled={isSaving}>
         Discard
       </Button>
-      <Button btnColor="primary" btnSize="md" onClick={onSave} disabled={isSaving}>
+      <Button variant="primary" size="md" onClick={onSave} disabled={isSaving}>
         {isSaving ? savingLabel : saveLabel}
       </Button>
     </div>

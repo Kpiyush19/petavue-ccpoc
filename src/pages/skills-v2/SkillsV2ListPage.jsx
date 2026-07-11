@@ -7,8 +7,8 @@ import {
   LayoutDashboard, FileText, ChevronDown, Loader2, CircleDashed,
   ArrowRight, Trash2,
 } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
-import { Badge } from '../../components/ui/Badge'
+import { Button } from '@/ui'
+import { Badge } from '@/ui'
 import { apiGet, apiPost, apiPut } from '../../api'
 import { PHASE_LABEL } from './statusMap'
 
@@ -75,7 +75,7 @@ function OutputTypePill({ skill, isAdmin, onEdited }) {
 
   if (!editable) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
         {pillContent}
       </span>
     )
@@ -87,7 +87,7 @@ function OutputTypePill({ skill, isAdmin, onEdited }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         disabled={saving}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-[var(--bg-hover)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)] transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] bg-[var(--bg-hover)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)] transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
       >
         {saving ? <Loader2 size={11} className="animate-spin" /> : pillContent}
       </button>
@@ -245,7 +245,7 @@ function RunSplitButton({
         >
           {/* Explicit label so the affordance reads as "open the list of
               in-progress runs" rather than a bare count. */}
-          <span className="text-[11px] font-medium leading-none whitespace-nowrap">
+          <span className="text-[12px] font-medium leading-none whitespace-nowrap">
             {activeRuns.length} in progress
           </span>
           <ChevronDown size={13} className={open ? 'rotate-180 transition-transform' : 'transition-transform'} />
@@ -287,7 +287,7 @@ function RunSplitButton({
                         {formatRelativeTime(run.created_at)}
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent)] px-2 py-0.5 rounded border border-[var(--accent)]/30 group-hover:bg-[var(--accent)] group-hover:text-white group-hover:border-[var(--accent)] transition-colors shrink-0">
+                    <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--accent)] px-2 py-0.5 rounded border border-[var(--accent)]/30 group-hover:bg-[var(--accent)] group-hover:text-white group-hover:border-[var(--accent)] transition-colors shrink-0">
                       View
                       <ArrowRight size={11} />
                     </span>
@@ -298,7 +298,7 @@ function RunSplitButton({
                     disabled={isDiscarding}
                     aria-label="Discard this run"
                     title="Discard. Removes this run from the list. Can't be undone."
-                    className="shrink-0 p-1 rounded text-[var(--text-muted)] hover:text-[var(--pv-error-text)] hover:bg-[var(--pv-error-bg)]/40 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                    className="shrink-0 p-1 rounded text-[var(--text-muted)] hover:text-[var(--color-red)] hover:bg-[var(--color-red-bg)]/40 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                   >
                     {isDiscarding
                       ? <Loader2 size={12} className="animate-spin" />

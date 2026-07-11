@@ -9,26 +9,26 @@
 
 const STYLES = {
   DISABLED: {
-    bg: "bg-[var(--pv-neutral-grey-50)]",
-    text: "text-[var(--pv-neutral-grey-500)]",
+    bg: "bg-[var(--color-grey-50)]",
+    text: "text-[var(--color-grey-500)]",
     label: "Disabled",
     pulse: false
   },
   ENABLED: {
-    bg: "bg-[var(--pv-neutral-grey-100)]",
-    text: "text-[var(--pv-neutral-grey-600)]",
+    bg: "bg-[var(--color-grey-100)]",
+    text: "text-[var(--color-grey-600)]",
     label: "Enabled",
     pulse: false
   },
   IN_PROGRESS: {
-    bg: "bg-[var(--pv-primary-50)]",
-    text: "text-[var(--pv-primary-500)]",
+    bg: "bg-[var(--color-primary-50)]",
+    text: "text-[var(--color-primary-500)]",
     label: "In progress",
     pulse: true
   },
   COMPLETED: {
-    bg: "bg-[var(--pv-success-bg)]",
-    text: "text-[var(--pv-success-text)]",
+    bg: "bg-[var(--color-green-bg)]",
+    text: "text-[var(--color-green)]",
     label: "Completed",
     pulse: false
   }
@@ -65,7 +65,7 @@ export const SyncStatusLegend = () => (
         <span className="shrink-0 w-28">
           <SyncStatusPill state={state} />
         </span>
-        <span className="text-[11px] font-normal leading-snug text-white/85">{desc}</span>
+        <span className="text-[12px] font-normal leading-snug text-white/85">{desc}</span>
       </div>
     ))}
   </div>

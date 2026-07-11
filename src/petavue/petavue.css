@@ -1,6 +1,0 @@
-/* Global Petavue tokens + reset. Import this ONCE in your app entry:
-       import './petavue/petavue.css';
-   Petavue's design system is the source of truth (tokens, Poppins, reset). */
-@import './style/colorography.css';
-@import './style/typography.css';
-@import './reset.css';
