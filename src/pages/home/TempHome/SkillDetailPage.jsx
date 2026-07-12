@@ -353,26 +353,25 @@ export default function SkillDetailPage() {
                   </ol>
                 </div>
 
-                <div className="flex flex-col pt-4 border-t border-[var(--border-primary)]">
-                  <div className="flex items-center justify-between gap-4 py-2">
-                    <span className={LABEL}>Output type</span>
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 px-2 py-0.5 text-[12px] font-medium rounded border",
-                        isMemo ? "bg-amber-50 text-amber-700 border-amber-300" : "bg-blue-50 text-blue-700 border-blue-300"
-                      )}
-                    >
-                      <OutputIcon size={12} />
-                      {isMemo ? "Memo" : "Dashboard"}
-                    </span>
-                  </div>
-                  {skill.time && (
-                    <div className="flex items-center justify-between gap-4 py-2 border-t border-[var(--border-primary)]">
-                      <span className={LABEL}>Build time</span>
-                      <span className="text-[12px] font-medium text-[var(--color-green)]">{skill.time}</span>
-                    </div>
-                  )}
+                <div className="flex items-center justify-between gap-4 pt-4 border-t border-[var(--border-primary)]">
+                  <span className={LABEL}>Output type</span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2 py-0.5 text-[12px] font-medium rounded border",
+                      isMemo ? "bg-amber-50 text-amber-700 border-amber-300" : "bg-blue-50 text-blue-700 border-blue-300"
+                    )}
+                  >
+                    <OutputIcon size={12} />
+                    {isMemo ? "Memo" : "Dashboard"}
+                  </span>
                 </div>
+
+                {skill.time && (
+                  <div className="flex items-center justify-between gap-4 pt-4 border-t border-[var(--border-primary)]">
+                    <span className={LABEL}>Build time</span>
+                    <span className="text-[12px] font-medium text-[var(--color-green)]">{skill.time}</span>
+                  </div>
+                )}
 
                 {skill.integrations?.length > 0 && (
                   <div className="flex flex-col gap-3.5 pt-4 border-t border-[var(--border-primary)]">

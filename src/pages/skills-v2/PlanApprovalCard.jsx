@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Check, Sparkles, AlertCircle, Calculator, X, MessageSquare, Info, BarChart3, LineChart, Table2, List, LayoutGrid, AlignLeft } from 'lucide-react'
-import { Button as PvButton } from '@/ui'
+import { Button as PvButton, ModifyPlan } from '@/ui'
 import { PaperPlaneRight, CheckCircle, XCircle, ArrowUUpLeft, PencilSimple } from '@phosphor-icons/react'
 import { Spinner } from '@/ui'
 import { WidgetPreview, WIDGET_TYPE_BY_ID } from './WidgetSchematic'
+import { StepIndicator } from './SetupProgress'
 
 // Widget-type chip icon per schematic kind (see WIDGET_TYPE_BY_ID).
 const TYPE_ICON = { stats: LayoutGrid, line: LineChart, bars: BarChart3, list: List, table: Table2, text: AlignLeft }
@@ -154,7 +155,6 @@ export default function PlanApprovalCard({
   // current step in the sequential review).
   const [selectedId, setSelectedId] = useState(null)
   // "Request a change" drawer — slides in from the right, hidden by default.
-  const [changePanelOpen, setChangePanelOpen] = useState(false)
 
   // Review completeness — computed BEFORE the early returns so the effect
   // below is always called (hooks can't run conditionally). `summary?` guards
@@ -297,13 +297,11 @@ export default function PlanApprovalCard({
                     disabled={locked}
                     onClick={() => setSelectedId(w.id)}
                     title={locked ? 'Review the earlier steps first' : undefined}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-colors ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${sel ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--bg-hover)]'}`}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg border border-[var(--color-grey-100)] text-left transition-colors ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${sel ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--bg-hover)]'}`}
                   >
-                    {isApproved ? (
-                      <CheckCircle size={16} weight="fill" className="text-[var(--accent)] shrink-0" />
-                    ) : (
-                      <span className={`flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-semibold shrink-0 tabular-nums ${sel ? 'bg-[var(--color-primary-50)] text-[var(--accent)]' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'}`}>{i + 1}</span>
-                    )}
+                    {/* Same indicator as the progress steppers: check (approved),
+                        spinner (the one you're reviewing), hollow circle (waiting). */}
+                    <StepIndicator status={isApproved ? 'completed' : sel ? 'active' : 'pending'} />
                     <span className={`flex-1 min-w-0 truncate text-[14px] ${isDropped ? 'line-through text-[var(--text-muted)]' : sel ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>{w.name}</span>
                     {!locked && hasNote ? (
                       <MessageSquare size={12} className="text-[var(--accent)] shrink-0" />
@@ -356,20 +354,26 @@ export default function PlanApprovalCard({
                 </div>
 
                 <div className="pt-3 border-t border-[var(--border-primary)] flex flex-col gap-2">
-                  {/* Per-widget actions — confirm the widget (approve) or exclude
-                      it (remove), plus "Request a change" which opens the drawer.
-                      Petavue design-system buttons only: primary + blueGhost
-                      (both collision-free; the system has no red/green). */}
+                  {/* Per-widget actions, all on one row: inline "Suggest a
+                      change" (workbook-style modify — expands upward in place as
+                      an overlay, so its edit/delete menu floats free of the note
+                      below) + exclude (Remove) / confirm (Keep). Petavue
+                      design-system buttons only. */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    {/* Suggest a change — left; Remove + Keep pushed to the far
-                        right, Keep rightmost as the primary confirm. */}
-                    <PvButton
-                      onClick={() => setChangePanelOpen(true)}
-                      size="md"
-                      variant="ghost"
-                      icon={PencilSimple}
+                    <ModifyPlan
+                      // key on the widget so switching widgets remounts it —
+                      // otherwise an open/expanded panel stays open on the next
+                      // widget (stale internal state).
+                      key={selected.id}
                       label="Suggest a change"
+                      placeholder={selected ? `e.g. break "${selected.name}" down by channel, or use a different metric…` : 'Suggest a change…'}
+                      modifications={selected && (widgetNotes[selected.id] || '').trim() ? [{ id: selected.id, text: widgetNotes[selected.id] }] : []}
+                      onAdd={(text) => selected && setWidgetNotes((m) => ({ ...m, [selected.id]: text }))}
+                      onEdit={(id, text) => setWidgetNotes((m) => ({ ...m, [id]: text }))}
+                      onDelete={(id) => setWidgetNotes((m) => { const n = { ...m }; delete n[id]; return n; })}
                     />
+                    {/* push Remove/Keep to the right, away from the fixed-width
+                        Suggest-a-change on the left */}
                     <div className="ml-auto flex items-center gap-2">
                       <PvButton
                         onClick={() => toggleDropped(selected.id)}
@@ -407,53 +411,6 @@ export default function PlanApprovalCard({
           </div>
         </div>
 
-        {/* "Request a change" drawer — slides in from the right, hidden by
-            default. Bound to the selected widget's note; closing keeps the
-            note (Sage applies it when it revises the plan). */}
-        <div
-          className={`absolute inset-0 z-[65] bg-black/20 transition-opacity duration-200 ${changePanelOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-          onClick={() => setChangePanelOpen(false)}
-        />
-        <aside
-          className={`absolute inset-y-0 right-0 z-[70] w-[380px] max-w-[85%] flex flex-col bg-white border-l border-[var(--color-grey-100)] transition-transform duration-200 ${changePanelOpen ? 'translate-x-0 shadow-[-8px_0_24px_-12px_rgba(16,24,40,0.25)]' : 'translate-x-full'}`}
-          aria-hidden={!changePanelOpen}
-        >
-          <div className="flex items-center justify-between gap-2 h-12 px-4 shrink-0 border-b border-[var(--color-grey-100)]">
-            <span className="text-[14px] font-semibold text-[var(--text-primary)] truncate">Request a change</span>
-            <button
-              type="button"
-              onClick={() => setChangePanelOpen(false)}
-              aria-label="Close"
-              className="flex items-center justify-center w-7 h-7 rounded-md text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] bg-transparent border-none cursor-pointer transition-colors shrink-0"
-            >
-              <X size={16} />
-            </button>
-          </div>
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
-            <div>
-              <div className="text-[14px] uppercase tracking-wider text-[var(--text-muted)] mb-1">{isMemo ? 'Section' : 'Widget'}</div>
-              <div className="text-[14px] font-medium text-[var(--text-primary)]">{selected?.name}</div>
-            </div>
-            <div>
-              <label className="block text-[12px] font-medium text-[var(--text-muted)] mb-1.5">What should change?</label>
-              <textarea
-                value={selected ? (widgetNotes[selected.id] || '') : ''}
-                onChange={(e) => selected && setWidgetNotes((m) => ({ ...m, [selected.id]: e.target.value }))}
-                rows={6}
-                placeholder={selected ? `e.g. break "${selected.name}" down by channel, or use a different metric…` : ''}
-                className="w-full px-3 py-2 rounded-lg border border-[var(--border-primary)] bg-white text-[12.5px] text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] resize-none"
-              />
-              <p className="flex items-start gap-1.5 text-[12px] text-[var(--text-secondary)] mt-2">
-                <Sparkles size={12} className="mt-0.5 shrink-0 text-[var(--accent)]" />
-                <span>Sage applies this when it revises the plan, before anything is built.</span>
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center justify-end gap-2 p-3 border-t border-[var(--color-grey-100)] shrink-0">
-            <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="blueGhost" label="Cancel" />
-            <PvButton onClick={() => setChangePanelOpen(false)} size="sm" variant="primary" label="Save change" />
-          </div>
-        </aside>
       </div>
     )
   }

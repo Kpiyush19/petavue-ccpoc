@@ -10,7 +10,6 @@ import MarkdownRenderer from '../../utils/MarkdownRenderer'
 import {
   useSubStageStopwatch,
   getInlineTimeHint,
-  severityTextClass,
 } from './subStageTime'
 import { StepIndicator } from './SetupProgress'
 import { SchematicBody } from './WidgetSchematic'
@@ -73,6 +72,7 @@ function buildVerifyRows({ phase, round }) {
     return [{
       key: 'reviewing',
       label: 'Reviewing the result',
+      desc: descOf.reviewing,
       status: 'pending',
     }]
   }
@@ -103,8 +103,19 @@ function buildVerifyRows({ phase, round }) {
       // Visible but not active and not terminal — must be a past phase.
       status = 'success'
     }
-    return { key, label: labelOf[key], status }
+    return { key, label: labelOf[key], desc: descOf[key], status }
   })
+}
+
+// What each verify sub-step is actually doing — shown as the row's
+// description when it's the active/blocked one, mirroring the plan steps'
+// purpose line so the quality-check section isn't just bare labels.
+// Time estimate lives in the sentence (as the setup rows do), not a separate
+// inline chip — an overrun swaps this whole line for the escalation tooltip.
+const descOf = {
+  reviewing: 'Checking the numbers, logic, and formatting hold up before you see it. Usually 5–7 minutes.',
+  polishing: 'Fixing anything the review flagged so the result comes out clean. Usually 2–4 minutes.',
+  final_check: 'One last pass to confirm everything is correct and consistent. Usually 5–6 minutes.',
 }
 
 // Pick which row should carry the "blocked" red state when the run
@@ -291,7 +302,11 @@ function BuildTile({ widget, status }) {
         <span className={`text-[12px] font-medium truncate ${status === 'pending' ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>{widget.name}</span>
       </div>
       {status === 'done' ? (
-        <SchematicBody id={widget.id} />
+        // Fade + rise the schematic in on reveal, so the skeleton→result swap
+        // reads as a smooth transition instead of a hard pop.
+        <div className="animate-fade-in">
+          <SchematicBody id={widget.id} />
+        </div>
       ) : (
         <div className={`flex flex-col gap-1.5 ${status === 'building' ? 'animate-pulse' : 'opacity-50'}`}>
           {(status === 'building' ? [100, 82, 90, 64] : [100, 68]).map((w, i) => (
@@ -372,7 +387,7 @@ function StepRow({ step, status, title }) {
   const showDesc = expanded && !!step.purpose
   return (
     <li
-      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      className={`px-2 py-2 rounded-lg border border-[var(--color-grey-100)] transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
       title={expanded ? undefined : (step.purpose || title)}
     >
       <div className="flex items-start gap-2.5">
@@ -408,13 +423,15 @@ function StepRow({ step, status, title }) {
 
 // Verify row — one per visible quality-check phase. Same morphing structure
 // as StepRow; its time hint (when present) rides the expanding description.
-function VerifyRow({ label, status, timeHint, onCancel }) {
+function VerifyRow({ label, status, desc: descProp, timeHint, onCancel }) {
   const expanded = status === 'running' || status === 'blocked'
-  const desc = timeHint?.tooltip
+  // Prefer the live time-hint tooltip when present; otherwise fall back to the
+  // static per-step description so the active row always explains itself.
+  const desc = timeHint?.tooltip || descProp
   const showDesc = expanded && !!desc
   return (
     <li
-      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      className={`px-2 py-2 rounded-lg border border-[var(--color-grey-100)] transition-colors duration-200 ${status === 'running' ? 'bg-[var(--color-primary-50)]' : ''}`}
       title={expanded ? undefined : (timeHint?.tooltip || label)}
     >
       <div className="flex items-start gap-2.5">
@@ -432,11 +449,6 @@ function VerifyRow({ label, status, timeHint, onCancel }) {
             >
               {label}
             </span>
-            {status === 'running' && timeHint?.text ? (
-              <span className={`text-[10.5px] shrink-0 ${severityTextClass(timeHint.severity)}`}>
-                {timeHint.text}
-              </span>
-            ) : null}
             {status === 'running' && timeHint?.showCancel && onCancel ? (
               <button
                 type="button"
@@ -728,6 +740,7 @@ export default function ExecutionProgress({
               key={r.key}
               label={r.label}
               status={r.status}
+              desc={r.desc}
               timeHint={r.status === 'running' ? verifyTimeHint : null}
               onCancel={onCancel}
             />

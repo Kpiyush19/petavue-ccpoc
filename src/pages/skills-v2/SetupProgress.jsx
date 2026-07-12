@@ -98,7 +98,7 @@ function SubStepRow({ label, status, tooltip, timeHint, onCancel }) {
 
   return (
     <li
-      className={`px-2 py-2 rounded-lg transition-colors duration-200 ${status === 'active' ? 'bg-[var(--color-primary-50)]' : ''}`}
+      className={`px-2 py-2 rounded-lg border border-[var(--color-grey-100)] transition-colors duration-200 ${status === 'active' ? 'bg-[var(--color-primary-50)]' : ''}`}
       title={expanded ? undefined : tooltip}
     >
       <div className="flex items-start gap-2.5">

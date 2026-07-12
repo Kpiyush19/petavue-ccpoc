@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   PencilSimpleLine,
   CaretUp,
@@ -46,6 +47,9 @@ export function ModifyPlan({
     : setInternalExpanded;
   const [value, setValue] = useState('');
   const [activeMenu, setActiveMenu] = useState(null);
+  /* Anchor rect for the actions dropdown — it's portaled to <body> so it
+     escapes the thread's overflow:auto / expanded panel's overflow:hidden. */
+  const [menuRect, setMenuRect] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
   const textareaRef = useRef(null);
@@ -197,13 +201,30 @@ export function ModifyPlan({
                         <button
                           className="modify-plan__msg-menu-btn"
                           type="button"
-                          onClick={() => setActiveMenu(activeMenu === mod.id ? null : mod.id)}
+                          onClick={(e) => {
+                            if (activeMenu === mod.id) {
+                              setActiveMenu(null);
+                            } else {
+                              setMenuRect(e.currentTarget.getBoundingClientRect());
+                              setActiveMenu(mod.id);
+                            }
+                          }}
                           aria-label="More options"
                         >
                           <DotsThree size={16} weight="bold" color="var(--color-primary-500)" />
                         </button>
-                        {activeMenu === mod.id && (
-                          <div className="modify-plan__actions-dropdown" ref={menuRef}>
+                        {activeMenu === mod.id && menuRect && createPortal(
+                          <div
+                            className="modify-plan__actions-dropdown"
+                            ref={menuRef}
+                            style={{
+                              position: 'fixed',
+                              top: menuRect.bottom + 4,
+                              left: menuRect.right,
+                              transform: 'translateX(-100%)',
+                              zIndex: 1000,
+                            }}
+                          >
                             <button
                               className="modify-plan__action-item"
                               type="button"
@@ -220,7 +241,8 @@ export function ModifyPlan({
                               <TrashSimple size={12} weight="regular" color="var(--color-text-primary)" />
                               <span className="text-body-2-regular">Delete</span>
                             </button>
-                          </div>
+                          </div>,
+                          document.body
                         )}
                       </div>
                     </div>
