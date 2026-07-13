@@ -2,7 +2,8 @@
 // raw-fetch / iframe viewers (HtmlViewer, MarkdownViewer, JsonTreeViewer,
 // DataTableViewer) which bypass axios. Only intercepts `/api/sessions/:id/files/*`.
 
-import { DASHBOARD_FILES, WIDGET_PREVIEWS } from "./dashboardAssets";
+import { DASHBOARD_FILES, WIDGET_PREVIEWS, assembleSkillDashboard } from "./dashboardAssets";
+import { getRun } from "./skillRun";
 
 function jsonResponse(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -35,9 +36,17 @@ function handleFilesRequest(pathname, search) {
   }
 
   // /api/sessions/<sid>/files/<filepath>[/data]
-  const m = pathname.match(/\/api\/sessions\/[^/]+\/files\/(.+)$/);
+  const m = pathname.match(/\/api\/sessions\/([^/]+)\/files\/(.+)$/);
   if (!m) return null;
-  let filepath = decodeURIComponent(m[1]);
+  const sid = m[1];
+  let filepath = decodeURIComponent(m[2]);
+
+  // Skill-flow dashboard — assembled live from the widgets the user KEPT in the
+  // plan (drop a widget → it's gone here too).
+  if (filepath === "output/dashboard/skill_dashboard.html") {
+    const run = getRun(sid);
+    return new Response(assembleSkillDashboard(run?.keptWidgetIds), { status: 200, headers: { "content-type": "text/html" } });
+  }
 
   // Paginated data endpoint for tables.
   if (filepath.endsWith("/data")) {

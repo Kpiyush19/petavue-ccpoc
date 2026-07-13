@@ -6,6 +6,7 @@
 
 import { emit } from "./pusherBus";
 import { SKILLS_CATALOG } from "../skills/skillsCatalog";
+import { SKILL_DASH_META } from "./dashboardAssets";
 
 const runs = {}; // sessionId -> run record
 
@@ -274,11 +275,14 @@ export function startRun(session, skillId) {
       // run page so the user always knows what this skill is for.
       skill_description: isPMR ? PMR_PLAN.description : (skill?.description || ""),
       output_type: isMemo ? "memo" : "dashboard",
-      // The dashboard this run opens on handoff (Paid Media ROI vs the default).
-      target_file: isPMR ? "output/dashboard/paid_media_roi.html" : "",
+      // The dashboard this run opens on handoff — the skill-flow dashboard,
+      // assembled from the widgets kept in the plan (distinct from the chat flow).
+      target_file: isPMR ? "output/dashboard/skill_dashboard.html" : "",
       plan_outcome: isPMR ? PMR_PLAN.overview : (skill?.overview || `Sage will build your ${(skill?.name || "output").toLowerCase()} from your connected data.`),
       plan_will_deliver: isPMR ? PMR_PLAN.will_deliver : (skill?.questions || []).slice(0, 4),
-      widgets: isMemo ? MEMO_SECTIONS : (isPMR ? PMR_WIDGETS : DASHBOARD_WIDGETS),
+      // Single source of truth: the built dashboard's own widgets. Drop one in
+      // the plan and it's excluded from the final dashboard (see executeRun).
+      widgets: isMemo ? MEMO_SECTIONS : (isPMR ? SKILL_DASH_META.map((w) => ({ id: w.id, name: w.name, desc: w.desc })) : DASHBOARD_WIDGETS),
       // The answers/definitions produced during this run, offered for saving as
       // reusable context so future runs reuse them (the "Save answers" popup).
       saveableAnswers: [
@@ -393,9 +397,12 @@ export function submitClarification(sid, answers) {
 }
 
 // User approved the plan → run the build, quality check, then complete.
-export function executeRun(sid) {
+export function executeRun(sid, keptWidgetIds) {
   const run = runs[sid];
   if (!run) return;
+  // Remember which widgets the user kept in the plan — the final dashboard is
+  // assembled from exactly these (fetchPatch reads run.keptWidgetIds).
+  if (Array.isArray(keptWidgetIds)) run.keptWidgetIds = keptWidgetIds;
   const { session, steps } = run;
   const after = (ms, fn) => run.timers.push(setTimeout(fn, ms));
 

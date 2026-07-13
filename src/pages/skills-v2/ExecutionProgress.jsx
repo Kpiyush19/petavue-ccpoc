@@ -581,7 +581,7 @@ function PlanSummaryPane({ summary }) {
 }
 
 
-function FinalArtifactPane({ sessionId, outputType, memoPath }) {
+function FinalArtifactPane({ sessionId, outputType, memoPath, dashboardPath }) {
   if (outputType === 'memo') {
     if (!memoPath) {
       return (
@@ -594,7 +594,9 @@ function FinalArtifactPane({ sessionId, outputType, memoPath }) {
     }
     return <MarkdownViewer sessionId={sessionId} path={memoPath} />
   }
-  return <HtmlViewer sessionId={sessionId} path="output/dashboard/index.html" />
+  // The themed run (e.g. Paid Media ROI) sets its own dashboard file; otherwise
+  // the default entry.
+  return <HtmlViewer sessionId={sessionId} path={dashboardPath || 'output/dashboard/index.html'} />
 }
 
 
@@ -809,6 +811,7 @@ export default function ExecutionProgress({
                 sessionId={sessionId}
                 outputType={outputType}
                 memoPath={memoPath}
+                dashboardPath={planSummary?.target_file}
               />
             </div>
           </>

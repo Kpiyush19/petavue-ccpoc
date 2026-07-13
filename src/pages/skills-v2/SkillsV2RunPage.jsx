@@ -14,7 +14,7 @@ import RunProgressBar from './RunProgressBar'
 import { SetupSubStepList, SetupRightPaneCopy } from './SetupProgress'
 import { Button } from '@/ui'
 import { Button as PvButton } from '@/ui'
-import { Sparkle, ArrowRight, Check } from '@phosphor-icons/react'
+import { Sparkle, ArrowRight, CheckCircle } from '@phosphor-icons/react'
 import { Spinner } from '@/ui'
 import { Dialog, DialogHeader, DialogContent, DialogFooter } from '@/ui/components/OverlayDialog/OverlayDialog'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
@@ -619,7 +619,7 @@ export default function SkillsV2RunPage() {
                 planSummary={planSummary}
                 planSummaryLoading={planSummaryLoading}
                 planSummaryError={planSummaryError}
-                onApprovePlan={approvePlan}
+                onApprovePlan={() => approvePlan(reviewProgress?.keptWidgetIds)}
                 onCancelPlan={cancelPlan}
                 approving={approving}
                 discarding={discarding}
@@ -647,7 +647,7 @@ export default function SkillsV2RunPage() {
                 planSummary={planSummary}
                 planSummaryLoading={planSummaryLoading}
                 planSummaryError={planSummaryError}
-                onApprovePlan={approvePlan}
+                onApprovePlan={() => approvePlan(reviewProgress?.keptWidgetIds)}
                 onCancelPlan={cancelPlan}
                 approving={approving}
                 discarding={discarding}
@@ -705,7 +705,7 @@ export default function SkillsV2RunPage() {
           <div className="w-[240px] shrink-0 flex justify-end">
             {state.phase === 'AWAITING_CONFIRMATION' && planSummary ? (
               <PvButton
-                onClick={approvePlan}
+                onClick={() => approvePlan(reviewProgress?.keptWidgetIds)}
                 size="md"
                 variant="primary"
                 disabled={approving || discarding || buildGated}
@@ -721,9 +721,9 @@ export default function SkillsV2RunPage() {
                 variant="primary"
                 disabled={handingOff}
                 label={handingOff ? 'Opening…' : 'Verify & refine in chat'}
-                icon={handingOff ? Spinner : Check}
+                icon={handingOff ? Spinner : CheckCircle}
                 iconPosition="suffix"
-                iconWeight={handingOff ? 'regular' : 'bold'}
+                iconWeight={handingOff ? 'regular' : 'fill'}
               />
             ) : state.phase === 'PLANNING' ? (
               // Proceed sits in the footer through the whole Plan stage, but

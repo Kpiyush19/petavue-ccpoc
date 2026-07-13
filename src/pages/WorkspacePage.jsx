@@ -79,6 +79,9 @@ export default function WorkspacePage() {
   // dashboard tab is active — ArtifactPanel handles the runtime check.
   const pendingArtifact = useRef(location.state?.openArtifact || null);
   const pendingVerifyPublish = useRef(!!location.state?.openVerifyPublish);
+  // Keep the handed-off dashboard descriptor so the chat welcome's "Open
+  // dashboard" button can re-open it (the ref above is nulled after auto-open).
+  const [handoffArtifact] = useState(() => location.state?.openArtifact || null);
   useEffect(() => {
     if (!pendingArtifact.current && !pendingVerifyPublish.current) return;
     if (session.sessionId !== id) return;
@@ -301,6 +304,8 @@ export default function WorkspacePage() {
               onMuteFollowups={session.muteFollowups}
               followupsMuted={session.followupsMuted}
               onUnmuteFollowups={session.unmuteFollowups}
+              dashboardName={session.sessionName}
+              onOpenDashboard={handoffArtifact ? () => artifact.openArtifact(handoffArtifact) : undefined}
             />
 
             {session.messages.length > 0 && (

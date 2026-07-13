@@ -18,6 +18,7 @@ import spinner from '@/ui/assets/spinner.gif';
  */
 function AnalyticsChatInner({
   dashboardId,
+  dashboardName,
   initialSessionId,
   apiUrl,
   authToken,
@@ -181,6 +182,7 @@ function AnalyticsChatInner({
           isThinking={isThinking}
           isCompacting={session.isCompacting}
           onSuggestionClick={(text) => session.sendMessage(text)}
+          dashboardName={dashboardName}
         />
         <InputArea
           onSend={session.sendMessage}
@@ -249,6 +251,7 @@ function AnalyticsChatInner({
  */
 export default function AnalyticsChat({
   dashboardId,
+  dashboardName,
   sessionId: initialSessionId,
   apiUrl,
   authToken,
@@ -277,6 +280,7 @@ export default function AnalyticsChat({
     >
       <AnalyticsChatInner
         dashboardId={dashboardId}
+        dashboardName={dashboardName}
         initialSessionId={initialSessionId}
         apiUrl={apiUrl}
         authToken={authToken}

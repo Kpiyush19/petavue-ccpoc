@@ -534,7 +534,9 @@ export const router = createBrowserRouter([
           {
             path: "skills/run/:sessionId",
             element: (
-              <SuspenseWrapper>
+              // The run page renders its own PLANNING / "setting up" UI, so a
+              // generic page skeleton here just flashes a mismatched layout.
+              <SuspenseWrapper variant="none">
                 <SkillsV2RunPage />
               </SuspenseWrapper>
             )

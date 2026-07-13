@@ -631,11 +631,11 @@ export function useSkillRun(sessionId) {
 
   // ─── Approve plan (AWAITING_CONFIRMATION → EXECUTING) ───────────────
   const [approving, setApproving] = useState(false)
-  const approvePlan = useCallback(async () => {
+  const approvePlan = useCallback(async (keptWidgetIds) => {
     if (approving) return
     setApproving(true)
     try {
-      await apiPost(`/api/sessions/${sessionId}/skill/execute`, {})
+      await apiPost(`/api/sessions/${sessionId}/skill/execute`, Array.isArray(keptWidgetIds) ? { kept_widgets: keptWidgetIds } : {})
       // Backend will publish skill-phase=EXECUTING via Pusher; the reducer
       // picks it up. No optimistic phase flip here so we stay in sync.
     } catch {

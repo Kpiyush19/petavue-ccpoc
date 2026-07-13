@@ -70,13 +70,22 @@ export default function RunSageOverlay({ phase, open, onClose }) {
   const help = useMemo(() => STEP_HELP[phase] || DEFAULT_HELP, [phase])
   const [chat, setChat] = useState([{ role: 'assistant', text: help.intro }])
   const [draft, setDraft] = useState('')
+  const [thinking, setThinking] = useState(false)
   const scrollRef = useRef(null)
   const taRef = useRef(null)
+  const thinkTimer = useRef(null)
 
   // Reset the thread to the step's intro whenever it opens or the step changes.
   useEffect(() => {
-    if (open) setChat([{ role: 'assistant', text: help.intro }])
+    if (open) {
+      setChat([{ role: 'assistant', text: help.intro }])
+      setThinking(false)
+      clearTimeout(thinkTimer.current)
+    }
   }, [open, help])
+
+  // Clear any pending reply timer on unmount.
+  useEffect(() => () => clearTimeout(thinkTimer.current), [])
 
   // Auto-grow the input up to ~3 lines, then let it scroll internally.
   const MAX_INPUT_H = 76
@@ -90,16 +99,27 @@ export default function RunSageOverlay({ phase, open, onClose }) {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
-  }, [chat])
+  }, [chat, thinking])
 
   const answerFor = (q) => {
     const hit = help.qs.find((x) => x.q === q)
     return hit?.a || "Good question. Short version: you don't have to do anything right now — I'll flag it if I need you. You can leave the page any time and pick it back up from your sessions."
   }
-  const ask = (q) => setChat((c) => [...c, { role: 'user', text: q }, { role: 'assistant', text: answerFor(q) }])
+  // Post the user turn, show a brief "Sage is thinking" state, then the answer.
+  const ask = (q) => {
+    if (thinking) return
+    const a = answerFor(q)
+    setChat((c) => [...c, { role: 'user', text: q }])
+    setThinking(true)
+    clearTimeout(thinkTimer.current)
+    thinkTimer.current = setTimeout(() => {
+      setChat((c) => [...c, { role: 'assistant', text: a }])
+      setThinking(false)
+    }, 750)
+  }
   const send = () => {
     const text = draft.trim()
-    if (!text) return
+    if (!text || thinking) return
     setDraft('')
     ask(text)
   }
@@ -125,7 +145,18 @@ export default function RunSageOverlay({ phase, open, onClose }) {
               {m.text}
             </div>
           ))}
-          {lastIsAssistant && followups.length > 0 && (
+          {thinking && (
+            <div className="self-start bg-grey-100 rounded-2xl rounded-bl-md px-3.5 py-3 flex items-center gap-1" aria-label="Sage is thinking">
+              {[0, 0.2, 0.4].map((d, i) => (
+                <span
+                  key={i}
+                  className="w-1.5 h-1.5 rounded-full bg-[var(--text-muted)] animate-thinking"
+                  style={{ animationDelay: `${d}s` }}
+                />
+              ))}
+            </div>
+          )}
+          {!thinking && lastIsAssistant && followups.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-1">
               {followups.map((q) => (
                 <button
@@ -146,15 +177,16 @@ export default function RunSageOverlay({ phase, open, onClose }) {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             rows={1}
+            disabled={thinking}
             placeholder={`Ask about the ${help.step} step…`}
             style={{ minHeight: '32px', maxHeight: `${MAX_INPUT_H}px` }}
-            className="flex-1 text-[14px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none"
+            className="flex-1 text-[14px] px-3 py-1.5 rounded-lg border border-[var(--border-primary)] focus:border-primary-500 outline-none resize-none disabled:opacity-60"
           />
           <PvButton
             variant="primary"
             size="md"
             icon={PaperPlaneRight}
-            disabled={!draft.trim()}
+            disabled={!draft.trim() || thinking}
             onClick={send}
             aria-label="Send"
             className="shrink-0"

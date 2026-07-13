@@ -940,6 +940,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
             <AnalyticsChat
               externalQueryClient={queryClient}
               sessionId={chatSessionId}
+              dashboardName={artifact?.name}
               apiUrl={config.apiUrl}
               authToken={authToken}
               pusherKey={config.pusherKey}

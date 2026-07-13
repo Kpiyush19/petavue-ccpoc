@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Trash2, BellOff } from "lucide-react";
+import { ArrowRight, Sparkle } from "@phosphor-icons/react";
 import { Button } from "@/ui";
 import MessageBubble from "./components/MessageBubble";
 import DeleteMessageModal from "./components/DeleteMessageModal";
@@ -11,6 +12,13 @@ import WelcomeState from "./components/WelcomeState";
 import Timestamp from "./components/Timestamp";
 import ChatSkeleton from "./components/ChatSkeleton";
 import SuggestedQuestions from "./components/SuggestedQuestions";
+
+// Post-publish welcome follow-ups (shown when a dashboard's chat opens empty).
+const WELCOME_FOLLOWUPS = [
+  { question: "What's our true ROAS by channel vs what the platforms report?", grounded_in: "Paid Media ROI", grounded_type: "dashboard" },
+  { question: "Where should I move budget this week?", grounded_in: "Paid Media ROI", grounded_type: "dashboard" },
+  { question: "Which ICP accounts should sales call?", grounded_in: "Paid Media ROI", grounded_type: "dashboard" },
+];
 
 function CompactionDivider({ messagesCompacted, emergency }) {
   return (
@@ -126,7 +134,10 @@ export default function ChatArea({
   suggestionsLoading = false,
   onMuteFollowups,
   followupsMuted = false,
-  onUnmuteFollowups
+  onUnmuteFollowups,
+  dashboardName,
+  onOpenDashboard,
+  onReviewAnswers,
 }) {
   const bottomRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -248,10 +259,50 @@ export default function ChatArea({
   }
 
   if (urlSessionId && !disabled && !hasConversation && isResumed) {
+    const followups = suggestedQuestions?.length ? suggestedQuestions : WELCOME_FOLLOWUPS;
     return (
       <div className="s-chat-area s-chat-area--empty">
-        <div className="flex flex-col items-center justify-center h-full text-center text-[var(--text-muted)]">
-          <p>This session has no messages.</p>
+        <div className="flex flex-col h-full px-6 py-8 overflow-y-auto">
+          <div className="w-full max-w-[720px] mx-auto">
+            {/* Ready card — dashboard name + intro + actions */}
+            <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--accent)]/[0.04] p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-11 h-11 shrink-0 rounded-full bg-[var(--accent)]/[0.12] flex items-center justify-center">
+                  <img src="/petavue-logo.svg" alt="Sage" className="w-6 h-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-[18px] font-semibold text-[var(--text-primary)]">{dashboardName || "Your dashboard"}</h2>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-green)] bg-[var(--color-green-bg)] px-2 py-0.5 rounded-full">Ready</span>
+                  </div>
+                  <p className="text-[14px] text-[var(--text-secondary)] mt-1.5">
+                    Ask me to walk through any number, explain how a widget was built, edit a chart, or add a new analysis.
+                  </p>
+                  <div className="flex items-center gap-2.5 mt-4 flex-wrap">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      label="Open dashboard"
+                      icon={ArrowRight}
+                      iconPosition="suffix"
+                      onClick={() => (onOpenDashboard ? onOpenDashboard() : onSend?.("Open the dashboard"))}
+                    />
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      label="Review & save answers"
+                      icon={Sparkle}
+                      onClick={() => (onReviewAnswers ? onReviewAnswers() : onSend?.("Review and save the answers from this run"))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Follow-ups for this dashboard */}
+            <div className="mt-5">
+              <SuggestedQuestions questions={followups} onSelect={(q) => onSend?.(q)} />
+            </div>
+          </div>
         </div>
       </div>
     );

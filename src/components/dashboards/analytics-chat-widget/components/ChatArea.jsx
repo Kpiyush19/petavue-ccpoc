@@ -19,9 +19,16 @@ const PMR_FOLLOWUPS = [
   { question: 'Show me the winning journey patterns', grounded_in: 'Paid Media ROI', grounded_type: 'dashboard' },
 ];
 
-function WelcomeState({}) {
+// Quick-action CTAs shown under the intro.
+const WELCOME_CTAS = [
+  'Walk me through the numbers',
+  'Explain how a widget was built',
+  'Add a new analysis',
+];
+
+function WelcomeState({ dashboardName, onSuggestionClick }) {
   return (
-    <div className="welcome-state">
+    <div className="welcome-state" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -40,11 +47,35 @@ function WelcomeState({}) {
         transition={{ duration: 0.4, delay: 0.06 }}
         className="welcome-state__text"
       >
-        <h2 className="welcome-state__title">How can I help you today?</h2>
+        <h2 className="welcome-state__title">{dashboardName || 'Your dashboard'}</h2>
         <p className="welcome-state__subtitle">
-          Ask a question about your data to get started
+          Ask me to walk through any number, explain how a widget was built, edit a chart, or add a new analysis.
         </p>
       </motion.div>
+
+      {/* CTAs */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.12 }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 18 }}
+      >
+        {WELCOME_CTAS.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => onSuggestionClick?.(c)}
+            className="text-[13px] font-medium px-3.5 py-2 rounded-full border border-[var(--border-primary)] bg-white text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+          >
+            {c}
+          </button>
+        ))}
+      </motion.div>
+
+      {/* Follow-ups for this dashboard */}
+      <div style={{ marginTop: 20, textAlign: 'left' }}>
+        <SuggestedQuestions questions={PMR_FOLLOWUPS} onSelect={(q) => onSuggestionClick?.(q)} />
+      </div>
     </div>
   );
 }
@@ -172,6 +203,7 @@ export default function ChatArea({
   isThinking,
   isCompacting,
   onSuggestionClick,
+  dashboardName,
 }) {
   const bottomRef = useRef(null);
   const messagesWrapperRef = useRef(null);
@@ -293,7 +325,7 @@ export default function ChatArea({
   if (messages.length === 0) {
     return (
       <div className="chat-area chat-area--empty">
-        <WelcomeState onSuggestionClick={onSuggestionClick} />
+        <WelcomeState dashboardName={dashboardName} onSuggestionClick={onSuggestionClick} />
       </div>
     );
   }

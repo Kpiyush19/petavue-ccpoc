@@ -693,8 +693,154 @@ export const PMR_WIDGET_FILES = {
   honest_limits: pmrDoc(PMR_SEC_METHOD),
 };
 
+// ── Skill-flow dashboard: "Paid Media Performance" ────────────────────────
+// A DIFFERENT dashboard from the chat-flow Paid Media ROI — a card-grid
+// operational view. ONE registry drives the plan widgets, the Verify & Publish
+// review widgets, the per-widget previews, AND the assembled final dashboard,
+// so dropping a widget in the plan removes it from the built dashboard.
+const SKILL_DASH_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+  :root{--ink:#1F2430;--muted:#6B7280;--line:#EAECEF;--teal:#0D787F;--teal-bg:#E6F4F5;--blue:#3661ED;--green:#08BD50;--red:#F93D3D;--amber:#E0A422;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:#F6F8FA;-webkit-font-smoothing:antialiased;}
+  .sd-wrap{max-width:1120px;margin:0 auto;padding:24px 24px 64px;}
+  .sd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+  .sd-head h1{font-size:24px;font-weight:600;margin:0;}
+  .sd-head p{margin:4px 0 0;font-size:13px;color:var(--muted);}
+  .sd-pill{background:var(--teal-bg);color:var(--teal);font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;white-space:nowrap;}
+  .sd-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .sd-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+  .sd-card--wide{grid-column:1 / -1;}
+  .sd-card h3{font-size:14px;font-weight:600;margin:0 0 2px;}
+  .sd-card .sub{font-size:11.5px;color:var(--muted);margin:0 0 14px;}
+  .sd-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .sd-kpi .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;}
+  .sd-kpi .val{font-size:22px;font-weight:700;margin-top:4px;}
+  .sd-kpi .val.good{color:var(--green);}.sd-kpi .val.bad{color:var(--red);}
+  .sd-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12.5px;}
+  .sd-bar-row .name{width:110px;flex-shrink:0;color:var(--ink);font-weight:500;}
+  .sd-bar-track{flex:1;height:10px;background:#F0F2F5;border-radius:999px;overflow:hidden;}
+  .sd-bar-fill{height:100%;border-radius:999px;}
+  .sd-bar-row .amt{width:64px;text-align:right;flex-shrink:0;font-weight:600;font-variant-numeric:tabular-nums;}
+  table.sd-tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.sd-tbl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:0 10px 8px;border-bottom:1px solid var(--line);}
+  table.sd-tbl th.num,table.sd-tbl td.num{text-align:right;}
+  table.sd-tbl td{padding:9px 10px;border-bottom:1px solid var(--line);}
+  .sd-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+  .sd-list-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .sd-list-item:last-child{border-bottom:none;}
+  .sd-tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:6px;}
+  .sd-tag.up{color:var(--green);background:#EBFFF3;}.sd-tag.down{color:var(--red);background:#FFF2F2;}.sd-tag.flat{color:var(--muted);background:#F0F2F5;}
+  .sd-spark{display:flex;align-items:flex-end;gap:5px;height:56px;margin-top:4px;}
+  .sd-spark span{flex:1;background:var(--teal);border-radius:4px 4px 0 0;opacity:.85;}
+  @media (max-width:760px){.sd-grid{grid-template-columns:1fr;}.sd-kpis{grid-template-columns:1fr 1fr;}}
+`;
+
+const SKILL_DASH_WIDGETS = [
+  {
+    id: "scorecard", name: "Performance scorecard", kind: "stats",
+    desc: "The headline paid-media KPIs — spend, ROAS, CPL, conversions — as a scorecard row.",
+    body: `<section class="sd-card sd-card--wide"><h3>Performance scorecard</h3><p class="sub">Trailing 90 days · across Google, LinkedIn, Meta</p>
+      <div class="sd-kpis">
+        <div class="sd-kpi"><div class="lbl">Total spend</div><div class="val">$163.1K</div></div>
+        <div class="sd-kpi"><div class="lbl">True ROAS</div><div class="val good">3.61×</div></div>
+        <div class="sd-kpi"><div class="lbl">Cost per lead</div><div class="val">$182</div></div>
+        <div class="sd-kpi"><div class="lbl">Conversions</div><div class="val">896</div></div>
+        <div class="sd-kpi"><div class="lbl">Closed-won</div><div class="val">$588.5K</div></div>
+        <div class="sd-kpi"><div class="lbl">Blended CTR</div><div class="val">2.4%</div></div>
+      </div></section>`,
+  },
+  {
+    id: "spend_by_channel", name: "Spend by channel", kind: "bars",
+    desc: "How the 90-day budget is split across paid channels.",
+    body: `<section class="sd-card"><h3>Spend by channel</h3><p class="sub">$163.1K total</p>
+      <div class="sd-bar-row"><span class="name">Google</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:47%;background:#0D787F"></div></div><span class="amt">$77.4K</span></div>
+      <div class="sd-bar-row"><span class="name">LinkedIn</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:37%;background:#1B3A8B"></div></div><span class="amt">$61.0K</span></div>
+      <div class="sd-bar-row"><span class="name">Meta</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:15%;background:#3661ED"></div></div><span class="amt">$24.7K</span></div></section>`,
+  },
+  {
+    id: "roas_trend", name: "ROAS trend", kind: "line",
+    desc: "CRM-grounded ROAS week over week across the window.",
+    body: `<section class="sd-card"><h3>ROAS trend</h3><p class="sub">True ROAS, last 12 weeks</p>
+      <div class="sd-spark">${[38,42,40,47,51,49,55,52,58,60,57,61].map((h) => `<span style="height:${h}%"></span>`).join("")}</div>
+      <div class="sd-bar-row" style="margin-top:12px"><span class="name">This week</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:72%;background:#08BD50"></div></div><span class="amt">3.61×</span></div></section>`,
+  },
+  {
+    id: "channel_table", name: "Channel performance", kind: "table",
+    desc: "Per-channel spend, conversions, CPA and true ROAS in one table.",
+    body: `<section class="sd-card sd-card--wide"><h3>Channel performance</h3><p class="sub">Platform-reported vs CRM-grounded</p>
+      <table class="sd-tbl"><thead><tr><th>Channel</th><th class="num">Spend</th><th class="num">Conv.</th><th class="num">CPA</th><th class="num">Platform ROAS</th><th class="num">True ROAS</th></tr></thead><tbody>
+      <tr><td><span class="sd-dot" style="background:#0D787F"></span>Google</td><td class="num">$77.4K</td><td class="num">512</td><td class="num">$151</td><td class="num">0.65×</td><td class="num"><b>4.81×</b></td></tr>
+      <tr><td><span class="sd-dot" style="background:#1B3A8B"></span>LinkedIn</td><td class="num">$61.0K</td><td class="num">208</td><td class="num">$293</td><td class="num">1.28×</td><td class="num"><b>3.14×</b></td></tr>
+      <tr><td><span class="sd-dot" style="background:#3661ED"></span>Meta</td><td class="num">$24.7K</td><td class="num">176</td><td class="num">$140</td><td class="num">1.18×</td><td class="num"><b>0.98×</b></td></tr>
+      </tbody></table></section>`,
+  },
+  {
+    id: "top_campaigns", name: "Top campaigns", kind: "list",
+    desc: "Campaigns ranked by true ROAS, with week-over-week movement.",
+    body: `<section class="sd-card"><h3>Top campaigns</h3><p class="sub">By true ROAS</p>
+      <div class="sd-list-item"><span>G_Display_Prospecting</span><span><b>4.9×</b> <span class="sd-tag up">▲ 36%</span></span></div>
+      <div class="sd-list-item"><span>LI_ABM_Enterprise</span><span><b>3.6×</b> <span class="sd-tag up">▲ 12%</span></span></div>
+      <div class="sd-list-item"><span>G_Brand_Search</span><span><b>3.2×</b> <span class="sd-tag flat">— 2%</span></span></div>
+      <div class="sd-list-item"><span>G_Search_NonBrand_Automation</span><span><b>0.3×</b> <span class="sd-tag down">▼ 50%</span></span></div></section>`,
+  },
+  {
+    id: "audience_perf", name: "Audience performance", kind: "bars",
+    desc: "ROAS by audience segment, so you know who to scale into.",
+    body: `<section class="sd-card"><h3>Audience performance</h3><p class="sub">True ROAS by segment</p>
+      <div class="sd-bar-row"><span class="name">ICP · Enterprise</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:90%;background:#08BD50"></div></div><span class="amt">4.5×</span></div>
+      <div class="sd-bar-row"><span class="name">ICP · Mid-Market</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:66%;background:#0D787F"></div></div><span class="amt">3.3×</span></div>
+      <div class="sd-bar-row"><span class="name">Retargeting</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:40%;background:#3661ED"></div></div><span class="amt">2.0×</span></div>
+      <div class="sd-bar-row"><span class="name">Broad / Prospect</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:19%;background:#F93D3D"></div></div><span class="amt">0.9×</span></div></section>`,
+  },
+  {
+    id: "budget_pacing", name: "Budget pacing", kind: "list",
+    desc: "Spend vs budget per channel with end-of-period projection.",
+    body: `<section class="sd-card"><h3>Budget pacing</h3><p class="sub">Month to date vs plan</p>
+      <div class="sd-bar-row"><span class="name">Google</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:78%;background:#0D787F"></div></div><span class="amt">78%</span></div>
+      <div class="sd-bar-row"><span class="name">LinkedIn</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:64%;background:#1B3A8B"></div></div><span class="amt">64%</span></div>
+      <div class="sd-bar-row"><span class="name">Meta</span><div class="sd-bar-track"><div class="sd-bar-fill" style="width:103%;background:#F93D3D"></div></div><span class="amt">103%</span></div>
+      <p class="sub" style="margin:10px 0 0">Meta is pacing 3% over plan — the one to trim.</p></section>`,
+  },
+];
+
+const skillDashDoc = (bodies) => `<!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Paid Media Performance</title>
+<style>${SKILL_DASH_CSS}</style></head>
+<body><div class="sd-wrap">
+  <div class="sd-head">
+    <div><h1>Paid Media Performance</h1><p>Operational view across Google, LinkedIn &amp; Meta — CRM-grounded, refreshed daily.</p></div>
+    <span class="sd-pill">◷ 90d · updated today</span>
+  </div>
+  <div class="sd-grid">${bodies}</div>
+</div></body></html>`;
+
+// Assemble the final dashboard from the KEPT widgets (drop in the plan → gone here).
+export function assembleSkillDashboard(keptIds) {
+  const kept = Array.isArray(keptIds) && keptIds.length
+    ? SKILL_DASH_WIDGETS.filter((w) => keptIds.includes(w.id))
+    : SKILL_DASH_WIDGETS;
+  return skillDashDoc(kept.map((w) => w.body).join("\n"));
+}
+// Per-widget docs (single card) for the plan / V&P previews.
+export const SKILL_WIDGET_DOCS = Object.fromEntries(
+  SKILL_DASH_WIDGETS.map((w) => [w.id, skillDashDoc(w.body)])
+);
+// Plan / review metadata (id + name + desc + schematic kind), the single source.
+export const SKILL_DASH_META = SKILL_DASH_WIDGETS.map((w) => ({ id: w.id, name: w.name, desc: w.desc, kind: w.kind }));
+
+// Re-point the Verify & Publish review manifest at the skill dashboard's
+// widgets, so plan, review, and the built dashboard all show the same set.
+DASHBOARD_MANIFEST.title = "Paid Media Performance";
+DASHBOARD_MANIFEST.widgets = Object.fromEntries(
+  SKILL_DASH_META.map((w) => [w.id, { id: w.id, file: `widgets/${w.id}.html`, name: w.name, data_source: "data/paid_media.json", verified: false, verified_at: null }])
+);
+
 // Extra workspace files the viewers/tree may request.
 export const DASHBOARD_FILES = {
+  // Skill-flow dashboard (assembled default) + its per-widget previews.
+  "output/dashboard/skill_dashboard.html": { content: assembleSkillDashboard(), contentType: "text/html" },
+  ...Object.fromEntries(SKILL_DASH_META.map((w) => [`output/dashboard/widgets/${w.id}.html`, { content: SKILL_WIDGET_DOCS[w.id], contentType: "text/html" }])),
   "output/dashboard/paid_media_roi.html": { content: PAID_MEDIA_ROI_HTML, contentType: "text/html" },
   // Per-widget sections rendered in the Verify & Publish widget preview.
   "output/dashboard/widgets/header.html": { content: PMR_WIDGET_FILES.header, contentType: "text/html" },

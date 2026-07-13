@@ -166,9 +166,16 @@ export default function PlanApprovalCard({
   // Report it up so the run-page footer can gate Build it until every widget
   // is Approved or Dropped.
   useEffect(() => {
-    onReviewProgress?.({ allReviewed, remaining, total: widgets.length })
+    onReviewProgress?.({
+      allReviewed,
+      remaining,
+      total: widgets.length,
+      // The widgets the user is keeping — the built dashboard is assembled from
+      // exactly these, so dropping one removes it from the final dashboard.
+      keptWidgetIds: widgets.filter((w) => !dropped.has(w.id)).map((w) => w.id),
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reviewedCount, widgets.length])
+  }, [reviewedCount, widgets.length, dropped])
 
   if (loading) {
     return (

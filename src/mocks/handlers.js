@@ -225,11 +225,11 @@ Ask me about any channel, the spend moves, or the accounts to call.`;
 Ask me where to move spend, which campaign to pause, or which ICP accounts to hand to sales.`;
 }
 
-// Open (or resume) a Sage chat session for a dashboard, seeding a welcome turn.
+// Open (or resume) a Sage chat session for a dashboard. Start EMPTY so the chat
+// shows the rich welcome state (dashboard name + intro + CTAs + follow-ups)
+// instead of a plain welcome bubble.
 function startSageChat(sid) {
-  if (!db.history[sid] || db.history[sid].length === 0) {
-    db.history[sid] = [{ type: "assistant", text: "Hi, I'm Sage. Ask me anything about this Paid Media ROI dashboard — true ROAS by channel vs what the platforms report, where spend is being wasted, this week's moves, or the ICP accounts to hand to sales.", timestamp: Date.now() }];
-  }
+  if (!db.history[sid]) db.history[sid] = [];
   return { session_id: sid };
 }
 
@@ -398,7 +398,7 @@ const handlers = [
   // ── Skills v2 run lifecycle ────────────────────────────────────────
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/skill\/progress$/, handler: ({ params }) => getProgress(params[0]) || { step_statuses: {}, clarifications_pending: [], verification_round: 0, finding_count: 0, disclosure_summary: null, blocked_summary: null, key_choices: [] } },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/skill\/plan-summary$/, handler: ({ params }) => getPlanSummary(params[0]) || {} },
-  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/execute$/, handler: ({ params }) => { executeRun(params[0]); return { ok: true }; } },
+  { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/execute$/, handler: ({ params, body }) => { executeRun(params[0], body?.kept_widgets); return { ok: true }; } },
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/discard$/, handler: ({ params }) => { discardRun(params[0]); return { ok: true }; } },
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/handoff$/, handler: () => ({ ok: true }) },
   { method: "POST", pattern: /\/api\/sessions\/([^/]+)\/skill\/clarify$/, handler: ({ params, body }) => { submitClarification(params[0], body?.answers); return { ok: true }; } },

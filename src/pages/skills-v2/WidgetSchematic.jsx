@@ -90,6 +90,9 @@ function MiniText() {
 export const PREVIEW_BY_ID = {
   headline: MiniStats, trend: MiniLine, segment: MiniBars, risk: MiniList, table: MiniTable,
   summary: MiniText, findings: MiniStats, drivers: MiniBars, actions: MiniList, method: MiniText,
+  // Skill-flow "Paid Media Performance" dashboard widgets.
+  scorecard: MiniStats, spend_by_channel: MiniBars, roas_trend: MiniLine,
+  channel_table: MiniTable, top_campaigns: MiniList, audience_perf: MiniBars, budget_pacing: MiniList,
 }
 
 // Human-readable widget/section type per id — surfaced as a chip in the
@@ -106,6 +109,13 @@ export const WIDGET_TYPE_BY_ID = {
   drivers:  { label: 'Bar chart', kind: 'bars' },
   actions:  { label: 'List', kind: 'list' },
   method:   { label: 'Narrative', kind: 'text' },
+  scorecard:       { label: 'Scorecard', kind: 'stats' },
+  spend_by_channel:{ label: 'Bar chart', kind: 'bars' },
+  roas_trend:      { label: 'Line chart', kind: 'line' },
+  channel_table:   { label: 'Table', kind: 'table' },
+  top_campaigns:   { label: 'List', kind: 'list' },
+  audience_perf:   { label: 'Bar chart', kind: 'bars' },
+  budget_pacing:   { label: 'List', kind: 'list' },
 }
 
 // Just the schematic body for a widget id (no card chrome).
