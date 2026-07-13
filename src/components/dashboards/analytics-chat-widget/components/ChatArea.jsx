@@ -6,8 +6,18 @@ import OutputsPanel from './OutputsPanel';
 // import DeleteButton from './DeleteButton'; // TODO: Re-enable when needed
 import Timestamp from './Timestamp';
 import { Sparkle } from '@phosphor-icons/react';
+import SuggestedQuestions from '../../../sessions/components/SuggestedQuestions';
 
 const SCROLL_THRESHOLD = 50;
+
+// Home-page-style follow-up chips shown after each answer in the dashboard
+// Sage chat. Clicking one sends it as the next question.
+const PMR_FOLLOWUPS = [
+  { question: 'Which campaign should I pause this week?', grounded_in: 'Paid Media ROI', grounded_type: 'dashboard' },
+  { question: 'Which ICP accounts should sales call?', grounded_in: 'Paid Media ROI', grounded_type: 'dashboard' },
+  { question: "Why is Google's platform ROAS so far off?", grounded_in: 'Paid Media ROI', grounded_type: 'dashboard' },
+  { question: 'Show me the winning journey patterns', grounded_in: 'Paid Media ROI', grounded_type: 'dashboard' },
+];
 
 function WelcomeState({}) {
   return (
@@ -429,6 +439,11 @@ export default function ChatArea({
           </motion.div>
         )}
         */}
+
+        {/* Follow-up suggestions after an answer (home-page style). */}
+        {!isThinking && messages.length > 0 && messages[messages.length - 1]?.type === 'assistant' && (
+          <SuggestedQuestions questions={PMR_FOLLOWUPS} onSelect={(q) => onSuggestionClick?.(q)} />
+        )}
 
         <div ref={bottomRef} />
       </div>

@@ -109,6 +109,132 @@ export const HARDENED_STEPS = {
   step_3: { reason: "Added a guard so KPI computation handles an empty revenue file without crashing." },
 };
 
+// ── Scripted demo conversation: "Paid Media ROI" ──────────────────────────
+// The landing session (DASH_SESSION_ID) opens pre-loaded with this transcript
+// so the Verify & Publish + artifact flow is immediately demoable. The chat
+// renderer (components/sessions) reads db.history[id]; assistant `text` is full
+// GFM markdown (bold, inline code, tables); consecutive `tool_call` entries
+// collapse into a "Completed · N tools" group whose count == number of entries.
+export const PMR_PROMPT =
+  "Which paid channels are actually driving demos, and where am I wasting spend?";
+
+// A pre-answer reasoning turn (renders as a Sage message ahead of the answer).
+const PMR_REASONING = `Good. The tenant's default conversion event is **closed-won**, not demo. The user said "demos" — that's a leading-indicator view. I should confirm before building.
+
+The right response here is a **short clarifying question**. No queries yet. This is exactly the "if ambiguous, ask ONE clarifying question — don't guess" rule.
+
+Here's what I know:
+- The tenant has 3 paid channels wired up (Google, LinkedIn, Meta) with a defined channel taxonomy
+- Default attribution conversion event is **closed-won**, not demo
+- There's a full \`paid-media-roi\` skill that grades channels against closed-won revenue
+- The user said "demos" — could mean (a) literal demo-booked events, (b) SQLs, (c) a proxy for "top-of-funnel conversions," or (d) they're using "demos" casually and really mean pipeline/revenue
+
+Rather than guessing, one quick question saves me from building the wrong thing.`;
+
+export const PMR_CLARIFY = `Great question — and one I can answer well, but I want to nail the conversion event before I build so the ranking actually reflects what you care about.
+
+Your tenant's default attribution conversion event is **closed-won opportunities**, and there's a full **Paid Media ROI skill** ready to run that grades LinkedIn / Google / Meta ROAS against closed-won revenue (not platform-reported ROAS) and calls out where spend is being wasted. That's the board-defensible answer.
+
+But you said **"demos"** — which is a leading indicator, not closed-won. Two ways to go:
+
+**Option A — Real ROAS against closed-won** (the locked definition)
+Run the full Paid Media ROI dashboard: CRM-grounded ROAS by channel, spend-reallocation moves for this week, ICP accounts to hand to sales, winning-journey patterns. Every dollar traces to a deal. This is what you'd defend to the board.
+
+**Option B — Demo-conversion view** (leading indicator)
+Rank channels by cost-per-demo and demo-to-opp conversion rate. Faster signal, but weaker downstream truth — a channel that books cheap demos that never close is still wasted spend. I'd need to know what counts as a "demo" in your stack:
+- A specific Salesforce activity type (e.g., \`Demo Scheduled\`)?
+- An opportunity stage (e.g., \`Discovery\` or \`Demo\`)?
+- A HubSpot lifecycle stage transition?
+- A GA4 conversion event?
+
+**My recommendation: Option A**, because "where am I wasting spend" is a closed-won question — a channel isn't wasteful if its demos convert; it's wasteful if the pipeline it sources never closes. If you also want the demo-conversion cut layered on top as a leading indicator, I can add it as a supplementary block.
+
+Which do you want — A, B, or A + B layered? And if B is in play, how do you define a demo?`;
+
+export const PMR_REPORT = `### Paid Media ROI — the honest picture
+
+**Finding:** Your paid channels are actually working — you're returning **$3.61 in closed-won revenue for every $1 spent** across LinkedIn / Google / Meta. But the platforms are telling you the wrong story, and one channel is dead weight.
+
+**Where the money is working**
+- **Google Ads → 4.81× true ROAS.** $77K spend, $373K closed-won across your paid channels. Google reports 0.65× — it's under-crediting itself by 7×. Every closed-won journey pattern in your top-3 starts with Google.
+- **LinkedIn Ads → 3.14× true ROAS.** $61K spend, $192K closed-won. Platform reports 1.28×. LinkedIn is your ABM workhorse — the top ICP accounts engaging with your ads (12 in the hand-off queue) are LinkedIn-touched.
+
+**Where you're wasting spend**
+- **Meta Ads → 0.98× true ROAS.** $25K spend, $24K closed-won. Meta reports 1.18× — it's the only channel where the platform *overstates* impact. Real revenue barely covers the spend. This is the flag in section 3.
+- \`G_Search_NonBrand_Automation\` **(Google search)** — trending down WoW; ranked as this week's #1 pause candidate in section 3.
+
+**The two-second version**
+
+| Channel | You spent | You won | Platform claims | Real ROAS | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| Google | $77K | $373K | 0.65× | **4.81×** | Scale |
+| LinkedIn | $61K | $192K | 1.28× | **3.14×** | Hold |
+| Meta | $25K | $24K | 1.18× | **0.98×** | Cut |
+| **Blended** | **$163K** | **$588K** | **0.96×** | **3.61×** | — |
+
+**Honest caveats on the numbers**
+- **78% of closed-won deals have no paid lead source.** Only 22% of wins carry \`opportunity.leadsource IN (paid channels)\` — the rest are organic search, email, referral, outbound. Paid attribution here is a floor, not the whole picture.
+- **Ad data is 85 days behind CRM.** Ad tables end 2026-04-13, CRM extends to today (2026-07-07). The 90d window is anchored to the ad-data max date, not today. If your ads syncs are broken, that's the first thing to fix before acting on any spend move.
+- **Attribution is via \`opportunity.leadsource\` per your Key Definition.** This is a last-touch-via-opp model — not a multi-touch reconstruction (you don't have a unified touch table).
+- **Campaign-level "True ROAS" allocates platform-level CRM revenue proportionally** to campaign spend, because CRM does not carry campaign IDs.
+
+The full dashboard — six sections, this week's 3 moves, the 12 ICP accounts your sales team should be calling, and the 3 winning journey patterns — is published as **Paid Media ROI** in the artifact panel.`;
+
+const toToolCall = ([tool, input_summary]) => ({ type: "tool_call", tool, input_summary });
+
+// 6 lightweight context reads before the clarifying question (no queries yet).
+export const PMR_DISCOVERY_TOOLS = [
+  ["get_tenant_config", "Read default conversion event (closed-won) + attribution model"],
+  ["list_connectors", "Enumerate connected paid channels: Google, LinkedIn, Meta"],
+  ["read_key_definitions", "Load canonical Key Definitions: ROAS formula, leadsource attribution"],
+  ["search_skills", "Match the request to the skill catalog → paid-media-roi"],
+  ["get_channel_taxonomy", "Read the tenant's defined paid-channel taxonomy"],
+  ["check_data_freshness", "Compare the ad-data max date against CRM recency"],
+];
+
+// 47 tools for the full skill run (Option A).
+export const PMR_RUN_TOOLS = [
+  ["connect_source", "Connect Salesforce — opportunities, accounts, activities"],
+  ["connect_source", "Connect Google Ads — spend, campaigns"],
+  ["connect_source", "Connect LinkedIn Ads — spend, campaigns"],
+  ["connect_source", "Connect Meta Ads — spend, campaigns"],
+  ["get_schema", "Read opportunity schema — leadsource, amount, stage, close_date"],
+  ["get_schema", "Read ad_spend schema — channel, campaign, spend, date"],
+  ["check_data_freshness", "Ad tables end 2026-04-13; CRM extends to 2026-07-07"],
+  ["query_db", "Total paid spend by channel over the 90d ad-data window"],
+  ["query_db", "Closed-won amount where leadsource IN (paid channels)"],
+  ["query_db", "Closed-won revenue attributed to Google"],
+  ["query_db", "Closed-won revenue attributed to LinkedIn"],
+  ["query_db", "Closed-won revenue attributed to Meta"],
+  ["query_db", "Pull platform-reported ROAS — Google Ads"],
+  ["query_db", "Pull platform-reported ROAS — LinkedIn Ads"],
+  ["query_db", "Pull platform-reported ROAS — Meta Ads"],
+  ["query_db", "Leadsource coverage — % of wins carrying a paid leadsource"],
+  ["query_db", "Week-over-week spend + conversion trend by campaign"],
+  ...Array.from({ length: 14 }, (_, i) => [
+    "query_db",
+    `Allocate CRM revenue to campaign ${i + 1} of 14 (proportional to spend)`,
+  ]),
+  ["execute_code", "Compute true ROAS per channel (CRM-grounded)"],
+  ["execute_code", "Compute blended ROAS across LinkedIn / Google / Meta"],
+  ["execute_code", "Assign Scale / Hold / Cut verdicts by channel"],
+  ["execute_code", "Rank campaigns → this week's #1 pause candidate"],
+  ["execute_code", "Mine the top-3 closed-won journey patterns"],
+  ["execute_code", "Score ICP accounts engaging paid ads → hand-off queue (12)"],
+  ["write_file", "Section 1 — ROAS scoreboard by channel"],
+  ["write_file", "Section 2 — platform-claimed vs true ROAS"],
+  ["write_file", "Section 3 — wasted-spend flags + pause candidates"],
+  ["write_file", "Section 4 — this week's 3 spend-reallocation moves"],
+  ["write_file", "Section 5 — 12 ICP accounts for sales to call"],
+  ["write_file", "Section 6 — 3 winning journey patterns"],
+  ["verify_step", "Reconcile channel revenue totals against CRM closed-won"],
+  ["verify_step", "Confirm every value is source-linked to SQL + contributing rows"],
+  ["render_dashboard", "Assemble the Paid Media ROI dashboard (6 sections)"],
+  ["publish_artifact", "Publish output/dashboard/paid_media_roi.html"],
+];
+
+const PMR_T0 = now - 5 * 24 * 60 * 60000; // ~5 days ago
+
 export const db = {
   // Runtime registries (populated during the Verify & Publish flow)
   execSessions: {},      // execSessionId -> { sessionId, recipe, channel, statuses, hardening }
@@ -119,17 +245,17 @@ export const db = {
   sessions: [
     {
       session_id: DASH_SESSION_ID,
-      name: "Q2 Revenue Dashboard",
+      name: "Paid Media ROI",
       session_type: "regular",
       status: "active",
       provider: "anthropic",
       dashboard_mode: "react",
-      created_at: minsAgo(45),
-      updated_at: minsAgo(5),
-      last_active_at: minsAgo(5),
+      created_at: minsAgo(7200),
+      updated_at: minsAgo(7195),
+      last_active_at: minsAgo(7195),
       turn_count: 2,
-      total_tokens: 26400,
-      context_tokens: 26400,
+      total_tokens: 48200,
+      context_tokens: 48200,
       agent_running: false,
     },
   ],
@@ -143,7 +269,7 @@ export const db = {
           {
             name: "dashboard", path: "output/dashboard", type: "folder", content_type: "folder",
             children: [
-              { name: "revenue_dashboard.html", path: "output/dashboard/revenue_dashboard.html", type: "file", content_type: "html" },
+              { name: "paid_media_roi.html", path: "output/dashboard/paid_media_roi.html", type: "file", content_type: "html" },
               { name: "manifest.json", path: "output/dashboard/manifest.json", type: "file", content_type: "json" },
               {
                 name: "widgets", path: "output/dashboard/widgets", type: "folder", content_type: "folder",
@@ -171,35 +297,14 @@ export const db = {
   // session_id -> history messages
   history: {
     [DASH_SESSION_ID]: [
-      { type: "user", text: "Hey, can you build me a dashboard for Q2 revenue? I want to see how we're tracking and which accounts matter most.", timestamp: now - 46 * 60000 },
-      {
-        type: "assistant",
-        text: "Happy to help. I'll pull monthly revenue and your top accounts from the warehouse, compute a few headline KPIs (total revenue, QoQ growth), and assemble a React dashboard you can publish. Let me start by querying the data.",
-        timestamp: now - 46 * 60000 + 20000,
-      },
-      { type: "tool_call", tool: "query_athena", input_summary: "SELECT month, SUM(amount) AS revenue FROM ns_demo_orders … GROUP BY month" },
-      { type: "tool_call", tool: "query_athena", input_summary: "SELECT account_name, SUM(arr) AS arr, health FROM ns_demo_accounts … ORDER BY arr DESC LIMIT 5" },
-      {
-        type: "assistant",
-        text: "Revenue is trending up nicely: **$4.82M** for the quarter, **+14.2% QoQ**, with September the strongest month. On the account side, Northwind and Contoso are expanding. A couple of accounts look like they're softening. Do you want me to flag at-risk accounts and add a win-rate metric?",
-        timestamp: now - 44 * 60000,
-      },
-      { type: "user", text: "Yes, flag anything at risk, and add a win-rate KPI to the scoreboard.", timestamp: now - 43 * 60000 },
-      {
-        type: "assistant",
-        text: "Got it. I'll add a **win rate** KPI (27.4% this quarter) and a health flag on each account, then build the widgets and assemble the page.",
-        timestamp: now - 43 * 60000 + 15000,
-      },
-      { type: "tool_call", tool: "execute_code", input_summary: "Compute headline KPIs → data/kpis.json" },
-      { type: "tool_call", tool: "write_file", input_summary: "output/dashboard/widgets/revenue_trend.jsx" },
-      { type: "tool_call", tool: "write_file", input_summary: "output/dashboard/widgets/top_accounts.jsx" },
-      { type: "tool_call", tool: "write_file", input_summary: "output/dashboard/revenue_dashboard.html" },
-      {
-        type: "assistant",
-        text: "Your **Q2 Revenue Dashboard** is ready. It has a scoreboard (total revenue, new ARR, win rate, avg deal size), a revenue-by-month chart, and a top-accounts table with health flags: Globex and Umbrella are marked **at risk**. It's open in the preview panel on the right. When you're happy with it, use **Verify & Publish** to validate every step and schedule automatic refreshes.",
-        timestamp: now - 42 * 60000,
-      },
-      { type: "outputs", outputs: [{ path: "output/dashboard/revenue_dashboard.html", name: "Q2 Revenue Dashboard", type: "html" }] },
+      { type: "user", text: PMR_PROMPT, timestamp: PMR_T0 },
+      ...PMR_DISCOVERY_TOOLS.map(toToolCall),
+      { type: "assistant", text: PMR_REASONING, timestamp: PMR_T0 + 30000 },
+      { type: "assistant", text: PMR_CLARIFY, timestamp: PMR_T0 + 45000 },
+      { type: "user", text: "option A", timestamp: PMR_T0 + 120000 },
+      ...PMR_RUN_TOOLS.map(toToolCall),
+      { type: "assistant", text: PMR_REPORT, timestamp: PMR_T0 + 300000 },
+      { type: "outputs", outputs: [{ path: "output/dashboard/paid_media_roi.html", title: "Paid Media ROI" }] },
     ],
   },
 
@@ -278,6 +383,75 @@ export const db = {
   ],
 
   dashboards: [
+    {
+      _id: "dash-paid-media-roi",
+      dashboard_id: "dash-paid-media-roi",
+      id: "dash-paid-media-roi",
+      name: "Paid Media ROI",
+      title: "Paid Media ROI",
+      shared: true,
+      status: "published",
+      source: "workflow",
+      workflow_id: "wf-paid-media-roi",
+      owner_id: USER_ID,
+      target_file: "output/dashboard/paid_media_roi.html",
+      tenant_timezone: "UTC",
+      latest_run: { status: "success", refreshed_at: minsAgo(15) },
+      created_at: minsAgo(7200),
+      updated_at: minsAgo(15),
+      widgets: [],
+    },
+    {
+      _id: "dash-campaign-perf",
+      dashboard_id: "dash-campaign-perf",
+      id: "dash-campaign-perf",
+      name: "Campaign Performance",
+      title: "Campaign Performance",
+      shared: true,
+      status: "published",
+      source: "skill",
+      owner_id: USER_ID,
+      target_file: "output/dashboard/revenue_dashboard.html",
+      tenant_timezone: "UTC",
+      latest_run: { status: "success", refreshed_at: minsAgo(90) },
+      created_at: minsAgo(8000),
+      updated_at: minsAgo(90),
+      widgets: [],
+    },
+    {
+      _id: "dash-pipeline-snapshot",
+      dashboard_id: "dash-pipeline-snapshot",
+      id: "dash-pipeline-snapshot",
+      name: "Pipeline Snapshot",
+      title: "Pipeline Snapshot",
+      shared: false,
+      status: "published",
+      source: "skill",
+      owner_id: USER_ID,
+      target_file: "output/dashboard/revenue_dashboard.html",
+      tenant_timezone: "UTC",
+      latest_run: { status: "success", refreshed_at: minsAgo(320) },
+      created_at: minsAgo(10000),
+      updated_at: minsAgo(320),
+      widgets: [],
+    },
+    {
+      _id: "dash-marketing-spend",
+      dashboard_id: "dash-marketing-spend",
+      id: "dash-marketing-spend",
+      name: "Marketing Spend",
+      title: "Marketing Spend",
+      shared: true,
+      status: "published",
+      source: "workflow",
+      owner_id: USER_ID,
+      target_file: "output/dashboard/revenue_dashboard.html",
+      tenant_timezone: "UTC",
+      latest_run: { status: "success", refreshed_at: minsAgo(1440) },
+      created_at: minsAgo(12000),
+      updated_at: minsAgo(1440),
+      widgets: [],
+    },
     {
       _id: "dash-demo-1",
       dashboard_id: "dash-demo-1",
@@ -385,15 +559,15 @@ export const db = {
     {
       _id: "skill-demo-6",
       id: "skill-demo-6",
-      name: "Campaign ROAS Breakdown",
-      description: "Break down return on ad spend by channel and campaign, with a reallocation plan for underperformers.",
+      name: "Paid Media ROI",
+      description: "Grade every paid channel against closed-won revenue — not platform-reported ROAS — and surface where to move spend this week.",
       category: "Marketing",
       scope: "tenant",
       tier: "tenant",
       is_active: true,
       active: true,
       output_type: "dashboard",
-      tags: ["ROAS", "Channels", "Spend"],
+      tags: ["ROAS", "Attribution", "Spend"],
     },
   ],
 

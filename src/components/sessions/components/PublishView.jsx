@@ -422,7 +422,7 @@ export default function PublishView({
   const agentRunningRef = useRef(false) // true while execution or hardening is actively running on backend
 
   // AI Preview state (agent_memo)
-  const [aiPrompt, setAiPrompt] = useState("Summarize this quarter's revenue trends, the biggest movers, and any at-risk accounts.")
+  const [aiPrompt, setAiPrompt] = useState("")
   const [aiFilename, setAiFilename] = useState('memo')
   // Folder destination — pick an existing folder or create a new one.
   const NEW_FOLDER = '__new__'
@@ -1883,7 +1883,7 @@ export default function PublishView({
         <div className="flex gap-4">
           <div className="flex-1 min-w-0">
             <label className="text-[12px] font-medium text-[var(--text-secondary)] block mb-1.5">Summary prompt</label>
-            <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. revenue trends and at-risk accounts" rows={4} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
+            <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="What should the summary cover? e.g. true ROAS by channel, this week's spend move, ICP accounts to call" rows={4} disabled={aiPreviewRunning} className="w-full text-[12px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors disabled:opacity-60" />
             <PvButton variant="primary" size="md" className="mt-2 w-full" label={aiPreviewRunning ? 'Generating…' : aiPreviewContent ? 'Regenerate' : 'Generate summary'} icon={aiPreviewRunning ? SpinnerIcon : aiPreviewContent ? ArrowsClockwise : Sparkle} iconWeight={aiPreviewContent && !aiPreviewRunning ? 'bold' : 'fill'} disabled={aiPreviewRunning || !aiPrompt.trim()} onClick={handleAiPreview} />
             {aiPreviewError && <p className="text-[12px] text-red-500 m-0 mt-1.5">{aiPreviewError}</p>}
           </div>
@@ -1891,7 +1891,7 @@ export default function PublishView({
             <div className="px-3.5 py-2.5 border-b border-[var(--border-primary)] shrink-0">
               <span className="text-[14px] font-semibold text-[var(--text-primary)]">Preview</span>
             </div>
-            <div className="p-3.5 flex-1 min-h-0 overflow-y-auto">
+            <div className="p-3.5 h-[400px] overflow-y-auto">
               {renderSummaryPreview()}
             </div>
           </div>

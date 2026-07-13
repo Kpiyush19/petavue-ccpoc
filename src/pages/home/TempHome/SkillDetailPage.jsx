@@ -45,9 +45,10 @@ function integrationGroup(name) {
   if (/ga4|analytics|segment|6sense|clearbit|website|first-party|snowflake|bigquery|intent/.test(n)) return "Web & First-party Data";
   return "CRM & Marketing Automation"; // Salesforce, HubSpot, Outreach, Gong, Marketo, LinkedIn Sales Navigator, etc.
 }
-// Mock "already connected" set so the panel reads like the user's own setup —
-// some connected, some not. Spans all three groups so each shows a mix.
-const CONNECTED_INTEGRATIONS = new Set(["Salesforce", "HubSpot", "Google Ads", "GA4"]);
+// Mock "already connected" set so the panel reads like the user's own setup.
+// Includes the full paid-media stack (Google / LinkedIn / Meta Ads) so Paid
+// Media ROI shows all its sources connected and ready to run.
+const CONNECTED_INTEGRATIONS = new Set(["Salesforce", "HubSpot", "Google Ads", "LinkedIn Ads", "Meta Ads", "GA4"]);
 
 function Section({ title, lead, children, delay }) {
   return (

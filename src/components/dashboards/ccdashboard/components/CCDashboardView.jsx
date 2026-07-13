@@ -681,7 +681,7 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           {/* Last updated — icon button with a CSS hover tooltip */}
           {artifact?.latest_run && (
             <span className="relative group flex">
-              <PvButton variant="ghost" size="lg" icon={ClockCounterClockwise} aria-label="Last updated" />
+              <PvButton variant="ghost" size="md" icon={ClockCounterClockwise} aria-label="Last updated" />
               <span role="tooltip" className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 whitespace-nowrap rounded-md bg-[#2D3044] text-white text-[12px] leading-snug px-2.5 py-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                 Last updated: {formatDateTime(artifact.latest_run.refreshed_at, artifact?.tenant_timezone || "UTC")}
               </span>
@@ -692,16 +692,16 @@ export const CCDashboardView = ({ dashboardId, Skeleton, Input }) => {
           <div className="w-px h-6 bg-[var(--color-grey-200)]" />
 
           {/* Data freshness — opens the Data Freshness popup */}
-          <PvButton variant="ghost" size="lg" label="Data freshness" icon={Stack} onClick={() => setShowFreshness(true)} />
+          <PvButton variant="ghost" size="md" label="Data freshness" icon={Stack} onClick={() => setShowFreshness(true)} />
 
           {isWorkflow && (
-            <PvButton variant="secondary" size="lg" label="Find out how" icon={Lightbulb} disabled={loading || !artifact?.latest_run} onClick={handleFindOutHow} />
+            <PvButton variant="secondary" size="md" label="Find out how" icon={Lightbulb} disabled={loading || !artifact?.latest_run} onClick={handleFindOutHow} />
           )}
           <Tooltip title="Ask Sage AI to analyze this dashboard" placement="bottom">
             <span>
               <PvButton
                 variant="primary"
-                size="lg"
+                size="md"
                 label={isStartingChat ? "Starting..." : "Sage (Beta)"}
                 icon={Sparkle}
                 iconWeight="fill"

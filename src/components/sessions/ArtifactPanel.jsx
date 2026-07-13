@@ -3,10 +3,14 @@ import {
   File,
   GitBranch,
   X,
-  CheckCircle
+  DotsThree,
+  SealCheck,
+  Sparkle,
+  FlowArrow,
+  FilePdf,
+  ArrowsClockwise,
 } from "@phosphor-icons/react";
-import { Button } from "@/ui";
-import { Button as PvButton } from "@/ui";
+import { Button, Popper } from "@/ui";
 import { getCurrentUser, getApiBase, getAuthToken, apiGet } from "../../api";
 import { MOCK_ENABLED } from "../../mocks";
 import ArtifactTabs from "./components/ArtifactTabs";
@@ -202,6 +206,23 @@ export default function ArtifactPanel({
   }, []);
 
   const isWidget = activeTab?.path?.startsWith("output/dashboard/widgets/") && activeTab?.path?.endsWith(".jsx");
+  // The dashboard actions menu shows for any dashboard HTML artifact (the React
+  // dashboard entry OR a published dashboard like Paid Media ROI).
+  const isDashboardHtml =
+    activeTab?.contentType === "html" &&
+    activeTab?.path?.startsWith("output/dashboard/") &&
+    activeTab?.path?.endsWith(".html");
+
+  // Print the dashboard iframe to PDF (browser print dialog → Save as PDF).
+  const handleSavePdf = useCallback(() => {
+    const win = htmlIframeRef.current?.contentWindow;
+    if (win) {
+      win.focus();
+      win.print();
+    } else {
+      window.print();
+    }
+  }, []);
 
   if (!activeTab) {
     return (
@@ -234,17 +255,45 @@ export default function ArtifactPanel({
         <ArtifactTabs tabs={tabs} activeTabId={activeTabId} onSelectTab={onSelectTab} onCloseTab={onCloseTab} inline />
 
         <div className="s-artifact-panel__actions">
-          {isReactDashboard && activeTab?.path === DASHBOARD_ENTRY && (
-            <PvButton
-              variant="primary"
-              size="md"
-              label="Verify & Publish"
-              icon={CheckCircle}
-              iconWeight="fill"
-              disabled={isLoading}
-              title="Verify & Publish"
-              onClick={() => setVerifyPublishOpen(true)}
-            />
+          {isDashboardHtml && (
+            <Popper
+              placement="bottom-end"
+              btnColor="transparent"
+              btnSize="sm"
+              buttonClassName="p-1"
+              popperClassName="min-w-[220px]"
+              buttonChildren={<DotsThree size={18} weight="bold" />}
+            >
+              {({ close }) => {
+                const items = [
+                  { label: "Verify & Publish", icon: SealCheck, onClick: () => setVerifyPublishOpen(true) },
+                  { label: "Create with AI", icon: Sparkle, beta: true, onClick: () => onCreateWorkflowAi && onCreateWorkflowAi() },
+                  { label: "Create workflow", icon: FlowArrow, onClick: () => onCreateWorkflow && onCreateWorkflow() },
+                  { label: "Save as PDF", icon: FilePdf, onClick: handleSavePdf },
+                  { label: "Refresh", icon: ArrowsClockwise, onClick: () => setRefreshKey((k) => k + 1) },
+                ];
+                return (
+                  <div className="flex flex-col py-1">
+                    {items.map(({ label, icon: Icon, beta, onClick }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        className="flex w-full items-center gap-2.5 px-3.5 py-2 text-[13px] text-left text-[var(--text-primary)] bg-transparent border-0 cursor-pointer hover:bg-[var(--color-grey-50)]"
+                        onClick={() => { onClick(); close(); }}
+                      >
+                        <Icon size={16} weight="regular" className="shrink-0 text-[var(--color-grey-600)]" />
+                        <span className="flex-1">{label}</span>
+                        {beta && (
+                          <span className="text-[9px] font-semibold tracking-wide text-[var(--accent)] bg-[var(--color-primary-50)] px-1.5 py-0.5 rounded">
+                            BETA
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                );
+              }}
+            </Popper>
           )}
           {isWidget && (
             <Button

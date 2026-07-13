@@ -115,6 +115,7 @@ export function MenuBar({
             key={item.id}
             icon={item.icon}
             label={item.label}
+            title={item.title}
             isOpen={isOpen}
             isActive={activeId === item.id}
             onClick={() => onItemClick && onItemClick(item.id)}

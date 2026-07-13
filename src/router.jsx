@@ -110,9 +110,15 @@ const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
 // Page-navigation loading now shows a content-shaped skeleton instead of the
 // petavue splash spinner. (PetavueSplash is still used for initial app boot.)
-const SuspenseWrapper = ({ children }) => {
-  return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>;
+const SuspenseWrapper = ({ children, variant }) => {
+  return <Suspense fallback={<PageSkeleton variant={variant} />}>{children}</Suspense>;
 };
+
+// Back-compat: old /sage/:id chat links redirect to the /chat/:id URL.
+function SageToChatRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/chat/${id}`} replace />;
+}
 
 function AuthenticatedLayout() {
   return (
@@ -302,7 +308,7 @@ export const router = createBrowserRouter([
               {
                 path: "sessions",
                 element: (
-                  <SuspenseWrapper>
+                  <SuspenseWrapper variant="list">
                     <SessionsPage />
                   </SuspenseWrapper>
                 )
@@ -316,13 +322,18 @@ export const router = createBrowserRouter([
                 )
               },
               {
-                // Sage is the new home for the main chat (clean URL).
-                path: "sage/:id",
+                // The main chat session (clean URL).
+                path: "chat/:id",
                 element: (
                   <SuspenseWrapper>
                     <WorkspacePage />
                   </SuspenseWrapper>
                 )
+              },
+              {
+                // Back-compat: old /sage/:id links → /chat/:id.
+                path: "sage/:id",
+                element: <SageToChatRedirect />
               }
             ]
           },
@@ -345,7 +356,7 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 element: (
-                  <SuspenseWrapper>
+                  <SuspenseWrapper variant="list">
                     <DashboardsPage />
                   </SuspenseWrapper>
                 )
@@ -369,7 +380,7 @@ export const router = createBrowserRouter([
             ? {
                 path: "new",
                 element: (
-                  <SuspenseWrapper>
+                  <SuspenseWrapper variant="none">
                     <HomeLayout />
                   </SuspenseWrapper>
                 ),
@@ -377,7 +388,7 @@ export const router = createBrowserRouter([
                   {
                     index: true,
                     element: (
-                      <SuspenseWrapper>
+                      <SuspenseWrapper variant="none">
                         <HomePage />
                       </SuspenseWrapper>
                     )
@@ -395,7 +406,7 @@ export const router = createBrowserRouter([
                   {
                     path: "home",
                     element: (
-                      <SuspenseWrapper>
+                      <SuspenseWrapper variant="none">
                         <HomeLayout />
                       </SuspenseWrapper>
                     ),
@@ -403,7 +414,7 @@ export const router = createBrowserRouter([
                       {
                         index: true,
                         element: (
-                          <SuspenseWrapper>
+                          <SuspenseWrapper variant="none">
                             <HomePage />
                           </SuspenseWrapper>
                         )
@@ -426,7 +437,7 @@ export const router = createBrowserRouter([
           {
             path: "goals",
             element: (
-              <SuspenseWrapper>
+              <SuspenseWrapper variant="goals">
                 <GoalsPage />
               </SuspenseWrapper>
             )
@@ -469,7 +480,7 @@ export const router = createBrowserRouter([
                   {
                     index: true,
                     element: (
-                      <SuspenseWrapper>
+                      <SuspenseWrapper variant="list">
                         <WorkflowsPage />
                       </SuspenseWrapper>
                     )
@@ -495,7 +506,7 @@ export const router = createBrowserRouter([
                   {
                     index: true,
                     element: (
-                      <SuspenseWrapper>
+                      <SuspenseWrapper variant="grid">
                         <SkillsLibraryPage />
                       </SuspenseWrapper>
                     )
@@ -513,7 +524,7 @@ export const router = createBrowserRouter([
               {
                 path: "skills-v2",
                 element: (
-                  <SuspenseWrapper>
+                  <SuspenseWrapper variant="grid">
                     <SkillsV2ListPage />
                   </SuspenseWrapper>
                 )

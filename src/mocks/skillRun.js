@@ -116,6 +116,77 @@ const GROUPING_LABEL = {
 // and each carries an `affects` line ("What this shapes").
 const CLARIFICATIONS = [ATTRIBUTION_CLARIFICATION, PERIOD_CLARIFICATION, GROUPING_CLARIFICATION];
 
+// ── Paid Media ROI theming ────────────────────────────────────────────────
+// The featured demo skill. When it's activated, the whole run reflects the
+// Paid Media ROI story (clarify → plan sections → build steps → the dashboard)
+// instead of the generic revenue-dashboard content — so the process matches the
+// output. Detected loosely so it fires on "Paid Media ROI" / any ROAS name.
+function isPaidMediaSkill(skillId, skill) {
+  const hay = `${skillId || ""} ${skill?.name || ""} ${skill?.slug || ""}`.toLowerCase();
+  return /paid.?media|roas|channel.?roi|campaign.?roas|channel.?roas/.test(hay);
+}
+
+// The defining choice for this skill — mirrors the chat flow's clarify: the user
+// said "demos" but the tenant attributes on closed-won, so confirm before building.
+const PMR_CONVERSION_CLARIFICATION = {
+  id: "conversion_event",
+  question: "Which conversion event should we grade channels against?",
+  help_text: "You mentioned demos, but this tenant's default is closed-won. This sets what every ROAS number is measured against — you can change it later in chat.",
+  affects: "Every ROAS figure and the Scale / Hold / Cut verdicts. Closed-won is the board-defensible answer; a demo is a faster but weaker leading indicator.",
+  answer_type: "single_select",
+  required: true,
+  default: "closed_won",
+  surfaced_reason: "You asked about demos, but this tenant attributes on closed-won opportunities.",
+  allow_custom: true,
+  options: [
+    { value: "closed_won", label: "Closed-won revenue (recommended)" },
+    { value: "demos", label: "Demos booked (leading indicator)" },
+    { value: "sqls", label: "Sales-qualified opps (SQLs)" },
+    { value: "__custom__", label: "Other (please specify)" },
+  ],
+};
+const CONVERSION_LABEL = { closed_won: "Closed-won revenue", demos: "Demos booked", sqls: "SQLs" };
+
+// Conversion event first (the consequential one), then attribution + period.
+const PMR_CLARIFICATIONS = [PMR_CONVERSION_CLARIFICATION, ATTRIBUTION_CLARIFICATION, PERIOD_CLARIFICATION];
+
+// Build steps shown in the execution left-pane — the real Paid Media ROI work.
+const PMR_STEPS = [
+  { id: "pull_spend", title: "Pull ad spend by channel", type: "query", tool: "query_athena", purpose: "Reads spend across Google, LinkedIn, and Meta from your connected ad platforms.", result: "Pulled $163.1K of spend across 15 live campaigns over the 90-day window." },
+  { id: "attribute_won", title: "Attribute closed-won to channels", type: "query", tool: "query_athena", purpose: "Matches won opportunities to their paid lead source, so revenue traces to a real deal.", result: "Attributed $588.5K closed-won across 9 deals via opportunity.leadsource." },
+  { id: "compute_roas", title: "Compute CRM-grounded true ROAS", type: "transform", tool: "execute_code", purpose: "Grades each channel against closed-won revenue, not platform-reported ROAS.", result: "Google 4.81×, LinkedIn 3.14×, Meta 0.98× — blended 3.61× vs platforms' 0.96×." },
+  { id: "rank_moves", title: "Rank this week's spend moves", type: "transform", tool: "execute_code", purpose: "Turns the ROAS gaps into Scale / Hold / Cut moves ranked by dollars at risk.", result: "Flagged Meta to cut, Google Display to scale, and 1 campaign to pause." },
+  { id: "score_icp", title: "Score the ICP hand-off queue", type: "transform", tool: "execute_code", purpose: "Finds in-market ICP accounts engaging your ads that have no open pipeline yet.", result: "Surfaced 12 ICP accounts ($666K potential) to hand to sales this week." },
+  { id: "build_widgets", title: "Build the dashboard sections", type: "widget", tool: "write_file", purpose: "Assembles each section you approved into the Paid Media ROI dashboard.", result: "Built the ROAS truth, this week's moves, ICP queue, and winning-journey sections." },
+  { id: "verify_values", title: "Verify every value is source-linked", type: "verify", tool: null, purpose: "Checks that every ROAS figure traces back to the SQL and rows behind it.", result: "Every value reconciles to CRM closed-won and is source-linked." },
+];
+
+// Plan-approval widget cards (ids reuse existing schematics: stats/line/bars/list/table).
+const PMR_WIDGETS = [
+  { id: "headline", name: "ROAS scoreboard", desc: "True ROAS, spend this week, pipeline influenced, and closed-won attributed — the headline scorecard." },
+  { id: "segment", name: "Platform-claimed vs true ROAS", desc: "What each platform reports vs CRM-grounded ROAS, per channel, with the gap called out." },
+  { id: "trend", name: "What moved this week", desc: "Campaigns that shifted ≥15% week-over-week, with platform → true ROAS and pipeline at risk." },
+  { id: "risk", name: "Wasted spend & this week's moves", desc: "Where spend isn't converting, with the Scale / Hold / Cut moves ranked by dollars at risk." },
+  { id: "table", name: "ICP hand-off queue", desc: "In-market ICP accounts engaging your ads with no open pipeline — ready for sales to call." },
+];
+
+const PMR_PLAN = {
+  title: "Paid Media ROI",
+  description: "Grade every paid channel against closed-won revenue — not platform-reported ROAS — and surface where to move spend this week.",
+  overview: "Sage grades LinkedIn / Google / Meta against closed-won revenue using your Key Definitions, calls out where spend is wasted, and hands sales the ICP accounts already engaging your ads. Every dollar traces to a deal.",
+  will_deliver: [
+    "True ROAS by channel, graded against CRM closed-won — not platform pixels.",
+    "This week's Scale / Hold / Cut moves, ranked by dollars at risk.",
+    "12 in-market ICP accounts to hand to sales, with engagement signals.",
+    "The winning multi-touch journeys your closed-won deals actually ran.",
+  ],
+  key_choices: [
+    { label: "Conversion event", value: "Conversion event: closed-won opportunities" },
+    { label: "Channels", value: "Channels: Google, LinkedIn, Meta" },
+    { label: "Window", value: "Window: 90 days, anchored to the ad-data max date" },
+  ],
+};
+
 // Demo trigger — any skill whose slug is in this set halts at the Plan stage
 // with a GTM-style "your setup is missing data" block, so the blocked-state +
 // correction UI is reachable in the prototype. Everything else runs normally.
@@ -180,15 +251,16 @@ export function getPlanSummary(sid) {
 export function startRun(session, skillId) {
   const sid = session.session_id;
   const skill = SKILLS_CATALOG.find((s) => s.slug === skillId || s.name === skillId) || null;
-  const isMemo = skill?.type === "memo";
-  const steps = DEFAULT_STEPS.map((s) => ({ ...s }));
+  const isPMR = isPaidMediaSkill(skillId, skill);
+  const isMemo = !isPMR && skill?.type === "memo";
+  const steps = (isPMR ? PMR_STEPS : DEFAULT_STEPS).map((s) => ({ ...s }));
 
   const run = {
     sessionId: sid,
     session,
     skill,
     createdAt: session.created_at,
-    clarifications: CLARIFICATIONS,
+    clarifications: isPMR ? PMR_CLARIFICATIONS : CLARIFICATIONS,
     awaiting: false,
     blocked: false,
     blockedSummary: null,
@@ -197,14 +269,16 @@ export function startRun(session, skillId) {
     finding_count: 0,
     timers: [],
     planSummary: {
-      title: skill?.name || "Skill run",
+      title: isPMR ? PMR_PLAN.title : (skill?.name || "Skill run"),
       // Short catalog blurb for the skill — shown as header context on the
       // run page so the user always knows what this skill is for.
-      skill_description: skill?.description || "",
+      skill_description: isPMR ? PMR_PLAN.description : (skill?.description || ""),
       output_type: isMemo ? "memo" : "dashboard",
-      plan_outcome: skill?.overview || `Sage will build your ${(skill?.name || "output").toLowerCase()} from your connected data.`,
-      plan_will_deliver: (skill?.questions || []).slice(0, 4),
-      widgets: isMemo ? MEMO_SECTIONS : DASHBOARD_WIDGETS,
+      // The dashboard this run opens on handoff (Paid Media ROI vs the default).
+      target_file: isPMR ? "output/dashboard/paid_media_roi.html" : "",
+      plan_outcome: isPMR ? PMR_PLAN.overview : (skill?.overview || `Sage will build your ${(skill?.name || "output").toLowerCase()} from your connected data.`),
+      plan_will_deliver: isPMR ? PMR_PLAN.will_deliver : (skill?.questions || []).slice(0, 4),
+      widgets: isMemo ? MEMO_SECTIONS : (isPMR ? PMR_WIDGETS : DASHBOARD_WIDGETS),
       // The answers/definitions produced during this run, offered for saving as
       // reusable context so future runs reuse them (the "Save answers" popup).
       saveableAnswers: [
@@ -227,7 +301,7 @@ export function startRun(session, skillId) {
       plan_wont_deliver: [],
       plan_key_formulas: [],
       // Inputs read as "Label: detail?"; take the label before the colon.
-      key_choices: (skill?.inputs || []).slice(0, 3).map((t) => ({ label: t.split(":")[0].trim(), value: t })),
+      key_choices: isPMR ? PMR_PLAN.key_choices : (skill?.inputs || []).slice(0, 3).map((t) => ({ label: t.split(":")[0].trim(), value: t })),
       steps: steps.map(({ id, title, type, purpose, result }) => ({ id, title, type, purpose, result })),
       memo_path: isMemo ? "output/memo.md" : "",
     },
@@ -292,11 +366,16 @@ export function submitClarification(sid, answers) {
   const periodLabel = PERIOD_LABEL[periodRaw] || (typeof periodRaw === "string" && periodRaw ? periodRaw : "Last quarter");
   const groupRaw = byId.grouping;
   const groupLabel = GROUPING_LABEL[groupRaw] || (typeof groupRaw === "string" && groupRaw ? groupRaw : "By channel");
-  const OWN = ["Attribution model", "Period", "Grouped by"];
+  // Paid Media ROI run asks a conversion-event question instead of grouping.
+  const isPMR = run.clarifications.some((c) => c.id === "conversion_event");
+  const convRaw = byId.conversion_event;
+  const convLabel = CONVERSION_LABEL[convRaw] || (typeof convRaw === "string" && convRaw ? convRaw : "Closed-won revenue");
+  const OWN = ["Conversion event", "Attribution model", "Period", "Grouped by", "Window"];
   run.planSummary.key_choices = [
+    ...(isPMR ? [{ label: "Conversion event", value: convLabel }] : []),
     { label: "Attribution model", value: attrLabel },
     { label: "Period", value: periodLabel },
-    { label: "Grouped by", value: groupLabel },
+    ...(isPMR ? [] : [{ label: "Grouped by", value: groupLabel }]),
     ...run.planSummary.key_choices.filter((c) => !OWN.includes(c.label)),
   ];
 

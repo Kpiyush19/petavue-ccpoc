@@ -1286,8 +1286,8 @@ export const SKILLS_CATALOG = [
   },
   {
     "slug": "channel-roas",
-    "name": "Channel ROAS",
-    "description": "Track ROAS by channel against configured targets, refreshed daily. One governed definition replaces the three different ROAS numbers leadership keeps citing from three different places.",
+    "name": "Paid Media ROI",
+    "description": "Grade every paid channel against closed-won revenue — not platform-reported ROAS — and see where to move spend this week. One governed definition replaces the three different ROAS numbers leadership keeps citing.",
     "type": "dashboard",
     "time": "~8 min",
     "workstream": "roas",
@@ -1335,11 +1335,11 @@ export const SKILLS_CATALOG = [
       "ROAS target: tenant config per channel, or 3.0x blended fallback?"
     ],
     "prompts": [
-      "Run Channel ROAS for the last quarter.",
-      "What is our blended and per-channel ROAS right now?",
-      "Which channels are below target, and by how much?",
-      "How is ROAS trending over the last 30 days?",
-      "Where is most of our spend concentrated relative to ROAS?"
+      "Run Paid Media ROI for the last quarter.",
+      "Which paid channels are actually driving demos, and where am I wasting spend?",
+      "What is our true, CRM-grounded ROAS per channel right now?",
+      "Which channels should we scale, hold, or cut this week?",
+      "Which ICP accounts are engaging our ads but have no open pipeline?"
     ],
     "integrations": [
       {

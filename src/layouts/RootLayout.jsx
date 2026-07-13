@@ -2,9 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/queryClient";
-import Sidebar from "../components/Sidebar";
 import MenuBarNav from "../components/MenuBarNav";
-import { MOCK_ENABLED } from "../mocks";
 import ImpersonationBanner from "../components/ImpersonationBanner";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
@@ -14,7 +12,8 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="h-screen flex bg-[var(--bg-primary)]">
-        {MOCK_ENABLED ? <MenuBarNav /> : <Sidebar />}
+        {/* Single unified nav everywhere — the design-system MenuBar. */}
+        <MenuBarNav />
         <main className="flex-1 min-w-0 flex flex-col">
           <ImpersonationBanner />
           <Outlet />

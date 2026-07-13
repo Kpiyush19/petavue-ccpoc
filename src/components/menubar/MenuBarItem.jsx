@@ -13,6 +13,7 @@ import {
   SageIcon,
   SquaresGridIcon,
   WorkflowsIcon,
+  ContextsIcon,
 } from './icons/NavIcons';
 
 /*
@@ -40,6 +41,7 @@ const ICON_MAP = {
   'sage': SageIcon,
   'grid': SquaresGridIcon,
   'workflows': WorkflowsIcon,
+  'contexts': ContextsIcon,
 };
 
 export function MenuBarItem({
@@ -49,6 +51,9 @@ export function MenuBarItem({
   isActive = false,
   isAccent = false,
   onClick,
+  // Optional native hover tooltip (shows in both open & closed states). Used
+  // for items that don't navigate — e.g. Contexts, which has no page yet.
+  title,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const IconComponent = ICON_MAP[icon];
@@ -64,6 +69,7 @@ export function MenuBarItem({
     <button
       className={className}
       onClick={onClick}
+      title={title}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

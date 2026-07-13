@@ -3,16 +3,23 @@ import { MenuBar } from "./menubar";
 import RunsActivity from "./runs/RunsActivity";
 import { getCurrentUser } from "../api";
 import { MOCK_ENABLED } from "../mocks";
+import { useSessionsQuery } from "../hooks/useSessionsQuery";
+import { getSessionRowMeta } from "./sessions/sessionRowMeta";
+import { timeAgo } from "@/utils/relativeTimeDiff";
 
 // Navigation items (icon keys map to the MenuBar's Phosphor icon set).
 // Canonical nav — identical order/ids in both navbars (see petavue MenuBar) so
 // buttons never shift position between pages. Sage + live Dashboard open the
 // live app; the rest open the Petavue design-system pages.
+// Order matches the New chat button (rendered first by MenuBar) → Dashboard →
+// Skills → Goals → Contexts → Data Hub. "contexts" has no NAV_ROUTES entry, so
+// it doesn't navigate — it's a tooltip-only affordance (no page yet).
 export const NAV_ITEMS = [
+  { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
   { id: "skills", label: "Skills", icon: "skills" },
   { id: "workflows", label: "Workflows", icon: "workflows" },
   { id: "goals", label: "Goals", icon: "goals" },
-  { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
+  { id: "contexts", label: "Contexts", icon: "contexts", title: "Contexts — add new (coming soon)" },
   { id: "data-hub", label: "Data Hub", icon: "data-hub" },
 ];
 
@@ -31,6 +38,9 @@ export default function MenuBarNav() {
   const currentUser = getCurrentUser();
   const navigate = useNavigate();
   const location = useLocation();
+  // Real recent sessions — used to populate the history panel when not running
+  // the scripted mock demo (this nav is now the single nav in every mode).
+  const { data: sessionList = [] } = useSessionsQuery();
   const name = currentUser?.name || currentUser?.username || "User";
   const initials =
     name
@@ -52,7 +62,7 @@ export default function MenuBarNav() {
   // Chat sessions and the Create-New page are reached from the "Create New"
   // button, so no nav item is highlighted there.
   const { pathname } = location;
-  const isChatRoute = pathname.startsWith("/sage") || pathname.startsWith("/session");
+  const isChatRoute = pathname.startsWith("/chat") || pathname.startsWith("/session") || pathname.startsWith("/sage");
   // Prefer the longest matching route so nested paths (e.g. /skills/:id)
   // highlight the deeper item (Skills). The bare /new page matches nothing → no
   // highlight, which is what we want for the Create-New page.
@@ -62,12 +72,27 @@ export default function MenuBarNav() {
         .filter((item) => { const r = NAV_ROUTES[item.id]; return r && pathname.startsWith(r); })
         .sort((a, b) => NAV_ROUTES[b.id].length - NAV_ROUTES[a.id].length)[0]?.id || null;
 
-  // Only the first (real) chat opens the live session; the rest are display-only.
-  const historyGroups = MOCK_ENABLED
-    ? [
+  // Mock demo: a scripted, populated history (only the first item opens the
+  // live session). Non-mock: real recents from the sessions query, so this nav
+  // fully replaces the retired Sidebar.
+  const historyGroups = !MOCK_ENABLED
+    ? sessionList.length
+      ? [
+          {
+            label: "Recents",
+            items: sessionList.slice(0, 20).map((s) => ({
+              id: s.session_id,
+              title: s.name || "Session",
+              time: s.last_active_at ? timeAgo(s.last_active_at) : "",
+              clickable: true,
+            })),
+          },
+        ]
+      : []
+    : [
         {
           label: "Today",
-          items: [{ id: "q2-revenue-dashboard", title: "Q2 Revenue Dashboard", time: "now", clickable: true }],
+          items: [{ id: "q2-revenue-dashboard", title: "Paid Media ROI", time: "now", clickable: true }],
         },
         {
           label: "Yesterday",
@@ -92,10 +117,13 @@ export default function MenuBarNav() {
             { id: "h-lead-source", title: "Lead source effectiveness", time: "24d" },
           ],
         },
-      ]
-    : [];
+      ];
 
-  const handleHistoryClick = (id) => navigate(`/sage/${id}`);
+  const handleHistoryClick = (id) => {
+    if (MOCK_ENABLED) { navigate(`/chat/${id}`); return; }
+    const s = sessionList.find((x) => x.session_id === id);
+    navigate(s ? getSessionRowMeta(s).route : `/session/${id}`);
+  };
 
   return (
     <div className="shrink-0 h-screen">

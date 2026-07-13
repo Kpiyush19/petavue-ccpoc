@@ -43,7 +43,7 @@ function MinimizedStrip({ label, onExpand }) {
 
 function ColumnHeader({ title, extra, onMinimize, minimizeTitle }) {
   return (
-    <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+    <div className="shrink-0 flex items-center gap-2 h-10 px-3 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
       <span className="text-[12px] font-semibold text-[var(--text-primary)] flex-1 truncate">
         {title}
       </span>
@@ -245,7 +245,7 @@ export default function WidgetDetailView({
           className="h-full min-h-0 flex flex-col border-r border-[var(--border-primary)]"
           style={{ width: widths.widget, transition: colTransition }}
         >
-          <div className="shrink-0 flex items-center justify-between px-3 py-1.5 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+          <div className="shrink-0 flex items-center justify-between h-10 px-3 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
             <span className="text-[12px] text-[var(--text-muted)] truncate">{widget?.name}</span>
             <PvButton variant="ghost" size="sm" icon={ArrowsClockwise} iconWeight="bold" onClick={handleRefresh} title="Refresh widget preview" />
           </div>

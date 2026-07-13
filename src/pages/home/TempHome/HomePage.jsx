@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowUp, ArrowRight, Paperclip, X, Upload, LayoutDashboard, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { getCurrentUser } from "../../../api";
+import { getCurrentUser, apiPost } from "../../../api";
 import { cn } from "../../../utils/cn";
 import { useSessionContext } from "../../../contexts/SessionContext";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../utils/upload";
@@ -116,13 +116,23 @@ export default function HomePage() {
   );
   const removeFile = useCallback((index) => setFiles((prev) => prev.filter((_, i) => i !== index)), []);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmed = message.trim();
     if (createLoading) return;
     if (!trimmed && files.length === 0) return;
-    navigate("/sage/q2-revenue-dashboard", {
-      state: { initialMessage: trimmed || null, initialFiles: files.length > 0 ? files : null },
-    });
+    const state = { initialMessage: trimmed || null, initialFiles: files.length > 0 ? files : null };
+    try {
+      // Mint a fresh empty session (direct API call — don't touch the shared
+      // session hook, so WorkspacePage resumes it clean) and let the scripted
+      // flow play: prompt → Sage's clarify → (Option A) → Paid Media ROI dashboard.
+      const data = await apiPost("/api/sessions", {});
+      const sid = data?.session?.session_id;
+      if (!sid) throw new Error("no session id");
+      navigate(`/chat/${sid}`, { state });
+    } catch {
+      // Fallback: land in the pre-loaded demo session.
+      navigate("/chat/q2-revenue-dashboard", { state });
+    }
   };
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
@@ -228,11 +238,11 @@ export default function HomePage() {
                     disabled={!canSend}
                     aria-label="Send"
                     className={cn(
-                      "flex items-center justify-center w-9 h-9 rounded-full shrink-0 border-none transition-colors",
+                      "flex items-center justify-center w-12 h-12 rounded-full shrink-0 border-none transition-colors",
                       canSend ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed"
                     )}
                   >
-                    <ArrowUp size={16} strokeWidth={2.75} />
+                    <ArrowUp size={20} strokeWidth={2.75} />
                   </button>
                 </div>
               </div>

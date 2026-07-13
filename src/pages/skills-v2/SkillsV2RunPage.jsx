@@ -58,8 +58,10 @@ function buildHandoffArtifact(planSummary) {
     }
   }
   return {
-    path: 'output/dashboard/index.html',
-    title: 'Dashboard',
+    // A themed run (e.g. Paid Media ROI) sets its own target_file so the run
+    // hands off to the matching dashboard; otherwise the default entry.
+    path: planSummary.target_file || 'output/dashboard/index.html',
+    title: planSummary.title || 'Dashboard',
     contentType: 'html',
   }
 }
