@@ -428,7 +428,25 @@ function scriptPaidMediaReply(channel, phase) {
   }, at);
 }
 
-function simulateAgentReply(sessionId, userText) {
+// Shape a generic reply by the selected model tier so the mode switch is
+// visibly functional in the demo: Pro reasons more and adds a follow-up,
+// Mini is terse, Standard is unchanged.
+function applyModeToReply(reply, mode) {
+  if (mode === "pro") {
+    return (
+      "Reasoning through this across every connected source before I answer — checking the joins and the date ranges so the numbers hold up. " +
+      reply +
+      " I also surfaced two secondary drivers worth a closer look, and I'm confident in the attribution here."
+    );
+  }
+  if (mode === "mini") {
+    const first = reply.split(". ")[0];
+    return first.endsWith(".") ? first : first + ".";
+  }
+  return reply;
+}
+
+function simulateAgentReply(sessionId, userText, mode = "standard") {
   const isSage = String(sessionId).startsWith("sage-");
   const isReviewSync = REVIEW_SYNC_MARKER.test(userText || "");
   const channel = `session-${sessionId}`;
@@ -451,7 +469,10 @@ function simulateAgentReply(sessionId, userText) {
     ? "Done. I've applied the reviewed adjustments to your dashboard so it stays accurate on every scheduled refresh."
     : followupReply ||
       "Done. I've updated your dashboard and re-ran the queries against the latest data. Let me know if you'd like any other changes.";
-  const words = reply.split(" ");
+  // Mode only shapes the generic / follow-up replies — scripted PMR and Sage
+  // flows keep their curated content so those demos stay intact.
+  const finalReply = !isSage && !isReviewSync ? applyModeToReply(reply, mode) : reply;
+  const words = finalReply.split(" ");
   let i = 0;
   const tick = () => {
     if (i < words.length) {
@@ -834,7 +855,7 @@ const handlers = [
     handler: ({ params, body }) => {
       const sid = params[0];
       (db.history[sid] ||= []).push({ type: "user", text: body?.message || "", timestamp: Date.now() });
-      simulateAgentReply(sid, body?.message || "");
+      simulateAgentReply(sid, body?.message || "", body?.mode || "standard");
       return { ok: true };
     },
   },

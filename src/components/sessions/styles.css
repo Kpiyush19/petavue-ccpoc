@@ -766,7 +766,9 @@
   flex-shrink: 0;
   width: 100%;
   padding: 0 24px;
-  overflow: hidden;
+  /* visible so the model-mode menu can open upward above the composer
+     instead of being clipped to the input field. */
+  overflow: visible;
   box-sizing: border-box;
 }
 

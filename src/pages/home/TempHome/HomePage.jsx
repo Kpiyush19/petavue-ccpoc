@@ -7,7 +7,7 @@ import { getCurrentUser, apiPost } from "../../../api";
 import { cn } from "../../../utils/cn";
 import { useSessionContext } from "../../../contexts/SessionContext";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../utils/upload";
-import { Input, Tooltip } from "@/ui";
+import { Input, Tooltip, ModelModeMenu, readSageMode } from "@/ui";
 import { NAV_ROUTES } from "../../../components/MenuBarNav";
 import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import { formatSkillName } from "./utils/formatSkillName";
@@ -87,6 +87,7 @@ export default function HomePage() {
   const [files, setFiles] = useState([]);
   const [dragOver, setDragOver] = useState(false);
   const [createLoading] = useState(false);
+  const [sageMode, setSageMode] = useState(readSageMode);
   const fileInputRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -232,18 +233,22 @@ export default function HomePage() {
                     <input ref={fileInputRef} type="file" multiple accept={ALLOWED_EXTENSIONS} onChange={handleFileChange} className="hidden" />
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleSend}
-                    disabled={!canSend}
-                    aria-label="Send"
-                    className={cn(
-                      "flex items-center justify-center w-12 h-12 rounded-full shrink-0 border-none transition-colors",
-                      canSend ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed"
-                    )}
-                  >
-                    <ArrowUp size={20} strokeWidth={2.75} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <ModelModeMenu value={sageMode} onChange={setSageMode} placement="bottom" />
+
+                    <button
+                      type="button"
+                      onClick={handleSend}
+                      disabled={!canSend}
+                      aria-label="Send"
+                      className={cn(
+                        "flex items-center justify-center w-12 h-12 rounded-full shrink-0 border-none transition-colors",
+                        canSend ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed"
+                      )}
+                    >
+                      <ArrowUp size={20} strokeWidth={2.75} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

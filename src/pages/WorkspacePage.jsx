@@ -70,6 +70,18 @@ export default function WorkspacePage() {
     session.sendMessage(msg || "", files || []);
   }, [session.sessionId, session.status, id]);
 
+  // Drop a "Switched to X mode" divider into the stream when the user changes
+  // the Sage model tier — but only once there's a real conversation, so a
+  // brand-new session doesn't open with a divider.
+  const handleModeChange = useCallback(
+    (mode) => {
+      if (session.messages.some((m) => m.type === "user")) {
+        session.addMessage({ type: "mode_switch_divider", mode, timestamp: Date.now() });
+      }
+    },
+    [session]
+  );
+
   // Skill-run → regular handoff lands here with `openArtifact` in route
   // state: descriptor of the dashboard / memo the skill produced. We
   // open it in the artifact panel as soon as the session reaches
@@ -316,6 +328,7 @@ export default function WorkspacePage() {
                 isThinking={isThinking}
                 connectionStatus={connectionStatus}
                 sessionId={id}
+                onModeChange={handleModeChange}
               />
             )}
           </div>

@@ -66,6 +66,25 @@ function RefreshDivider({ text, timestamp }) {
   );
 }
 
+function ModeSwitchDivider({ mode, timestamp }) {
+  const label = mode ? mode.charAt(0).toUpperCase() + mode.slice(1) : "Standard";
+  const formattedTime = timestamp
+    ? new Date(timestamp).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+    : null;
+
+  return (
+    <div className="s-refresh-divider">
+      <div className="s-refresh-divider__line" />
+      <div className="s-refresh-divider__badge">
+        <Sparkle size={13} weight="fill" color="var(--accent)" />
+        <span>Switched to {label} mode</span>
+        {formattedTime && <span className="s-refresh-divider__time">{formattedTime}</span>}
+      </div>
+      <div className="s-refresh-divider__line" />
+    </div>
+  );
+}
+
 function ThinkingIndicator({ isCompacting }) {
   const color = isCompacting ? "var(--status-warning)" : "var(--accent)";
   const label = isCompacting ? "Compacting context..." : "Thinking...";
@@ -440,6 +459,17 @@ export default function ChatArea({
                     transition={{ duration: 0.3 }}
                   >
                     <RefreshDivider text={msg.text} timestamp={msg.timestamp} />
+                  </motion.div>
+                );
+              case "mode_switch_divider":
+                return (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ModeSwitchDivider mode={msg.mode} timestamp={msg.timestamp} />
                   </motion.div>
                 );
               default:

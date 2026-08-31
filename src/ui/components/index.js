@@ -28,6 +28,7 @@ export { Tooltip as InfoTooltip } from './Popover/Tooltip/Tooltip';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export { Toast } from './Toast/Toast';
 export { SageTextBox } from './SageTextBox/SageTextBox';
+export { ModelModeMenu, SAGE_MODES, readSageMode, writeSageMode } from './ModelModeMenu/ModelModeMenu';
 export { ThoughtProcess } from './ThoughtProcess/ThoughtProcess';
 export { SagePane } from './SagePane/SagePane';
 export { GuidanceActionCard } from './GuidanceActionCard/GuidanceActionCard';

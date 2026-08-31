@@ -567,6 +567,7 @@ export function useSession() {
       const body = { message: text }
       if (attachments) body.attachments = attachments
       if (options.widgetScope) body.widget_scope = options.widgetScope
+      if (options.mode) body.mode = options.mode
 
       await apiPost(`/api/sessions/${sessionId}/chat`, body)
     } catch (e) {

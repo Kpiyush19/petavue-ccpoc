@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Square, Paperclip, X, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { Button, Input, Tooltip } from "@/ui";
+import { Button, Input, Tooltip, ModelModeMenu, readSageMode } from "@/ui";
 import { MAX_FILES, MAX_FILE_SIZE, MAX_FILE_SIZE_MB, ALLOWED_EXTENSIONS, ALLOWED_SET } from "../../../utils/upload";
 
 function formatSize(bytes) {
@@ -16,10 +16,11 @@ function getExtension(filename) {
   return dot >= 0 ? filename.slice(dot).toLowerCase() : "";
 }
 
-export default function Composer({ onSend, onCancel, disabled, isThinking, placeholder, sessionId }) {
+export default function Composer({ onSend, onCancel, disabled, isThinking, placeholder, sessionId, onModeChange }) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState([]);
   const [dragOver, setDragOver] = useState(false);
+  const [sageMode, setSageMode] = useState(readSageMode);
   const fileInputRef = useRef(null);
 
   // Skill-disclosure follow-up handoff: SkillsV2RunPage drops the suggested
@@ -96,7 +97,7 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
   const handleSend = () => {
     const trimmed = text.trim();
     if ((!trimmed && files.length === 0) || disabled) return;
-    onSend(trimmed, files);
+    onSend(trimmed, files, { mode: sageMode });
     setText("");
     setFiles([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -233,25 +234,40 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
         </div>
       )}
 
-      <Input
-        type="textarea"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
-        placeholder={placeholder || "Ask the agent to analyze your data..."}
-        minRows={1}
-        maxRows={6}
-        leftElem={attachButton}
-        rightElem={actionButton}
-        className={{
-          wrapper: "s-composer__input-wrapper min-h-[66px]",
-          input: {
-            wrapper: "rounded-[20px] overflow-hidden",
-            root: "s-composer__textarea"
-          }
-        }}
-      />
+      <div className="s-composer__box relative flex flex-col w-full bg-white border border-grey-200 rounded-[20px] focus-within:border-primary-500 hover:border-primary-300 transition-colors">
+        {/* Row 1 — the textarea */}
+        <Input
+          type="textarea"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          placeholder={placeholder || "Ask the agent to analyze your data..."}
+          minRows={1}
+          maxRows={6}
+          className={{
+            wrapper: "w-full",
+            input: {
+              wrapper: "border-none bg-transparent px-4 pt-3 pb-1 focus-within:border-none hover:border-none",
+              root: "s-composer__textarea"
+            }
+          }}
+        />
+
+        {/* Row 2 — actions: attach on the left, mode + send on the right */}
+        <div className="flex items-center justify-between gap-2 px-3 pb-2.5 pt-0.5">
+          <div className="flex items-center gap-1.5">{attachButton}</div>
+          <div className="flex items-center gap-2">
+            <ModelModeMenu
+              value={sageMode}
+              onChange={(m) => { setSageMode(m); onModeChange && onModeChange(m); }}
+              placement="top"
+              disabled={disabled}
+            />
+            {actionButton}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
