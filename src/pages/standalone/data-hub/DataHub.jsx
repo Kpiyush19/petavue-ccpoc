@@ -107,12 +107,15 @@ function ActionDropdown({ onClose, onEdit, onDelete }) {
 
 /* ─── Definition Row ─── */
 
-function DefinitionRow({ index, metric, onOpen }) {
+function DefinitionRow({ index, metric, onOpen, clickable = true }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const sourceKeys = useMemo(() => extractSourceKeys(metric.rawSources), [metric.rawSources]);
 
   return (
-    <div className="data-hub__row" onClick={() => onOpen(metric)}>
+    <div
+      className={`data-hub__row${clickable ? "" : " data-hub__row--static"}`}
+      onClick={clickable ? () => onOpen(metric) : undefined}
+    >
       <span className="data-hub__row-num">{index}.</span>
       <span className="data-hub__col-metric-name">
         <span className="data-hub__metric-name">{metric.name}</span>
@@ -140,22 +143,24 @@ function DefinitionRow({ index, metric, onOpen }) {
           {metric.status === 'enabled' ? 'Enabled' : 'Disabled'}
         </Tag>
       </span>
-      <div className="data-hub__dots-wrapper">
-        <button
-          className="data-hub__dots-btn"
-          onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
-          aria-label="Actions"
-        >
-          <DotsThree size={20} weight="regular" />
-        </button>
-        {menuOpen && (
-          <ActionDropdown
-            onClose={() => setMenuOpen(false)}
-            onEdit={() => onOpen(metric)}
-            onDelete={() => {}}
-          />
-        )}
-      </div>
+      {clickable && (
+        <div className="data-hub__dots-wrapper">
+          <button
+            className="data-hub__dots-btn"
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
+            aria-label="Actions"
+          >
+            <DotsThree size={20} weight="regular" />
+          </button>
+          {menuOpen && (
+            <ActionDropdown
+              onClose={() => setMenuOpen(false)}
+              onEdit={() => onOpen(metric)}
+              onDelete={() => {}}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -360,6 +365,9 @@ export function DataHub({
   onNavigate,
   menuOpen,
   onMenuToggle,
+  // When false, definition rows are view-only — no detail page, no actions menu
+  // (used by the embed). Dictionary stays fully interactive regardless.
+  definitionsClickable = true,
 }) {
   const [activeTab, setActiveTab] = useState('dictionary');
   const [selectedMetric, setSelectedMetric] = useState(null);
@@ -492,6 +500,7 @@ export function DataHub({
                           index={i + 1}
                           metric={metric}
                           onOpen={setSelectedMetric}
+                          clickable={definitionsClickable}
                         />
                       ))}
                     </div>

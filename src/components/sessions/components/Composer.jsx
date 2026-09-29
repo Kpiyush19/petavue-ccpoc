@@ -22,6 +22,8 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
   const [dragOver, setDragOver] = useState(false);
   const [sageMode, setSageMode] = useState(readSageMode);
   const fileInputRef = useRef(null);
+  // Embeds strip the composer to essentials: no model picker, inert attach.
+  const minimalComposer = typeof window !== "undefined" && !!window.__EMBED_MINIMAL_COMPOSER__;
 
   // Skill-disclosure follow-up handoff: SkillsV2RunPage drops the suggested
   // prompt into sessionStorage before navigating here. Consume + clear on
@@ -135,7 +137,7 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={minimalComposer ? undefined : () => fileInputRef.current?.click()}
           disabled={disabled}
           className="p-2"
           aria-label="Attach file"
@@ -258,12 +260,14 @@ export default function Composer({ onSend, onCancel, disabled, isThinking, place
         <div className="flex items-center justify-between gap-2 px-3 pb-2.5 pt-0.5">
           <div className="flex items-center gap-1.5">{attachButton}</div>
           <div className="flex items-center gap-2">
-            <ModelModeMenu
-              value={sageMode}
-              onChange={(m) => { setSageMode(m); onModeChange && onModeChange(m); }}
-              placement="top"
-              disabled={disabled}
-            />
+            {!minimalComposer && (
+              <ModelModeMenu
+                value={sageMode}
+                onChange={(m) => { setSageMode(m); onModeChange && onModeChange(m); }}
+                placement="top"
+                disabled={disabled}
+              />
+            )}
             {actionButton}
           </div>
         </div>

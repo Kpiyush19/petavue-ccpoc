@@ -368,7 +368,7 @@ export default function SlackIntegrationDetail({ onBack }) {
                         <span>
                           {wf.workflow_id && (
                             <a
-                              href={`/workflows/${wf.workflow_id}`}
+                              href={`/workflow-engine/${wf.workflow_id}`}
                               className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
                               title="Edit this workflow"
                             >

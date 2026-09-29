@@ -169,7 +169,7 @@ export default function DashboardsPage() {
                       {art.source === 'workflow' && (
                         <span
                           className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--accent)] bg-[var(--accent)]/8 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-[var(--accent)]/15 transition-colors"
-                          onClick={(e) => { e.stopPropagation(); navigate(`/workflows/${art.workflow_id}`) }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/workflow-engine/${art.workflow_id}`) }}
                           title="View workflow"
                         >
                           <Workflow size={9} /> Workflow
@@ -238,7 +238,7 @@ export default function DashboardsPage() {
             return (
               <>
                 {art.source === 'workflow' && art.workflow_id && (
-                  <button onClick={() => { setMenuOpen(null); navigate(`/workflows/${art.workflow_id}`) }}
+                  <button onClick={() => { setMenuOpen(null); navigate(`/workflow-engine/${art.workflow_id}`) }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors bg-transparent border-none cursor-pointer">
                     <Workflow size={14} />
                     View workflow

@@ -29,7 +29,7 @@ import { Badge } from "@/ui";
 import { Button, Tooltip, Toggle, Skeleton } from "@/ui";
 import { useScrollCleanup } from "@/hooks/useScrollCleanup";
 import WorkflowDropdown from "../components/WorkflowDropdown";
-import { RenameWorkflowModal } from "./workflows/components/RenameWorkflowModal";
+import { RenameWorkflowModal } from "./components/RenameWorkflowModal";
 import { apiGet, apiPost, apiPut, getCurrentUser } from "../api";
 import { timeAgo } from "@/utils/relativeTimeDiff";
 import { formatDateTime } from "@/utils/formatDateTime";
@@ -184,7 +184,7 @@ export default function WorkflowDetailPage() {
   useEffect(() => {
     if (isError) {
       toast.error("Workflow not found");
-      navigate("/workflows", { replace: true });
+      navigate("/workflow-engine", { replace: true });
     }
   }, [isError, navigate]);
 
@@ -491,7 +491,7 @@ export default function WorkflowDetailPage() {
         <div className="flex items-center justify-between px-6 h-[64px] shrink-0 bg-white border-b border-[var(--color-grey-100)]">
           <div className="flex items-center gap-2 min-w-0">
             <button
-              onClick={() => navigate("/workflows")}
+              onClick={() => navigate("/workflow-engine")}
               className="text-[16px] leading-[24px] font-medium text-[var(--color-grey-500)] hover:text-[var(--color-grey-900)] hover:underline transition-colors cursor-pointer bg-transparent border-none"
             >
               Workflows

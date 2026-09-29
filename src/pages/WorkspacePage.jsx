@@ -66,7 +66,13 @@ export default function WorkspacePage() {
     const files = pendingFiles.current;
     pendingMessage.current = null;
     pendingFiles.current = null;
-    window.history.replaceState({}, "", location.pathname);
+    // Clear the route state so a refresh doesn't re-send. Guarded: on a file://
+    // origin (the embed build) replaceState to a path throws a SecurityError.
+    try {
+      window.history.replaceState({}, "", location.pathname);
+    } catch {
+      /* non-navigable origin (e.g. embed on file://) — nothing to clear */
+    }
     session.sendMessage(msg || "", files || []);
   }, [session.sessionId, session.status, id]);
 
@@ -102,7 +108,12 @@ export default function WorkspacePage() {
     const wantVP = pendingVerifyPublish.current;
     pendingArtifact.current = null;
     pendingVerifyPublish.current = false;
-    window.history.replaceState({}, "", location.pathname);
+    // See note above — guarded for file:// (embed) where replaceState throws.
+    try {
+      window.history.replaceState({}, "", location.pathname);
+    } catch {
+      /* non-navigable origin */
+    }
     if (desc) artifact.openArtifact(desc);
     if (wantVP && desc?.path) artifact.requestVerifyPublishOpen(desc.path);
   }, [session.sessionId, session.status, id, artifact]);

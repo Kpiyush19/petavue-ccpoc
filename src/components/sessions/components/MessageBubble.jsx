@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { File, ChevronRight, ChevronDown, GitBranch, LayoutDashboard, Sparkles, ArrowRight } from 'lucide-react'
 import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 import Timestamp from './Timestamp'
+import petavueLogo from "@/assets/petavue-logo.svg";
 
 /**
  * Bridge pill rendered next to user/assistant messages that have a
@@ -217,7 +218,7 @@ export default function MessageBubble({
   return (
     <div className="s-msg-assistant group/msg mt-2">
       <div className="flex h-6 w-6">
-        <img src="/petavue-logo.svg" alt="" className="h-5 w-5 my-auto" />
+        <img src={petavueLogo} alt="" className="h-5 w-5 my-auto" />
       </div>
       <div className="s-msg-assistant__content">
         <MarkdownRenderer content={text || ''} className={isError ? 's-msg-assistant--error' : ''} />

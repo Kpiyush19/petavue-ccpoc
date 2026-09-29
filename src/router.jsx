@@ -76,11 +76,9 @@ const GoogleAnalyticsCallback = lazy(() => import("./pages/callbacks/GoogleAnaly
 const GoogleAnalyticsRedirect = lazy(() => import("./pages/callbacks/GoogleAnalyticsRedirect"));
 
 const RootLayout = lazy(() => import("./layouts/RootLayout"));
-const WorkflowsLayout = lazy(() => import("./layouts/WorkflowsLayout"));
 const DashboardsLayout = lazy(() => import("./layouts/DashboardsLayout"));
 const SessionsLayout = lazy(() => import("./layouts/SessionsLayout"));
 const HomeLayout = lazy(() => import("./pages/home/TempHome/HomeLayout"));
-const GoalsPage = lazy(() => import("./pages/goals/GoalsPage"));
 const NewGoalPage = lazy(() => import("./pages/goals/NewGoalPage"));
 const RunHistoryPage = lazy(() => import("./pages/goals/RunHistoryPage"));
 const GoalDetailPage = lazy(() => import("./pages/goals/GoalDetailPage"));
@@ -109,8 +107,14 @@ function LegacyRunRedirect() {
   const { sessionId } = useParams();
   return <Navigate to={`/skills/run/${sessionId}`} replace />;
 }
+// Agentic workflows surface (the six paid-media workflows) owns /workflows.
+// The original step-based engine is retired (src/_archive/workflow-engine).
 const WorkflowsPage = lazy(() => import("./pages/workflows"));
-const WorkflowDetailPage = lazy(() => import("./pages/WorkflowDetailPage"));
+const AgentWorkflowDetailPage = lazy(() => import("./pages/workflows/WorkflowDetail"));
+const AssessmentPage = lazy(() => import("./pages/workflows/Assessment"));
+const AgentsPage = lazy(() => import("./pages/agents"));
+const AgentDetailPage = lazy(() => import("./pages/agents/AgentDetail"));
+const RecommendationsPage = lazy(() => import("./pages/recommendations"));
 const MyProfilePage = lazy(() => import("./pages/MyProfilePage"));
 const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
@@ -136,7 +140,7 @@ function AuthenticatedLayout() {
   );
 }
 
-export const router = createBrowserRouter([
+export const routes = [
   {
     // Settings & Profile are self-contained (own MenuBar) so they mount OUTSIDE
     // the app layout — now at natural URLs (/settings, /profile).
@@ -458,12 +462,19 @@ export const router = createBrowserRouter([
                 ]
               },
           {
-            path: "goals",
+            // The workflow decision queue — replaces the retired Goals list page.
+            path: "recommendations",
             element: (
               <SuspenseWrapper variant="goals">
-                <GoalsPage />
+                <RecommendationsPage />
               </SuspenseWrapper>
             )
+          },
+          {
+            // Goals list page retired (src/_archive/goals). Goal detail, new and
+            // run-history pages below still resolve, so old links keep working.
+            path: "goals",
+            element: <Navigate to="/recommendations" replace />
           },
           {
             path: "goals/new",
@@ -494,11 +505,6 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "workflows",
-                element: (
-                  <SuspenseWrapper>
-                    <WorkflowsLayout />
-                  </SuspenseWrapper>
-                ),
                 children: [
                   {
                     index: true,
@@ -509,15 +515,48 @@ export const router = createBrowserRouter([
                     )
                   },
                   {
+                    // Must sit above ":id" or the id route swallows it.
+                    path: "paid-media-assessment",
+                    element: (
+                      <SuspenseWrapper>
+                        <AssessmentPage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  {
                     path: ":id",
                     element: (
                       <SuspenseWrapper>
-                        <WorkflowDetailPage />
+                        <AgentWorkflowDetailPage />
                       </SuspenseWrapper>
                     )
                   }
                 ]
               },
+              {
+                path: "agents",
+                children: [
+                  {
+                    index: true,
+                    element: (
+                      <SuspenseWrapper variant="list">
+                        <AgentsPage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  {
+                    path: ":key",
+                    element: (
+                      <SuspenseWrapper>
+                        <AgentDetailPage />
+                      </SuspenseWrapper>
+                    )
+                  }
+                ]
+              },
+              // The original step-based workflow engine is retired
+              // (src/_archive/workflow-engine). Old links land on /workflows.
+              { path: "workflow-engine/*", element: <Navigate to="/workflows" replace /> },
               {
                 path: "skills",
                 element: (
@@ -594,4 +633,6 @@ export const router = createBrowserRouter([
     element: <LegacyRedirect />,
     errorElement: <BubbleError />
   }
-]);
+];
+
+export const router = createBrowserRouter(routes);

@@ -7,6 +7,9 @@ const ROUTE_TITLES = {
   '/sessions': 'Sessions',
   '/dashboards': 'Dashboards',
   '/workflows': 'Workflows',
+  '/workflows/paid-media-assessment': 'Paid Media Assessment',
+  '/agents': 'Agents',
+  '/recommendations': 'Recommendations',
   '/skills': 'Skills',
   '/data-hub': 'Data Hub',
   '/data-hub/dictionary': 'Data Dictionary',
@@ -28,6 +31,9 @@ function getTitleFromPath(pathname) {
   }
   if (pathname.startsWith('/dashboards/')) {
     return 'Dashboard'
+  }
+  if (pathname.startsWith('/agents/')) {
+    return 'Agent'
   }
   if (pathname.startsWith('/workflows/')) {
     return 'Workflow'

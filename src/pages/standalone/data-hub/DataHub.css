@@ -353,6 +353,16 @@
   background-color: var(--color-white);
 }
 
+/* Non-interactive rows (e.g. definitions locked in an embed) — no pointer,
+   no hover affordance. */
+.data-hub__row--static {
+  cursor: default;
+}
+
+.data-hub__row--static:hover {
+  background-color: var(--color-white);
+}
+
 .data-hub__col-records {
   width: 140px;
   flex-shrink: 0;

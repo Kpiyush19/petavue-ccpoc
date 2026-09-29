@@ -7,21 +7,12 @@ import { useSessionsQuery } from "../hooks/useSessionsQuery";
 import { getSessionRowMeta } from "./sessions/sessionRowMeta";
 import { timeAgo } from "@/utils/relativeTimeDiff";
 
-// Navigation items (icon keys map to the MenuBar's Phosphor icon set).
-// Canonical nav — identical order/ids in both navbars (see petavue MenuBar) so
-// buttons never shift position between pages. Sage + live Dashboard open the
-// live app; the rest open the Petavue design-system pages.
-// Order matches the New chat button (rendered first by MenuBar) → Dashboard →
-// Skills → Goals → Contexts → Data Hub. "contexts" has no NAV_ROUTES entry, so
-// it doesn't navigate — it's a tooltip-only affordance (no page yet).
-export const NAV_ITEMS = [
-  { id: "dashboard-live", label: "Dashboard", icon: "dashboard" },
-  { id: "skills", label: "Skills", icon: "skills" },
-  { id: "goals", label: "Goals", icon: "goals" },
-  { id: "workflows", label: "Workflows", icon: "workflows" },
-  { id: "contexts", label: "Contexts", icon: "contexts", title: "Contexts — add new (coming soon)" },
-  { id: "data-hub", label: "Data Hub", icon: "data-hub" },
-];
+// Nav items come from the design-system MenuBar's CANONICAL_NAV so the app
+// navbar and the standalone-page navbar can never drift apart — they used to
+// keep separate lists, which is exactly how they ended up with different items
+// in a different order. Add or reorder nav items THERE, not here.
+import { CANONICAL_NAV as NAV_ITEMS } from "@/ui/components/MenuBar/MenuBar";
+export { NAV_ITEMS };
 
 export const NAV_ROUTES = {
   new: "/new",
@@ -29,9 +20,17 @@ export const NAV_ROUTES = {
   "dashboards-pv": "/dashboards",
   "data-hub": "/data-hub",
   skills: "/skills",
-  goals: "/goals",
+  recommendations: "/recommendations",
   workflows: "/workflows",
+  agents: "/agents",
   settings: "/settings",
+};
+
+// Paths that belong to a nav section but don't sit under its own route.
+// Goal detail pages are still served from /goals/:id while the section itself
+// is now Recommendations, so they must keep the same item highlighted.
+export const NAV_ALT_ROUTES = {
+  recommendations: ["/goals"],
 };
 
 export default function MenuBarNav() {
@@ -53,7 +52,10 @@ export default function MenuBarNav() {
   const user = { name, initials, email: currentUser?.email || "" };
 
   // Navigate when a nav item maps to a route; otherwise it's a no-op.
+  // Embeds (see embed/sage-flow) set __EMBED_LOCK_NAV__ to pin the viewer to
+  // the scripted flow — sidebar tabs become inert there.
   const handleItemClick = (id) => {
+    if (typeof window !== "undefined" && window.__EMBED_LOCK_NAV__) return;
     const route = NAV_ROUTES[id];
     if (route) navigate(route);
   };
@@ -66,11 +68,13 @@ export default function MenuBarNav() {
   // Prefer the longest matching route so nested paths (e.g. /skills/:id)
   // highlight the deeper item (Skills). The bare /new page matches nothing → no
   // highlight, which is what we want for the Create-New page.
+  const routesFor = (id) => [NAV_ROUTES[id], ...(NAV_ALT_ROUTES[id] || [])].filter(Boolean);
+  const matchLen = (id) => routesFor(id).filter((r) => pathname.startsWith(r)).reduce((n, r) => Math.max(n, r.length), 0);
   const activeId = isChatRoute
     ? null
     : NAV_ITEMS
-        .filter((item) => { const r = NAV_ROUTES[item.id]; return r && pathname.startsWith(r); })
-        .sort((a, b) => NAV_ROUTES[b.id].length - NAV_ROUTES[a.id].length)[0]?.id || null;
+        .filter((item) => matchLen(item.id) > 0)
+        .sort((a, b) => matchLen(b.id) - matchLen(a.id))[0]?.id || null;
 
   // Mock demo: a scripted, populated history (only the first item opens the
   // live session). Non-mock: real recents from the sessions query, so this nav

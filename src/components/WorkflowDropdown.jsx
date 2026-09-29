@@ -55,7 +55,7 @@ export default function WorkflowDropdown({ workflows, currentWorkflow, loading }
   const handleSelect = (wf) => {
     setSearchQuery("");
     setAnchorEl(null);
-    navigate(`/workflows/${wf.workflow_id}`);
+    navigate(`/workflow-engine/${wf.workflow_id}`);
   };
 
   return (

@@ -1294,7 +1294,7 @@ export default function WorkflowCreateModal({ targetFile, targetTitle, sessionId
       toast.success(action)
       await cleanupVerifySession()
       onClose()
-      navigate(`/workflows/${data.workflow_id}`)
+      navigate(`/workflow-engine/${data.workflow_id}`)
     } catch (e) {
       toast.error('Failed: ' + e.message)
     } finally {

@@ -101,7 +101,7 @@ export const CCDashboardElement = ({
         >
           {artifact.workflow_id && (
             <button
-              onClick={() => navigate(`/workflows/${artifact.workflow_id}`)}
+              onClick={() => navigate(`/workflow-engine/${artifact.workflow_id}`)}
               className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-[var(--color-grey-700)] hover:bg-[var(--color-grey-50)] active:bg-white active:text-[var(--color-grey-600)] transition-colors bg-transparent border-none cursor-pointer"
             >
               <ExternalLink size={14} />

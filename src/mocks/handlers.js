@@ -13,6 +13,8 @@ import { makeFakeJwt } from "./jwt";
 import { emit } from "./pusherBus";
 import { startRun, executeRun, discardRun, getProgress, getPlanSummary, listActiveRuns, submitClarification } from "./skillRun";
 import * as Goals from "./goals";
+import * as AgentWf from "./agentWorkflows";
+import * as Recs from "./recommendations";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
 function getWidgets(sessionId) {
@@ -534,7 +536,15 @@ const handlers = [
   { method: "GET", pattern: /\/api\/goals\/config$/, handler: () => Goals.getConfig() },
   { method: "PUT", pattern: /\/api\/goals\/config$/, handler: ({ body }) => Goals.saveConfig(body) },
   { method: "GET", pattern: /\/api\/goals\/attention$/, handler: () => Goals.attentionFeed() },
+  // Goals module's own queue (grouped by goal) — used by the Goals pages.
   { method: "GET", pattern: /\/api\/goals\/recommendations$/, handler: () => Goals.allRecommendations() },
+  // Workflow recommendation queue (the /recommendations page). Kept on its own
+  // path: in the prototype it replaced /api/goals/recommendations, but here the
+  // Goals module is still live and reads that route with a different shape.
+  // Every recommendation carries the workflow and agent that produced it.
+  { method: "GET", pattern: /\/api\/recommendations$/, handler: () => ({ items: Recs.listRecommendations() }) },
+  { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/decide$/, handler: ({ params, body }) => ({ item: Recs.decide(String(params[0]), body?.decision, body?.note) }) },
+  { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/comment$/, handler: ({ params, body }) => ({ item: Recs.addComment(String(params[0]), body?.text) }) },
   { method: "GET", pattern: /\/api\/goals$/, handler: () => ({ goals: Goals.listGoals() }) },
   { method: "POST", pattern: /\/api\/goals$/, handler: ({ body }) => ({ goal: Goals.createGoal(body || {}) }) },
   { method: "GET", pattern: /\/api\/goals\/([^/]+)$/, handler: ({ params }) => Goals.getGoal(params[0]) || { detail: "not found" } },
@@ -946,6 +956,15 @@ const handlers = [
     };
     return { runs: [mkRun("run-3", 200, false), mkRun("run-2", 1640, false), mkRun("run-1", 3080, true)] };
   } },
+  // Agentic workflows surface (the six paid-media pilot use cases). Separate
+  // from /api/workflows, which is the existing step-based workflow engine.
+  // Workflow rows read their pending count from the live recommendation queue,
+  // so a row and the Recommendations page can never claim different numbers.
+  { method: "GET", pattern: /\/api\/agent-workflows$/, handler: () => { const recs = Recs.listRecommendations(); return { workflows: AgentWf.listWorkflows(recs), summary: AgentWf.summary(recs) }; } },
+  { method: "GET", pattern: /\/api\/agents$/, handler: () => ({ agents: AgentWf.listAgents(), orchestrator: AgentWf.ORCHESTRATOR }) },
+  { method: "POST", pattern: /\/api\/agent-workflows\/([^/]+)\/pause$/, handler: ({ params }) => ({ workflow: AgentWf.pauseWorkflow(String(params[0])) }) },
+  { method: "POST", pattern: /\/api\/agent-workflows\/([^/]+)\/activate$/, handler: ({ params }) => ({ workflow: AgentWf.activateWorkflow(String(params[0])) }) },
+  { method: "GET", pattern: /\/api\/agents\/([^/]+)$/, handler: ({ params }) => ({ agent: AgentWf.agentDetail(String(params[0]), Recs.listRecommendations()) }) },
   { method: "GET", pattern: /\/api\/workflows$/, handler: () => ({ workflows: db.workflows }) },
   { method: "GET", pattern: /\/api\/workflows\/([^/]+)$/, handler: ({ params }) => db.workflows.find((w) => w.workflow_id === params[0]) || db.workflows[0] },
   {

@@ -88,6 +88,9 @@ export default function HomePage() {
   const [dragOver, setDragOver] = useState(false);
   const [createLoading] = useState(false);
   const [sageMode, setSageMode] = useState(readSageMode);
+  // Embeds (see embed/sage-flow) strip the composer to essentials: no model
+  // picker, and the attach button is inert.
+  const minimalComposer = typeof window !== "undefined" && !!window.__EMBED_MINIMAL_COMPOSER__;
   const fileInputRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -224,7 +227,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={minimalComposer ? undefined : () => fileInputRef.current?.click()}
                       title="Attach files"
                       className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 border-none bg-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)] cursor-pointer transition-colors"
                     >
@@ -234,7 +237,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <ModelModeMenu value={sageMode} onChange={setSageMode} placement="bottom" />
+                    {!minimalComposer && (
+                      <ModelModeMenu value={sageMode} onChange={setSageMode} placement="bottom" />
+                    )}
 
                     <button
                       type="button"

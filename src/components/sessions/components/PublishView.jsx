@@ -299,6 +299,9 @@ export default function PublishView({
 }) {
   const navigate = useNavigate()
   const isPetavueUser = (getCurrentUser()?.email || '').includes('@petavue.com')
+  // In an embed, publishing and "View dashboard" would jump to a module the
+  // embedded flow doesn't have — disable them.
+  const isEmbed = typeof window !== 'undefined' && !!window.__EMBED__
 
   // Wizard step + review-passed gate
   const [step, setStep] = useState(STEP.WORKFLOW)
@@ -2167,7 +2170,7 @@ export default function PublishView({
             <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">{wasUpdate ? 'Dashboard updated!' : 'Dashboard published!'}</h3>
             <p className="text-[12px] text-[var(--text-muted)] mt-1">{completedSteps} checks passed{autoRefresh ? ` · ${scheduleSummary.toLowerCase()}` : ''}</p>
           </div>
-          <PvButton variant="primary" size="md" label="View dashboard" onClick={() => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }} />
+          <PvButton variant="primary" size="md" label="View dashboard" disabled={isEmbed} onClick={() => { if (isEmbed) return; onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflow-engine/${workflowId}`) }} />
         </div>
       )
     }
@@ -2419,7 +2422,7 @@ export default function PublishView({
           )}
           {step === STEP.FREQUENCY && (
             reviewPassed ? (
-              <PvButton variant="primary" size="md" label={isPublishing ? 'Publishing…' : 'Publish'} icon={isPublishing ? SpinnerIcon : CheckCircle} iconPosition="suffix" iconWeight="fill" disabled={isPublishing || !canPublish} title={publishReason} onClick={() => createWorkflow(execSessionIdRef.current)} />
+              <PvButton variant="primary" size="md" label={isPublishing ? 'Publishing…' : 'Publish'} icon={isPublishing ? SpinnerIcon : CheckCircle} iconPosition="suffix" iconWeight="fill" disabled={isPublishing || !canPublish || isEmbed} title={isEmbed ? 'Disabled in preview' : publishReason} onClick={() => { if (isEmbed) return; createWorkflow(execSessionIdRef.current) }} />
             ) : (
               <PvButton variant="primary" size="md" label="Run Agentic Review" icon={Play} iconWeight="fill" title="The agentic review must pass before you can publish" onClick={() => { setTab(TAB.VERIFY); setVerifySubTab('agent') }} />
             )

@@ -12,7 +12,7 @@ export default function WelcomeState({ onSend, disabled }) {
       >
         <div className="s-welcome-state__icon-glow" />
         <div className="s-welcome-state__icon">
-          <img src="/petavue-logo.svg" alt="Petavue" style={{ width: 24, height: 30 }} />
+          <img src={petavueLogo} alt="Petavue" style={{ width: 24, height: 30 }} />
         </div>
       </motion.div>
 

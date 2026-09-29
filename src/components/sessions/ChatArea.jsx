@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Trash2, BellOff } from "lucide-react";
 import { ArrowRight, Sparkle } from "@phosphor-icons/react";
 import { Button } from "@/ui";
+import petavueLogo from "@/assets/petavue-logo.svg";
 import MessageBubble from "./components/MessageBubble";
 import DeleteMessageModal from "./components/DeleteMessageModal";
 import ToolCallsContainer from "./components/ToolCallsContainer";
@@ -98,7 +99,7 @@ function ThinkingIndicator({ isCompacting }) {
       className="s-thinking-indicator"
     >
       <div className="flex h-6 w-6">
-        <img src="/petavue-logo.svg" alt="" className="h-5 w-5 my-auto" />
+        <img src={petavueLogo} alt="" className="h-5 w-5 my-auto" />
       </div>
       <div className="s-thinking-indicator__dots">
         <span className="s-thinking-indicator__dot" style={{ backgroundColor: color }} />
@@ -287,7 +288,7 @@ export default function ChatArea({
             <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--accent)]/[0.04] p-6">
               <div className="flex items-start gap-4">
                 <div className="w-11 h-11 shrink-0 rounded-full bg-[var(--accent)]/[0.12] flex items-center justify-center">
-                  <img src="/petavue-logo.svg" alt="Sage" className="w-6 h-6" />
+                  <img src={petavueLogo} alt="Sage" className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
