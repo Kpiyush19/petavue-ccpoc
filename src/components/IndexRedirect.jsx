@@ -7,9 +7,9 @@ import { MOCK_ENABLED } from "../mocks";
 const ExplorePage = lazy(() => import("../pages/ExplorePage"));
 
 export default function IndexRedirect() {
-  // Frontend-only mode: land on the Create-New page.
+  // Frontend-only mode: land on the chat-first Home (campaigns + findings).
   if (MOCK_ENABLED) {
-    return <Navigate to="/new" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   const homeEnabled = useFeatureFlagEnabled("ccpoc-home");

@@ -17,9 +17,9 @@ function PetavueLegacyRedirect() {
     "dashboard-view": "/dashboards",
     chat: "/new",
     skills: "/skills",
-    home: "/new",
+    home: "/home",
   };
-  return <Navigate to={map[seg] || "/new"} replace />;
+  return <Navigate to={map[seg] || "/home"} replace />;
 }
 
 import AuthGuard from "./pages/auth/AuthGuard";

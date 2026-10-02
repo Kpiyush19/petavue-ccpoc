@@ -8,7 +8,9 @@
  */
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChatCircleText, PauseCircle, PlayCircle, Quotes } from "@phosphor-icons/react";
+import {
+  ChatCircleText, PauseCircle, PlayCircle, Quotes, Timer, ShieldCheck, PaperPlaneTilt, House, Info,
+} from "@phosphor-icons/react";
 import { Button } from "@/ui";
 import { toast } from "sonner";
 import { apiGet, apiPost } from "../../api";
@@ -29,8 +31,14 @@ function StatusPill({ status }) {
   );
 }
 
+/* The vertical rail between flow nodes — the v1 diagram's Drop(). */
+function Rail() {
+  return <span className="block w-px h-3.5 bg-[var(--color-grey-200)] ml-6" aria-hidden="true" />;
+}
+
 function AutomationCard({ a, onToggle }) {
   const paused = a.status === "paused";
+  const steps = a.steps || [];
   return (
     <div className={cn(
       "flex flex-col gap-2.5 p-4 bg-grey-50 border border-grey-100 rounded-lg transition-opacity",
@@ -44,29 +52,50 @@ function AutomationCard({ a, onToggle }) {
           <StatusPill status={a.status} />
         </span>
         {!a.builtIn && (
-          <button
+          <Button
+            variant="secondaryGhost"
+            size="md"
+            className="shrink-0"
+            label={paused ? "Resume" : "Pause"}
+            icon={paused ? PlayCircle : PauseCircle}
             onClick={() => onToggle(a.id)}
-            className="shrink-0 inline-flex items-center gap-1.5 bg-transparent border-none p-0 cursor-pointer text-[12px] text-[#757A97] hover:text-[var(--text-primary)] transition-colors"
-          >
-            {paused ? <><PlayCircle size={14} /> Resume</> : <><PauseCircle size={14} /> Pause</>}
-          </button>
+          />
         )}
       </div>
 
       <p className="m-0 text-[13px] text-[var(--text-secondary)] leading-relaxed">{a.produces}</p>
 
-      {(a.steps || []).length > 0 && (
-        <div className="flex flex-col gap-1.5 py-1">
-          {a.steps.map((s, i) => (
-            <span key={i} className="flex items-start gap-2.5">
-              <span className="shrink-0 grid place-items-center w-[18px] h-[18px] mt-px rounded-full bg-white border border-[var(--color-grey-100)] text-[10px] font-medium text-[#757A97] tabular-nums">
+      {/* The run, drawn as a flow: trigger → steps → where it ends. */}
+      <div className="flex flex-col py-1">
+        <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[var(--color-grey-200)] text-[11px] font-medium text-[#757A97]">
+          <Timer size={12} /> {a.schedule}
+        </span>
+        {steps.map((s, i) => (
+          <span key={i} className="flex flex-col">
+            <Rail />
+            <span className="flex items-start gap-2.5 px-3 py-2 bg-white border border-[var(--color-grey-200)] rounded-lg">
+              <span className="shrink-0 grid place-items-center w-[18px] h-[18px] mt-px rounded-full bg-grey-50 border border-[var(--color-grey-100)] text-[10px] font-medium text-[#757A97] tabular-nums">
                 {i + 1}
               </span>
               <span className="text-[12px] leading-[19px] text-[var(--text-primary)]">{s}</span>
             </span>
-          ))}
-        </div>
-      )}
+          </span>
+        ))}
+        <Rail />
+        {a.builtIn ? (
+          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-100 text-[11px] font-medium text-primary-700">
+            <House size={12} /> Findings land on Home
+          </span>
+        ) : steps.length > 0 ? (
+          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[11px] font-medium text-emerald-700">
+            <ShieldCheck size={12} weight="fill" /> Pushes only after your approval
+          </span>
+        ) : (
+          <span className="inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[var(--color-grey-200)] text-[11px] font-medium text-[#757A97]">
+            <PaperPlaneTilt size={12} /> Delivers on schedule
+          </span>
+        )}
+      </div>
 
       <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-[var(--color-grey-100)]">
         {a.quote ? (
@@ -79,7 +108,7 @@ function AutomationCard({ a, onToggle }) {
           <span className="text-[12px] text-[var(--text-muted)]">{a.origin}</span>
         )}
         <span className="shrink-0 text-[12px] text-[var(--text-muted)] tabular-nums">
-          {a.schedule} · {a.lastRun}
+          {a.lastRun}
         </span>
       </div>
     </div>
@@ -125,11 +154,12 @@ export default function AutomationsPage() {
               {/* Main column */}
               <main className="flex-1 min-w-0 flex flex-col">
 
-                <div className="flex flex-col gap-2 mb-6">
-                  <span className={SECTION_LABEL}>Description</span>
-                  <p className="m-0 text-[14px] leading-relaxed text-[var(--text-primary)] max-w-[820px]">
-                    Things you asked Petavue to repeat. Each one was built from a conversation — no builder, no
-                    configuration — and runs in the background until it has something worth your approval.
+                <div className="flex items-start gap-2.5 px-4 py-3 mb-6 bg-primary-50 border border-primary-100 rounded-lg">
+                  <Info size={15} className="text-primary-600 shrink-0 mt-0.5" />
+                  <p className="m-0 text-[12px] text-[var(--text-secondary)] leading-snug">
+                    <span className="font-medium text-[var(--text-primary)]">Workflows are things you asked Petavue to repeat.</span>{" "}
+                    Each one was built from a conversation — no builder, no configuration — and runs in the background
+                    until it has something worth your approval.
                   </p>
                 </div>
 
