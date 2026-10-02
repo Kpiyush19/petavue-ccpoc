@@ -15,6 +15,7 @@ import { startRun, executeRun, discardRun, getProgress, getPlanSummary, listActi
 import * as Goals from "./goals";
 import * as AgentWf from "./agentWorkflows";
 import * as Recs from "./recommendations";
+import * as Harness from "./harness";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
 function getWidgets(sessionId) {
@@ -543,7 +544,7 @@ const handlers = [
   // Goals module is still live and reads that route with a different shape.
   // Every recommendation carries the workflow and agent that produced it.
   { method: "GET", pattern: /\/api\/recommendations$/, handler: () => ({ items: Recs.listRecommendations() }) },
-  { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/decide$/, handler: ({ params, body }) => ({ item: Recs.decide(String(params[0]), body?.decision, body?.note) }) },
+  { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/decide$/, handler: ({ params, body }) => ({ item: Recs.decide(String(params[0]), body?.decision, body?.note, body?.choice, body?.applied) }) },
   { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/comment$/, handler: ({ params, body }) => ({ item: Recs.addComment(String(params[0]), body?.text) }) },
   { method: "GET", pattern: /\/api\/goals$/, handler: () => ({ goals: Goals.listGoals() }) },
   { method: "POST", pattern: /\/api\/goals$/, handler: ({ body }) => ({ goal: Goals.createGoal(body || {}) }) },
@@ -956,6 +957,20 @@ const handlers = [
     };
     return { runs: [mkRun("run-3", 200, false), mkRun("run-2", 1640, false), mkRun("run-1", 3080, true)] };
   } },
+  // ── Chat-first harness (UX concept) ────────────────────────────────
+  // Home / Campaigns / Automations + the scripted action chat. The open-
+  // recommendations count on Home reads the live Recs queue, so the two
+  // surfaces can never disagree.
+  { method: "GET", pattern: /\/api\/harness\/overview$/, handler: () => Harness.overview(Recs.listRecommendations().filter((r) => r.lifecycle === "needs-decision").length) },
+  { method: "GET", pattern: /\/api\/harness\/campaigns$/, handler: () => ({ campaigns: Harness.listCampaigns() }) },
+  { method: "GET", pattern: /\/api\/harness\/campaigns\/([^/]+)$/, handler: ({ params }) => Harness.getCampaign(String(params[0])) || { detail: "not found" } },
+  { method: "GET", pattern: /\/api\/harness\/automations$/, handler: () => Harness.listAutomations() },
+  { method: "POST", pattern: /\/api\/harness\/automations\/([^/]+)\/toggle$/, handler: ({ params }) => ({ automation: Harness.toggleAutomation(String(params[0])) }) },
+  { method: "POST", pattern: /\/api\/harness\/chat$/, handler: async ({ body }) => { await new Promise((r) => setTimeout(r, 400)); return Harness.chatReply(body || {}); } },
+  { method: "POST", pattern: /\/api\/harness\/actions\/([^/]+)\/approve$/, handler: async ({ params }) => { await new Promise((r) => setTimeout(r, 900)); const id = String(params[0]); return { receipt: Harness.approveAction(id), followUp: Harness.followUpFor(id) }; } },
+  { method: "POST", pattern: /\/api\/harness\/actions\/([^/]+)\/undo$/, handler: ({ params }) => Harness.undoAction(String(params[0])) },
+  { method: "POST", pattern: /\/api\/harness\/reset$/, handler: () => Harness.resetDemo() },
+
   // Agentic workflows surface (the six paid-media pilot use cases). Separate
   // from /api/workflows, which is the existing step-based workflow engine.
   // Workflow rows read their pending count from the live recommendation queue,

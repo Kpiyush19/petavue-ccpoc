@@ -1,7 +1,22 @@
 /* All navigation icons — inline SVGs matching Figma Phosphor icons at 20x20 */
+import { Megaphone, ArrowsClockwise } from '@phosphor-icons/react';
 
 const DEFAULT_COLOR = 'var(--color-grey-500, #757A97)';
 const ACTIVE_COLOR = 'var(--color-primary-500, #3661ED)';
+
+/* Megaphone — Campaigns (chat-first harness concept). Phosphor component
+   directly: same family as the hand-inlined glyphs, filled when active. */
+export function CampaignsIcon({ size = 20, isActive = false, isAccent = false }) {
+  const active = isActive || isAccent;
+  return <Megaphone size={size} color={active ? ACTIVE_COLOR : DEFAULT_COLOR} weight={active ? 'fill' : 'regular'} aria-hidden="true" />;
+}
+
+/* ArrowsClockwise — Automations (things asked to repeat). Bold when active:
+   the glyph has no meaningful filled variant. */
+export function AutomationsIcon({ size = 20, isActive = false, isAccent = false }) {
+  const active = isActive || isAccent;
+  return <ArrowsClockwise size={size} color={active ? ACTIVE_COLOR : DEFAULT_COLOR} weight={active ? 'bold' : 'regular'} aria-hidden="true" />;
+}
 
 /* SquaresFour grid — second Dashboard entry. Filled when active. */
 export function SquaresGridIcon({ size = 20, isActive = false, isAccent = false }) {

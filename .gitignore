@@ -35,3 +35,9 @@ help-docs/
 
 # Case-study UI export snippets
 exports/
+
+# Internal reference material — not part of the app (customer-call notes,
+# catalog sheet exports). Keep local only.
+docs/Petavue_-_*
+docs/*.zip
+Petavue_Workflow_Master/

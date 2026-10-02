@@ -264,7 +264,7 @@ export default function SkillDetailPage() {
                   "Example prompts" sections: these questions double as the
                   plain-language prompts you ask Sage, so one section carries both. */}
               {skill.questions?.length > 0 && (
-                <Section title="Questions it answers" lead="Once it's live, ask Sage any of these in plain language. Every one has a single answer you can trace back to source." delay={0.1}>
+                <Section title="Questions it answers" lead="Once it's live, ask Petavue any of these in plain language. Every one has a single answer you can trace back to source." delay={0.1}>
                   <div className="flex flex-col gap-2 mt-1">
                     {skill.questions.map((q, i) => (
                       <div key={i} className="flex items-start gap-2.5 px-4 py-3 bg-grey-50 border border-grey-100 rounded-lg">
@@ -281,7 +281,7 @@ export default function SkillDetailPage() {
               {skill.inputs?.length > 0 && (
                 <Section
                   title="Before we run"
-                  lead="Before it builds, Sage asks a few quick questions about your data, like which time period to use or how you define a qualified lead. We pre-fill what we can detect; you just confirm or change it."
+                  lead="Before it builds, Petavue asks a few quick questions about your data, like which time period to use or how you define a qualified lead. We pre-fill what we can detect; you just confirm or change it."
                   delay={0.16}
                 >
                   <div className="flex flex-col divide-y divide-grey-100 border border-grey-100 rounded-lg overflow-hidden mt-1">

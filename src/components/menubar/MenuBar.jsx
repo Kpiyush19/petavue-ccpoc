@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SHOW_CREATE_NEW } from '@/ui/components/MenuBar/MenuBar';
 import { MenuBarItem } from './MenuBarItem';
 import { HistoryPanel } from './HistoryPanel';
 import { UserProfile } from './UserProfile';
@@ -101,14 +102,18 @@ export function MenuBar({
 
       {/* Navigation items */}
       <div className="menubar__nav">
-        {/* New Chat button */}
-        <MenuBarItem
-          icon="new-chat"
-          label="Create New"
-          isOpen={isOpen}
-          isAccent
-          onClick={onNewChat}
-        />
+        {/* New Chat button — hidden in the chat-first UX (chat lives on
+            Home). SHOW_CREATE_NEW in the design-system MenuBar is the one
+            switch for both rails. */}
+        {SHOW_CREATE_NEW && (
+          <MenuBarItem
+            icon="new-chat"
+            label="Create New"
+            isOpen={isOpen}
+            isAccent
+            onClick={onNewChat}
+          />
+        )}
 
         {items.map((item) => (
           <MenuBarItem

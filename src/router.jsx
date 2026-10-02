@@ -115,6 +115,12 @@ const AssessmentPage = lazy(() => import("./pages/workflows/Assessment"));
 const AgentsPage = lazy(() => import("./pages/agents"));
 const AgentDetailPage = lazy(() => import("./pages/agents/AgentDetail"));
 const RecommendationsPage = lazy(() => import("./pages/recommendations"));
+// Chat-first harness concept (Sep 29 direction): campaigns-first Home with the
+// action chat, the Campaigns surface, and Automations (repeat-only workflows).
+const HarnessHomePage = lazy(() => import("./pages/harness/HomePage"));
+const CampaignsPage = lazy(() => import("./pages/harness/CampaignsPage"));
+const CampaignDetailPage = lazy(() => import("./pages/harness/CampaignDetail"));
+const AutomationsPage = lazy(() => import("./pages/harness/AutomationsPage"));
 const MyProfilePage = lazy(() => import("./pages/MyProfilePage"));
 const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
@@ -398,8 +404,8 @@ export const routes = [
               }
             ]
           },
-          // Legacy /home links now land on the Create-New page (/new).
-          { path: "home", element: <Navigate to="/new" replace /> },
+          // /home is the chat-first harness concept home (see the PetavueGuard
+          // group below for its siblings). /new stays the production landing.
           { path: "home/skills", element: <Navigate to="/skills" replace /> },
           // Frontend-only mode: /new is the Create-New home (greeting + composer
           // + skills), no flag gate. Otherwise it's gated by HomeGuard.
@@ -503,6 +509,46 @@ export const routes = [
           {
             element: <PetavueGuard />,
             children: [
+              {
+                // Campaigns-first home + the action chat (UX concept).
+                path: "home",
+                element: (
+                  <SuspenseWrapper variant="none">
+                    <HarnessHomePage />
+                  </SuspenseWrapper>
+                )
+              },
+              {
+                path: "campaigns",
+                children: [
+                  {
+                    index: true,
+                    element: (
+                      <SuspenseWrapper variant="list">
+                        <CampaignsPage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  {
+                    path: ":id",
+                    element: (
+                      <SuspenseWrapper>
+                        <CampaignDetailPage />
+                      </SuspenseWrapper>
+                    )
+                  }
+                ]
+              },
+              {
+                path: "workflows-v2",
+                element: (
+                  <SuspenseWrapper variant="list">
+                    <AutomationsPage />
+                  </SuspenseWrapper>
+                )
+              },
+              // Old URL for the same page — keep deep links working.
+              { path: "automations", element: <Navigate to="/workflows-v2" replace /> },
               {
                 path: "workflows",
                 children: [

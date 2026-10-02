@@ -15,6 +15,8 @@ import {
   WorkflowsIcon,
   ContextsIcon,
   AgentsIcon,
+  CampaignsIcon,
+  AutomationsIcon,
 } from './icons/NavIcons';
 
 /*
@@ -44,6 +46,8 @@ const ICON_MAP = {
   'workflows': WorkflowsIcon,
   'contexts': ContextsIcon,
   'agents': AgentsIcon,
+  'campaigns': CampaignsIcon,
+  'automations': AutomationsIcon,
 };
 
 export function MenuBarItem({

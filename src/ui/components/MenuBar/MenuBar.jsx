@@ -26,20 +26,36 @@ import './MenuBar.css';
 //
 // Deliberately NOT in the nav (route still live, reachable by URL):
 //   contexts — no page yet; it was a tooltip-only affordance.
+// Chat-first harness concept (Sep 29 direction) reorders the rail to tell the
+// new story: Home (where findings land), Campaigns (what the marketer thinks
+// in), Automations (things asked to repeat). The configure-first surfaces
+// (Workflows, Agents) stay reachable below while the concept is evaluated —
+// list them in HIDDEN_NAV to try the rail without them.
 const ALL_NAV = [
+  { id: 'home', label: 'Home', icon: 'home' },
+  { id: 'campaigns', label: 'Campaigns', icon: 'campaigns' },
+  { id: 'automations', label: 'Workflows-v2', icon: 'workflows' },
+  { id: 'recommendations', label: 'Recommendations', icon: 'goals' },
   { id: 'workflows', label: 'Workflows', icon: 'workflows' },
   { id: 'agents', label: 'Agents', icon: 'agents' },
-  { id: 'recommendations', label: 'Recommendations', icon: 'goals' },
   { id: 'dashboard-live', label: 'Dashboard', icon: 'dashboard' },
   { id: 'skills', label: 'Skills', icon: 'skills' },
   { id: 'data-hub', label: 'Data Hub', icon: 'data-hub' },
 ];
 
-// Nav items to hide. Empty: every section, Create New included, has an
-// entrance here. Hide an entrance by listing its id (e.g. 'data-hub'); routes
-// keep resolving either way, since this hides links and never deletes pages. Both
+// Nav items to hide. Hide an entrance by listing its id; routes keep
+// resolving either way, since this hides links and never deletes pages. Both
 // navbars read CANONICAL_NAV, so a change here applies to both at once.
-const HIDDEN_NAV = [];
+//
+// Chat-first UX decision (Oct 2): Workflows' job moved to the background scan
+// + Automations, Agents belong inside a recommendation's evidence, and Skills
+// run from the chat composer rather than a gallery. All pages stay
+// reachable by URL for demos — delete an id here to bring one back.
+const HIDDEN_NAV = ['workflows', 'agents'];
+
+// Create New (+) hidden with them: chat starts from Home's composer in the
+// chat-first UX. Both rails read this — flip to true to bring it back.
+export const SHOW_CREATE_NEW = false;
 
 export const CANONICAL_NAV = ALL_NAV.filter((item) => !HIDDEN_NAV.includes(item.id));
 
@@ -133,13 +149,15 @@ export function MenuBar({
 
       {/* Navigation items */}
       <div className="menubar__nav">
-        <MenuBarItem
-          icon="new-chat"
-          label="Create New"
-          isOpen={isOpen}
-          isAccent
-          onClick={onNewChat}
-        />
+        {SHOW_CREATE_NEW && (
+          <MenuBarItem
+            icon="new-chat"
+            label="Create New"
+            isOpen={isOpen}
+            isAccent
+            onClick={onNewChat}
+          />
+        )}
 
         {/* Canonical nav — same ids/order as the app navbar so buttons never
             jump position between pages. The `items` prop is ignored on purpose. */}

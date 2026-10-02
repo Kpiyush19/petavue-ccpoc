@@ -16,6 +16,9 @@ export { NAV_ITEMS };
 
 export const NAV_ROUTES = {
   new: "/new",
+  home: "/home",
+  campaigns: "/campaigns",
+  automations: "/workflows-v2",
   "dashboard-live": "/dashboards",
   "dashboards-pv": "/dashboards",
   "data-hub": "/data-hub",

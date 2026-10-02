@@ -23,7 +23,7 @@ export default function PetavueRoutes() {
   // MenuBar nav ids → natural app routes.
   const handleNavigate = (id) => {
     const routes = {
-      home: "/new",
+      home: "/home",
       "new-chat": "/new",
       skills: "/skills",
       "dashboard-live": "/dashboards",
@@ -33,6 +33,8 @@ export default function PetavueRoutes() {
       agents: "/agents",
       recommendations: "/recommendations",
       goals: "/recommendations",
+      campaigns: "/campaigns",
+      automations: "/workflows-v2",
       "data-hub": "/data-hub",
       settings: "/settings",
       profile: "/profile",
