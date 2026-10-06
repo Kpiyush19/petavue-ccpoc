@@ -6,11 +6,13 @@
 import {
   db, currentUser, newId, TENANT_ID, USER_ID,
   DASH_SESSION_ID, DASH_RECIPE, HARDENED_STEPS,
-  PMR_CLARIFY, PMR_REPORT, PMR_DISCOVERY_TOOLS, PMR_RUN_TOOLS,
+  PMR_CLARIFY, PMR_REPORT, PMR_DISCOVERY_TOOLS, PMR_RUN_TOOLS, ROI_REPORT,
 } from "./db";
 import { DASHBOARD_MANIFEST, PMR_SUMMARY_MD } from "./dashboardAssets";
 import { makeFakeJwt } from "./jwt";
 import { emit } from "./pusherBus";
+import { RUN_SESSION, scriptRunReply, runFollowups, runFileTable } from "../pages/workflows/agents-run/runSession";
+import { ROI_TITLE, ROI_DASHBOARD_PATH, ROI_TREE, ROI_FOLLOWUPS, roiReply } from "./paidMediaRoi";
 import { startRun, executeRun, discardRun, getProgress, getPlanSummary, listActiveRuns, submitClarification } from "./skillRun";
 import * as Goals from "./goals";
 import * as AgentWf from "./agentWorkflows";
@@ -18,6 +20,10 @@ import * as Recs from "./recommendations";
 import * as Harness from "./harness";
 
 // ── Verify & Publish: widgets ─────────────────────────────────────────
+// A chat that built the Paid Media ROI report in one turn (every new chat from
+// Home does). Its dashboard is the default one.
+const isRoi = (sessionId) => db.sessions.find((x) => x.session_id === sessionId)?.report === "roi";
+
 function getWidgets(sessionId) {
   if (!db.dashboardWidgets[sessionId]) {
     db.dashboardWidgets[sessionId] = Object.values(DASHBOARD_MANIFEST.widgets).map((w) => ({
@@ -431,6 +437,52 @@ function scriptPaidMediaReply(channel, phase) {
   }, at);
 }
 
+// Stream text word by word, then finish the turn.
+function streamReply(channel, text, startAt, done) {
+  const words = text.split(" ");
+  words.forEach((w, i) => {
+    setTimeout(() => emit(channel, "agent-event", { type: "text", content: (i === 0 ? "" : " ") + w }), startAt + i * 14);
+  });
+  setTimeout(done, startAt + words.length * 14 + 150);
+}
+
+// The Paid Media ROI chat. The first message, whatever it says,
+// builds the report and its dashboard in one turn: no clarifying question.
+// Later messages are answered from the same numbers.
+function scriptRoiReply(sessionId, userText) {
+  const channel = `session-${sessionId}`;
+  const userTurns = (db.history[sessionId] || []).filter((m) => m.type === "user").length;
+  const built = (db.history[sessionId] || []).some((m) => m.type === "outputs");
+
+  if (!built) {
+    let at = 250;
+    PMR_RUN_TOOLS.forEach(([tool, input]) => {
+      const t0 = at;
+      setTimeout(() => emit(channel, "agent-event", { type: "tool_call", tool, input }), t0);
+      setTimeout(() => emit(channel, "agent-event", { type: "tool_result", tool, result_length: 120 }), t0 + 15);
+      at += 90;
+    });
+    streamReply(channel, ROI_REPORT, at + 250, () => {
+      const outputs = [{ path: ROI_DASHBOARD_PATH, title: ROI_TITLE }];
+      db.fileTree[sessionId] = ROI_TREE;
+      (db.history[sessionId] ||= []).push({ type: "assistant", text: ROI_REPORT, timestamp: Date.now() }, { type: "outputs", outputs });
+      emit(channel, "agent-event", { type: "done", outputs, context_tokens: 41800, turn_count: 2 });
+      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: ROI_FOLLOWUPS }), 700);
+    });
+    return;
+  }
+
+  const reply = roiReply(userText);
+  streamReply(channel, reply, 500, () => {
+    (db.history[sessionId] ||= []).push({ type: "assistant", text: reply, timestamp: Date.now() });
+    emit(channel, "agent-event", { type: "done", context_tokens: 43000, turn_count: userTurns + 1 });
+    // Follow-ups are offered once, after the report. The conversation has
+    // moved on, so none are offered again (the empty list also ends the
+    // "loading follow-ups" placeholder).
+    emit(channel, "agent-event", { type: "suggested-questions", questions: [] });
+  });
+}
+
 // Shape a generic reply by the selected model tier so the mode switch is
 // visibly functional in the demo: Pro reasons more and adds a follow-up,
 // Mini is terse, Standard is unchanged.
@@ -450,6 +502,15 @@ function applyModeToReply(reply, mode) {
 }
 
 function simulateAgentReply(sessionId, userText, mode = "standard") {
+  // A workflow run under review: the reviewer carries on the agents' conversation.
+  if (sessionId === RUN_SESSION.session_id) {
+    scriptRunReply(emit, userText);
+    return;
+  }
+  if (isRoi(sessionId) && !REVIEW_SYNC_MARKER.test(userText || "")) {
+    scriptRoiReply(sessionId, userText);
+    return;
+  }
   const isSage = String(sessionId).startsWith("sage-");
   const isReviewSync = REVIEW_SYNC_MARKER.test(userText || "");
   const channel = `session-${sessionId}`;
@@ -486,8 +547,10 @@ function simulateAgentReply(sessionId, userText, mode = "standard") {
       emit(channel, "agent-event", { type: "done", context_tokens: 26400, turn_count: 3 });
       // Fresh follow-ups for the turn we just answered — delayed so the
       // "Related" loading skeleton has a clear moment to shimmer first.
-      const nextQs = /target-account/.test(String(sessionId)) ? TAJ_NEXT_FOLLOWUPS : /creative/.test(String(sessionId)) ? CAP_NEXT_FOLLOWUPS : NEXT_FOLLOWUP_QUESTIONS;
-      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: nextQs }), 3500);
+      // A Paid Media ROI report chat gets none here: its follow-ups are
+      // offered once, after the report.
+      const nextQs = isRoi(sessionId) ? [] : /target-account/.test(String(sessionId)) ? TAJ_NEXT_FOLLOWUPS : /creative/.test(String(sessionId)) ? CAP_NEXT_FOLLOWUPS : NEXT_FOLLOWUP_QUESTIONS;
+      setTimeout(() => emit(channel, "agent-event", { type: "suggested-questions", questions: nextQs }), nextQs.length ? 3500 : 0);
     }
   };
   setTimeout(tick, 250);
@@ -518,8 +581,9 @@ const handlers = [
       const sid = newId("sess");
       const isSkillRun = !!body?.skill_id;
       const session = {
-        session_id: sid, name: isSkillRun ? "Skill run" : "New Session",
+        session_id: sid, name: isSkillRun ? "Skill run" : ROI_TITLE,
         session_type: isSkillRun ? "skill_run" : "regular", status: "active",
+        report: isSkillRun ? null : "roi",
         skill_id: body?.skill_id || null,
         provider: "anthropic", dashboard_id: body?.dashboard_id || null,
         created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
@@ -539,10 +603,10 @@ const handlers = [
   { method: "GET", pattern: /\/api\/goals\/attention$/, handler: () => Goals.attentionFeed() },
   // Goals module's own queue (grouped by goal) — used by the Goals pages.
   { method: "GET", pattern: /\/api\/goals\/recommendations$/, handler: () => Goals.allRecommendations() },
-  // Workflow recommendation queue (the /recommendations page). Kept on its own
-  // path: in the prototype it replaced /api/goals/recommendations, but here the
-  // Goals module is still live and reads that route with a different shape.
-  // Every recommendation carries the workflow and agent that produced it.
+  // Workflow recommendation queue (the /recommendations page). Every
+  // recommendation carries the workflow and agent that produced it; findings
+  // no live workflow could have produced are dropped rather than shown
+  // without a source.
   { method: "GET", pattern: /\/api\/recommendations$/, handler: () => ({ items: Recs.listRecommendations() }) },
   { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/decide$/, handler: ({ params, body }) => ({ item: Recs.decide(String(params[0]), body?.decision, body?.note, body?.choice, body?.applied) }) },
   { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/comment$/, handler: ({ params, body }) => ({ item: Recs.addComment(String(params[0]), body?.text) }) },
@@ -571,7 +635,9 @@ const handlers = [
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/history$/, handler: ({ params }) => ({ messages: db.history[params[0]] || [] }) },
   // Grounded follow-up chips for the latest turn (shown under the last message).
   // Slight delay so the "Related" loading skeleton renders before they resolve.
-  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: async ({ params }) => { await new Promise((r) => setTimeout(r, 1200)); const sid = String(params[0]); const questions = /target-account/.test(sid) ? TAJ_SAGE_STARTERS : /creative/.test(sid) ? CAP_SAGE_STARTERS : sid.startsWith("sage-") ? PMR_SAGE_STARTERS : FOLLOWUP_QUESTIONS; return { questions }; } },
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/recommendations$/, handler: async ({ params }) => { await new Promise((r) => setTimeout(r, 1200)); const sid = String(params[0]); if (sid === RUN_SESSION.session_id) return { questions: runFollowups() }; if (isRoi(sid)) { const h = db.history[sid] || []; const built = h.findIndex((m) => m.type === "outputs"); return { questions: built >= 0 && !h.slice(built).some((m) => m.type === "user") ? ROI_FOLLOWUPS : [] }; } const questions = /target-account/.test(sid) ? TAJ_SAGE_STARTERS : /creative/.test(sid) ? CAP_SAGE_STARTERS : sid.startsWith("sage-") ? PMR_SAGE_STARTERS : FOLLOWUP_QUESTIONS; return { questions }; } },
+  // Table rows for a file of a workflow run (the table viewer pages through these).
+  { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/files\/(.+)\/data$/, handler: ({ params }) => runFileTable(decodeURIComponent(params[1])) || { columns: [], rows: [], total_rows: 0, total_pages: 0, page: 1 } },
   { method: "GET", pattern: /\/api\/sessions\/([^/]+)\/files$/, handler: ({ params }) => ({ files: db.fileTree[params[0]] || [], tree: db.fileTree[params[0]] || [] }) },
 
   // ── Verify & Publish: dashboard detection + widgets ────────────────
@@ -957,6 +1023,10 @@ const handlers = [
     };
     return { runs: [mkRun("run-3", 200, false), mkRun("run-2", 1640, false), mkRun("run-1", 3080, true)] };
   } },
+  // Agentic workflows surface (the six paid-media pilot use cases). Separate
+  // from /api/workflows, which is the existing step-based workflow engine.
+  // Workflow rows read their pending count from the live recommendation queue,
+  // so a row and the Recommendations page can never claim different numbers.
   // ── Chat-first harness (UX concept) ────────────────────────────────
   // Home / Campaigns / Automations + the scripted action chat. The open-
   // recommendations count on Home reads the live Recs queue, so the two
@@ -971,11 +1041,7 @@ const handlers = [
   { method: "POST", pattern: /\/api\/harness\/actions\/([^/]+)\/undo$/, handler: ({ params }) => Harness.undoAction(String(params[0])) },
   { method: "POST", pattern: /\/api\/harness\/reset$/, handler: () => Harness.resetDemo() },
 
-  // Agentic workflows surface (the six paid-media pilot use cases). Separate
-  // from /api/workflows, which is the existing step-based workflow engine.
-  // Workflow rows read their pending count from the live recommendation queue,
-  // so a row and the Recommendations page can never claim different numbers.
-  { method: "GET", pattern: /\/api\/agent-workflows$/, handler: () => { const recs = Recs.listRecommendations(); return { workflows: AgentWf.listWorkflows(recs), summary: AgentWf.summary(recs) }; } },
+  { method: "GET", pattern: /\/api\/agent-workflows$/, handler: () => { const recs = Recs.listRecommendations(); return { workflows: [...AgentWf.listWorkflows(recs), { id: "paid-media-roi", name: "Paid Media ROI", platform: null, published: true }], summary: AgentWf.summary(recs) }; } },
   { method: "GET", pattern: /\/api\/agents$/, handler: () => ({ agents: AgentWf.listAgents(), orchestrator: AgentWf.ORCHESTRATOR }) },
   { method: "POST", pattern: /\/api\/agent-workflows\/([^/]+)\/pause$/, handler: ({ params }) => ({ workflow: AgentWf.pauseWorkflow(String(params[0])) }) },
   { method: "POST", pattern: /\/api\/agent-workflows\/([^/]+)\/activate$/, handler: ({ params }) => ({ workflow: AgentWf.activateWorkflow(String(params[0])) }) },
@@ -1036,9 +1102,9 @@ const handlers = [
   {
     method: "GET",
     pattern: /\/api\/slack\/channels$/,
-    handler: () => ({ channels: [{ id: "C1", name: "dashboards" }, { id: "C2", name: "revenue" }, { id: "C3", name: "gtm-leadership" }], next_cursor: null }),
+    handler: () => ({ channels: [{ id: "C-marketing-ops", name: "marketing-ops" }, { id: "C-paid-media", name: "paid-media" }, { id: "C-demand-gen", name: "demand-gen" }, { id: "C1", name: "dashboards" }, { id: "C2", name: "revenue" }, { id: "C3", name: "gtm-leadership" }], next_cursor: null }),
   },
-  { method: "GET", pattern: /\/api\/slack\/users$/, handler: () => ({ users: [{ id: "U1", name: "Demo User" }], next_cursor: null }) },
+  { method: "GET", pattern: /\/api\/slack\/users$/, handler: () => ({ users: [{ id: "U-priya", name: "priya", real_name: "Priya Raman" }, { id: "U-arun", name: "arun", real_name: "Arun Mehta" }, { id: "U1", name: "Demo User", real_name: "Demo User" }], next_cursor: null }) },
   { method: "GET", pattern: /\/api\/slack\/configured-alerts$/, handler: () => ({ alerts: [] }) },
 ];
 

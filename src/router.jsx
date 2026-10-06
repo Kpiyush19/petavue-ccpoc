@@ -112,6 +112,7 @@ function LegacyRunRedirect() {
 const WorkflowsPage = lazy(() => import("./pages/workflows"));
 const AgentWorkflowDetailPage = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const AssessmentPage = lazy(() => import("./pages/workflows/Assessment"));
+const WorkflowConfigPage = lazy(() => import("./pages/workflows/agents-run/WorkflowConfigPage"));
 const AgentsPage = lazy(() => import("./pages/agents"));
 const AgentDetailPage = lazy(() => import("./pages/agents/AgentDetail"));
 const RecommendationsPage = lazy(() => import("./pages/recommendations"));
@@ -566,6 +567,21 @@ export const routes = [
                     element: (
                       <SuspenseWrapper>
                         <AssessmentPage />
+                      </SuspenseWrapper>
+                    )
+                  },
+                  {
+                    // A run is reviewed in the chat session its agents ran in.
+                    path: "review/:runId",
+                    element: <Navigate to="/chat/run-paid-media-roi" replace />
+                  },
+                  {
+                    // The workflow published from the Paid Media ROI report:
+                    // its configuration, and the draft waiting for review.
+                    path: "paid-media-roi",
+                    element: (
+                      <SuspenseWrapper>
+                        <WorkflowConfigPage />
                       </SuspenseWrapper>
                     )
                   },

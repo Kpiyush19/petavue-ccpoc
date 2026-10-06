@@ -906,6 +906,41 @@ export function decide(id, status, note, choice, applied) {
   return withLiveApply(it);
 }
 
+/* Changes approved in a workflow-run review land here as open cards, so the
+   team sees them exactly where every other recommendation lives. */
+const RUN_URGENCY = { "Act now": "act-now", "This week": "this-week", "This month": "monitor" };
+// The channel a change is filed under. A sales hand-off sits with LinkedIn,
+// the channel those accounts engaged on.
+const RUN_PLATFORM = { "Google Ads": "google-search", "LinkedIn Ads": "linkedin", "Meta Ads": "meta", Salesforce: "linkedin" };
+export function addRunChanges(records) {
+  for (const r of [...records].reverse()) {
+    if (r.pending === "removed") continue;
+    const id = `rec-roi-${r.id.toLowerCase()}`;
+    if (ITEMS.some((x) => x.id === id)) continue;
+    const advice = !r.d;
+    ITEMS.unshift({
+      id,
+      workflowId: "paid-media-roi",
+      // A cross-channel workflow: each change names the system it lands in.
+      platform: RUN_PLATFORM[r.sys] || null,
+      agent: null,
+      type: "change",
+      urgency: RUN_URGENCY[r.urg] || "monitor",
+      lifecycle: "needs-decision",
+      run: { n: "13", at: "Oct 5, 6:04 AM" },
+      title: r.title,
+      shortTitle: r.title,
+      basis: r.why,
+      changeTitle: r.title,
+      changeCols: advice ? ["Advice", "Nothing to apply"] : ["Field", "Current", "After"],
+      changeRows: advice ? [[r.title, "For the team to act on."]] : [[r.d.label, r.d.from, r.d.to]],
+      appliedPrefix: advice ? null : `${r.sys === "Salesforce" ? "Pushed to" : "Applied to"} ${r.sys}`,
+      decision: null,
+      comments: [],
+    });
+  }
+}
+
 /* A general comment changes no state. */
 export function addComment(id, text) {
   const it = ITEMS.find((r) => r.id === id);

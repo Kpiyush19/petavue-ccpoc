@@ -6,11 +6,10 @@ import Pusher from 'pusher-js'
 import {
   CaretLeft, CaretRight, Play,
   CircleNotch, CheckCircle, XCircle, Spinner, ArrowsClockwise, PencilSimple, Sparkle,
-  Plus, ListChecks, Warning, X, Eye,
+  Plus, ListChecks, Warning, X, Eye, Hash,
 } from '@phosphor-icons/react'
 import { PUSHER_KEY, PUSHER_CLUSTER } from '../../../config'
 import { apiPost, apiGet, apiDelete, getApiBase, getAuthToken, getCurrentUser } from '../../../api'
-import { Toggle } from '@/ui'
 import { Button as PvButton } from '@/ui'
 import RecipeGroupCard from '../../RecipeGroupCard'
 import RecipeStepCell from '../../RecipeStepCell'
@@ -20,6 +19,7 @@ import MarkdownRenderer from '../../../utils/MarkdownRenderer'
 import SlackChannelPicker from '../../shared/SlackChannelPicker'
 import WidgetListView from './WidgetListView'
 import WidgetDetailView from './WidgetDetailView'
+import { WORKFLOW_PATH } from '../../../pages/workflows/agents-run/data'
 
 const DAYS_OF_WEEK = [
   { value: '0', label: 'Sunday' },
@@ -199,15 +199,14 @@ const PHASE = {
 
 // Wizard steps. "Verify" (per-widget review) is the first step; "Review" is
 // the mandatory agentic check that gates publishing.
-const STEP = { WORKFLOW: 'workflow', VERIFY: 'verify', OUTPUTS: 'outputs', FREQUENCY: 'frequency', REVIEW: 'review', CONFIRM: 'confirm' }
+const STEP = { WORKFLOW: 'workflow', VERIFY: 'verify', FREQUENCY: 'frequency', REVIEW: 'review', CONFIRM: 'confirm' }
 // Verify hosts two sub-steps (User Review + Agentic Review); the agentic review
 // is the gate. Publish runs the remaining 4-screen sequence.
-const STEP_ORDER = [STEP.WORKFLOW, STEP.OUTPUTS, STEP.FREQUENCY]
+const STEP_ORDER = [STEP.WORKFLOW, STEP.FREQUENCY]
 const TAB = { VERIFY: 'verify', PUBLISH: 'publish' }
 const STEP_LABELS = {
-  [STEP.WORKFLOW]: 'Workflow',
+  [STEP.WORKFLOW]: 'Dashboard',
   [STEP.VERIFY]: 'Verify',
-  [STEP.OUTPUTS]: 'Outputs',
   [STEP.FREQUENCY]: 'Schedule',
   [STEP.REVIEW]: 'Review',
   [STEP.CONFIRM]: 'Configure',
@@ -298,10 +297,10 @@ export default function PublishView({
   onRequestMaximize,
 }) {
   const navigate = useNavigate()
-  const isPetavueUser = (getCurrentUser()?.email || '').includes('@petavue.com')
   // In an embed, publishing and "View dashboard" would jump to a module the
   // embedded flow doesn't have — disable them.
   const isEmbed = typeof window !== 'undefined' && !!window.__EMBED__
+  const isPetavueUser = (getCurrentUser()?.email || '').includes('@petavue.com')
 
   // Wizard step + review-passed gate
   const [step, setStep] = useState(STEP.WORKFLOW)
@@ -2035,6 +2034,15 @@ export default function PublishView({
             className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors"
           />
           <p className="text-[12px] text-[var(--text-muted)] mt-1.5">This names the automation, not the dashboard itself.</p>
+
+          <label className="text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)] block mt-5 mb-1.5">Dashboard name</label>
+          <input
+            value={dashboardTitle}
+            onChange={(e) => setDashboardTitle && setDashboardTitle(e.target.value)}
+            placeholder="Name this dashboard…"
+            className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors"
+          />
+          <p className="text-[12px] text-[var(--text-muted)] mt-1.5">The name it gets on your Dashboards page.</p>
         </div>
       ) : (
         <div className="mt-5">
@@ -2045,7 +2053,7 @@ export default function PublishView({
             options={existingWorkflows.map((w) => ({ value: w.workflow_id, label: w.name }))}
             className="w-full"
           />
-          <p className="text-[12px] text-[var(--text-muted)] mt-1.5">Its outputs and schedule will pre-fill the next steps.</p>
+          <p className="text-[12px] text-[var(--text-muted)] mt-1.5">Its schedule will pre-fill the next step.</p>
         </div>
       )}
       </div>
@@ -2091,7 +2099,7 @@ export default function PublishView({
     )
   )
 
-  // ── STEP 1 — Outputs ──
+  // A choice card: a radio or a checkbox with an icon, a title and a line of help.
   const OutputCard = ({ active, onToggle, icon, title, desc, radio }) => (
     <button type="button" onClick={onToggle} disabled={isAgentBusy} className={`w-full flex items-center gap-3.5 p-4 rounded-xl border text-left transition-colors cursor-pointer disabled:cursor-not-allowed ${active ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border-primary)] bg-[var(--bg-primary)] hover:border-[var(--accent)]/40'}`}>
       <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${active ? 'bg-[var(--accent)]/10' : 'bg-[var(--bg-hover)]'}`}>{icon}</div>
@@ -2111,66 +2119,24 @@ export default function PublishView({
     </button>
   )
 
-  // ── STEP 1 — Outputs ──
-  const renderOutputsStep = () => (
-    <div className="h-full flex flex-col">
-      {stepHeader('What do you want to publish?', 'Toggle on what you want. Set each one up right where you turn it on.')}
-      <div className="flex-1 min-h-0 flex flex-col gap-4 px-6 py-4 overflow-y-auto [scrollbar-gutter:stable] bg-[#FCFCFC]">
-
-        {/* Dashboard — toggle + its name field clubbed together */}
-        <div className="shrink-0 bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="flex items-center gap-3 px-4 py-3 cursor-pointer" onClick={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)}>
-            <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--accent)]/8 flex items-center justify-center"><DashboardMark size={18} className={publishDashboardEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} /></div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[14px] font-semibold text-[#2D3044] block">Dashboard</span>
-              <span className="text-[12px] text-[var(--text-muted)] block leading-snug">A live dashboard on your Dashboards page.</span>
-            </div>
-            <Toggle checked={publishDashboardEnabled} onChange={() => !isAgentBusy && setPublishDashboardEnabled(v => !v)} size="lg" />
-          </div>
-          <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${publishDashboardEnabled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-            <div className="overflow-hidden">
-              <div className="px-4 pb-3.5 pt-3 border-t border-[var(--border-primary)]">
-                <input value={dashboardTitle} onChange={(e) => setDashboardTitle && setDashboardTitle(e.target.value)} placeholder="Name this dashboard…" className="w-full text-[14px] border border-[var(--border-primary)] rounded-lg px-3 py-2 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--bg-primary)] focus:border-[var(--accent)] transition-colors" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Summary — a first-class output that fans out to a folder and/or Slack */}
-        {isPetavueUser && (
-          <div className="shrink-0 bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-3 shrink-0 cursor-pointer" onClick={() => !isAgentBusy && setSummaryEnabled(v => !v)}>
-              <div className="shrink-0 w-9 h-9 rounded-lg bg-[var(--accent)]/8 flex items-center justify-center"><Sparkle size={18} weight="fill" className={summaryEnabled ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} /></div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[14px] font-semibold text-[#2D3044] block">Summary</span>
-                <span className="text-[12px] text-[var(--text-muted)] block leading-snug">An AI-written recap of your data, sent to a folder and/or Slack.</span>
-              </div>
-              <Toggle checked={summaryEnabled} onChange={() => !isAgentBusy && setSummaryEnabled(v => !v)} size="lg" />
-            </div>
-            <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${summaryEnabled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-              <div className="overflow-hidden">
-                <div className="px-4 pb-3.5 pt-3 border-t border-[var(--border-primary)]">
-                  {renderSummaryBlock()}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-
-  // ── STEP 3 (final) — Schedule + publish / post-publish ──
+  // ── STEP 2 (final) — Schedule + publish / post-publish ──
   const renderFrequencyStep = () => {
     if (phase === PHASE.DONE) {
+      const openDashboard = () => { onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflows/${workflowId}`) }
       return (
-        <div className="flex flex-col items-center justify-center h-full px-6 py-8 gap-4">
-          <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center"><CheckCircle size={32} weight="fill" className="text-green-500" /></div>
-          <div className="text-center">
-            <h3 className="text-[14px] font-semibold text-[var(--text-primary)] m-0">{wasUpdate ? 'Dashboard updated!' : 'Dashboard published!'}</h3>
-            <p className="text-[12px] text-[var(--text-muted)] mt-1">{completedSteps} checks passed{autoRefresh ? ` · ${scheduleSummary.toLowerCase()}` : ''}</p>
+        <div className="flex flex-col items-center justify-center min-h-full px-6 py-10 gap-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center"><CheckCircle size={32} weight="fill" className="text-green-500" /></div>
+            <div>
+              <h3 className="text-[16px] font-semibold text-[var(--text-primary)] m-0">{wasUpdate ? 'Dashboard updated!' : 'Dashboard published!'}</h3>
+              <p className="text-[12px] text-[var(--text-muted)] mt-1 mb-0">{completedSteps} checks passed{autoRefresh ? ` · ${scheduleSummary.toLowerCase()}` : ''}</p>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <PvButton variant="secondary" size="md" label="View dashboard" disabled={isEmbed} onClick={() => { if (!isEmbed) openDashboard() }} />
+              {/* Agents and alerts are set up on the workflow's own page. */}
+              <PvButton variant="primary" size="md" label="Open workflow" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled={isEmbed} onClick={() => { if (isEmbed) return; onClose?.(); navigate(WORKFLOW_PATH) }} />
+            </div>
           </div>
-          <PvButton variant="primary" size="md" label="View dashboard" disabled={isEmbed} onClick={() => { if (isEmbed) return; onClose?.(); if (dashboardId) navigate(`/dashboards/${dashboardId}`); else if (workflowId) navigate(`/workflow-engine/${workflowId}`) }} />
         </div>
       )
     }
@@ -2411,14 +2377,15 @@ export default function PublishView({
       <div className="shrink-0 flex items-center justify-between gap-5 px-6 py-3.5 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
         <div className="flex items-center gap-0.5 overflow-x-auto min-w-0">{renderStepNavItems(publishNavItems, step, (id) => setStep(id))}</div>
         <div className="flex items-center gap-5 shrink-0">
-        {step === STEP.OUTPUTS && backBtn(STEP.WORKFLOW)}
-        {step === STEP.FREQUENCY && phase !== PHASE.DONE && !isPublishing && backBtn(STEP.OUTPUTS)}
+        {step === STEP.FREQUENCY && phase !== PHASE.DONE && !isPublishing && backBtn(STEP.WORKFLOW)}
         <div>
           {step === STEP.WORKFLOW && (
-            <PvButton variant="primary" size="md" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled={isEditing && !updateMode?.workflow_id} onClick={() => setStep(STEP.OUTPUTS)} />
-          )}
-          {step === STEP.OUTPUTS && (
-            <PvButton variant="primary" size="md" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold" disabled={!canPublish} title={publishReason} onClick={() => { if (summaryEnabled && slackEnabled && slackChannels.length === 0 && slackDmUsers.length === 0) { setSlackTargetError(true); return } setStep(STEP.FREQUENCY) }} />
+            <PvButton
+              variant="primary" size="md" label="Continue" icon={CaretRight} iconPosition="suffix" iconWeight="bold"
+              disabled={(isEditing && !updateMode?.workflow_id) || (!isEditing && !canPublish)}
+              title={isEditing ? '' : publishReason}
+              onClick={() => { if (summaryEnabled && slackEnabled && slackChannels.length === 0 && slackDmUsers.length === 0) { setSlackTargetError(true); return } setStep(STEP.FREQUENCY) }}
+            />
           )}
           {step === STEP.FREQUENCY && (
             reviewPassed ? (
@@ -2855,7 +2822,6 @@ export default function PublishView({
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto">
               {step === STEP.WORKFLOW && renderWorkflowStep()}
-              {step === STEP.OUTPUTS && renderOutputsStep()}
               {step === STEP.FREQUENCY && renderFrequencyStep()}
             </div>
             {phase !== PHASE.DONE && renderFooter()}

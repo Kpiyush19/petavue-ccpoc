@@ -4,6 +4,8 @@
 
 import { DASHBOARD_FILES, WIDGET_PREVIEWS, assembleSkillDashboard } from "./dashboardAssets";
 import { getRun } from "./skillRun";
+import { runFileContent } from "../pages/workflows/agents-run/runSession";
+import { RUN_SESSION_ID } from "../pages/workflows/agents-run/data";
 
 function jsonResponse(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -40,6 +42,12 @@ function handleFilesRequest(pathname, search) {
   if (!m) return null;
   const sid = m[1];
   let filepath = decodeURIComponent(m[2]);
+
+  // Files of a workflow run under review.
+  if (sid === RUN_SESSION_ID) {
+    const f = runFileContent(filepath);
+    if (f) return new Response(f.content, { status: 200, headers: { "content-type": f.contentType } });
+  }
 
   // Skill-flow dashboard — assembled live from the widgets the user KEPT in the
   // plan (drop a widget → it's gone here too).

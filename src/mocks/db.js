@@ -235,6 +235,12 @@ export const PMR_RUN_TOOLS = [
 
 const PMR_T0 = now - 5 * 24 * 60 * 60000; // ~5 days ago
 
+import { RUN_SESSION, RUN_HISTORY, RUN_FILES } from "../pages/workflows/agents-run/runSession";
+import { ROI_TITLE, ROI_DASHBOARD_PATH, ROI_REPORT_SESSION_ID, ROI_PROMPT, ROI_NEXT_STEP, ROI_TREE } from "./paidMediaRoi";
+
+// The report as the Home chat writes it: one turn, no clarifying question.
+export const ROI_REPORT = `${PMR_REPORT}\n\n${ROI_NEXT_STEP}`;
+
 export const db = {
   // Runtime registries (populated during the Verify & Publish flow)
   execSessions: {},      // execSessionId -> { sessionId, recipe, channel, statuses, hardening }
@@ -258,10 +264,21 @@ export const db = {
       context_tokens: 48200,
       agent_running: false,
     },
+    // The chat that built the Paid Media ROI report in one turn: where Verify &
+    // Publish starts.
+    {
+      session_id: ROI_REPORT_SESSION_ID, name: ROI_TITLE, session_type: "regular", status: "active", provider: "anthropic",
+      dashboard_mode: "react", report: "roi", created_at: minsAgo(1500), updated_at: minsAgo(1495), last_active_at: minsAgo(1495),
+      turn_count: 1, total_tokens: 41800, context_tokens: 41800, agent_running: false,
+    },
+    // A workflow run, opened for review in the same chat workspace.
+    RUN_SESSION,
   ],
 
   // session_id -> file tree (workspace tray)
   fileTree: {
+    [RUN_SESSION.session_id]: RUN_FILES,
+    [ROI_REPORT_SESSION_ID]: ROI_TREE,
     [DASH_SESSION_ID]: [
       {
         name: "output", path: "output", type: "folder", content_type: "folder",
@@ -296,6 +313,13 @@ export const db = {
 
   // session_id -> history messages
   history: {
+    [RUN_SESSION.session_id]: RUN_HISTORY,
+    [ROI_REPORT_SESSION_ID]: [
+      { type: "user", text: ROI_PROMPT, timestamp: now - 25 * 60 * 60000 },
+      ...PMR_RUN_TOOLS.map(([tool, input_summary]) => ({ type: "tool_call", tool, input_summary })),
+      { type: "assistant", text: ROI_REPORT, timestamp: now - 25 * 60 * 60000 + 240000 },
+      { type: "outputs", outputs: [{ path: ROI_DASHBOARD_PATH, title: ROI_TITLE }] },
+    ],
     [DASH_SESSION_ID]: [
       { type: "user", text: PMR_PROMPT, timestamp: PMR_T0 },
       ...PMR_DISCOVERY_TOOLS.map(toToolCall),

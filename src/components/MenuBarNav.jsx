@@ -99,7 +99,12 @@ export default function MenuBarNav() {
     : [
         {
           label: "Today",
-          items: [{ id: "q2-revenue-dashboard", title: "Paid Media ROI", time: "now", clickable: true }],
+          items: [
+            // One example, start to finish: the chat that built the report, then
+            // the workflow run waiting for review (same chat workspace).
+            { id: "paid-media-roi", title: "Paid Media ROI", time: "now", clickable: true },
+            { id: "run-paid-media-roi", title: "Paid Media ROI · Oct 5 run", time: "6h", clickable: true },
+          ],
         },
         {
           label: "Yesterday",
