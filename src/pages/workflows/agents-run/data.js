@@ -1,6 +1,7 @@
 /* Workflow agents: the one run the demo follows, end to end.
-   "Paid Media ROI" has five agents: two Reasoning agents, then three
-   Recommendation agents. Everything here is mock data, and the numbers match
+   "Paid Media ROI" has six agents: two Reasoning agents, then four
+   Recommendation agents. One of them, Landing page, drafts a page from the
+   workspace Library, so the draft under review carries a landing page. Everything here is mock data, and the numbers match
    the Paid Media ROI dashboard in mocks/dashboardAssets.js. File bodies are
    static HTML written in this file, so rendering them as HTML is safe. */
 
@@ -28,6 +29,26 @@ export const RECS = [
   { id: "REC-23", title: "Send 11 ICP accounts to the SDR queue", sys: "Salesforce", urg: "This week", status: "Draft", pending: "new",
     d: { label: "SDR queue", from: "Not assigned", to: "11 accounts" },
     why: "12 ICP accounts are engaging with your ads and have no open opportunity. 11 already have an active SQL, worth about $610K in potential pipeline.", by: "ICP hand-off", hist: [] },
+  // A drafted landing page. Its card shows the page and opens it in the page
+  // builder; `draftPage` is what the Landing page agent built it from.
+  { id: "REC-25", title: "Give \"LI_ABM_Tier1\" its own landing page", sys: "Petavue pages", urg: "This week", status: "Draft", pending: "new",
+    d: { label: "Landing page", from: "Company homepage", to: "ABM forecast review page (draft)" },
+    why: "LI_ABM_Tier1 sends every click to the homepage. 0.9% of those visits reach a form, against 3.4% on your LinkedIn campaigns that have their own page. A page is drafted from your Library, using the ad's wording.",
+    by: "Landing page", hist: [],
+    draftPage: {
+      name: "ABM forecast review page",
+      templateId: "tpl-demo",
+      prompt: "Build a landing page for the LinkedIn ABM campaign",
+      repoint: "Point LI_ABM_Tier1 at this address.",
+      hero: {
+        headline: "Your forecast, reviewed against your own pipeline",
+        lead: "A 30-minute review for revenue teams. We connect a read-only copy of your CRM and show which deals decide the quarter.",
+        button: "Book a forecast review",
+      },
+      form: { headline: "Book your forecast review", button: "Book a forecast review" },
+      note:
+        "I drafted this page in the **Paid Media ROI** run, for the change **Give LI_ABM_Tier1 its own landing page**. It uses your **Demo request page** template, with the headline and button taken from the LI_ABM_Tier1 ad and the form directly under the hero.\n\nChange anything you want here. The page is part of a run you are reviewing, so it can be published once the run is.",
+    } },
   { id: "REC-24", title: "Take the Meta Ads portfolio to the CMO before cutting it", sys: null, urg: "This month", status: "Draft", pending: "new", d: null,
     why: "Your playbook says a whole channel is not cut without the CMO. Meta returned 0.98× on $24.7K of spend. Advice only, nothing to apply.", by: "Budget moves", hist: [] },
   { id: "REC-14", title: "Lower bid on \"LI_ABM_Tier1\"", sys: "LinkedIn Ads", urg: "This week", status: "Open", pending: "changed",
@@ -58,6 +79,7 @@ export const ACTIONS = [
   { g: "LinkedIn Ads", items: ["Campaign budget update", "Campaign bid update", "Targeting criteria change", "Campaign status (pause or resume)"] },
   { g: "Meta Ads", items: ["Ad set budget update", "Ad set status (pause or resume)", "Audience change"] },
   { g: "Salesforce", items: ["Assign accounts to a sales queue"] },
+  { g: "Petavue pages", items: ["Draft a landing page from the Library"] },
   { g: "General", items: ["Advice only, nothing to apply"] },
 ];
 
@@ -83,6 +105,7 @@ export const FILES = {
   metrics: { t: "channel_roas.csv", icon: "table", table: { h: ["Channel", "Spend", "Closed-won", "True ROAS", "Checked"], r: [["Google", "$77.4K", "$372.6K", "4.81×", "matches"], ["LinkedIn", "$61.0K", "$191.7K", "3.14×", "corrected by agent 2"], ["Meta", "$24.7K", "$24.3K", "0.98×", "matches"]] } },
   corrections: { t: "corrections.md", icon: "file", md: `<h4>Check of the channel ROI analysis</h4><p>Recomputed every channel from the raw spend and opportunity data and compared with the last 4 runs.</p><ul><li><b>Cause found:</b> step 4 counted one LinkedIn deal twice after two Salesforce opportunities were merged on Sep 28.</li><li><b>Fix:</b> edited step 4 to count each opportunity once, then replayed the 3 steps that depend on it. Nothing else was re-run.</li><li><b>Result:</b> LinkedIn has $191.7K closed-won and 3.14×, not $210.0K and 3.44×. The blended figure is now $588.5K and 3.61×.</li><li><b>Confirmed:</b> Google and Meta match to the dollar.</li></ul>` },
   sizes: { t: "icp_handoff.csv", icon: "table", table: { h: ["Account", "Buyers engaged", "Active SQL", "Next step"], r: [["Walter, Edwards and Rios", "9", "5", "Assign to SDR"], ["Rodriguez LLC", "7", "3", "Assign to SDR"], ["Jones Inc", "6", "3", "Assign to SDR"], ["Novak PLC", "5", "4", "Assign to SDR"], ["Mcclure, Ward and Lee", "5", "0", "Review first"]] } },
+  pagebrief: { t: "landing_page_brief.md", icon: "file", md: `<h4>Landing page for LI_ABM_Tier1</h4><p>Written by Landing page.</p><ul><li><b>Problem:</b> the campaign sends every click to the company homepage. 0.9% of those visits reach a form, against 3.4% on LinkedIn campaigns with their own page.</li><li><b>Built from:</b> the Demo request page template and 7 published components in your Library, in your design system.</li><li><b>Changed:</b> the headline and button repeat the LI_ABM_Tier1 ad, and the form sits directly under the hero.</li><li><b>Not done:</b> nothing is published. The page is a draft until you publish it.</li></ul>` },
   check: { t: "check.md", icon: "file", md: `<h4>Final check of the draft</h4><ul><li><b>Lowered:</b> the G_Display_Prospecting budget was drafted at $350 a day. The Google Ads guidance allows at most doubling a daily budget in one step, so it is now $120.</li><li><b>Removed from the draft:</b> pausing "Meta_Retarget_WebVisitors". The same advice was rejected on Sep 23.</li><li><b>Proposed for removal:</b> “Extend end date of LI_Webinar_October”, because the webinar has finished.</li><li>The remaining changes are within this month's budget.</li></ul>` },
   analysis: { t: "reasoning.md", icon: "file", md: `<h4>How the recommendations were worked out</h4><p>Read the Google Ads, LinkedIn Ads and Meta Ads guidance, then compared each channel's true ROAS with its week-over-week trend.</p><ul><li>Raise: a campaign in a channel above 3× whose platform ROAS is rising.</li><li>Pause: a campaign whose platform ROAS fell 50% or more week over week.</li><li>Whole channel under 1×: advice only, because the playbook asks for the CMO first.</li></ul>` },
   capped: { t: "campaign_moves.csv", icon: "table", table: { h: ["Campaign", "Spend, 7 days", "Platform ROAS", "Week over week"], r: [["G_Search_NonBrand_Automation", "$2,285", "0.31×", "−50%"], ["Meta_Summer_Promo_V3", "$700", "0.72×", "−85%"], ["Meta_Retarget_WebVisitors", "$667", "1.01×", "+39%"], ["G_Display_Prospecting", "$437", "1.00×", "+36%"]] } },
@@ -93,7 +116,7 @@ export const FILES = {
   leads: { t: "nonbrand_search_terms.csv", icon: "table", table: { h: ["Search term", "Spend, 7 days", "Clicks", "Pipeline"], r: [["free marketing analytics tool", "$612", "418", "$0"], ["marketing roi calculator", "$540", "377", "$0"], ["attribution software pricing", "$398", "96", "$11.0K"]] } },
 };
 
-// The five agents as the creator set them up. [[key]] in a prompt is an @ tag.
+// The six agents as the creator set them up. [[key]] in a prompt is an @ tag.
 const AGENTS = [
   { kind: "reasoning", name: "Channel ROI analysis", file: "summary0", out: ["summary", "metrics"], files: [], model: "Standard", preview: null,
     prompt: "Work out spend, [[kd-won]] revenue and [[kd-roas]] for each paid channel in [[daily]] over 90 days, and list campaigns that moved 15% or more week over week." },
@@ -105,6 +128,9 @@ const AGENTS = [
   { kind: "recommendation", name: "ICP hand-off", recs: ["REC-23"], out: ["sizes"], files: [], model: "Standard", preview: null,
     prompt: "Find ICP accounts that are engaging with our ads and have no open opportunity, and hand the ones with an active SQL to sales.",
     actions: ["Salesforce|Assign accounts to a sales queue"] },
+  { kind: "recommendation", name: "Landing page", recs: ["REC-25"], out: ["pagebrief"], files: [], model: "Standard", preview: null,
+    prompt: "For any campaign in [[metrics]] that sends paid clicks to a page converting far below our other paid pages, draft a replacement landing page from the published components and templates in our Library. Use the ad's own wording.",
+    actions: ["Petavue pages|Draft a landing page from the Library"] },
   { kind: "recommendation", name: "Final check", recs: [], out: ["check"], files: [], model: "Pro", preview: null,
     prompt: "Check every draft against past decisions, the guidance limits and this month's budget. Fix or remove what does not pass.",
     actions: ["Google Ads|Campaign budget update", "Google Ads|Campaign status (pause or resume)", "LinkedIn Ads|Campaign bid update", "Meta Ads|Ad set status (pause or resume)"] },

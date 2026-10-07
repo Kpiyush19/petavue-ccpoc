@@ -1,0 +1,550 @@
+/* The ad creative editor: the artboard, its layers and the tools above it.
+   Sizes inside .cr-art are in artboard pixels; the artboard is scaled to fit
+   by .cr-fit, which exposes that scale as --cr-scale. */
+
+.cr-stage {
+  gap: 12px;
+  overflow: hidden;
+}
+
+/* ── Tools ─────────────────────────────────────────────────────────────── */
+.cr-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cr-tools__rule {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  background: var(--color-grey-100);
+}
+
+.cr-tools__hint {
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.cr-tools__name {
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.cr-tools__end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.cr-size {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cr-size__value {
+  min-width: 48px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.cr-swatches {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.cr-swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cr-swatch--on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--color-primary-500);
+}
+
+/* ── Fit ───────────────────────────────────────────────────────────────── */
+.cr-fit {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.cr-fit__box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--color-grey-100), 0 8px 24px -8px rgba(16, 24, 40, 0.12);
+}
+
+.cr-fit__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ── Artboard ──────────────────────────────────────────────────────────── */
+.cr-art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 90px 90px 0;
+  line-height: 1.4;
+  text-align: left;
+  user-select: none;
+}
+
+.cr-art *,
+.cr-art *::before {
+  box-sizing: border-box;
+}
+
+.cr-art__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  margin-top: 64px;
+}
+
+.cr-art--center,
+.cr-art--center .cr-art__copy {
+  align-items: center;
+  text-align: center;
+}
+
+.cr-layer {
+  position: relative;
+  max-width: 100%;
+}
+
+.cr-layer--logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cr-logo__mark {
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 0.24em;
+  background: currentColor;
+}
+
+.cr-logo__img {
+  display: block;
+  height: 1.6em;
+  width: auto;
+}
+
+.cr-layer--eyebrow {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.cr-layer--headline {
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.cr-layer--cta {
+  margin-top: 16px;
+  padding: 0.72em 1.5em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cr-text {
+  display: block;
+  outline: none;
+}
+
+.cr-layer--image {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin-top: 64px;
+  transform-origin: top center;
+}
+
+.cr-image__shot.lp {
+  width: auto;
+  background: none;
+  zoom: 1.25;
+}
+
+.cr-image__upload {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Without an image the copy sits in the middle of the space under the logo. */
+.cr-art--no-image {
+  padding-bottom: 90px;
+}
+
+.cr-art--no-image .cr-art__copy {
+  flex: 1;
+  justify-content: center;
+  margin-top: 0;
+}
+
+/* Landscape: copy on the left, image on the right. */
+.cr-art--landscape {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: 56px;
+  padding: 52px 56px;
+  align-items: start;
+}
+
+.cr-art--landscape .cr-layer--logo {
+  grid-area: 1 / 1;
+}
+
+.cr-art--landscape .cr-art__copy {
+  grid-area: 2 / 1;
+  align-self: center;
+  gap: 14px;
+  margin-top: 0;
+}
+
+.cr-art--landscape .cr-layer--cta {
+  margin-top: 10px;
+}
+
+.cr-art--landscape .cr-layer--image {
+  grid-area: 1 / 2 / 3 / 3;
+  align-self: center;
+  margin-top: 0;
+}
+
+.cr-art--landscape .cr-image__shot.lp {
+  zoom: 0.78;
+}
+
+.cr-art--landscape.cr-art--center .cr-layer--logo {
+  justify-self: center;
+}
+
+.cr-art--landscape.cr-art--no-image {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Story: taller, with more room around each part. */
+.cr-art--story {
+  padding: 150px 96px 0;
+}
+
+.cr-art--story .cr-art__copy {
+  gap: 32px;
+  margin-top: 150px;
+}
+
+.cr-art--story .cr-layer--cta {
+  margin-top: 24px;
+}
+
+.cr-art--story .cr-layer--image {
+  margin-top: 120px;
+}
+
+.cr-art--story .cr-image__shot.lp {
+  zoom: 1.7;
+}
+
+.cr-art--story.cr-art--no-image {
+  padding-bottom: 240px;
+}
+
+/* ── Picking ───────────────────────────────────────────────────────────── */
+.cr-art--live .cr-layer {
+  cursor: grab;
+  touch-action: none;
+}
+
+.cr-art--live .cr-layer:hover {
+  outline: calc(1.5px / var(--cr-scale, 1)) dashed var(--color-primary-300);
+  outline-offset: calc(6px / var(--cr-scale, 1));
+}
+
+.cr-art--live .cr-layer--on,
+.cr-art--live .cr-layer--on:hover {
+  outline: calc(2px / var(--cr-scale, 1)) solid var(--color-primary-500);
+  outline-offset: calc(6px / var(--cr-scale, 1));
+}
+
+.cr-art--live .cr-layer--editing {
+  cursor: text;
+  user-select: text;
+}
+
+.cr-art--on {
+  box-shadow: inset 0 0 0 calc(3px / var(--cr-scale, 1)) var(--color-primary-500);
+}
+
+/* ── Layers ────────────────────────────────────────────────────────────── */
+.cr-layers {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.cr-layers__label {
+  font-size: 12px;
+  color: var(--color-grey-500);
+  white-space: nowrap;
+}
+
+.cr-layers__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.cr-layers__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cr-layers__item:hover {
+  border-color: var(--color-grey-200);
+  background: var(--color-grey-50);
+}
+
+.cr-layers__item--on {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.cr-layers__item--hidden {
+  border-style: dashed;
+  color: var(--color-grey-400);
+}
+
+/* A creative as a still picture, on a Library card. */
+.cr-thumb {
+  display: flex;
+  width: 100%;
+  height: 340px;
+  padding: 16px;
+  background: var(--color-grey-50);
+}
+
+/* The artboard while the first version is being made. */
+.cr-making {
+  background: #fff;
+}
+
+/* A picture only the user has: a meme's image, a customer's photo or clip. */
+.cr-image__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  width: 100%;
+  height: 100%;
+  min-height: 8em;
+  border: 0.08em dashed rgba(15, 23, 42, 0.28);
+  background: rgba(15, 23, 42, 0.05);
+  font-size: 1.1em;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.5);
+}
+
+/* ── Meme: a caption, the picture, the punchline ───────────────────────── */
+.cr-art--meme {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 70px;
+}
+
+.cr-art--meme .cr-art__copy {
+  display: contents;
+}
+
+.cr-art--meme .cr-layer--headline,
+.cr-art--meme .cr-layer--body {
+  font-family: Impact, "Anton", "Arial Narrow Bold", sans-serif !important;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.cr-art--meme .cr-layer--headline {
+  order: 1;
+}
+
+.cr-art--meme .cr-layer--body {
+  order: 3;
+}
+
+.cr-art--meme .cr-layer--image {
+  order: 2;
+  margin: 40px 0;
+}
+
+.cr-art--meme .cr-layer--logo {
+  order: 4;
+  margin-top: 32px;
+  opacity: 0.7;
+  zoom: 0.8;
+}
+
+.cr-art--meme .cr-layer--eyebrow { order: 0; }
+.cr-art--meme .cr-layer--cta { order: 5; }
+
+.cr-art--meme.cr-art--landscape {
+  padding: 36px 56px;
+}
+
+.cr-art--meme.cr-art--landscape .cr-layer--image {
+  margin: 18px 0;
+  align-self: stretch;
+}
+
+.cr-art--meme.cr-art--landscape .cr-layer--logo {
+  margin-top: 14px;
+}
+
+/* ── UGC: the customer's picture first, then their words ───────────────── */
+.cr-art--ugc:not(.cr-art--landscape) {
+  padding-bottom: 90px;
+}
+
+.cr-art--ugc:not(.cr-art--landscape) .cr-layer--logo { order: 0; }
+
+.cr-art--ugc:not(.cr-art--landscape) .cr-layer--image {
+  order: 1;
+  margin-top: 48px;
+}
+
+.cr-art--ugc:not(.cr-art--landscape) .cr-art__copy {
+  order: 2;
+  margin-top: 48px;
+}
+
+.cr-art--ugc .cr-layer--headline {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cr-art--ugc.cr-art--landscape .cr-layer--image {
+  align-self: stretch;
+}
+
+/* ── Cards and scenes ──────────────────────────────────────────────────── */
+.cr-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cr-strip__list {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 3px;
+}
+
+.cr-strip__item {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  height: 64px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--color-grey-100);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cr-strip__item .cr-fit__box {
+  box-shadow: none;
+}
+
+.cr-strip__item--on {
+  box-shadow: 0 0 0 2px var(--color-primary-500);
+}
+
+.cr-strip__no {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.72);
+  font-size: 10px;
+  line-height: 16px;
+  color: #fff;
+}
+
+/* ── Export ────────────────────────────────────────────────────────────── */
+.cr-export__list {
+  right: 0;
+  left: auto;
+}
+
+/* The cards drawn at full size for export: on the page, out of sight. */
+.cr-export__stage {
+  position: fixed;
+  top: 0;
+  left: -100000px;
+  pointer-events: none;
+}

@@ -245,7 +245,7 @@ function AutomationBlock({ automation, onOpenAutomations }) {
 }
 
 /* ── The thread ───────────────────────────────────────────────────────── */
-export default function HarnessChat({ thread, setThread, convo, setConvo, registerSend }) {
+export default function HarnessChat({ thread, setThread, convo, setConvo, registerSend, onMake }) {
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -267,9 +267,14 @@ export default function HarnessChat({ thread, setThread, convo, setConvo, regist
     setInput("");
 
     // Chips that navigate instead of speaking.
-    if (/^open (automations|workflows)(-v2)?$/i.test(trimmed)) { navigate("/workflows-v2"); return; }
+    if (/^open workflows$/i.test(trimmed)) { navigate("/workflows"); return; }
+    if (/^open (automations|workflows-v2)$/i.test(trimmed)) { navigate("/workflows-v2"); return; }
     if (/^show me what changed on the campaign$/i.test(trimmed)) { navigate("/campaigns/li-broad-awareness"); return; }
     if (/^show me (one|a) deal'?s journey$/i.test(trimmed)) { navigate("/campaigns/li-abm-tier1"); return; }
+    // A landing page or an ad creative is made with its canvas beside the
+    // chat. Home opens that in place; elsewhere it opens the Library screen.
+    if (/\blanding page\b/i.test(trimmed)) { onMake ? onMake("page", trimmed) : navigate("/library/pages/new", { state: { prompt: trimmed } }); return; }
+    if (/\bad creatives?\b/i.test(trimmed)) { onMake ? onMake("creative", trimmed) : navigate("/library/creatives/new", { state: { prompt: trimmed } }); return; }
 
     setBusy(true);
     setThread((prev) => [...prev, { key: nextKey(), role: "user", text: trimmed }]);

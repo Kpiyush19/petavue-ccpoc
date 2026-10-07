@@ -17,6 +17,7 @@ import {
   AgentsIcon,
   CampaignsIcon,
   AutomationsIcon,
+  LibraryIcon,
 } from './icons/NavIcons';
 
 /*
@@ -48,6 +49,7 @@ const ICON_MAP = {
   'agents': AgentsIcon,
   'campaigns': CampaignsIcon,
   'automations': AutomationsIcon,
+  'library': LibraryIcon,
 };
 
 export function MenuBarItem({

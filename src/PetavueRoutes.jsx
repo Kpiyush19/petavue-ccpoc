@@ -26,6 +26,7 @@ export default function PetavueRoutes() {
       home: "/home",
       "new-chat": "/new",
       skills: "/skills",
+      library: "/library",
       "dashboard-live": "/dashboards",
       dashboard: "/dashboards",
       "dashboards-pv": "/dashboards",

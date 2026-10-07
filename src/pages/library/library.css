@@ -1,0 +1,1534 @@
+/* Library page. The shell matches the skill and campaign pages: a 60px
+   header, a grey canvas and one white card. */
+
+.lib {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 960px;
+  color: var(--text-primary);
+}
+
+.lib__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 60px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--color-grey-100);
+  background: #fff;
+}
+
+.lib__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.lib__canvas {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--color-grey-50);
+}
+
+.lib__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.lib-label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── Tabs — the Data Hub tabs bar (DataHub.css) ────────────────────────── */
+.lib-tabs {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  gap: 24px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-grey-100);
+  background: #fff;
+}
+
+.lib-tabs__tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 8px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.lib-tabs__tab:hover {
+  color: var(--color-primary-500);
+}
+
+.lib-tabs__tab:focus,
+.lib-scope__option:focus {
+  outline: none;
+}
+
+.lib-tabs__tab:focus-visible,
+.lib-scope__option:focus-visible {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: -2px;
+}
+
+.lib-tabs__tab--active {
+  border-bottom-color: var(--color-primary-500);
+  color: var(--color-primary-500);
+  font-weight: 500;
+}
+
+/* My workspace / Library */
+.lib-scope {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--color-grey-50);
+}
+
+.lib-scope__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-grey-500);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.lib-scope__option:hover {
+  color: var(--text-primary);
+}
+
+.lib-scope__option--active {
+  border-color: var(--color-grey-100);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.lib-scope__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.lib-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.lib-grid--templates {
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+
+.lib-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lib-card:hover {
+  border-color: var(--color-grey-200);
+  box-shadow: 0 4px 16px -4px rgba(16, 24, 40, 0.08);
+}
+
+.lib-card__preview {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-bottom: 1px solid var(--color-grey-100);
+  background: var(--color-grey-50);
+  cursor: zoom-in;
+}
+
+/* The section drawn as a sheet on the grey canvas, so a short component
+   (a header, a logo strip) reads as artwork rather than dead space. */
+.lib-card__canvas {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.lib-card__preview:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+
+.lib-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 0;
+}
+
+.lib-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lib-card__category {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.lib-card__name {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+
+.lib-card__text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--color-grey-500);
+}
+
+.lib-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 16px;
+}
+
+.lib-card__main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-card__tools { /* shown on hover, so card bottoms stay quiet */
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: -6px;
+}
+
+.lib-card .lib-card__tools {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.lib-card:hover .lib-card__tools,
+.lib-card:focus-within .lib-card__tools {
+  opacity: 1;
+}
+
+.lib-card__added {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-green);
+}
+
+/* ── Scaled preview ────────────────────────────────────────────────────── */
+.lib-preview {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.lib-preview__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Empty ─────────────────────────────────────────────────────────────── */
+/* Fills the space left in the card and centres in it, so an empty tab
+   reads as a finished screen. */
+.lib-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.lib-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: var(--color-grey-50);
+  color: var(--color-grey-400);
+}
+
+.lib-empty__title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.lib-empty__text {
+  max-width: 380px;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-grey-500);
+}
+
+.lib-empty__action {
+  margin-top: 20px;
+}
+
+/* ── Dialogs ─────────────────────────────────────────────────────── */
+.lib-dialog__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(31, 33, 46, 0.45);
+}
+
+/* The product Dialog lays its body out as a left-aligned column with its own
+   gap, so the frame has to ask for the full width. */
+.lib-dialog .dialog__body {
+  gap: 12px;
+}
+
+.lib-dialog__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.lib-dialog__frame {
+  align-self: stretch;
+  overflow-y: auto;
+  max-height: 56vh;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+}
+
+.lib-dialog__sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: lib-section;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-dialog__sections li {
+  counter-increment: lib-section;
+}
+
+.lib-dialog__sections li::before {
+  content: counter(lib-section) ". ";
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.lib-dialog--form .dialog__body {
+  align-items: stretch;
+  gap: 16px;
+}
+
+.lib-dialog__hint {
+  margin: -8px 0 0;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+/* ── Design system ─────────────────────────────────────────────────────── */
+.lib-design {
+  display: grid;
+  grid-template-columns: minmax(460px, 1.1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+}
+
+/* A setting: what it is on the left, the control on the right. */
+.lib-design__row {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+.lib-design__row:first-child {
+  padding-top: 4px;
+  border-top: none;
+}
+
+.lib-design__rowtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.lib-design__rowdesc {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--color-grey-500);
+}
+
+.lib-design__rowbody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* The row's left column is the label, so the field's own stays empty. */
+.lib-design__rowbody .text-input__label:empty {
+  display: none;
+}
+
+.lib-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lib-swatch {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(16, 24, 40, 0.1);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.lib-swatch--on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--color-primary-500);
+}
+
+.lib-design__tokens {
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-design__group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 0;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+.lib-design__group:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.lib-design__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 16px;
+}
+
+.lib-design__sample {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.lib-design__sample--head {
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.lib-design__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-design__reset {
+  padding-top: 16px;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+/* The page that follows every change, pinned while the controls scroll. */
+.lib-design__live {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: var(--color-grey-50);
+}
+
+.lib-design__live-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lib-design__frame {
+  overflow-y: auto;
+  max-height: calc(100vh - 260px);
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* Logo */
+.lib-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lib-logo__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  min-height: 56px;
+  padding: 8px 16px;
+  border: 1px dashed var(--color-grey-200);
+  border-radius: 8px;
+}
+
+.lib-logo__img {
+  display: block;
+  max-width: 220px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.lib-logo__empty {
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-logo__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-logo__file {
+  display: none;
+}
+
+/* Colours */
+.lib-colors {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-color {
+  display: grid;
+  grid-template-columns: 32px 72px 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-grey-100);
+  font-size: 12px;
+}
+
+.lib-color:first-child {
+  border-top: none;
+}
+
+.lib-color__picker {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.lib-color__picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.lib-color__picker::-webkit-color-swatch {
+  border: none;
+}
+
+.lib-color__picker::-moz-color-swatch {
+  border: none;
+}
+
+.lib-color__name {
+  font-weight: 500;
+}
+
+.lib-color__hex {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 6px;
+  background: #fff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.lib-color__hex:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+}
+
+.lib-color__use {
+  color: var(--color-grey-500);
+}
+
+/* Slider */
+.lib-range {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.lib-range__head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lib-range__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.lib-range__input {
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-primary-500);
+  cursor: pointer;
+}
+
+/* ── Component editor ──────────────────────────────────────────────────── */
+.lib-editor__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.lib-editor__body {
+  display: grid;
+  grid-template-columns: 440px minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+}
+
+.lib-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--color-grey-100);
+  background: #fff;
+}
+
+.lib-chat__thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 16px 16px;
+}
+
+.lib-chat__assistant {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lib-chat__avatar {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+.lib-chat__thinking {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.lib-chat__composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin: 0 16px 20px;
+  padding: 8px 8px 8px 20px;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 20px;
+  background: #fff;
+  transition: border-color 0.15s ease;
+}
+
+.lib-chat__composer:hover {
+  border-color: var(--color-primary-300);
+}
+
+.lib-chat__composer:focus-within {
+  border-color: var(--color-primary-500);
+}
+
+.lib-chat__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--text-primary);
+}
+
+.lib-chat__input::placeholder {
+  color: var(--color-grey-300);
+}
+
+.lib-chat__send {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary-500);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lib-chat__send:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.lib-chat__send:disabled {
+  background: var(--color-grey-100);
+  color: var(--color-grey-300);
+  cursor: not-allowed;
+}
+
+.lib-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 24px 24px;
+  background: var(--color-grey-50);
+}
+
+.lib-stage__bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lib-stage__note {
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-stage__frame {
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 16px -4px rgba(16, 24, 40, 0.08);
+}
+
+.lib-editor__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── What a chat reply did ─────────────────────────────────────────────── */
+.lib-chat__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lib-chat__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.lib-chat__steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-chat__steps svg {
+  flex-shrink: 0;
+  color: var(--color-green);
+}
+
+.lib-chat__used {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 10px;
+  background: var(--color-grey-50);
+}
+
+.lib-chat__used-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.lib-chat__used-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-chat__used-item {
+  padding: 3px 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.lib-chat__used-item--template {
+  border-color: var(--color-primary-100);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: 500;
+}
+
+/* ── The page, in a browser frame ──────────────────────────────────────── */
+.lib-browser {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 16px -4px rgba(16, 24, 40, 0.08);
+}
+
+.lib-browser__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-grey-100);
+  background: var(--color-grey-50);
+}
+
+.lib-browser__address {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--color-grey-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lib-browser__address--live {
+  color: var(--text-primary);
+}
+
+.lib-browser__address--live svg {
+  color: var(--color-green);
+}
+
+.lib-browser__chip,
+.lib-browser__count {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-browser__chip {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--color-green-bg);
+  color: var(--text-primary);
+}
+
+.lib-browser__chip--draft {
+  background: var(--color-grey-100);
+  color: var(--color-grey-500);
+}
+
+.lib-browser__page {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.lib-browser__page[hidden] {
+  display: none;
+}
+
+/* Preview / Code, on the canvas bar. */
+.lib-scope--view {
+  flex-shrink: 0;
+  background: var(--color-grey-100);
+}
+
+/* ── The page as code ──────────────────────────────────────────────────── */
+.lib-code {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.lib-code:focus-visible {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: -2px;
+}
+
+.lib-code__gutter,
+.lib-code__source {
+  margin: 0;
+  padding: 16px 0;
+  font: inherit;
+}
+
+.lib-code__gutter {
+  position: sticky;
+  left: 0;
+  flex-shrink: 0;
+  min-width: 44px;
+  padding-right: 12px;
+  padding-left: 12px;
+  border-right: 1px solid var(--color-grey-100);
+  background: var(--color-grey-50);
+  color: var(--color-grey-300);
+  text-align: right;
+  user-select: none;
+}
+
+.lib-code__source {
+  padding-right: 24px;
+  padding-left: 16px;
+  white-space: pre;
+}
+
+.lib-code__tag {
+  color: var(--color-primary-500);
+}
+
+.lib-code__attr {
+  color: var(--color-grey-500);
+}
+
+.lib-code__value {
+  color: #0b7a3b;
+}
+
+.lib-browser__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 420px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── Publish dialog ────────────────────────────────────────────────────── */
+.lib-publish__url {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -8px 0 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+/* The settings in groups, each under a small heading; the body scrolls. */
+.lib-dialog--publish .dialog__body {
+  max-height: min(64vh, 620px);
+  overflow-y: auto;
+  gap: 0;
+}
+
+.lib-publish__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+.lib-publish__group:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.lib-publish__heading {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.lib-publish__switch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lib-publish__offline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Library dialogs use the medium button, whatever the dialog's width. */
+.lib-dialog .dialog__footer .btn {
+  height: 32px;
+  padding: var(--spacing-6) var(--spacing-12);
+  font-size: 12px;
+  line-height: var(--line-height-body-2);
+}
+
+.lib-publish__note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--color-grey-50);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Picking a part of the page ────────────────────────────────────────── */
+.lib-preview--interactive .lib-preview__stage {
+  pointer-events: auto;
+}
+
+.lp-pick {
+  position: relative;
+  cursor: pointer;
+}
+
+.lp-pick:hover {
+  box-shadow: inset 0 0 0 3px var(--color-primary-300);
+}
+
+.lp-pick--on,
+.lp-pick--on:hover {
+  box-shadow: inset 0 0 0 4px var(--color-primary-500);
+}
+
+.lp-pick [data-piece]:hover {
+  outline: 3px dashed var(--color-primary-300);
+  outline-offset: 6px;
+}
+
+.lp-pick[data-picked="headline"] [data-piece="headline"],
+.lp-pick[data-picked="lead"] [data-piece="lead"],
+.lp-pick[data-picked="button"] [data-piece="button"] {
+  outline: 4px solid var(--color-primary-500);
+  outline-offset: 6px;
+}
+
+/* The picked part, above the text box and on the message it was sent with. */
+.lib-chat__target {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  max-width: calc(100% - 32px);
+  margin: 0 16px 8px;
+  padding: 4px 4px 4px 10px;
+  border: 1px solid var(--color-primary-100);
+  border-radius: 8px;
+  background: var(--color-primary-50);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-primary-700);
+}
+
+.lib-chat__target-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-chat__target-clear {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.lib-chat__target-clear:hover {
+  background: var(--color-primary-100);
+}
+
+.lib-chat__on {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.lib-chat__on + .s-msg-user__text {
+  padding-top: 2px;
+}
+
+.lib-editor__from {
+  font-size: 12px;
+  color: var(--color-grey-500);
+  white-space: nowrap;
+}
+
+/* ── The description the agent followed for each component ─────────────── */
+.lib-chat__why {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-grey-500);
+}
+
+.lib-chat__why li {
+  padding-left: 2px;
+}
+
+.lib-chat__why-name {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.lib-chat__why-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-primary-600);
+}
+
+.lib-chat__why-caret {
+  transition: transform 0.15s ease;
+}
+
+.lib-chat__why-caret--open {
+  transform: rotate(180deg);
+}
+
+/* ── Folders and tags ──────────────────────────────────────────────────── */
+.lib-sort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lib-sort__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Filter menus sit at the right edge, so their lists open leftwards. */
+.lib-sort .composer-menu__button {
+  border-radius: 8px;
+}
+
+.lib-sort .composer-menu__list {
+  right: 0;
+  left: auto;
+  width: 200px;
+}
+
+.lib-card__filing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+}
+
+.lib-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.lib-tag {
+  padding: 1px 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 999px;
+  background: var(--color-grey-50);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.lib-tag:hover {
+  border-color: var(--color-grey-200);
+}
+
+.lib-tag--on {
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.lib-tag--static {
+  cursor: default;
+}
+
+.lib-dialog__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.lib-dialog__hint--flush {
+  margin: 0;
+}
+
+.lib-card__tools:only-child {
+  margin-left: auto;
+}
+
+/* ── Questions and directions, asked in the chat ───────────────────────── */
+.lib-chat__footer {
+  flex-shrink: 0;
+  margin: 0 16px 20px;
+}
+
+.intake {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px -12px rgba(16, 24, 40, 0.16);
+}
+
+.intake__step {
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.intake__question {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.intake__options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.intake__option,
+.intake__other {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.intake__option {
+  cursor: pointer;
+}
+
+.intake__option:hover {
+  border-color: var(--color-grey-200);
+  background: var(--color-grey-50);
+}
+
+.intake__option--on,
+.intake__option--on:hover {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+.intake__other {
+  outline: none;
+}
+
+.intake__other:focus {
+  border-color: var(--color-primary-500);
+}
+
+.intake__other::placeholder {
+  color: var(--color-grey-300);
+}
+
+.intake__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.intake__option .intake__label {
+  font-weight: 400;
+}
+
+.intake__badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-100);
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.intake__key {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--color-grey-500);
+}
+
+.intake__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.intake__spacer {
+  flex: 1;
+}
+
+.intake__directions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.intake__direction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 6px 6px 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.intake__direction:hover {
+  border-color: var(--color-grey-200);
+}
+
+.intake__direction--on,
+.intake__direction--on:hover {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 1px var(--color-primary-500);
+}
+
+.intake__thumb {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--color-grey-50);
+}
+
+.intake__art {
+  display: flex;
+  width: 100%;
+  height: 132px;
+}
+
+.intake__art .cr-fit__box {
+  box-shadow: none;
+}
+
+.intake__note {
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--color-grey-500);
+}

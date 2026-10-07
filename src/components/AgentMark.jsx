@@ -1,5 +1,5 @@
 import {
-  ChartLineUp, Wallet, Broadcast, Target, PaintBrush, FunnelSimple, Circle,
+  ChartLineUp, Wallet, Broadcast, Target, PaintBrush, FunnelSimple, Browser, Circle,
 } from "@phosphor-icons/react";
 import { Tooltip } from "@/ui";
 import { AGENTS } from "../mocks/agentWorkflows";
@@ -16,6 +16,7 @@ export const AGENT_ICONS = {
   Target,
   PaintBrush,
   FunnelSimple,
+  Browser,
 };
 
 export function agentIcon(agentKey) {

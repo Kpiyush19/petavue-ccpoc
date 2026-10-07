@@ -1,5 +1,5 @@
 /* All navigation icons — inline SVGs matching Figma Phosphor icons at 20x20 */
-import { Megaphone, ArrowsClockwise } from '@phosphor-icons/react';
+import { Megaphone, ArrowsClockwise, Shapes } from '@phosphor-icons/react';
 
 const DEFAULT_COLOR = 'var(--color-grey-500, #757A97)';
 const ACTIVE_COLOR = 'var(--color-primary-500, #3661ED)';
@@ -14,6 +14,12 @@ function iconColor(isActive, isAccent) {
 export function CampaignsIcon({ size = 20, isActive = false, isAccent = false }) {
   const active = isActive || isAccent;
   return <Megaphone size={size} color={iconColor(isActive, isAccent)} weight={active ? 'fill' : 'regular'} aria-hidden="true" />;
+}
+
+/* Shapes — Library (landing-page components, templates, design system). */
+export function LibraryIcon({ size = 20, isActive = false, isAccent = false }) {
+  const active = isActive || isAccent;
+  return <Shapes size={size} color={active ? ACTIVE_COLOR : DEFAULT_COLOR} weight={active ? 'fill' : 'regular'} aria-hidden="true" />;
 }
 
 /* ArrowsClockwise — Automations (things asked to repeat). Bold when active:

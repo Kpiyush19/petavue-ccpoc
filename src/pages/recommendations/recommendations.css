@@ -184,3 +184,70 @@
 .rec-card-status--accepted { color: #15803d; }
 .rec-card-status--rejected { color: #be123c; }
 .rec-card-status--on-hold { color: #b45309; }
+
+/* ── A drafted landing page attached to a recommendation ───────────────── */
+.rec-draft {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.rec-draft__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-grey-100);
+}
+
+.rec-draft__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rec-draft__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+.rec-draft__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.rec-draft__preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: var(--color-grey-50);
+  cursor: pointer;
+}
+
+.rec-draft__foot,
+.rec-draft__empty {
+  margin: 0;
+  padding: 12px 18px;
+  border-top: 1px solid var(--color-grey-100);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #757A97;
+}
+
+.rec-draft__empty {
+  border-top: none;
+}
+
+.rec-draft__preview--creative {
+  display: flex;
+  height: 380px;
+  padding: 20px;
+}

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Button, Dialog } from "@/ui";
 import SourceIcon from "../../../components/SourceIcon";
 import useRunReviewStore from "./useRunReviewStore";
+import { runRecId } from "../../../mocks/recommendations";
+import { ScaledPreview, Section } from "../../library/parts";
+import { useRecDraft } from "../../library/recDraft";
+import "../../library/library.css";
 import "../../recommendations/recommendations.css";
 import "./runReview.css";
 
@@ -45,6 +49,33 @@ function Urgency({ label }) {
       <u.icon size={12} />
       {label}
     </span>
+  );
+}
+
+/* The landing page a change arrives with: the draft as it stands, and the way
+   into the page builder to read or change it before the run is published. */
+function DraftedPage({ r }) {
+  const navigate = useNavigate();
+  const page = useRecDraft({ id: runRecId(r.id), shortTitle: r.title, draftPage: r.draftPage, runReview: true });
+  const open = () => page && navigate(`/library/pages/${page.id}`);
+  return (
+    <div className="run-draft">
+      <div className="run-draft__head">
+        <span className="run-draft__titles">
+          <span className="run-draft__label">The drafted page</span>
+          <span className="run-draft__name">{page?.name || r.draftPage.name}</span>
+        </span>
+        <Button variant="secondary" size="md" label="Review the draft" onClick={open} disabled={!page} />
+      </div>
+      {page ? (
+        <button type="button" className="run-draft__preview" onClick={open} aria-label="Open the drafted page">
+          <ScaledPreview height={260}>{page.sections.map((s) => <Section key={s.key} item={s} />)}</ScaledPreview>
+        </button>
+      ) : (
+        <p className="run-draft__foot">The draft could not be made: your workspace has no published components.</p>
+      )}
+      {page && <p className="run-draft__foot">{page.sections.length} sections from your published components, in your design system. Nothing is live until the page is published.</p>}
+    </div>
   );
 }
 
@@ -94,6 +125,8 @@ function ChangeCard({ r, left, locked, flash, onToggle }) {
           )}
 
           <p className="run-change__why">{r.why}</p>
+
+          {r.draftPage && <DraftedPage r={r} />}
 
           {/* Who changed this draft after it was first written, and why. */}
           {r.adjusted && (

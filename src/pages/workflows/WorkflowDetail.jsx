@@ -14,6 +14,8 @@ import { cn } from "../../utils/cn";
 import { AGENTS, platformOf, deckFamilyOf } from "../../mocks/agentWorkflows";
 import { agentIcon } from "../../components/AgentMark";
 import SourceIcon from "../../components/SourceIcon";
+import useDesignStore from "../library/useDesignStore";
+import useLibraryStore, { workspaceTemplates } from "../library/useLibraryStore";
 
 // Step kinds, using the engine's own vocabulary. These sit one level down —
 // the outcome leads, agents attribute, the raw work is available underneath.
@@ -360,7 +362,7 @@ function specialistRoster(families) {
     .join("  ·  ");
 }
 
-function AgentGraph({ families, system, platform, blockState, selected, onSelect }) {
+function AgentGraph({ families, system, platform, approvalNote, blockState, selected, onSelect }) {
   return (
     <div className="w-full rounded-lg border border-[var(--color-grey-100)] bg-[var(--color-grey-50)] px-8 py-6">
       {/* One workflow, run in order. It used to fan out from a Sage node, which
@@ -403,7 +405,7 @@ function AgentGraph({ families, system, platform, blockState, selected, onSelect
           <span className="flex flex-col">
             <span className="text-[12px] font-medium text-[var(--text-primary)]">Your approval</span>
             <span className="text-[12px] text-[#757A97]">
-              Nothing reaches {platform.short} until you approve
+              {approvalNote || `Nothing reaches ${platform.short} until you approve`}
             </span>
           </span>
         </div>
@@ -723,7 +725,7 @@ function WorkflowRail({ wf, platform, families, live, paused, onReview }) {
           <span className="text-[12px] text-[#757A97]">Acts on</span>
           {/* Some platforms are compound ("LinkedIn Ads · Pipeline · Web"), so
               each part gets its own mark rather than one generic fallback. */}
-          {platform.label.split(" \u00b7 ").map((part) => (
+          {(wf.actsOn || platform.label.split(" \u00b7 ")).map((part) => (
             <div key={part} className="flex items-center gap-2" title={part}>
               <SourceIcon name={part} size={16} />
               <span className="flex-1 min-w-0 text-[12px] text-[var(--text-primary)]">{part}</span>
@@ -745,7 +747,32 @@ function WorkflowRail({ wf, platform, families, live, paused, onReview }) {
           }
         />
       </RailGroup>
+
+      {wf.buildsFromLibrary && <LibrarySources only={wf.buildsFromLibrary === "design" ? "design" : null} />}
     </aside>
+  );
+}
+
+/* What a page-building workflow is allowed to build from: the workspace's
+   Library as it stands now, so a change there shows here. */
+function LibrarySources({ only }) {
+  const navigate = useNavigate();
+  const items = useLibraryStore((s) => s.items);
+  const library = useLibraryStore();
+  const brand = useDesignStore((s) => s.design.brand);
+  const published = items.filter((i) => i.status === "published").length;
+  const templates = workspaceTemplates(library).map((t) => t.name);
+  return (
+    <RailGroup label="Builds from your Library">
+      {!only && (
+        <>
+          <RailRow k="Components" v={`${published} published${items.length > published ? ` \u00b7 ${items.length - published} in draft, not used` : ""}`} stack />
+          <RailRow k="Templates" v={templates.length ? templates.join(", ") : "None added"} stack />
+        </>
+      )}
+      <RailRow k="Design system" v={brand || "Not set"} />
+      <PvButton variant="blueGhost" size="sm" label="Open the Library" icon={ArrowSquareOut} iconPosition="suffix" onClick={() => navigate("/library", { state: only ? { tab: "design" } : undefined })} />
+    </RailGroup>
   );
 }
 
@@ -820,7 +847,7 @@ export default function WorkflowDetail() {
       }];
     }
     return [
-      { icon: ShieldCheck, color: "var(--color-green)", label: "Your approval", detail: `Nothing reaches ${platform.short} until you approve` },
+      { icon: ShieldCheck, color: "var(--color-green)", label: "Your approval", detail: wf.approvalNote || `Nothing reaches ${platform.short} until you approve` },
       ...(system ? [{ icon: ArrowSquareOut, color: "var(--text-secondary)", label: system.label, detail: system.detail }] : []),
     ];
   })();
@@ -910,6 +937,7 @@ export default function WorkflowDetail() {
                 </div>
 
                 <AgentGraph
+                  approvalNote={wf.approvalNote}
                   families={families}
                   system={system}
                   blockState={blockStateFor(wf)}

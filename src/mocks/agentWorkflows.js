@@ -78,7 +78,7 @@ export const AGENTS = {
     icon: "PaintBrush", platforms: ["LinkedIn", "Google Search"],
     owns: "Which message keeps working",
     blurb: "This family measures creative performance, message response, fatigue, and test results.",
-    specialists: ["Creative Performance", "Message & Offer", "Creative Fatigue", "Creative Testing"],
+    specialists: ["Creative Performance", "Message & Offer", "Creative Fatigue", "Creative Testing", "Creative Builder"],
     does: [
       "Separates creative decay from audience change",
       "Protects the winning control asset",
@@ -90,11 +90,29 @@ export const AGENTS = {
     icon: "FunnelSimple", platforms: ["Web", "HubSpot", "Pipeline"],
     owns: "What happens after the click",
     blurb: "This family evaluates outcome definitions, HubSpot evidence, and account-level buying signals that can create pipeline.",
-    specialists: ["Buyer Outcome Validator", "Buying Signal Scorer"],
+    specialists: ["Buyer Outcome Validator", "Buying Signal Scorer", "Landing Page Analyst"],
     does: [
       "Reads awareness from session and form behaviour",
       "Isolates where a funnel leak actually starts",
       "Separates lead quality from media quality",
+      "Finds the paid landing page that under-converts, and why",
+    ],
+  },
+  // The landing-page agent (Prasanna, 6 Oct). The other families find the
+  // problem; this one builds the fix. When a workflow reports that a page is
+  // losing paid visits, it assembles the replacement from the workspace
+  // Library and attaches the draft to the recommendation.
+  landing: {
+    key: "landing", label: "Landing page", mark: "LP", color: "#1E3A8A", tint: "#E3E9F8",
+    icon: "Browser", platforms: ["Web", "Petavue pages"],
+    owns: "The page a paid click lands on",
+    blurb: "This agent builds landing pages from your Library. When a workflow finds a page that is losing paid visits, it drafts the replacement from your published components, a workspace template, and your design system.",
+    specialists: ["Landing Page Builder"],
+    does: [
+      "Drafts a replacement page when a workflow flags one",
+      "Uses only the components your workspace has published",
+      "Repeats the ad’s own wording in the headline and button",
+      "Attaches the draft to the recommendation for you to review and publish",
     ],
   },
 };
@@ -152,6 +170,7 @@ export const DECK_FAMILY = {
   delivery: "Campaign",
   budget: "Budget",
   conversion: "Conversion",
+  landing: "Landing page",
 };
 export const deckFamilyOf = (key) => DECK_FAMILY[key] || AGENTS[key]?.label || "";
 
@@ -597,6 +616,159 @@ export const WORKFLOWS = [
       { agent: "budget", type: "write_file", label: "Draft the schedule and geo exclusions", ms: 260 },
       { kind: "approval", label: "Your approval", detail: "Review the schedule and location changes." },
       { kind: "system", label: "Google Ads", detail: "Applies the approved exclusions." },
+    ],
+  },
+  /* The landing-page workflow (Prasanna, 6 Oct). It is the one workflow whose
+     output is not a platform change but a drafted page: the Landing Page
+     Builder assembles it from the workspace Library (published components, a
+     workspace template, the design system), and the recommendation it raises
+     opens that draft in the page builder. Publishing the page is the
+     approval. Its card is rec-lp-01 in mocks/recommendations.js. */
+  {
+    id: "landing-page-conversion",
+    family: "Measurement · Conversion · Landing page",
+    n: 7,
+    nextRun: "Oct 13, 7:00 AM",
+    runs: [
+      { at: "Oct 6, 7:05 AM", status: "success", ms: 9400, produced: "1 recommendation · 1 page drafted", evaluated: "6 paid landing pages · 2,870 visits on the flagged page" },
+      { at: "Sep 29, 7:04 AM", status: "no-action", ms: 6100, produced: "", evaluated: "No page was far enough below the paid average for long enough · still watching the demo page" },
+    ],
+    lastRunOk: true,
+    reads: ["LinkedIn Ads", "HubSpot", "GA4"],
+    // What this workflow changes is a page, not an ad platform, and what it
+    // builds from is the workspace Library (shown live on the workflow page).
+    actsOn: ["Petavue pages"],
+    approvalNote: "Nothing goes live until you publish the page",
+    buildsFromLibrary: true,
+    outcomes: ["Visit-to-form rate by landing page", "Gap to the paid-page average", "Pages drafted and published"],
+    recommendation: {
+      impact: "The demo landing page converts 1.1% of paid visits against 3.4% elsewhere",
+      waiting: 1,
+    },
+    found: [
+      {
+        agent: "measurement", jobTitle: "Join clicks to what happened on the page", specialist: "Delivery Outcome Mapper",
+        text: "Joined 30 days of paid clicks to web sessions and form submissions for every paid landing page.",
+        analyzes: "Joins each paid click to its web session and to the HubSpot form submission that followed, so every landing page has visits, scroll depth and form completions from the same source. Organic and direct visits are left out.",
+        uses: "LinkedIn Ads, GA4, and HubSpot.",
+        produces: "One row per landing page: paid visits, visits that reached the form, and form completions.",
+        config: [["Lookback", "30 days"], ["Traffic", "Paid clicks only"], ["Sessions under 3 seconds", "Removed"]],
+      },
+      {
+        agent: "conversion", jobTitle: "Find the page that under-converts, and why", specialist: "Landing Page Analyst",
+        text: "Flagged the demo page at 1.1% against a 3.4% paid average, and found the ad and the page say different things.",
+        analyzes: "Compares each page’s visit-to-form rate with the average of your other paid pages. For a page that falls well below it, it reads the ad copy against the page’s headline and first screen, and measures how many visitors leave before reaching the form.",
+        uses: "The page table from the previous step, the ad copy, and the live page.",
+        produces: "The page to replace and the reasons: a message mismatch, a form too far down, or both.",
+        config: [["Flag threshold", "Under half the paid-page average"], ["Minimum traffic", "1,000 paid visits"], ["Must hold for", "2 runs in a row"]],
+      },
+      {
+        agent: "landing", jobTitle: "Draft the replacement page", specialist: "Landing Page Builder",
+        text: "Drafted a replacement from the Demo request page template and 7 published components.",
+        analyzes: "Builds a replacement page from your Library. It can only use components your workspace has published, it follows a template your workspace has added, and it takes colours and fonts from your design system. It writes the headline and button from the ad’s own wording and adds no figures or customer claims of its own.",
+        uses: "Your Library: published components, workspace templates, and the design system.",
+        produces: "A draft landing page, attached to the recommendation and open to changes in chat.",
+        config: [["Components", "Published in your Library only"], ["Template", "Demo request page"], ["Design system", "Your workspace’s"], ["Goes live", "Only when you publish"]],
+      },
+    ],
+    specialists: 3,
+    approvalRequired: true,
+    name: "Landing page conversion control",
+    platform: "linkedin",
+    automates: "This workflow finds paid landing pages that convert far below your other pages, works out why, and drafts a replacement page from your Library for you to review and publish.",
+    manualWork: "A marketer currently notices a weak page late, usually from a campaign report. They then brief a designer or a web team, wait for a build, and review it in a separate tool. This workflow checks every paid landing page each week and arrives with the replacement already drafted from components your team has approved.",
+    problem: "Campaigns keep sending paid clicks to a page that does not say what the ad said, so most visitors leave before the form.",
+    customerOutput: "The workflow drafts a replacement landing page and raises it as a recommendation.",
+    deliverable: "A drafted landing page, ready to review and publish",
+    status: "active",
+    cadence: "Weekly · Mondays, 7:00 AM",
+    lastRun: "Oct 6, 7:05 AM",
+    pending: 1,
+    steps: [
+      { agent: "measurement", type: "athena_query", label: "Join paid clicks to sessions and form submissions", ms: 2100,
+        code: "SELECT landing_page, COUNT(*) AS visits,\n       SUM(reached_form) AS reached_form,\n       SUM(form_submitted) AS submissions\nFROM paid_sessions\nWHERE date >= CURRENT_DATE - INTERVAL '30' DAY\n  AND session_seconds >= 3\nGROUP BY 1" },
+      { agent: "conversion", type: "python_code", label: "Compare each page with the paid-page average", ms: 640,
+        code: "pages['rate'] = pages.submissions / pages.visits\navg = pages.rate.mean()\nweak = pages[(pages.rate < avg / 2) & (pages.visits >= 1000)]" },
+      { agent: "conversion", type: "python_code", label: "Read the ad copy against the page", ms: 1180,
+        code: "for page in weak.itertuples():\n    ads = ad_copy[ad_copy.final_url == page.landing_page]\n    mismatch = missing_phrases(ads.headline, page.first_screen)" },
+      { agent: "landing", type: "write_file", label: "Draft the replacement from published components", ms: 3900 },
+      { kind: "approval", label: "Your review", detail: "Review the drafted page, change it in chat, and publish it." },
+      { kind: "system", label: "Petavue pages", detail: "Publishes the page at the address you choose." },
+    ],
+  },
+  /* The creative workflow (Prasanna, 6 Oct: "imagine creative for the entire
+     workflow"). Like the landing-page workflow, its output is a drafted asset:
+     the Creative Builder makes a replacement ad from the workspace's design
+     system, and the recommendation opens that draft in the creative editor.
+     Approving the creative is the approval. Its card is rec-cr-01. */
+  {
+    id: "creative-refresh",
+    family: "Measurement · Creative",
+    n: 8,
+    nextRun: "Oct 13, 7:30 AM",
+    runs: [
+      { at: "Oct 6, 7:34 AM", status: "success", ms: 8800, produced: "1 recommendation · 1 creative drafted", evaluated: "14 live ads across 3 campaigns" },
+      { at: "Sep 29, 7:33 AM", status: "no-action", ms: 5900, produced: "", evaluated: "No ad was past the fatigue thresholds · the retargeting image was close" },
+    ],
+    lastRunOk: true,
+    reads: ["LinkedIn Ads", "HubSpot"],
+    actsOn: ["LinkedIn Ads"],
+    approvalNote: "Nothing is added to the campaign until you approve the creative",
+    buildsFromLibrary: "design",
+    outcomes: ["Click rate against each ad’s first two weeks", "Frequency per person", "Creatives drafted and approved"],
+    recommendation: {
+      impact: "The retargeting ad has run 7 weeks and its click rate has halved",
+      waiting: 1,
+    },
+    found: [
+      {
+        agent: "measurement", jobTitle: "Track each ad against its own start", specialist: "Delivery Outcome Mapper",
+        text: "Compared every live ad’s last 14 days with its first 14 days, by click rate, frequency and cost per click.",
+        analyzes: "For every live ad, compares the last 14 days with the ad’s own first 14 days. An ad is judged against itself, not against other ads, because audiences and offers differ.",
+        uses: "LinkedIn Ads and HubSpot.",
+        produces: "One row per ad: weeks live, click rate then and now, frequency, cost per click.",
+        config: [["Compare", "Last 14 days against the ad’s first 14"], ["Minimum", "5,000 impressions in each window"]],
+      },
+      {
+        agent: "creative", jobTitle: "Find the ads that have worn out", specialist: "Creative Fatigue",
+        text: "Flagged the retargeting image: 7 weeks live, frequency 3.4, click rate down from 0.61% to 0.29%.",
+        analyzes: "Flags an ad when it has run longer than six weeks, people are seeing it more than 2.5 times each, and its click rate has fallen by more than a third. All three must hold, so a new ad with a slow start is not flagged.",
+        uses: "The per-ad table from the previous step.",
+        produces: "The ads to replace, and what in each still works: the offer, the audience, the wording.",
+        config: [["Weeks live", "More than 6"], ["Frequency", "Above 2.5 per person"], ["Click rate", "Down by more than a third"]],
+      },
+      {
+        agent: "creative", jobTitle: "Draft the replacement creative", specialist: "Creative Builder",
+        text: "Drafted a replacement in the same format, keeping the offer and changing the angle.",
+        analyzes: "Makes a replacement in the format the campaign already runs, from your design system: your logo, colours and fonts. It keeps the offer that was working and changes the angle and the layout. It adds no figures or customer claims of its own.",
+        uses: "Your design system, and the wording of the ad being replaced.",
+        produces: "A draft creative, attached to the recommendation and open to changes in chat, layer by layer.",
+        config: [["Design system", "Your workspace’s"], ["Format", "The one the campaign runs"], ["Offer", "Kept from the ad being replaced"], ["Goes live", "Only when you approve"]],
+      },
+    ],
+    specialists: 3,
+    approvalRequired: true,
+    name: "Creative fatigue refresh",
+    platform: "linkedin",
+    automates: "This workflow finds ads that have worn out with their audience and drafts a replacement creative in your design system for you to review and approve.",
+    manualWork: "A marketer currently spots a tired ad when results drop, briefs a designer, waits for the new version, and resizes it by hand. This workflow checks every live ad each week against its own first weeks and arrives with the replacement already drafted.",
+    problem: "Ads keep running after the audience has stopped responding to them, so spend buys fewer clicks each week.",
+    customerOutput: "The workflow drafts a replacement creative and raises it as a recommendation.",
+    deliverable: "A drafted ad creative, ready to review and approve",
+    status: "active",
+    cadence: "Weekly · Mondays, 7:30 AM",
+    lastRun: "Oct 6, 7:34 AM",
+    pending: 1,
+    steps: [
+      { agent: "measurement", type: "athena_query", label: "Compare each ad with its first two weeks", ms: 1900,
+        code: "SELECT ad_id, weeks_live,\n       ctr_first_14d, ctr_last_14d, frequency_last_14d\nFROM linkedin_ad_delivery\nWHERE status = 'ACTIVE'" },
+      { agent: "creative", type: "python_code", label: "Flag ads past the fatigue thresholds", ms: 540,
+        code: "tired = ads[(ads.weeks_live > 6)\n           & (ads.frequency_last_14d > 2.5)\n           & (ads.ctr_last_14d < ads.ctr_first_14d * 0.67)]" },
+      { agent: "creative", type: "python_code", label: "Keep what still works in each", ms: 900,
+        code: "for ad in tired.itertuples():\n    keep = {'offer': ad.cta, 'audience': ad.audience}" },
+      { agent: "creative", type: "write_file", label: "Draft the replacement in your design system", ms: 3600 },
+      { kind: "approval", label: "Your review", detail: "Review the drafted creative, change it in chat, and approve it." },
+      { kind: "system", label: "LinkedIn Ads", detail: "Adds the approved creative to the campaign as a new ad." },
     ],
   },
 ];

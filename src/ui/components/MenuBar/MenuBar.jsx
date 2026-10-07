@@ -34,12 +34,13 @@ import './MenuBar.css';
 const ALL_NAV = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'campaigns', label: 'Campaigns', icon: 'campaigns' },
+  { id: 'workflows', label: 'Workflows', icon: 'workflows' },
   { id: 'automations', label: 'Workflows-v2', icon: 'workflows' },
   { id: 'recommendations', label: 'Recommendations', icon: 'goals' },
-  { id: 'workflows', label: 'Workflows', icon: 'workflows' },
   { id: 'agents', label: 'Agents', icon: 'agents' },
   { id: 'dashboard-live', label: 'Dashboard', icon: 'dashboard' },
   { id: 'skills', label: 'Skills', icon: 'skills' },
+  { id: 'library', label: 'Library', icon: 'library' },
   { id: 'data-hub', label: 'Data Hub', icon: 'data-hub' },
 ];
 
@@ -47,11 +48,12 @@ const ALL_NAV = [
 // resolving either way, since this hides links and never deletes pages. Both
 // navbars read CANONICAL_NAV, so a change here applies to both at once.
 //
-// Chat-first UX decision (Oct 2): Workflows' job moved to the background scan
-// + Automations, Agents belong inside a recommendation's evidence, and Skills
-// run from the chat composer rather than a gallery. All pages stay
-// reachable by URL for demos — delete an id here to bring one back.
-const HIDDEN_NAV = ['workflows', 'agents'];
+// Workflows is the main page (Oct 7): it is where the agent workflows live,
+// including the ones that draft landing pages and creatives. The chat-first
+// Workflows-v2 page (automations) is hidden instead. Agents belong inside a
+// workflow and a recommendation's evidence. All pages stay reachable by URL
+// for demos — delete an id here to bring one back.
+const HIDDEN_NAV = ['automations', 'agents'];
 
 // Create New (+) hidden with them: chat starts from Home's composer in the
 // chat-first UX. Both rails read this — flip to true to bring it back.

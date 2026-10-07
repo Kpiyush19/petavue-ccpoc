@@ -122,6 +122,10 @@ const HarnessHomePage = lazy(() => import("./pages/harness/HomePage"));
 const CampaignsPage = lazy(() => import("./pages/harness/CampaignsPage"));
 const CampaignDetailPage = lazy(() => import("./pages/harness/CampaignDetail"));
 const AutomationsPage = lazy(() => import("./pages/harness/AutomationsPage"));
+const LibraryPage = lazy(() => import("./pages/library/LibraryPage"));
+const ComponentEditorPage = lazy(() => import("./pages/library/ComponentEditorPage"));
+const PageBuilderPage = lazy(() => import("./pages/library/PageBuilderPage"));
+const CreativeEditorPage = lazy(() => import("./pages/library/CreativeEditorPage"));
 const MyProfilePage = lazy(() => import("./pages/MyProfilePage"));
 const ExperimentsPage = lazy(() => import("./pages/ExperimentsPage"));
 
@@ -550,6 +554,38 @@ export const routes = [
               },
               // Old URL for the same page — keep deep links working.
               { path: "automations", element: <Navigate to="/workflows-v2" replace /> },
+              {
+                path: "library",
+                element: (
+                  <SuspenseWrapper variant="list">
+                    <LibraryPage />
+                  </SuspenseWrapper>
+                )
+              },
+              {
+                path: "library/pages/:id",
+                element: (
+                  <SuspenseWrapper variant="list">
+                    <PageBuilderPage />
+                  </SuspenseWrapper>
+                )
+              },
+              {
+                path: "library/creatives/:id",
+                element: (
+                  <SuspenseWrapper variant="list">
+                    <CreativeEditorPage />
+                  </SuspenseWrapper>
+                )
+              },
+              {
+                path: "library/components/:uid",
+                element: (
+                  <SuspenseWrapper variant="list">
+                    <ComponentEditorPage />
+                  </SuspenseWrapper>
+                )
+              },
               {
                 path: "workflows",
                 children: [

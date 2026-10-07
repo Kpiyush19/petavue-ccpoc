@@ -13,6 +13,7 @@ const ROUTE_TITLES = {
   '/agents': 'Agents',
   '/recommendations': 'Recommendations',
   '/skills': 'Skills',
+  '/library': 'Library',
   '/data-hub': 'Data Hub',
   '/data-hub/dictionary': 'Data Dictionary',
   '/data-hub/sync-activity': 'Sync Activity',
@@ -39,6 +40,9 @@ function getTitleFromPath(pathname) {
   }
   if (pathname.startsWith('/workflows/')) {
     return 'Workflow'
+  }
+  if (pathname.startsWith('/library/')) {
+    return 'Library'
   }
   if (pathname.startsWith('/campaigns/')) {
     return 'Campaign'

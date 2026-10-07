@@ -5,7 +5,7 @@ import { MagnifyingGlass, ArrowRight } from "@phosphor-icons/react";
 import { apiGet } from "../../api";
 import { agentIcon } from "../../components/AgentMark";
 
-/* ── The five agents, as the deck presents them.
+/* ── The agents: the deck’s five, and the landing-page agent that builds.
    A workflow deploys an ensemble: the Measurement Agent is always its
    foundation, and the analytics agents do the workflow's specific analysis.
    The families organise the page; the individual agents inside them are the
@@ -17,6 +17,7 @@ const FAMILIES = [
   { key: "delivery" },
   { key: "budget" },
   { key: "conversion" },
+  { key: "landing", note: "Builds the page when a workflow finds one that is losing visits" },
 ];
 
 const searchText = (m) => [m.label, m.owns, m.blurb, ...(m.specialists || [])].join(" ").toLowerCase();
@@ -107,7 +108,7 @@ export default function AgentsPage() {
           <span className="flex flex-col min-w-0">
             <span className="text-[16px] leading-[24px] font-medium">Agents</span>
             <span className="text-[12px] leading-[18px] text-[#757A97]">
-              Petavue groups specialist agents into five families. Each workflow deploys the specialists it needs in
+              Petavue groups specialist agents into six families. Each workflow deploys the specialists it needs in
               sequence. You approve any proposed platform change.
             </span>
           </span>

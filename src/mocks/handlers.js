@@ -609,6 +609,7 @@ const handlers = [
   // without a source.
   { method: "GET", pattern: /\/api\/recommendations$/, handler: () => ({ items: Recs.listRecommendations() }) },
   { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/decide$/, handler: ({ params, body }) => ({ item: Recs.decide(String(params[0]), body?.decision, body?.note, body?.choice, body?.applied) }) },
+  { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/published$/, handler: ({ params, body }) => ({ item: Recs.publishDraft(String(params[0]), body?.url, body?.pixel, body?.line) }) },
   { method: "POST", pattern: /\/api\/recommendations\/([^/]+)\/comment$/, handler: ({ params, body }) => ({ item: Recs.addComment(String(params[0]), body?.text) }) },
   { method: "GET", pattern: /\/api\/goals$/, handler: () => ({ goals: Goals.listGoals() }) },
   { method: "POST", pattern: /\/api\/goals$/, handler: ({ body }) => ({ goal: Goals.createGoal(body || {}) }) },

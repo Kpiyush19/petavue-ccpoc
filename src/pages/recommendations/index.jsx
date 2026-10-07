@@ -23,6 +23,71 @@ import { PUSHER_KEY, PUSHER_CLUSTER } from "../../config";
 // stacked text (other pages import it, this page must too)
 import "../../components/dashboards/analytics-chat-widget/styles.css";
 import "./recommendations.css";
+import { ScaledPreview, Section } from "../library/parts";
+import { useRecCreative, useRecDraft } from "../library/recDraft";
+import { Artboard, Fit } from "../library/CreativeEditorPage";
+import { flat } from "../library/useCreativesStore";
+import { formatById } from "../../mocks/creatives";
+import "../library/creative.css";
+import "../library/library.css";
+
+/* The landing page a recommendation arrives with: the real draft, drawn
+   small, with the way into the page builder. */
+function DraftPage({ item, page, onOpen }) {
+  const live = page?.status === "published";
+  return (
+    <div className="rec-draft">
+      <div className="rec-draft__head">
+        <div className="rec-draft__titles">
+          <span className="rec-draft__label">{live ? "The published page" : "The drafted page"}</span>
+          <span className="rec-draft__name">{page?.name || item.draftPage.name}</span>
+        </div>
+        <Button variant={live ? "secondary" : "primary"} size="md" label={live ? "Open the page" : "Review the draft"} onClick={onOpen} disabled={!page} />
+      </div>
+      {page ? (
+        <button type="button" className="rec-draft__preview" onClick={onOpen} aria-label="Open the page">
+          <ScaledPreview height={360}>{page.sections.map((s) => <Section key={s.key} item={s} />)}</ScaledPreview>
+        </button>
+      ) : (
+        <p className="rec-draft__empty">The draft could not be made: your workspace has no published components. Publish some in the Library.</p>
+      )}
+      {page && (
+        <p className="rec-draft__foot">
+          {page.sections.length} sections from your published components, in your design system.
+          {live ? ` Live at ${item.publishedUrl || ""}.` : " Nothing is live until you publish it."}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* The ad creative a recommendation arrives with, drawn as it stands. */
+function DraftCreative({ creative, onOpen }) {
+  const approved = creative?.status === "approved";
+  const format = formatById(creative?.format);
+  return (
+    <div className="rec-draft">
+      <div className="rec-draft__head">
+        <div className="rec-draft__titles">
+          <span className="rec-draft__label">{approved ? "The approved creative" : "The drafted creative"}</span>
+          <span className="rec-draft__name">{creative?.name || "Creative"}</span>
+        </div>
+        <Button variant={approved ? "secondary" : "primary"} size="md" label={approved ? "Open the creative" : "Review the draft"} onClick={onOpen} disabled={!creative} />
+      </div>
+      {creative && (
+        <button type="button" className="rec-draft__preview rec-draft__preview--creative" onClick={onOpen} aria-label="Open the creative">
+          <Fit w={format.w} h={format.h}><Artboard creative={flat(creative, 0)} /></Fit>
+        </button>
+      )}
+      {creative && (
+        <p className="rec-draft__foot">
+          {format.label}, {format.size}, in your design system.
+          {approved ? " Approved." : " Nothing is added to the campaign until you approve it."}
+        </p>
+      )}
+    </div>
+  );
+}
 
 /* ── Sage, scoped to the recommendation on screen. ── */
 function recFollowups(ctx) {
@@ -273,7 +338,12 @@ function FilterDropdown({ value, options, onChange, ariaLabel, size = "sm", alig
 
   const selected = options.find((o) => o.value === value) || options[0];
   return (
-    <span className="relative inline-flex" ref={ref}>
+    // A long option name is cut short on the button; the list shows it whole.
+    <span
+      className="relative inline-flex [&>.btn]:max-w-[180px] [&>.btn]:!text-[12px] [&>.btn>span:first-child]:min-w-0 [&>.btn>span:first-child]:truncate"
+      title={selected?.label}
+      ref={ref}
+    >
       <Button
         variant="secondary"
         size={size}
@@ -1175,6 +1245,13 @@ function Detail({ item, workflow, onDecide, onComment, commentPosting, onOpenWor
   const onHold = item.decision?.status === "on-hold";
   const applied = item.decision?.status === "accepted";
   const showBar = open || onHold || applied;
+  // A card that arrives with a drafted page is accepted by publishing it.
+  const navigate = useNavigate();
+  const page = useRecDraft(item);
+  const creative = useRecCreative(item);
+  const draft = page || creative;
+  const hasDraft = !!(item.draftPage || item.draftCreative);
+  const openDraft = () => draft && navigate(page ? `/library/pages/${page.id}` : `/library/creatives/${creative.id}`);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col">
@@ -1319,6 +1396,9 @@ function Detail({ item, workflow, onDecide, onComment, commentPosting, onOpenWor
           )}
         </div>
 
+        {item.draftPage && <DraftPage item={item} page={page} onOpen={openDraft} />}
+        {item.draftCreative && <DraftCreative creative={creative} onOpen={openDraft} />}
+
         {/* 5 · Timing · What to expect · Controls and checks · Follow-up check */}
         {(item.timing || item.expect || item.controls || item.followUp || item.needsFromYou) && (() => {
           const cells = [
@@ -1447,9 +1527,18 @@ function Detail({ item, workflow, onDecide, onComment, commentPosting, onOpenWor
           cards; a single Decide now on held cards. */}
       {showBar && (
         <div className="shrink-0 border-t border-[var(--color-grey-100)] bg-white px-[34px] py-3">
-          {open || deciding ? (
+          {hasDraft && applied ? (
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[12px] text-[var(--text-muted)]">
+                Decided. The {item.draftPage ? "page is published" : "creative is approved"} and this recommendation is closed.
+              </span>
+              <Button variant="secondary" size="md" label={item.draftPage ? "Open the page" : "Open the creative"} onClick={openDraft} />
+            </div>
+          ) : open || deciding ? (
             <div className="flex items-center gap-2">
-              <Button variant="primary" size="md" icon={CheckCircle} iconWeight="fill" label="Apply" onClick={() => setModal("accepted")} />
+              {hasDraft
+                ? <Button variant="primary" size="md" label="Review the draft" onClick={openDraft} disabled={!draft} />
+                : <Button variant="primary" size="md" icon={CheckCircle} iconWeight="fill" label="Apply" onClick={() => setModal("accepted")} />}
               {open && <Button variant="secondary" size="md" icon={PauseCircle} label="Hold" onClick={() => setModal("on-hold")} />}
               <Button variant="blueGhost" size="md" icon={Prohibit} label="Reject" onClick={() => setModal("rejected")} />
               {deciding && <Button variant="ghost" size="md" label="Cancel" onClick={() => setDeciding(false)} />}
@@ -1477,7 +1566,7 @@ export default function RecommendationsPage() {
   const [scope, setScope] = useState(params.get("workflow") || "all");
   const [channel, setChannel] = useState("all");
   const [status, setStatus] = useState("all");
-  const [sel, setSel] = useState(null);
+  const [sel, setSel] = useState(params.get("rec"));
 
   const { data, isLoading } = useQuery({
     queryKey: ["workflow-recommendations"],
@@ -1605,7 +1694,7 @@ export default function RecommendationsPage() {
                   <span className="ml-auto shrink-0">
                     <FilterDropdown
                       ariaLabel="Filter by workflow"
-                      size="md"
+                      size="sm"
                       value={scope}
                       onChange={pickScope}
                       options={chips.map((c) => ({

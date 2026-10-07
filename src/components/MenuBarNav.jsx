@@ -23,6 +23,7 @@ export const NAV_ROUTES = {
   "dashboards-pv": "/dashboards",
   "data-hub": "/data-hub",
   skills: "/skills",
+  library: "/library",
   recommendations: "/recommendations",
   workflows: "/workflows",
   agents: "/agents",

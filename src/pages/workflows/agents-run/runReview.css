@@ -610,3 +610,61 @@
 @media (prefers-reduced-motion: reduce) {
   .run-change, .run-record, .run-tick, .wf-filter { transition: none; }
 }
+
+/* ── A drafted landing page on a change card ───────────────────────────── */
+.run-draft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: var(--color-grey-50);
+}
+
+.run-draft__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.run-draft__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.run-draft__label {
+  font-size: 11px;
+  color: var(--color-grey-500);
+}
+
+.run-draft__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.run-draft__preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.run-draft__preview:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: 0 4px 12px -2px rgba(16, 24, 40, 0.1);
+}
+
+.run-draft__foot {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}

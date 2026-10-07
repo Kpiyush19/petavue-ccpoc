@@ -19,7 +19,7 @@ export const RUN_SESSION = {
   created_at: new Date(RUN_T0).toISOString(),
   updated_at: new Date(min(4)).toISOString(),
   last_active_at: new Date(min(4)).toISOString(),
-  turn_count: 5,
+  turn_count: 6,
   total_tokens: 61200,
   context_tokens: 61200,
   agent_running: false,
@@ -91,8 +91,22 @@ export const RUN_HISTORY = [
     "Budgets and bids are covered above, so I looked only at accounts. **12 ICP accounts** are engaging with your ads and have no open opportunity. 11 of them already have an active SQL, so I drafted one change to send those 11 to the SDR queue. The twelfth needs a review first." },
   wrote("agent_memo/icp_handoff.csv"),
 
-  { type: "agent_turn", n: 5, duration: "41s", name: "Final check", kind: "recommendation", model: "Pro", startsWith: "agents 1–4",
-    outcome: "Checked 6 drafts against the guidance and past decisions" },
+  { type: "agent_turn", n: 5, duration: "1m 22s", name: "Landing page", kind: "recommendation", model: "Standard", startsWith: "agents 1–4",
+    outcome: "Drafted 1 landing page from the Library" },
+  ...tools([
+    ["read_file", "agent_memo/channel_roas.csv (tagged)"],
+    ["query_athena", "Paid visits and form starts per landing page, last 30 days"],
+    ["read_library", "Published components, workspace templates, design system"],
+    ["build_page", "Demo request page template · 7 published components"],
+    ["write_file", "agent_memo/landing_page_brief.md"],
+    ["recommendation", "create · Give LI_ABM_Tier1 its own landing page"],
+  ]),
+  { type: "assistant", timestamp: min(3.8), text:
+    "One campaign is losing its clicks after the ad. **LI_ABM_Tier1** sends every click to the company homepage, where 0.9% of visits reach a form. Your LinkedIn campaigns with their own page reach 3.4%.\n\nI drafted a landing page for it from your Library: the **Demo request page** template and 7 published components, in your design system. The headline and button repeat the ad, and the form sits directly under the hero.\n\nThe page is a draft. Open it from its card in **Changes** to read or change it. Nothing is published." },
+  wrote("agent_memo/landing_page_brief.md"),
+
+  { type: "agent_turn", n: 6, duration: "41s", name: "Final check", kind: "recommendation", model: "Pro", startsWith: "agents 1–5",
+    outcome: "Checked 7 drafts against the guidance and past decisions" },
   ...tools([
     ["read_file", "context/skills/google-ads/SKILL.md"],
     ["read_file", "recommendations/draft.json"],
@@ -102,7 +116,7 @@ export const RUN_HISTORY = [
     ["write_file", "agent_memo/check.md"],
   ]),
   { type: "assistant", timestamp: min(4), text:
-    "I checked the six drafts against the ad platform guidance, this month's budget, and what your team decided before.\n\n- **Lowered** the G_Display_Prospecting daily budget from $350 to $120. The Google Ads guidance allows at most doubling a daily budget in one step.\n- **Removed** the pause of Meta_Retarget_WebVisitors. Priya rejected the same advice on Sep 23: “Keep retargeting live through the Q4 launch.”\n- **Proposed removing** “Extend end date of LI_Webinar_October”. The webinar has finished.\n\nThe draft now has **6 changes**: four new, one update to an existing recommendation, and one removal." },
+    "I checked the seven drafts against the ad platform guidance, this month's budget, and what your team decided before.\n\n- **Lowered** the G_Display_Prospecting daily budget from $350 to $120. The Google Ads guidance allows at most doubling a daily budget in one step.\n- **Removed** the pause of Meta_Retarget_WebVisitors. Priya rejected the same advice on Sep 23: “Keep retargeting live through the Q4 launch.”\n- **Proposed removing** “Extend end date of LI_Webinar_October”. The webinar has finished.\n\nThe draft now has **7 changes**: five new, one of them a drafted landing page, one update to an existing recommendation, and one removal." },
   wrote("agent_memo/check.md", "agent_memo/lineage.md"),
 
   { type: "refresh_divider", text: "You opened this run for review · the conversation above carries on", timestamp: 0 },
@@ -120,7 +134,7 @@ export const DASHBOARD_PATH = "output/dashboard/paid_media_roi.html";
 // A flat list, as the workspace tray expects. What the agents wrote comes first.
 export const RUN_FILES = [
   dir("agent_memo", "What the agents wrote", false),
-  ...["analysis.md", "channel_roas.csv", "corrections.md", "reasoning.md", "campaign_moves.csv", "icp_handoff.csv", "check.md", "lineage.md"].map((n) => file(`agent_memo/${n}`)),
+  ...["analysis.md", "channel_roas.csv", "corrections.md", "reasoning.md", "campaign_moves.csv", "icp_handoff.csv", "landing_page_brief.md", "check.md", "lineage.md"].map((n) => file(`agent_memo/${n}`)),
   dir("agent_steps", "What each agent ran"),
   dir("agent_steps/04_closed_won_by_channel"),
   file("agent_steps/04_closed_won_by_channel/code.py"),
@@ -143,6 +157,7 @@ const PATH_KEY = {
   "agent_memo/reasoning.md": "analysis",
   "agent_memo/campaign_moves.csv": "capped",
   "agent_memo/icp_handoff.csv": "sizes",
+  "agent_memo/landing_page_brief.md": "pagebrief",
   "agent_memo/check.md": "check",
   "agent_memo/lineage.md": "lineage",
   "agent_memo/nonbrand_search_terms.csv": "leads",

@@ -259,7 +259,7 @@ export default function AgentDetail() {
                         const t = findingTone(f);
                         return (
                           <button
-                            key={f.recId}
+                            key={f.recId || f.id}
                             type="button"
                             onClick={() => navigate(`/recommendations?workflow=${f.workflowId}`)}
                             className="group flex flex-col gap-1.5 h-full text-left px-4 py-3 bg-white border border-grey-100 rounded-lg cursor-pointer hover:bg-primary-50 hover:shadow-[0_4px_12px_-2px_rgba(16,24,40,0.10)] transition-all"

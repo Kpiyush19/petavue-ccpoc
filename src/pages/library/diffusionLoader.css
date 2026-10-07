@@ -1,0 +1,50 @@
+/* The Diffusion variant, as on generativeloaders.com. The frame (.iml-loader,
+   .iml-visual) comes from the generative-loaders stylesheet. */
+
+.diffusion-loader.iml-loader {
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+.iml-diffusion {
+  inset: 7% !important;
+}
+
+.iml-diffusion i {
+  left: var(--iml-x);
+  top: var(--iml-y);
+  width: var(--iml-dot-size);
+  aspect-ratio: 1;
+  border-radius: 8%;
+  background: currentColor;
+  animation: iml-diffusion var(--iml-duration) ease-in-out infinite;
+  animation-delay: var(--iml-delay);
+}
+
+@keyframes iml-diffusion {
+  0%,
+  100% {
+    opacity: 0.06;
+    filter: blur(2px);
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  38% {
+    opacity: 0.7;
+    filter: blur(0);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  68% {
+    opacity: 0.2;
+    filter: blur(0.5px);
+    transform: translate(-50%, -50%) scale(0.64);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iml-diffusion i {
+    animation: none;
+    opacity: 0.4;
+    transform: translate(-50%, -50%);
+  }
+}

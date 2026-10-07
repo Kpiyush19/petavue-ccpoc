@@ -129,6 +129,136 @@ const LOOKALIKE_ACCOUNTS = [
 ];
 
 const ITEMS = [
+  /* ── The creative card (Prasanna, 6 Oct). The creative workflow arrives
+     with a replacement ad already drafted in the workspace's design system.
+     It opens in the creative editor; approving it there accepts the card. ── */
+  {
+    id: "rec-cr-01",
+    workflowId: "creative-refresh",
+    platform: "linkedin",
+    agent: "creative",
+    type: "change",
+    urgency: "this-week",
+    lifecycle: "needs-decision",
+    scope: "1 ad, 1 campaign",
+    run: { n: "02", at: "Oct 6, 7:34 AM" },
+    shortTitle: "Retargeting creative",
+    title: "Replace the worn-out retargeting ad: a new creative is ready",
+    basis:
+      "The image ad in the LinkedIn retargeting campaign has run for 7 weeks. People now see it 3.4 times each, and its click rate has fallen from 0.61% to 0.29%. The audience has stopped responding to it, not to the offer.",
+    changeTitle: "Current ad against the draft",
+    changeCols: ["What", "Current ad", "Draft"],
+    changeRows: [
+      ["Angle", "Product claim: \u201cThe revenue platform for modern teams\u201d", "A question to someone still deciding"],
+      ["Headline", "The revenue platform for modern teams", "See Meridian on your own pipeline"],
+      ["Offer and button", "Book a demo", "Book a demo (kept: it is not what wore out)"],
+      ["Format", "LinkedIn square, 1200 \u00d7 1200", "The same"],
+    ],
+    timing:
+      "Swap it this week. An ad that has worn out keeps costing more per click each week it stays live.",
+    expect:
+      "A new image for an audience that has seen the old one too often. Petavue cannot promise a click rate. It will report the new ad against the old ad\u2019s first two weeks, which is the fair comparison.",
+    controls:
+      "Nothing is added to the campaign until you approve the creative. The draft uses your design system and adds no figures or customer claims. The old ad is paused, not deleted, so it can be switched back on.",
+    followUp:
+      "Oct 20. That run reports the new ad\u2019s click rate, frequency and cost per click against the old ad\u2019s first 14 days.",
+    needsFromYou: "Review the draft, change anything you want in chat or on the artboard, and approve it.",
+    noticed:
+      "The retargeting campaign\u2019s cost per click has risen three weeks in a row while its audience and budget stayed the same.",
+    analyzed:
+      "The workflow compared the last 14 days of every live ad with that ad\u2019s own first 14 days: click rate, frequency per person and cost per click.",
+    found:
+      "One ad is past all three thresholds: 7 weeks live (limit 6), frequency 3.4 (limit 2.5), click rate down 52% (limit a third). The campaign\u2019s other two ads are within them.",
+    whyNow:
+      "The audience is small and fixed, so the same people keep seeing the same image. Waiting does not recover it.",
+    excluded:
+      "Ads with fewer than 5,000 impressions in either window were left out, as were ads live for under two weeks.",
+    confidence:
+      "Confidence is high that this ad has worn out: three independent signals agree. Confidence is moderate that the draft does better, because it has not run yet. The follow-up run measures it.",
+    trace: [
+      { specialist: "Delivery Outcome Mapper", agent: "measurement", text: "compared each live ad\u2019s last 14 days with its own first 14 days." },
+      { specialist: "Creative Fatigue", agent: "creative", text: "flagged the retargeting image as past all three thresholds, and noted that the offer was still working." },
+      { specialist: "Creative Builder", agent: "creative", text: "drafted a replacement in the same format from your design system, keeping the offer and changing the angle." },
+    ],
+    draftCreative: {
+      prompt: "A LinkedIn square ad creative to refresh the retargeting campaign",
+      name: "Retargeting ad refresh",
+      note:
+        "I drafted this creative for the recommendation **Replace the worn-out retargeting ad**. It keeps the offer and the button, because those were still working, and changes the angle: a question to someone still deciding, where the old ad made a product claim.\n\nIt is in your design system and I added no figures or customer claims. Click any layer to change it, or approve it when it is ready. Approving accepts the recommendation.",
+    },
+    decision: null,
+    comments: [],
+  },
+  /* ── The landing-page card (Prasanna, 6 Oct). The landing-page agent does
+     not only say the page is the problem: it arrives with a replacement
+     already drafted from the workspace's published components. There is
+     nothing to apply on an ad platform, so the card has no Apply step:
+     the draft opens in the page builder and publishing it accepts the card. ── */
+  {
+    id: "rec-lp-01",
+    workflowId: "landing-page-conversion",
+    platform: "linkedin",
+    agent: "landing",
+    type: "change",
+    urgency: "this-week",
+    lifecycle: "needs-decision",
+    scope: "1 landing page, 3 campaigns",
+    run: { n: "02", at: "Oct 6, 7:05 AM" },
+    shortTitle: "Demo landing page",
+    title: "Replace the demo landing page: a new draft is ready",
+    basis:
+      "The three LinkedIn demo campaigns send every click to one page, and that page converts 1.1% of visits against 3.4% for your other paid pages. The ads promise a forecast review; the page opens with a general product pitch and keeps the form at the bottom.",
+    changeTitle: "Current page against the draft",
+    changeCols: ["What", "Current page", "Draft"],
+    changeRows: [
+      ["Headline", "The revenue platform for modern teams", "See where this quarter’s number is at risk"],
+      ["Demo form", "Bottom of the page, after 6 sections", "Directly under the hero"],
+      ["Sections", "11", "7"],
+      ["Button", "Learn more", "Book a forecast review"],
+      ["Tracking", "No Petavue pixel", "Petavue pixel on, if you keep it ticked when publishing"],
+    ],
+    timing:
+      "Publish this week. The three campaigns spend about $4,200 a week, and Q4 demo budget rises on Oct 20.",
+    expect:
+      "The headline and button will match what the ads say, and the form will be in view without scrolling. Petavue cannot promise a conversion rate. It will report the new page’s rate against the 1.1% baseline.",
+    controls:
+      "Nothing goes live until you publish. The draft uses only components your workspace has published, and follows your design system. The old page is not touched, so the campaigns can be pointed back at it.",
+    followUp:
+      "Oct 20. That run reports visits, form starts and form completions on the new page, from the tracking pixel, against the old page’s last 30 days.",
+    needsFromYou: "Review the draft, change anything you want in chat, and publish it. Then point the three campaigns at the new address.",
+    noticed:
+      "Clicks from the three demo campaigns are steady and cost per click is in line with your other LinkedIn campaigns, but very few of those clicks become demo requests.",
+    analyzed:
+      "The workflow compared 30 days of LinkedIn Ads clicks with web sessions and HubSpot form submissions for every paid landing page, and read the ad copy against each page’s headline and first screen.",
+    found:
+      "2,870 visits produced 32 demo requests on this page, 1.1%. Your other paid pages average 3.4%. 71% of visitors left without scrolling to the form. The ads say “forecast review”; those words do not appear on the page.",
+    whyNow:
+      "Every week on the current page costs about $4,200 in clicks that mostly leave. The draft is ready, so the only step left is your review.",
+    excluded:
+      "Organic and direct visits were left out, so the comparison is paid clicks only. Sessions under 3 seconds were removed as accidental clicks.",
+    confidence:
+      "Confidence is high that the page under-converts: the gap holds across all three campaigns. Confidence is moderate that the draft fixes it, because it has no traffic yet. The follow-up run measures it.",
+    trace: [
+      { specialist: "Delivery Outcome Mapper", agent: "measurement", text: "joined 30 days of LinkedIn Ads clicks to web sessions and HubSpot demo requests for each paid landing page." },
+      { specialist: "Landing Page Analyst", agent: "conversion", text: "compared the ad copy with the page’s first screen and measured how far visitors scrolled before leaving." },
+      { specialist: "Landing Page Builder", agent: "landing", text: "drafted a replacement from your Demo request page template and 7 published components, using the ads’ own wording." },
+    ],
+    draftPage: {
+      name: "Forecast review demo page",
+      templateId: "tpl-demo",
+      prompt: "Build a landing page for the LinkedIn demo campaigns",
+      hero: {
+        headline: "See where this quarter’s number is at risk",
+        lead: "Book a 30-minute forecast review. We connect a read-only copy of your CRM and show you the deals that decide the quarter.",
+        button: "Book a forecast review",
+      },
+      form: { headline: "Book your forecast review", button: "Book a forecast review" },
+      note:
+        "I drafted this page for the recommendation **Replace the demo landing page**. It uses your **Demo request page** template with two changes: the headline and button repeat what the LinkedIn ads say, and the form sits directly under the hero.\n\nI added no figures or customer claims that are not already in your components. Tell me what to change, or publish it when it is ready. Publishing accepts the recommendation.",
+    },
+    decision: null,
+    comments: [],
+  },
   /* ── The ABM and LinkedIn cards (Camunda demo, 30 Sep).
      Source: docs/Camunda Recommendations Demo.md. These four lead the queue.
      Recommendations 1 and 2 extend the earlier handoff and cap-raise cards;
@@ -911,11 +1041,14 @@ export function decide(id, status, note, choice, applied) {
 const RUN_URGENCY = { "Act now": "act-now", "This week": "this-week", "This month": "monitor" };
 // The channel a change is filed under. A sales hand-off sits with LinkedIn,
 // the channel those accounts engaged on.
-const RUN_PLATFORM = { "Google Ads": "google-search", "LinkedIn Ads": "linkedin", "Meta Ads": "meta", Salesforce: "linkedin" };
+const RUN_PLATFORM = { "Google Ads": "google-search", "LinkedIn Ads": "linkedin", "Meta Ads": "meta", Salesforce: "linkedin", "Petavue pages": "linkedin" };
+// The card a run's change becomes. A drafted page keeps this id from the
+// moment it is drafted, so the page reviewed in the run is the page on the card.
+export const runRecId = (id) => `rec-roi-${id.toLowerCase()}`;
 export function addRunChanges(records) {
   for (const r of [...records].reverse()) {
     if (r.pending === "removed") continue;
-    const id = `rec-roi-${r.id.toLowerCase()}`;
+    const id = runRecId(r.id);
     if (ITEMS.some((x) => x.id === id)) continue;
     const advice = !r.d;
     ITEMS.unshift({
@@ -923,7 +1056,7 @@ export function addRunChanges(records) {
       workflowId: "paid-media-roi",
       // A cross-channel workflow: each change names the system it lands in.
       platform: RUN_PLATFORM[r.sys] || null,
-      agent: null,
+      agent: r.draftPage ? "landing" : null,
       type: "change",
       urgency: RUN_URGENCY[r.urg] || "monitor",
       lifecycle: "needs-decision",
@@ -934,11 +1067,36 @@ export function addRunChanges(records) {
       changeTitle: r.title,
       changeCols: advice ? ["Advice", "Nothing to apply"] : ["Field", "Current", "After"],
       changeRows: advice ? [[r.title, "For the team to act on."]] : [[r.d.label, r.d.from, r.d.to]],
-      appliedPrefix: advice ? null : `${r.sys === "Salesforce" ? "Pushed to" : "Applied to"} ${r.sys}`,
+      appliedPrefix: advice || r.draftPage ? null : `${r.sys === "Salesforce" ? "Pushed to" : "Applied to"} ${r.sys}`,
+      // A drafted page travels with its card: publishing it is the acceptance.
+      ...(r.draftPage ? { draftPage: r.draftPage, needsFromYou: "Review the draft, change anything you want in chat, and publish it." } : {}),
       decision: null,
       comments: [],
     });
   }
+}
+
+/* A drafted page was published: that is the acceptance. There is nothing to
+   apply on a platform, so the card records where the page went live. */
+export function publishDraft(id, url, pixel, line) {
+  const it = ITEMS.find((r) => r.id === id);
+  if (!it) return null;
+  // A drafted creative was approved: `line` says what happened to it.
+  if (line) {
+    if (it.decision?.status !== "accepted") {
+      it.decision = { status: "accepted", by: currentUser.name, at: stamp(), note: null };
+      it.lifecycle = "accepted";
+    }
+    it.applied = line;
+    return it;
+  }
+  if (it.decision?.status !== "accepted") {
+    it.decision = { status: "accepted", by: currentUser.name, at: stamp(), note: null };
+    it.lifecycle = "accepted";
+  }
+  it.publishedUrl = url;
+  it.applied = `Published at ${url}${pixel ? ", with the Petavue tracking pixel" : ", without the tracking pixel"}. ${it.draftPage?.repoint || "Point the three campaigns at this address."}`;
+  return it;
 }
 
 /* A general comment changes no state. */
