@@ -42,9 +42,9 @@ const fadeUp = (delay = 0) => ({
 
 /* ── Tiny in-card drawings (pure SVG, no chart lib) ─────────────────── */
 const URGENCY = {
-  "act-now": { label: "Act now", icon: Lightning, tone: "text-[#e11d48] bg-[#fff1f2]" },
-  "this-week": { label: "This week", icon: Warning, tone: "text-[#b45309] bg-[#fffbeb]" },
-  monitor: { label: "This month", icon: Eye, tone: "text-[#1d4ed8] bg-[#eff6ff]" },
+  "act-now": { label: "Act now", icon: Lightning, tone: "text-[#e11d48]" },
+  "this-week": { label: "This week", icon: Warning, tone: "text-[#b45309]" },
+  monitor: { label: "This month", icon: Eye, tone: "text-[#1d4ed8]" },
 };
 
 // What a recommendation is about, said with the same icons the prompts use.
@@ -72,19 +72,21 @@ function RecCard({ rec, onOpen }) {
     <button
       type="button"
       onClick={onOpen}
-      className="group flex flex-col gap-3 p-5 rounded-2xl border border-solid border-[var(--color-grey-100)] bg-white cursor-pointer text-left transition-[box-shadow,border-color] hover:border-[var(--color-grey-200)] hover:shadow-[0_10px_28px_-16px_rgba(16,24,40,0.28)]"
+      className="group flex flex-col gap-3 p-4 rounded-lg border border-solid border-[var(--color-grey-100)] bg-white cursor-pointer text-left transition-[box-shadow,border-color] hover:border-[var(--color-grey-200)] hover:shadow-[0_10px_28px_-16px_rgba(16,24,40,0.28)]"
     >
       <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)]">
         <kind.icon size={15} className="text-primary-500" /> {kind.label}
       </span>
 
       <span className="flex flex-col gap-1.5">
-        <span className="text-[14px] leading-[20px] font-medium text-[var(--text-primary)] line-clamp-2">{rec.title}</span>
+        <Tooltip title={rec.title} displayTooltipOnOverflow placement="top" describeChild>
+          <span className="block truncate text-[14px] leading-[20px] font-medium text-[var(--text-primary)]">{rec.title}</span>
+        </Tooltip>
         <span className="text-[12px] leading-[18px] text-[var(--text-secondary)] line-clamp-2">{rec.basis}</span>
       </span>
 
       <span className="mt-auto flex items-center justify-between gap-2 pt-3 border-solid border-x-0 border-b-0 border-t border-t-[var(--color-grey-100)]">
-        <span className={cn("inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[12px] font-medium", u.tone)}>
+        <span className={cn("inline-flex items-center gap-1 text-[12px] font-medium", u.tone)}>
           <u.icon size={12} /> {u.label}
         </span>
         {channel && (
@@ -122,7 +124,7 @@ function RecRow({ rec, onOpen }) {
         {channel && <><SourceIcon name={channel} size={13} /> <span className="truncate">{channel}</span></>}
       </span>
       <span>
-        <span className={cn("inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[12px] font-medium", u.tone)}>
+        <span className={cn("inline-flex items-center gap-1 text-[12px] font-medium", u.tone)}>
           <u.icon size={12} /> {u.label}
         </span>
       </span>
@@ -156,14 +158,12 @@ const STYLE_OPTIONS = STYLES.map(({ id, label, description }) => ({ id, label, d
 
 // Prompts under the box, in place of /new's ready-made skills: a spread of
 // what can be built, two of each. `text` is what is sent.
-const PROMPTS = [
+const PROMPTS = [ // six, so they sit in two rows
   { kind: "dashboard", label: "Paid channel ROI dashboard", text: "Which paid channels drive revenue?" },
   { kind: "landing", label: "Demo page for the Q4 campaign", text: "Build a landing page for our Q4 demo campaign" },
   { kind: "creative", label: "LinkedIn carousel for the demo offer", text: "Make a LinkedIn carousel ad creative for our Q4 demo campaign" },
   { kind: "report", label: "Monthly paid media report", text: "Write the monthly paid media report" },
-  { kind: "landing", label: "Webinar sign-up page", text: "Build a page that collects sign-ups for the autumn webinar" },
   { kind: "creative", label: "Retargeting ad for site visitors", text: "Make an ad creative for retargeting site visitors" },
-  { kind: "dashboard", label: "Pipeline coverage dashboard", text: "Build a pipeline coverage dashboard" },
   { kind: "report", label: "Spend reallocation plan", text: "Write a spend reallocation plan" },
 ];
 
@@ -180,6 +180,7 @@ export default function HarnessHomePage() {
   // The model the chat runs on, and files attached to the request. Both are
   // the Sage home's controls; in the prototype they are carried, not used.
   const [sageMode, setSageMode] = useState(readSageMode);
+  const [atEnd, setAtEnd] = useState(false);
   const [files, setFiles] = useState([]);
   const [recView, setRecView] = useState(storedView);
   const pickView = (v) => { setRecView(v); try { localStorage.setItem(VIEW_KEY, v); } catch { /* the choice still holds for this visit */ } };
@@ -342,7 +343,10 @@ export default function HarnessHomePage() {
 
   return (
     <div className="flex h-full w-full overflow-x-auto">
-      <div className="flex flex-col h-full w-full min-w-[960px] overflow-y-auto bg-grey-50">
+      <div
+        className="flex flex-col h-full w-full min-w-[960px] overflow-y-auto bg-grey-50"
+        onScroll={(e) => { const el = e.currentTarget; setAtEnd(el.scrollHeight - el.scrollTop - el.clientHeight < 24); }}
+      >
         <div className="flex flex-col shrink-0 w-full max-w-[1040px] min-h-full mx-auto px-8 pb-10">
 
           {/* The Sage home's layout (/new): greeting, one line on what the
@@ -350,7 +354,7 @@ export default function HarnessHomePage() {
           {/* Centred in the page. It leaves room at the bottom of the window
               for the recommendations' heading and about half of each card,
               so there is plainly more to scroll to. */}
-          <div className="flex shrink-0 flex-col items-center justify-center min-h-[calc(100vh-156px)] py-12">
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-[calc(100vh-156px)] pt-28 pb-8">
 
           <motion.div {...fadeUp(0)} className="flex flex-col items-center gap-2 mb-7 text-center">
             <div className="flex items-center justify-center gap-3">
@@ -367,7 +371,7 @@ export default function HarnessHomePage() {
           <motion.div {...fadeUp(0.05)} className="w-full max-w-[720px]">
             {/* One grey frame: the white box holds the request, the tray under it holds how it's built. */}
             <div
-              className="flex flex-col p-1 rounded-[22px] bg-[var(--color-grey-100)]"
+              className="flex flex-col p-1 rounded-[22px] bg-[var(--color-grey-100)] border border-solid border-[var(--color-grey-200)]"
               style={{ boxShadow: "0px 18px 40px -20px rgba(54,97,237,0.18)" }}
             >
             <div className="flex flex-col bg-white border border-solid border-[#d4d9ea] rounded-[18px] transition-colors hover:border-primary-300 focus-within:!border-primary-500">
@@ -517,7 +521,7 @@ export default function HarnessHomePage() {
                   {top.map((r) => <RecCard key={r.id} rec={r} onOpen={() => navigate(`/recommendations?rec=${r.id}`)} />)}
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-solid border-[var(--color-grey-100)] bg-white">
+                <div className="overflow-hidden rounded-lg border border-solid border-[var(--color-grey-100)] bg-white">
                   <div
                     className="grid items-center gap-4 h-9 px-4 bg-[var(--color-grey-50)] text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]"
                     style={{ gridTemplateColumns: LIST_COLS }}
@@ -531,6 +535,14 @@ export default function HarnessHomePage() {
           )}
 
         </div>
+        {/* Content fades out at the bottom edge, until the page is scrolled to its end. */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            "sticky bottom-0 z-10 shrink-0 h-24 -mt-24 pointer-events-none bg-gradient-to-t from-grey-50 to-transparent transition-opacity duration-200",
+            atEnd && "opacity-0",
+          )}
+        />
       </div>
     </div>
   );
