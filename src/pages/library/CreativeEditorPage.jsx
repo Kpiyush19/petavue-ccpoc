@@ -37,6 +37,7 @@ import { ProductShot } from "./sections";
 import useCreativesStore, { flat } from "./useCreativesStore";
 import useDesignStore, { useDesignVars } from "./useDesignStore";
 import "./library.css";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuDescription, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
 import "./creative.css";
 
 const FORMAT_OPTIONS = FORMATS.map((f) => ({ id: f.id, label: f.label, description: f.size }));
@@ -207,23 +208,12 @@ async function embeddedFonts() {
    PNGs there. A video has no rendered file here, so its scenes export as
    storyboard frames. */
 function ExportMenu({ creative, disabled }) {
-  const [open, setOpen] = useState(false);
   const [job, setJob] = useState(null);
-  const ref = useRef(null);
   const stage = useRef(null);
   const format = formatById(creative?.format);
   const many = (creative?.slides.length || 0) > 1;
   const unit = kindById(creative?.kind).unit;
   const base = (creative?.name || "creative").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "creative";
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const onDown = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("mousedown", onDown);
-    window.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("mousedown", onDown); window.removeEventListener("keydown", onKey); };
-  }, [open]);
 
   // Once the off-screen cards are on the page, turn them into files.
   useEffect(() => {
@@ -276,33 +266,32 @@ function ExportMenu({ creative, disabled }) {
   ].filter(Boolean);
 
   return (
-    <div className="composer-menu cr-export" ref={ref}>
-      <Button
-        variant="secondary"
-        size="md"
-        label={job ? "Exporting…" : "Export"}
-        icon={job ? DownloadSimple : CaretDown}
-        iconPosition={job ? "prefix" : "suffix"}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        disabled={disabled || !!job}
-        onClick={() => setOpen((v) => !v)}
-      />
-      {open && (
-        <ul className="composer-menu__list cr-export__list" role="menu" aria-label="Export">
+    <div className="cr-export">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          disabled={disabled || !!job}
+          render={
+            <Button
+              variant="secondary"
+              size="md"
+              label={job ? "Exporting…" : "Export"}
+              icon={job ? DownloadSimple : CaretDown}
+              iconPosition={job ? "prefix" : "suffix"}
+            />
+          }
+        />
+        <DropdownMenuContent align="end" sideOffset={6} aria-label="Export">
           {options.map((o) => (
-            <li key={o.id}>
-              <button type="button" role="menuitem" className="composer-menu__option" onClick={() => { setOpen(false); o.run(); }}>
-                <o.icon size={13} className="composer-menu__icon" />
-                <span className="composer-menu__text">
-                  <span className="text-body-2-medium composer-menu__name">{o.label}</span>
-                  <span className="text-metadata-regular composer-menu__description">{o.description}</span>
-                </span>
-              </button>
-            </li>
+            <DropdownMenuItem key={o.id} className="items-start" onClick={o.run}>
+              <o.icon size={16} className="mt-0.5" />
+              <span className="composer-menu__text">
+                <span>{o.label}</span>
+                <DropdownMenuDescription>{o.description}</DropdownMenuDescription>
+              </span>
+            </DropdownMenuItem>
           ))}
-        </ul>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {job && createPortal(
         <div className="cr-export__stage" ref={stage} aria-hidden="true">
           {Array.from({ length: job.count }, (_, k) => <Artboard key={k} creative={flat(creative, job.from + k)} />)}

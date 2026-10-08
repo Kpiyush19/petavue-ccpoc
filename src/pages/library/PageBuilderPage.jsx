@@ -19,17 +19,18 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CaretLeft, Code, Copy, Eye, Globe, LockSimple } from "@phosphor-icons/react";
+import { CaretLeft, Code, Eye, GearSix, Globe, LockSimple } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { Button, Dialog, Dropdown, RadioGroup, Tag, TextInput, Toggle, Tooltip } from "@/ui";
+import { Button, Tag, Tooltip } from "@/ui";
 import {
-  BUILD_GREETING, cleanSlug, pageDirections, pageQuestions, pageReply, slugFor, targetLabel, targetReply,
+  BUILD_GREETING, pageDirections, pageQuestions, pageReply, slugFor, targetLabel, targetReply,
 } from "../../mocks/pageBuilder";
 import { designVars } from "../../mocks/library";
 import { apiPost } from "../../api";
 import ChatPane from "./ChatPane";
 import { AskCard, DirectionCard, summarise } from "./Intake";
-import PageCode, { documentFor } from "./PageCode";
+import PageCode, { projectFor } from "./PageCode";
+import { PETAVUE_DOMAIN, PageSettingsDialog, PublishDialog, metaOf } from "./PageSettings";
 import { DetailsDialog, ScaledPreview, Section } from "./parts";
 import useDesignStore from "./useDesignStore";
 import useLibraryStore, { foldersOf, workspaceTemplates } from "./useLibraryStore";
@@ -38,136 +39,11 @@ import useRunReviewStore from "../workflows/agents-run/useRunReviewStore";
 import { REVIEW_PATH } from "../workflows/agents-run/data";
 import "./library.css";
 
-const PETAVUE_DOMAIN = "pages.petavue.com";
 const LIVE_NOTE = " The live page is unchanged until you publish again.";
 
 function PageStatus({ page }) {
   if (page.status !== "published") return <Tag color="column">Draft</Tag>;
   return page.unpublished ? <Tag color="warning-yellow">Unpublished changes</Tag> : <Tag color="success-green">Published</Tag>;
-}
-
-const FORM_TARGETS = [
-  { value: "hubspot", label: "HubSpot · create or update the contact" },
-  { value: "email", label: "Email the workspace owner" },
-  { value: "both", label: "HubSpot and email" },
-];
-
-function Group({ title, children }) {
-  return (
-    <section className="lib-publish__group">
-      <h3 className="lib-publish__heading">{title}</h3>
-      {children}
-    </section>
-  );
-}
-
-/* Where the page goes live and how it behaves there. Confirming this is the
-   approval. A live page can be taken offline from here. */
-function PublishDialog({ page, ownDomain, onPublish, onUnpublish, onClose }) {
-  const was = page.settings || {};
-  const live = page.status === "published";
-  const [domain, setDomain] = useState(was.domain || PETAVUE_DOMAIN);
-  const [slug, setSlug] = useState(was.slug || slugFor(page.name));
-  const [pixel, setPixel] = useState(was.pixel ?? true);
-  const [title, setTitle] = useState(was.title ?? page.name);
-  const [description, setDescription] = useState(was.description ?? "");
-  const [noindex, setNoindex] = useState(was.noindex ?? false);
-  const [gtm, setGtm] = useState(was.gtm ?? "");
-  const [forms, setForms] = useState(was.forms ?? "hubspot");
-  const missing = !slug.replace(/-/g, "");
-  const label = !live ? "Publish page" : page.unpublished ? "Publish changes" : "Save settings";
-
-  useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  const confirm = () => {
-    if (missing) return;
-    onPublish({
-      domain, slug: slug.replace(/-+$/, ""), pixel, noindex, forms,
-      title: title.trim() || page.name, description: description.trim(), gtm: gtm.trim().toUpperCase(),
-    });
-  };
-
-  return (
-    <div className="lib-dialog__scrim" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label="Publish settings" onClick={(e) => e.stopPropagation()}>
-        <Dialog
-          size="md"
-          title={live ? "Publish settings" : "Publish page"}
-          cancelLabel="Cancel"
-          confirmLabel={label}
-          onClose={onClose}
-          onCancel={onClose}
-          onConfirm={confirm}
-          className="lib-dialog lib-dialog--form lib-dialog--publish"
-        >
-          <Group title="Address">
-            <RadioGroup
-              label="Domain"
-              name="page-domain"
-              value={domain}
-              onChange={setDomain}
-              options={[
-                { value: PETAVUE_DOMAIN, label: `${PETAVUE_DOMAIN} · Petavue's domain` },
-                { value: ownDomain, label: `${ownDomain} · your connected domain` },
-              ]}
-            />
-            <TextInput
-              label="Page address"
-              placeholder="demo-request"
-              value={slug}
-              onChange={(e) => setSlug(cleanSlug(e.target.value))}
-              error={missing}
-              errorMessage="Give the page an address."
-            />
-            <p className="lib-publish__url"><Globe size={14} /> https://{domain}/{slug || "…"}</p>
-          </Group>
-
-          <Group title="Search and sharing">
-            <TextInput label="Meta title" placeholder={page.name} value={title} onChange={(e) => setTitle(e.target.value)} />
-            <TextInput
-              label="Meta description"
-              placeholder="One or two sentences shown in search results and link previews"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div className="lib-publish__switch">
-              <Toggle label="Hide from search engines" checked={noindex} onChange={() => setNoindex((v) => !v)} />
-              <p className="lib-dialog__hint lib-dialog__hint--flush">Use for pages that only paid campaigns should reach.</p>
-            </div>
-          </Group>
-
-          <Group title="Tracking">
-            <div className="lib-publish__switch">
-              <Toggle label="Include the Petavue tracking pixel" checked={pixel} onChange={() => setPixel((v) => !v)} />
-              <p className="lib-dialog__hint lib-dialog__hint--flush">Lets Petavue measure visits and form completions on this page.</p>
-            </div>
-            <TextInput label="Google Tag Manager ID (optional)" placeholder="GTM-XXXXXXX" value={gtm} onChange={(e) => setGtm(e.target.value)} />
-          </Group>
-
-          <Group title="Forms">
-            <Dropdown label="Send form submissions to" options={FORM_TARGETS} value={forms} onChange={setForms} />
-          </Group>
-
-          {live ? (
-            <Group title="Take offline">
-              <div className="lib-publish__offline">
-                <p className="lib-dialog__hint lib-dialog__hint--flush">
-                  The address stops serving the page. The page stays here as a draft and can be published again.
-                </p>
-                <Button variant="secondary" size="md" label="Unpublish" onClick={onUnpublish} />
-              </div>
-            </Group>
-          ) : (
-            <p className="lib-publish__note">The page goes live at this address as soon as you publish.</p>
-          )}
-        </Dialog>
-      </div>
-    </div>
-  );
 }
 
 export default function PageBuilderPage({ embedded = null }) {
@@ -176,7 +52,7 @@ export default function PageBuilderPage({ embedded = null }) {
   const navigate = useNavigate();
   const location = useLocation();
   const page = usePagesStore((s) => s.pages.find((p) => p.id === id));
-  const { create, setSections, undo, say, publish, unpublish } = usePagesStore();
+  const { create, setSections, undo, say, publish, unpublish, setMeta } = usePagesStore();
   // A page drafted in a workflow run is held until that run is published:
   // only then does its recommendation exist for the page to accept.
   const runOutcome = useRunReviewStore((s) => s.outcome);
@@ -185,10 +61,11 @@ export default function PageBuilderPage({ embedded = null }) {
   const { brand } = design;
   // The canvas shows the page or its code; the code is read off the page.
   const [view, setView] = useState("preview");
-  const [source, setSource] = useState("");
+  const [files, setFiles] = useState([]);
   const pageRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const library = useLibraryStore();
   const isNew = id === "new";
@@ -284,14 +161,30 @@ export default function PageBuilderPage({ embedded = null }) {
   // The code follows the page: it is read again whenever the page changes.
   useEffect(() => {
     if (view !== "code" || !pageRef.current || !page) return;
-    setSource(documentFor(pageRef.current, {
-      title: page.settings?.title || page.name,
-      description: page.settings?.description,
+    const meta = metaOf(page);
+    const title = meta.title || page.name;
+    const slug = page.settings?.slug || slugFor(page.name);
+    setFiles(projectFor(pageRef.current, {
+      title,
+      description: meta.description,
       vars: designVars(design),
-      pixel: page.status === "published" && page.settings?.pixel,
-      slug: page.settings?.slug,
-      noindex: page.settings?.noindex,
-      gtm: page.settings?.gtm,
+      pixel: page.status === "published" && meta.pixel,
+      slug,
+      sections: page.sections,
+      // The page settings as a file. The image and the password are left out.
+      settings: {
+        name: page.name,
+        address: { domain: page.settings?.domain || PETAVUE_DOMAIN, slug, published: page.status === "published" },
+        access: meta.access,
+        seo: { title, description: meta.description, sitemap: meta.sitemap, canonical: meta.canonical || null },
+        openGraph: { title: meta.ogSameTitle ? title : meta.ogTitle || title, description: meta.ogSameDescription ? meta.description : meta.ogDescription, image: meta.ogImage?.name || null },
+        tracking: { petavuePixel: meta.pixel, googleTagManager: meta.gtm || null },
+        forms: { sendTo: meta.forms },
+      },
+      noindex: !meta.sitemap,
+      canonical: meta.canonical,
+      gtm: meta.gtm,
+      og: { title: meta.ogSameTitle ? title : meta.ogTitle || title, description: meta.ogSameDescription ? meta.description : meta.ogDescription, image: !!meta.ogImage },
     }));
   }, [view, page, design]);
 
@@ -327,17 +220,55 @@ export default function PageBuilderPage({ embedded = null }) {
 
   return (
     <div className="lib lib-editor">
-      <header className="lib__header">
+      {/* One header for the whole editor: what the page is, how it is being
+          looked at and where it lives, then what can be done with it. */}
+      <header className="lib__header lib__header--editor">
         <div className="lib-editor__heading">
           <Button variant="secondaryGhost" size="md" icon={CaretLeft} aria-label={embedded ? "Back to Home" : inReview ? "Back to the run" : page?.recId ? "Back to the recommendation" : "Back to the library"} onClick={back} />
           <h1 className="lib__title">{built ? page.name : "New landing page"}</h1>
           {built && <PageStatus page={page} />}
-          {page?.recId && <span className="lib-editor__from">{inReview ? "Drafted in a workflow run you are reviewing" : "Drafted for a recommendation"}</span>}
+          {page?.recId && (
+            <Tooltip title={inReview ? "Drafted in a workflow run you are reviewing" : "Drafted for a recommendation"}>
+              <span className="lib-editor__from">{inReview ? "From a run in review" : "For a recommendation"}</span>
+            </Tooltip>
+          )}
         </div>
+
+        <div className="lib-editor__view">
+          {built && (
+            <div className="lib-scope lib-scope--view" role="tablist" aria-label="Show the page as">
+              {[{ id: "preview", label: "Preview", icon: Eye }, { id: "code", label: "Code", icon: Code }].map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={view === v.id}
+                  className={`lib-scope__option${view === v.id ? " lib-scope__option--active" : ""}`}
+                  onClick={() => { setView(v.id); if (v.id === "code") setPicked(null); }}
+                >
+                  <v.icon size={13} />
+                  {v.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {direction ? (
+            <span className="lib-browser__address">Preview of “{direction.label}” · not chosen yet</span>
+          ) : (
+            <Tooltip title={live ? (metaOf(page).pixel ? "Live, with the Petavue tracking pixel" : "Live, without the tracking pixel") : built ? "A local preview. The page is not published." : ""}>
+              <span className={`lib-browser__address${live ? " lib-browser__address--live" : ""}`}>
+                {live ? <LockSimple size={12} weight="fill" /> : <Globe size={12} />}
+                <span>{live ? `https://${url}` : built ? `localhost:3000/${page.settings?.slug || slugFor(page.name)}` : "localhost:3000"}</span>
+              </span>
+            </Tooltip>
+          )}
+        </div>
+
         <div className="lib-editor__actions">
           <Button variant="secondaryGhost" size="md" label="Save as template" disabled={!built} onClick={() => setSaving(true)} />
+          <Button variant="secondaryGhost" size="md" icon={GearSix} iconPosition="prefix" label="Page settings" disabled={!built} onClick={() => setSettingsOpen(true)} />
           {live && !page.unpublished ? (
-            <Button variant="secondaryGhost" size="md" label="Publish settings" onClick={() => setPublishing(true)} />
+            <Button variant="secondaryGhost" size="md" label="Publishing" onClick={() => setPublishing(true)} />
           ) : (
             <Tooltip title={inReview ? "Publish the run first. The page can be published from its recommendation after that." : ""}>
               <span>
@@ -389,43 +320,7 @@ export default function PageBuilderPage({ embedded = null }) {
 
         <section className="lib-stage" aria-label="Page">
           <div className="lib-browser">
-            <div className="lib-browser__bar">
-              <span className={`lib-browser__address${live ? " lib-browser__address--live" : ""}`}>
-                {live ? <LockSimple size={12} weight="fill" /> : <Globe size={12} />}
-                {live ? `https://${url}` : built ? `localhost:3000/${page.settings?.slug || slugFor(page.name)}` : "localhost:3000"}
-              </span>
-              {live && page.settings.pixel && <span className="lib-browser__chip">Tracking pixel on</span>}
-              {built && !live && <span className="lib-browser__chip lib-browser__chip--draft">Not published</span>}
-              {built && view === "preview" && <span className="lib-browser__count">{sections.length} sections · click a part to change it</span>}
-              {built && view === "code" && (
-                <Button
-                  variant="secondaryGhost"
-                  size="md"
-                  label="Copy"
-                  icon={Copy}
-                  onClick={() => navigator.clipboard?.writeText(source).then(() => toast.success("HTML copied."), () => toast.error("Could not copy."))}
-                />
-              )}
-              {built && (
-                <div className="lib-scope lib-scope--view" role="tablist" aria-label="Show the page as">
-                  {[{ id: "preview", label: "Preview", icon: Eye }, { id: "code", label: "Code", icon: Code }].map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={view === v.id}
-                      className={`lib-scope__option${view === v.id ? " lib-scope__option--active" : ""}`}
-                      onClick={() => { setView(v.id); if (v.id === "code") setPicked(null); }}
-                    >
-                      <v.icon size={13} />
-                      {v.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {direction && <span className="lib-browser__count">Preview · {direction.label} · not chosen yet</span>}
-            </div>
-            {built && view === "code" && <PageCode source={source} />}
+            {built && view === "code" && <PageCode files={files} name={page.settings?.slug || slugFor(page.name)} />}
             {built ? (
               <div ref={pageRef} className="lib-browser__page" hidden={view === "code"} onClick={pick}>
                 <ScaledPreview interactive>
@@ -479,22 +374,36 @@ export default function PageBuilderPage({ embedded = null }) {
           page={page}
           ownDomain={ownDomain}
           onClose={() => setPublishing(false)}
+          onSettings={() => { setPublishing(false); setSettingsOpen(true); }}
           onUnpublish={() => {
             unpublish(page.id);
             setPublishing(false);
             toast.success(`${page.name} is offline. It is a draft again.`);
           }}
           onPublish={(settings) => {
-            const saved = page.status === "published" && !page.unpublished;
+            const moved = page.status === "published" && !page.unpublished;
             publish(page.id, settings);
             setPublishing(false);
-            if (saved) { toast.success("Publish settings saved."); return; }
+            if (moved) { toast.success(`Now at ${settings.domain}/${settings.slug}.`); return; }
             if (page.recId) {
-              apiPost(`/api/recommendations/${page.recId}/published`, { url: `${settings.domain}/${settings.slug}`, pixel: settings.pixel }).catch(() => {});
+              apiPost(`/api/recommendations/${page.recId}/published`, { url: `${settings.domain}/${settings.slug}`, pixel: metaOf(page).pixel }).catch(() => {});
               toast.success(`Published at ${settings.domain}/${settings.slug}. The recommendation is accepted.`);
             } else {
               toast.success(`Published at ${settings.domain}/${settings.slug}.`);
             }
+          }}
+        />
+      )}
+
+      {settingsOpen && page && (
+        <PageSettingsDialog
+          page={page}
+          address={live ? url : `${PETAVUE_DOMAIN}/${page.settings?.slug || slugFor(page.name)}`}
+          onClose={() => setSettingsOpen(false)}
+          onSave={(name, meta) => {
+            setMeta(page.id, name, meta);
+            setSettingsOpen(false);
+            toast.success(live ? "Settings saved. Publish the page again to put them live." : "Settings saved.");
           }}
         />
       )}

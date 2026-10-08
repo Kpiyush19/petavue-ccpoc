@@ -19,7 +19,7 @@ export default function IndexRedirect() {
   }
 
   if (homeEnabled === true) {
-    return <Navigate to="/new" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return (

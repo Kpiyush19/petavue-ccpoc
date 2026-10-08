@@ -536,11 +536,6 @@
 }
 
 /* ── Export ────────────────────────────────────────────────────────────── */
-.cr-export__list {
-  right: 0;
-  left: auto;
-}
-
 /* The cards drawn at full size for export: on the page, out of sight. */
 .cr-export__stage {
   position: fixed;

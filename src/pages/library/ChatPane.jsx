@@ -61,9 +61,66 @@ function AssistantMessage({ message }) {
   );
 }
 
+// The chat column's width, dragged by its right edge and remembered for the
+// next page, creative or component that opens. The canvas beside it keeps at
+// least STAGE_MIN, so a page or its code never gets too narrow to read: the
+// chat cannot be dragged past that, and gives way when the window shrinks.
+const WIDTH = { key: "lib-chat-width", initial: 440, min: 340, max: 760 };
+const STAGE_MIN = 600;
+const clampWidth = (w, room = Infinity) => Math.round(Math.max(WIDTH.min, Math.min(w, WIDTH.max, room - STAGE_MIN)));
+const storedWidth = () => {
+  try { return clampWidth(Number(localStorage.getItem(WIDTH.key)) || WIDTH.initial); } catch { return WIDTH.initial; }
+};
+
+function useChatWidth() {
+  const ref = useRef(null);
+  const [wanted, setWanted] = useState(storedWidth);
+  const [room, setRoom] = useState(Infinity);
+  const [dragging, setDragging] = useState(false);
+
+  // The space the chat and the canvas share.
+  useEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent) return undefined;
+    const measure = () => setRoom(parent.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(parent);
+    return () => observer.disconnect();
+  }, []);
+
+  const width = clampWidth(wanted, room);
+  const keep = (w) => {
+    const next = clampWidth(w, room);
+    setWanted(next);
+    try { localStorage.setItem(WIDTH.key, String(next)); } catch { /* the width still applies for this visit */ }
+  };
+  const start = (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const from = { x: e.clientX, width };
+    setDragging(true);
+    const move = (ev) => keep(from.width + ev.clientX - from.x);
+    const stop = () => {
+      setDragging(false);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  };
+  const onKey = (e) => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); keep(width - 24); }
+    if (e.key === "ArrowRight") { e.preventDefault(); keep(width + 24); }
+    if (e.key === "Home") { e.preventDefault(); keep(WIDTH.initial); }
+  };
+  return { ref, width, max: clampWidth(WIDTH.max, room), dragging, start, onKey, reset: () => keep(WIDTH.initial) };
+}
+
 export default function ChatPane({ greeting, thread, busy, placeholder, onSend, target, onClearTarget, footer }) {
   const [input, setInput] = useState("");
   const endRef = useRef(null);
+  const size = useChatWidth();
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -76,7 +133,20 @@ export default function ChatPane({ greeting, thread, busy, placeholder, onSend, 
   };
 
   return (
-    <section className="lib-chat" aria-label="Chat">
+    <section ref={size.ref} className={`lib-chat${size.dragging ? " lib-chat--resizing" : ""}`} style={{ width: size.width }} aria-label="Chat">
+      <div
+        className="lib-chat__resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize the chat. Double-click to reset."
+        aria-valuenow={size.width}
+        aria-valuemin={WIDTH.min}
+        aria-valuemax={size.max}
+        tabIndex={0}
+        onPointerDown={size.start}
+        onDoubleClick={size.reset}
+        onKeyDown={size.onKey}
+      />
       <div className="lib-chat__thread">
         <AssistantMessage message={{ text: greeting }} />
         {thread.map((m, i) =>

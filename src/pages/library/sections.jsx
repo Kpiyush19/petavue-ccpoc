@@ -303,6 +303,39 @@ export function CtaBanner({ copy = {} }) {
   );
 }
 
+/* You against one named competitor, row by row. */
+export function CompareTable({ copy = {} }) {
+  const brand = useBrand();
+  const rival = copy.rival || "the alternative";
+  const rows = [
+    ["Forecast rebuilt from your CRM", "Every night", "Once a week"],
+    ["A reason behind every at-risk deal", true, false],
+    ["Time to go live", "One day", "4 to 6 weeks"],
+    ["Works with your CRM as it is", true, "Needs custom fields"],
+    ["Board-ready report", true, true],
+  ];
+  const cell = (v) => (v === true ? <span className="lp-compare__yes">Yes</span> : v === false ? <span className="lp-compare__no">No</span> : v);
+  return (
+    <section className="lp-section lp-compare">
+      <h2 className="lp-h2" data-piece="headline">{copy.headline || `${brand} and ${rival}, side by side`}</h2>
+      <div className="lp-compare__table">
+        <div className="lp-compare__row lp-compare__row--head">
+          <span />
+          <span className="lp-compare__us">{brand}</span>
+          <span>{rival}</span>
+        </div>
+        {rows.map(([what, us, them]) => (
+          <div key={what} className="lp-compare__row">
+            <span>{what}</span>
+            <span className="lp-compare__us">{cell(us)}</span>
+            <span>{cell(them)}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function Faq({ copy = {} }) {
   const brand = useBrand();
   const items = [
@@ -358,5 +391,5 @@ export function FooterColumns({ copy = {} }) {
 
 export const SECTIONS = {
   HeaderSimple, HeroSplit, HeroDemo, HeroForm, LogoCloud, StatsBand, Testimonial, FeatureGrid,
-  FeatureSplit, PricingThree, LeadForm, RoiCalculator, CtaBanner, Faq, FooterColumns,
+  FeatureSplit, PricingThree, LeadForm, RoiCalculator, CtaBanner, CompareTable, Faq, FooterColumns,
 };

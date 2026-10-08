@@ -40,13 +40,13 @@ export default function PetavueRoutes() {
       settings: "/settings",
       profile: "/profile",
     };
-    navigate(routes[id] || "/skills");
+    navigate(routes[id] || "/home");
   };
 
   const menuProps = {
     user,
     onNavigate: handleNavigate,
-    onNewChat: () => navigate("/new"),
+    onNewChat: () => navigate("/home"),
     menuOpen,
     onMenuToggle: setMenuOpen,
   };
@@ -61,7 +61,7 @@ export default function PetavueRoutes() {
         return <DataHub {...menuProps} />;
       default:
         // Any other segment isn't a self-contained page — send it to the app home.
-        return <Navigate to="/new" replace />;
+        return <Navigate to="/home" replace />;
     }
   };
 

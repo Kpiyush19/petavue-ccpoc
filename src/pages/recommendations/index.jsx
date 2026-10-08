@@ -9,6 +9,7 @@ import {
   Clock, CircleNotch, X, Check, PencilSimple,
 } from "@phosphor-icons/react";
 import { Button, Tooltip } from "@/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
 import { apiGet, apiPost, getApiBase, getAuthToken } from "../../api";
 import { cn } from "../../utils/cn";
 import { platformOf, deckFamilyOf, AGENTS } from "../../mocks/agentWorkflows";
@@ -325,76 +326,41 @@ function DecisionModal({ kind, item, platform, onCancel, onConfirm }) {
 }
 
 function FilterDropdown({ value, options, onChange, ariaLabel, size = "sm", align = "right" }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("mousedown", onClick);
-    window.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("mousedown", onClick); window.removeEventListener("keydown", onKey); };
-  }, [open]);
-
   const selected = options.find((o) => o.value === value) || options[0];
   return (
     // A long option name is cut short on the button; the list shows it whole.
     <span
       className="relative inline-flex [&>.btn]:max-w-[180px] [&>.btn]:!text-[12px] [&>.btn>span:first-child]:min-w-0 [&>.btn>span:first-child]:truncate"
       title={selected?.label}
-      ref={ref}
     >
-      <Button
-        variant="secondary"
-        size={size}
-        icon={CaretDown}
-        iconPosition="suffix"
-        label={selected?.label || ""}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-label={ariaLabel}
-        onClick={() => setOpen((v) => !v)}
-      />
-      {open && (
-        <div
-          role="listbox"
-          className={cn(
-            "absolute top-[calc(100%+4px)] z-30 min-w-[240px] max-h-[320px] overflow-y-auto py-1 bg-white border border-[var(--color-grey-100)] rounded-lg shadow-[0_8px_24px_0_rgba(0,0,0,0.10)]",
-            align === "right" ? "right-0" : "left-0",
-          )}
-        >
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="secondary"
+              size={size}
+              icon={CaretDown}
+              iconPosition="suffix"
+              label={selected?.label || ""}
+              aria-label={ariaLabel}
+            />
+          }
+        />
+        <DropdownMenuContent align={align === "right" ? "end" : "start"} className="min-w-[240px] max-h-[320px]">
           {options.map((o) => (
-            <button
-              key={o.value}
-              type="button"
-              role="option"
-              aria-selected={o.value === value}
-              onClick={() => { onChange(o.value); setOpen(false); }}
-              className={cn(
-                "w-full flex items-center gap-2 text-left px-3 py-2 cursor-pointer transition-colors bg-transparent",
-                "border-solid border-y-0 border-r-0 border-l-[3px]",
-                o.value === value
-                  ? "bg-primary-50 border-l-primary-500"
-                  : "border-l-transparent hover:bg-primary-50",
-              )}
-            >
+            <DropdownMenuItem key={o.value} onClick={() => onChange(o.value)}>
               {o.icon}
-              <span
-                title={o.label}
-                className={cn(
-                  "flex-1 min-w-0 truncate text-[12px] leading-snug text-[var(--text-primary)]",
-                  o.value === value && "font-medium",
-                )}
-              >
+              <span title={o.label} className={cn("flex-1 min-w-0 truncate", o.value === value && "font-medium")}>
                 {o.label}
               </span>
               {o.count != null && (
                 <span className="shrink-0 text-[12px] tabular-nums text-[var(--text-muted)]">{o.count}</span>
               )}
-            </button>
+              {o.value === value && <Check size={16} weight="bold" className="text-primary-500" />}
+            </DropdownMenuItem>
           ))}
-        </div>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </span>
   );
 }
@@ -1540,7 +1506,7 @@ function Detail({ item, workflow, onDecide, onComment, commentPosting, onOpenWor
                 ? <Button variant="primary" size="md" label="Review the draft" onClick={openDraft} disabled={!draft} />
                 : <Button variant="primary" size="md" icon={CheckCircle} iconWeight="fill" label="Apply" onClick={() => setModal("accepted")} />}
               {open && <Button variant="secondary" size="md" icon={PauseCircle} label="Hold" onClick={() => setModal("on-hold")} />}
-              <Button variant="blueGhost" size="md" icon={Prohibit} label="Reject" onClick={() => setModal("rejected")} />
+              <Button variant="ghost" size="md" icon={Prohibit} label="Reject" onClick={() => setModal("rejected")} />
               {deciding && <Button variant="ghost" size="md" label="Cancel" onClick={() => setDeciding(false)} />}
             </div>
           ) : applied ? (

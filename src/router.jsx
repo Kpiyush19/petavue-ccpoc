@@ -15,7 +15,7 @@ function PetavueLegacyRedirect() {
     "data-hub": "/data-hub",
     dashboards: "/dashboards",
     "dashboard-view": "/dashboards",
-    chat: "/new",
+    chat: "/home",
     skills: "/skills",
     home: "/home",
   };
@@ -410,7 +410,8 @@ export const routes = [
             ]
           },
           // /home is the chat-first harness concept home (see the PetavueGuard
-          // group below for its siblings). /new stays the production landing.
+          // group below for its siblings) and the default landing page. /new stays
+          // reachable by URL.
           { path: "home/skills", element: <Navigate to="/skills" replace /> },
           // Frontend-only mode: /new is the Create-New home (greeting + composer
           // + skills), no flag gate. Otherwise it's gated by HomeGuard.

@@ -4,7 +4,8 @@
    an ordinary draft after that: it opens in the page builder, can be changed
    there, and publishing it is what accepts the recommendation. */
 import { useEffect } from "react";
-import { buildPage } from "../../mocks/pageBuilder";
+import { buildFromSpec, buildPage } from "../../mocks/pageBuilder";
+import { SUGGESTED_PAGES } from "../../mocks/suggestedPages";
 import { buildCreative } from "../../mocks/creatives";
 import useCreativesStore from "./useCreativesStore";
 import useDesignStore from "./useDesignStore";
@@ -17,6 +18,24 @@ export function ensureDraft(rec) {
   if (existing) return existing;
 
   const d = rec.draftPage;
+
+  // A page drafted from a fixed list of sections, not from a template.
+  if (d.spec) {
+    const spec = SUGGESTED_PAGES.find((x) => x.id === d.spec);
+    const brand = useDesignStore.getState().design.brand;
+    const made = spec && buildFromSpec(spec, useLibraryStore.getState(), brand);
+    if (!made?.sections.length) return null;
+    const page = pages.create({ recId: rec.id, recTitle: rec.shortTitle, runReview: !!rec.runReview });
+    pages.setSections(page.id, made.sections, { name: spec.name.replace(/\{brand\}/g, brand || "Us") });
+    pages.say(page.id, {
+      role: "assistant",
+      working: ["Read the recommendation and the searches behind it", "Read your design system", `Read the description of each published component and placed ${made.sections.length}`],
+      used: made.used,
+      text: `${spec.note}${made.skippedNote}\n\nPublishing accepts the recommendation.`,
+    });
+    return usePagesStore.getState().get(page.id);
+  }
+
   const built = buildPage(d.prompt, useLibraryStore.getState(), d.templateId);
   if (!built.sections) return null;
 

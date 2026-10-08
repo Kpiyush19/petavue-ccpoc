@@ -33,6 +33,7 @@ const ALIASES = {
   "lead-form": /form/,
   "roi-calculator": /\broi\b|calculator/,
   "cta-banner": /\bcta\b|call.to.action|banner/,
+  "compare-table": /comparison|compare/,
   "faq": /faq|questions/,
   "footer-columns": /footer/,
 };
@@ -203,6 +204,24 @@ export function buildPage(prompt, workspace, templateId = null) {
     used: usedOf(null, sections),
     text: `Here is a first version. Your workspace has no templates, so I arranged your ${plural(sections.length, "published component")} in the usual order for a landing page, on my own. A template is recommended: it keeps pages of the same kind consistent.${choiceNote(choices)}\n\nTell me what to change, or publish it when it is ready.`,
   };
+}
+
+// A page Petavue drafts on its own, from a list of sections and the words
+// for them: { name, sections: [sourceId], copy: { [sourceId]: {...} } }. It
+// follows the same rule as any page: published components only. `{brand}` in
+// the copy becomes the workspace's brand.
+export function buildFromSpec(spec, workspace, brand) {
+  const fill = (v) => (typeof v === "string" ? v.replace(/\{brand\}/g, brand || "us") : v);
+  const sections = [];
+  const skipped = [];
+  for (const sourceId of spec.sections) {
+    const found = publishedFor(workspace, sourceId, spec.name);
+    if (!found) { skipped.push({ name: componentById(sourceId).name, reason: missingReason(workspace, sourceId) }); continue; }
+    const made = snapshot(found.item);
+    const copy = Object.fromEntries(Object.entries(spec.copy?.[sourceId] || {}).map(([k, v]) => [k, fill(v)]));
+    sections.push({ ...made, overrides: { ...made.overrides, copy: { ...made.overrides.copy, ...copy } } });
+  }
+  return { sections, skipped, used: usedOf(null, sections), skippedNote: skippedNote(skipped) };
 }
 
 // ── What the agent asks before it builds ──────────────────────────────────

@@ -1,46 +1,38 @@
 /**
- * Home — the campaigns-first landing (UX concept, Sep 29 direction).
+ * Home — one box, and the three things most worth a decision.
  *
- * Layout follows the assistant-home reference (Nov shot): short greeting,
- * one big "Ask anything" composer with a recent-chat pill above it and
- * suggestion chips below, then content as quiet list rows on a white page —
- * findings and campaigns read like the reference's meetings and tasks.
- * Anything typed (or any finding row) slides the page into the chat thread.
+ * A short greeting, one "Ask anything" composer, and three prompts under it:
+ * build a dashboard, build a landing page, generate an ad creative. Below,
+ * the top three recommendations as cards, each showing what it would change;
+ * the rest live on the Recommendations page. Nothing else is on this page.
  *
  * Under the text box, Output says what the chat should make. Auto leaves it
  * to Sage. Landing page and Ad creative open in place: Home becomes the chat
  * on the left and the page or artboard on the right, without leaving Home.
- * Dashboard sends the request to the Sage chat that builds dashboards.
+ * A dashboard is built in the Sage chat.
  */
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import {
-  ArrowUp, CaretRight, ChartBar, ChatCircleDots, CheckCircle, TrendUp, TrendDown,
-  Coins, UsersThree, LinkBreak, Images, ImageSquare, Layout, Palette, Sparkle,
+  ArrowRight, ArrowUp, Eye, FileText, ImageSquare, Layout, Lightning, Note, Palette, Paperclip, Rows, SlidersHorizontal, Sparkle, SquaresFour,
+  Warning, X,
 } from "@phosphor-icons/react";
 import SourceIcon from "../../components/SourceIcon";
-import { Button } from "@/ui";
+import { Button, ModelModeMenu, Tooltip, readSageMode } from "@/ui";
 import { apiGet, apiPost } from "../../api";
 import { FORMATS, KINDS, STYLES } from "../../mocks/creatives";
 import { ROI_PROMPT, ROI_REPORT_SESSION_ID } from "../../mocks/paidMediaRoi";
+import { platformOf } from "../../mocks/agentWorkflows";
 import useDesignStore from "../library/useDesignStore";
 import useLibraryStore, { workspaceTemplates } from "../library/useLibraryStore";
 import CreativeEditorPage from "../library/CreativeEditorPage";
 import PageBuilderPage from "../library/PageBuilderPage";
 import ComposerMenu from "./ComposerMenu";
 import { cn } from "../../utils/cn";
-import { fmtMoney } from "./bits";
 import HarnessChat from "./HarnessChat";
 import { chatStore } from "./chatStore";
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Morning";
-  if (hour < 17) return "Afternoon";
-  return "Evening";
-}
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 14 },
@@ -49,176 +41,100 @@ const fadeUp = (delay = 0) => ({
 });
 
 /* ── Tiny in-card drawings (pure SVG, no chart lib) ─────────────────── */
-function MiniBars({ data, tone = "var(--color-primary-500)" }) {
-  const max = Math.max(...data);
-  return (
-    <span className="flex items-end gap-[3px] h-[26px]" aria-hidden="true">
-      {data.map((v, i) => (
-        <span
-          key={i}
-          className="w-[7px] rounded-[2px]"
-          style={{
-            height: `${Math.max(14, (v / max) * 100)}%`,
-            background: i === data.length - 1 ? tone : "var(--color-grey-100)",
-          }}
-        />
-      ))}
-    </span>
-  );
-}
+const URGENCY = {
+  "act-now": { label: "Act now", icon: Lightning, tone: "text-[#e11d48] bg-[#fff1f2]" },
+  "this-week": { label: "This week", icon: Warning, tone: "text-[#b45309] bg-[#fffbeb]" },
+  monitor: { label: "This month", icon: Eye, tone: "text-[#1d4ed8] bg-[#eff6ff]" },
+};
 
-function MiniArea({ data, stroke = "#F43F5E" }) {
-  const W = 72, H = 26, P = 2;
-  const min = Math.min(...data), max = Math.max(...data);
-  const pts = data.map((v, i) => [
-    P + (i / (data.length - 1)) * (W - P * 2),
-    P + (1 - (v - min) / (max - min || 1)) * (H - P * 2),
-  ]);
-  const line = pts.map((p) => p.join(",")).join(" ");
-  return (
-    <svg width={W} height={H} aria-hidden="true">
-      <polygon points={`${P},${H} ${line} ${W - P},${H}`} fill={stroke} opacity="0.08" />
-      <polyline points={line} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="2" fill={stroke} />
-    </svg>
-  );
-}
+// What a recommendation is about, said with the same icons the prompts use.
+// A change to a campaign setting has no deliverable, so it gets its own.
+const MAKES = {
+  dashboard: { label: "Dashboard", icon: SquaresFour },
+  report: { label: "Report", icon: FileText },
+  memo: { label: "Memo", icon: Note },
+  landing: { label: "Landing page", icon: Layout },
+  creative: { label: "Ad creative", icon: ImageSquare },
+  change: { label: "Campaign change", icon: SlidersHorizontal },
+};
+const kindOf = (rec) =>
+  rec.draftPage ? "landing" : rec.draftCreative ? "creative" : rec.workflowId === "paid-media-roi" ? "dashboard" : rec.type === "handoff" ? "memo" : "change";
 
-/* Platform-reported vs CRM-true, as two bars — the signature stat, drawn. */
-function MiniCompare({ a, b }) {
-  const pct = Math.max(8, (a / b) * 100);
+/* One recommendation as a card. Every recommendation has the same parts,
+   whether it changes a budget, a list or a page: what kind of thing it is,
+   what it says and why, then how soon and where. The card opens it on the
+   Recommendations page. */
+function RecCard({ rec, onOpen }) {
+  const u = URGENCY[rec.urgency] || URGENCY.monitor;
+  const kind = MAKES[kindOf(rec)];
+  const channel = rec.platform ? platformOf(rec.platform).label : null;
   return (
-    <span className="flex flex-col gap-[5px] w-full" aria-hidden="true">
-      <span className="h-[7px] rounded-full bg-[var(--color-grey-100)] overflow-hidden">
-        <span className="block h-full rounded-full bg-[var(--color-grey-300)]" style={{ width: `${pct}%` }} />
-      </span>
-      <span className="h-[7px] rounded-full bg-primary-500" />
-    </span>
-  );
-}
-
-function KpiViz({ viz }) {
-  if (!viz) return null;
-  if (viz.type === "bars") return <MiniBars data={viz.data} />;
-  if (viz.type === "area") return <MiniArea data={viz.data} />;
-  if (viz.type === "compare") return <MiniCompare a={viz.a} b={viz.b} />;
-  return null;
-}
-
-function KpiTile({ kpi, onOpen }) {
-  const Dir = kpi.dir === "up" ? TrendUp : kpi.dir === "down" ? TrendDown : null;
-  // Direction color is semantic to money, not to the arrow: spend up is a cost
-  // signal (neutral-amber), pipeline down is the bad one.
-  const tone =
-    kpi.dir === "flat" ? "text-[#757A97]" : kpi.dir === "down" ? "text-rose-600" : "text-amber-600";
-  return (
-    <div
+    <button
+      type="button"
       onClick={onOpen}
-      className="group flex flex-col gap-1.5 px-5 py-4 bg-white border border-[var(--color-grey-100)] rounded-xl cursor-pointer hover:shadow-[0_4px_16px_-4px_rgba(16,24,40,0.08)] hover:border-[var(--color-grey-200)] transition-all"
+      className="group flex flex-col gap-3 p-5 rounded-2xl border border-solid border-[var(--color-grey-100)] bg-white cursor-pointer text-left transition-[box-shadow,border-color] hover:border-[var(--color-grey-200)] hover:shadow-[0_10px_28px_-16px_rgba(16,24,40,0.28)]"
     >
-      <span className="flex items-center justify-between">
-        <span className="text-[12px] font-medium text-[#757A97]">{kpi.label}</span>
-        <CaretRight size={12} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)]">
+        <kind.icon size={15} className="text-primary-500" /> {kind.label}
       </span>
-      <span className="flex items-baseline gap-2">
-        <span className="text-[24px] leading-[30px] font-medium text-[var(--text-primary)] tracking-[-0.01em] tabular-nums">{kpi.value}</span>
-        {kpi.delta && (
-          <span className={cn("inline-flex items-center gap-0.5 text-[11px] font-medium", tone)}>
-            {Dir && <Dir size={11} weight="bold" />}
-            {kpi.delta}
+
+      <span className="flex flex-col gap-1.5">
+        <span className="text-[14px] leading-[20px] font-medium text-[var(--text-primary)] line-clamp-2">{rec.title}</span>
+        <span className="text-[12px] leading-[18px] text-[var(--text-secondary)] line-clamp-2">{rec.basis}</span>
+      </span>
+
+      <span className="mt-auto flex items-center justify-between gap-2 pt-3 border-solid border-x-0 border-b-0 border-t border-t-[var(--color-grey-100)]">
+        <span className={cn("inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[12px] font-medium", u.tone)}>
+          <u.icon size={12} /> {u.label}
+        </span>
+        {channel && (
+          <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)]">
+            <SourceIcon name={channel} size={13} /> {channel}
           </span>
         )}
       </span>
-      {kpi.viz?.type === "compare" ? (
-        <span className="flex flex-col gap-2 pt-1">
-          <span className="text-[11px] leading-[16px] text-[var(--text-muted)]">{kpi.sub}</span>
-          <KpiViz viz={kpi.viz} />
-        </span>
-      ) : (
-        <span className="flex items-end justify-between gap-3 pt-1">
-          <span className="text-[11px] leading-[16px] text-[var(--text-muted)]">{kpi.sub}</span>
-          <KpiViz viz={kpi.viz} />
-        </span>
-      )}
-    </div>
+    </button>
   );
 }
 
-/* Leading glyph — a category icon carrying the severity in its tone,
-   the Linear-list treatment instead of a raw colored dot. */
-const FINDING_ICON = {
-  "opp-waste": Coins,
-  "opp-tracking": LinkBreak,
-  "opp-pause": TrendDown,
-  "opp-handoff": UsersThree,
-  "opp-fatigue": Images,
-};
-/* One finding as a quiet list row: icon + headline left, the number right.
-   The row itself starts the fix in chat. */
-function FindingRow({ opp, onFix, onOpen }) {
-  const Icon = FINDING_ICON[opp.id] || Coins;
+/* The same recommendation as a table row, for the list view: one column per
+   part, so several can be compared down the page. */
+const LIST_COLS = "168px minmax(0,1fr) 150px 116px 24px";
+function RecRow({ rec, onOpen }) {
+  const u = URGENCY[rec.urgency] || URGENCY.monitor;
+  const kind = MAKES[kindOf(rec)];
+  const channel = rec.platform ? platformOf(rec.platform).label : null;
   return (
-    <div
-      onClick={opp.fixed ? onOpen : onFix}
-      className="group flex items-center gap-3 h-11 px-3 -mx-3 rounded-lg cursor-pointer hover:bg-[var(--color-grey-50)] transition-colors"
-    >
-      <Icon size={16} weight="duotone" className={cn("shrink-0", opp.fixed ? "text-[var(--text-muted)]" : "text-[#8E93AF]")} />
-      <span className="flex-1 min-w-0 truncate text-[14px] text-[var(--text-primary)]">{opp.title}</span>
-      {opp.fixed ? (
-        <span className="inline-flex items-center gap-1.5 text-[13px] text-emerald-700 whitespace-nowrap shrink-0">
-          <CheckCircle size={14} weight="fill" className="text-emerald-500" /> {opp.fixedLabel}
-        </span>
-      ) : (
-        <>
-          <span className="text-[13px] text-[var(--text-secondary)] tabular-nums whitespace-nowrap shrink-0">{opp.stat}</span>
-          <CaretRight size={13} className="shrink-0 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
-        </>
-      )}
-    </div>
-  );
-}
-
-/* One campaign as a list row — the reference's task rows. */
-function CampaignRow({ c, onOpen }) {
-  return (
-    <div
+    <button
+      type="button"
       onClick={onOpen}
-      className="group flex items-center gap-3 h-11 px-3 -mx-3 rounded-lg cursor-pointer hover:bg-[var(--color-grey-50)] transition-colors"
+      className="group grid w-full items-center gap-4 min-h-[60px] px-4 py-2.5 border-solid border-x-0 border-b-0 border-t border-t-[var(--color-grey-100)] bg-white cursor-pointer text-left transition-colors hover:bg-[var(--color-grey-50)]"
+      style={{ gridTemplateColumns: LIST_COLS }}
     >
-      <SourceIcon name={c.channel} size={15} />
-      <span className="flex-1 min-w-0 truncate text-[14px] text-[var(--text-primary)]">{c.name}</span>
-      {c.openFindings > 0 && (
-        <span className="text-[12px] text-amber-600 whitespace-nowrap shrink-0">
-          {c.openFindings} finding{c.openFindings === 1 ? "" : "s"}
-        </span>
-      )}
-      <span className="text-[13px] text-[var(--text-secondary)] tabular-nums whitespace-nowrap shrink-0 w-[72px] text-right">
-        {fmtMoney(c.spend30d)}
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)]">
+        <kind.icon size={15} className="text-primary-500" /> {kind.label}
       </span>
-    </div>
+      <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="truncate text-[14px] leading-[20px] font-medium text-[var(--text-primary)]">{rec.title}</span>
+        <span className="truncate text-[12px] leading-[18px] text-[var(--text-secondary)]">{rec.basis}</span>
+      </span>
+      <span className="inline-flex items-center gap-1.5 min-w-0 text-[12px] text-[var(--text-secondary)]">
+        {channel && <><SourceIcon name={channel} size={13} /> <span className="truncate">{channel}</span></>}
+      </span>
+      <span>
+        <span className={cn("inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[12px] font-medium", u.tone)}>
+          <u.icon size={12} /> {u.label}
+        </span>
+      </span>
+      <ArrowRight size={13} className="text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
+    </button>
   );
 }
 
-/* Section header — plain grey text left, quiet affordance right. */
-function SectionHeader({ label, right }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-[15px] font-medium text-[var(--text-secondary)]">{label}</span>
-      {right}
-    </div>
-  );
-}
+// How the recommendations are laid out, remembered between visits.
+const VIEW_KEY = "home-recs-view";
+const storedView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid"; } catch { return "grid"; } };
 
-// What a suggestion makes. A dashboard is just something the chat builds, so
-// only the two real outputs carry a label; asks are plain rows.
-const KIND = {
-  chat: { icon: ChatCircleDots, label: null },
-  dashboard: { icon: ChartBar, label: null },
-  landing: { icon: Layout, label: "Landing page" },
-  creative: { icon: ImageSquare, label: "Ad creative" },
-};
-
-// What the chat can be asked to make. Auto leaves the choice to Sage.
 const OUTPUTS = [
   { id: "auto", label: "Auto", description: "Chat, dashboards and answers, from your request", icon: Sparkle },
   { id: "landing", label: "Landing page", description: "Built from your published components", icon: Layout },
@@ -238,48 +154,36 @@ const FORMAT_OPTIONS = [
 const KIND_OPTIONS = KINDS.map(({ id, label, description }) => ({ id, label, description }));
 const STYLE_OPTIONS = STYLES.map(({ id, label, description }) => ({ id, label, description }));
 
-const SUGGESTIONS = {
-  auto: [
-    { kind: "chat", text: "Find where my LinkedIn ads are leaking spend" },
-    { kind: "dashboard", text: "Which paid channels drive revenue?" },
-    { kind: "landing", text: "Build a landing page for our Q4 demo campaign" },
-    { kind: "creative", text: "Make an ad creative for retargeting site visitors" },
-  ],
-  landing: [
-    { kind: "landing", text: "Build a landing page for our Q4 demo campaign" },
-    { kind: "landing", text: "Build a landing page for the product launch" },
-    { kind: "landing", text: "Build a page that collects sign-ups" },
-  ],
-  creative: [
-    { kind: "creative", text: "Make an ad creative for our Q4 demo campaign" },
-    { kind: "creative", text: "Make a LinkedIn ad creative for the autumn webinar" },
-    { kind: "creative", text: "Make a Meta story for retargeting site visitors" },
-  ],
-};
+// Prompts under the box, in place of /new's ready-made skills: a spread of
+// what can be built, two of each. `text` is what is sent.
+const PROMPTS = [
+  { kind: "dashboard", label: "Paid channel ROI dashboard", text: "Which paid channels drive revenue?" },
+  { kind: "landing", label: "Demo page for the Q4 campaign", text: "Build a landing page for our Q4 demo campaign" },
+  { kind: "creative", label: "LinkedIn carousel for the demo offer", text: "Make a LinkedIn carousel ad creative for our Q4 demo campaign" },
+  { kind: "report", label: "Monthly paid media report", text: "Write the monthly paid media report" },
+  { kind: "landing", label: "Webinar sign-up page", text: "Build a page that collects sign-ups for the autumn webinar" },
+  { kind: "creative", label: "Retargeting ad for site visitors", text: "Make an ad creative for retargeting site visitors" },
+  { kind: "dashboard", label: "Pipeline coverage dashboard", text: "Build a pipeline coverage dashboard" },
+  { kind: "report", label: "Spend reallocation plan", text: "Write a spend reallocation plan" },
+];
 
-/* One suggestion as a quiet row: what to ask on the left, what it makes on
-   the right. The reference's meeting rows, pointed at the composer. */
-function SuggestionRow({ row, showKind, onPick }) {
-  const k = KIND[row.kind];
-  return (
-    <button
-      type="button"
-      onClick={onPick}
-      className="group flex w-full items-center gap-3 h-11 px-3 rounded-[10px] border-none bg-transparent cursor-pointer text-left hover:bg-[var(--color-grey-50)] transition-colors"
-    >
-      <k.icon size={16} className="shrink-0 text-[#8E93AF]" />
-      <span className="flex-1 min-w-0 truncate text-[14px] text-[var(--text-primary)]">{row.text}</span>
-      {showKind && k.label && <span className="shrink-0 text-[12px] text-[#ADB2CE] whitespace-nowrap">{k.label}</span>}
-      <CaretRight size={13} className="shrink-0 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
-    </button>
-  );
-}
+const greetingOf = () => {
+  const hour = new Date().getHours();
+  return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+};
 
 export default function HarnessHomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
   const [message, setMessage] = useState("");
+  // The model the chat runs on, and files attached to the request. Both are
+  // the Sage home's controls; in the prototype they are carried, not used.
+  const [sageMode, setSageMode] = useState(readSageMode);
+  const [files, setFiles] = useState([]);
+  const [recView, setRecView] = useState(storedView);
+  const pickView = (v) => { setRecView(v); try { localStorage.setItem(VIEW_KEY, v); } catch { /* the choice still holds for this visit */ } };
+  const fileRef = useRef(null);
 
   // Separate chats: each ask starts its own thread, all held in chatStore
   // (module scope — survives leaving for a campaign page). The page keeps
@@ -308,7 +212,7 @@ export default function HarnessHomePage() {
   ];
 
   const { data } = useQuery({ queryKey: ["harness-overview"], queryFn: () => apiGet("/api/harness/overview") });
-  const { data: campaignData } = useQuery({ queryKey: ["harness-campaigns"], queryFn: () => apiGet("/api/harness/campaigns") });
+  const { data: recData } = useQuery({ queryKey: ["recommendations"], queryFn: () => apiGet("/api/recommendations") });
 
   // Typing, a chip or a finding row starts a NEW chat; recent rows reopen one.
   const openChatWith = (text) => {
@@ -380,12 +284,10 @@ export default function HarnessHomePage() {
     }
   };
 
-  const rows = SUGGESTIONS[output] || SUGGESTIONS.auto;
-
   // A row names its own kind, whatever the Output menu says. A row that
   // matches the chosen output keeps the template or format picked under it.
   const go = (row) => {
-    if (row.kind === "dashboard") return startDashboard();
+    if (row.kind === "dashboard" || row.kind === "report") return startDashboard();
     if (row.kind === "landing") return startPage(row.text, output === "landing");
     if (row.kind === "creative") return startCreative(row.text, output === "creative");
     return openChatWith(row.text);
@@ -433,35 +335,54 @@ export default function HarnessHomePage() {
     );
   }
 
-  const kpis = data?.kpis || [];
-  const opps = data?.opportunities || [];
-  const campaigns = (campaignData?.campaigns || []).slice().sort((a, b) => b.spend30d - a.spend30d).slice(0, 5);
+  // The first six still waiting for a decision, in the order the
+  // Recommendations page lists them.
+  const open = (recData?.items || []).filter((r) => r.lifecycle === "needs-decision");
+  const top = open.slice(0, 6);
 
   return (
     <div className="flex h-full w-full overflow-x-auto">
-      <div className="flex flex-col h-full w-full min-w-[840px] overflow-y-auto bg-white">
-        <div className="flex flex-col w-full max-w-[840px] mx-auto px-8 pb-12">
+      <div className="flex flex-col h-full w-full min-w-[960px] overflow-y-auto bg-grey-50">
+        <div className="flex flex-col shrink-0 w-full max-w-[1040px] min-h-full mx-auto px-8 pb-10">
 
-          {/* Hero zone — greeting + composer sit centered in the upper half
-              of the viewport, like a homepage; the lists live below the fold.
-              The padding is real, not just centring, so on a short window the
-              greeting never touches the top and the lists never touch the
-              suggestion rows. */}
-          <div className="flex flex-col gap-6 min-h-[90vh] shrink-0 py-6">
-          <div className="flex-[1.1]" aria-hidden="true" />
+          {/* The Sage home's layout (/new): greeting, one line on what the
+              box is for, the composer, then prompts where /new has skills. */}
+          {/* Centred in the page. It leaves room at the bottom of the window
+              for the recommendations' heading and about half of each card,
+              so there is plainly more to scroll to. */}
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-[calc(100vh-156px)] py-12">
 
-          {/* Greeting — just the hello. What the box can make is said by the
-              suggestion rows, not by a sales line. */}
-          <motion.h1
-            {...fadeUp(0)}
-            className="text-[26px] leading-[34px] font-medium text-[#232532] tracking-[-0.01em] m-0 text-center"
-          >
-            {getGreeting()}{data?.greetingName ? `, ${data.greetingName}` : ""}
-          </motion.h1>
+          <motion.div {...fadeUp(0)} className="flex flex-col items-center gap-2 mb-7 text-center">
+            <div className="flex items-center justify-center gap-3">
+              <Sparkle size={30} weight="fill" className="text-primary-500" />
+              <h1 className="m-0 text-[34px] leading-[44px] font-medium text-[#232532] tracking-[-0.015em]">
+                {greetingOf()}{data?.greetingName ? `, ${data.greetingName}` : ""}.
+              </h1>
+            </div>
+            <p className="m-0 text-[16px] leading-[24px] text-[var(--text-secondary)]">
+              Ask anything about your marketing performance, or start by building something.
+            </p>
+          </motion.div>
 
-          {/* Composer block: big ask box, recent-chat pill under it, chips below */}
-          <motion.div {...fadeUp(0.05)} className="flex flex-col gap-3">
-            <div className="flex flex-col bg-white border border-[#d4d9ea] rounded-[20px] transition-all shadow-[0_1px_2px_rgba(16,24,40,0.04),0_12px_32px_-16px_rgba(16,24,40,0.12)] hover:border-primary-300 focus-within:border-primary-500 focus-within:shadow-[0_0_0_4px_#F5F8FF,0_12px_32px_-16px_rgba(16,24,40,0.12)]">
+          <motion.div {...fadeUp(0.05)} className="w-full max-w-[720px]">
+            {/* One grey frame: the white box holds the request, the tray under it holds how it's built. */}
+            <div
+              className="flex flex-col p-1 rounded-[22px] bg-[var(--color-grey-100)]"
+              style={{ boxShadow: "0px 18px 40px -20px rgba(54,97,237,0.18)" }}
+            >
+            <div className="flex flex-col bg-white border border-solid border-[#d4d9ea] rounded-[18px] transition-colors hover:border-primary-300 focus-within:!border-primary-500">
+              {files.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 px-5 pt-4">
+                  {files.map((f) => (
+                    <span key={f.name} className="inline-flex items-center gap-1.5 h-7 pl-2.5 pr-1.5 rounded-lg bg-[var(--color-grey-50)] border border-solid border-[var(--color-grey-100)] text-[12px] text-[var(--text-secondary)]">
+                      <span className="truncate max-w-[160px]">{f.name}</span>
+                      <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setFiles((all) => all.filter((x) => x !== f))} className="flex items-center justify-center w-5 h-5 rounded border-none bg-transparent cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -471,111 +392,143 @@ export default function HarnessHomePage() {
                 autoFocus
                 className="w-full resize-none border-none outline-none bg-transparent px-5 pt-4 pb-1 text-[15px] leading-[22px] text-[var(--text-primary)] placeholder:text-[#adb2ce]"
               />
-              <div className="flex items-center justify-between gap-3 px-3 pb-3">
-                <div className="composer-tools composer-tools--wrap">
-                  <ComposerMenu label="Output" value={output} options={OUTPUTS} onChange={setOutput} />
-                  {output === "creative" && (
-                    <>
-                      <ComposerMenu label="Type" value={kindId} options={KIND_OPTIONS} onChange={setKindId} />
-                      <ComposerMenu label="Style" value={styleId} options={STYLE_OPTIONS} onChange={setStyleId} />
-                      <ComposerMenu label="Format" value={formatId} options={FORMAT_OPTIONS} onChange={setFormatId} />
-                    </>
-                  )}
-                  {output === "landing" && <ComposerMenu label="Template" value={templateId} options={templateOptions} onChange={setTemplateId} />}
-                  {(output === "landing" || output === "creative") && (
-                    <button
-                      type="button"
-                      className="composer-menu__button"
-                      onClick={() => navigate("/library", { state: { tab: "design" } })}
-                    >
-                      <Palette size={14} />
-                      <span className="composer-menu__label">Design system</span>
-                      <span className="composer-menu__value">{brand || "Not set"}</span>
-                    </button>
-                  )}
+              {/* Attach and what to make on the left; the model and send on the right. */}
+              <div className="flex items-end justify-between gap-3 px-3 pb-3 pt-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <button
+                    type="button"
+                    aria-label="Attach files"
+                    onClick={() => fileRef.current?.click()}
+                    className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 border-none bg-transparent text-[var(--text-muted)] cursor-pointer transition-colors hover:bg-[var(--color-grey-50)] hover:text-[var(--text-secondary)]"
+                  >
+                    <Paperclip size={16} />
+                  </button>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    multiple
+                    hidden
+                    aria-label="Files to attach"
+                    onChange={(e) => {
+                      const added = Array.from(e.target.files || []);
+                      e.target.value = "";
+                      setFiles((all) => [...all, ...added.filter((f) => !all.some((x) => x.name === f.name))].slice(0, 5));
+                    }}
+                  />
+                  <div className="composer-tools composer-tools--wrap">
+                    <ComposerMenu label="Output" value={output} options={OUTPUTS} onChange={setOutput} />
+                  </div>
                 </div>
-                <button
-                  onClick={handleSend}
-                  disabled={!message.trim()}
-                  aria-label="Send"
-                  className={cn(
-                    "flex items-center justify-center w-9 h-9 rounded-full shrink-0 border-none transition-colors",
-                    message.trim() ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[var(--color-grey-100)] text-[#ADB2CE] cursor-not-allowed",
-                  )}
-                >
-                  <ArrowUp size={16} weight="bold" />
-                </button>
+                <div className="flex items-center gap-2 shrink-0 [&_.mm\_\_pill]:!h-8 [&_.mm\_\_pill]:!border-[var(--color-grey-300)] [&_.mm\_\_pill]:!text-[var(--color-grey-600)] [&_.mm\_\_pill-spark]:!text-inherit [&_.mm\_\_pill-caret]:!text-inherit [&_.mm\_\_pill-label]:!text-inherit [&_.mm\_\_pill-label]:!text-[12px] [&_.mm\_\_pill-label]:!font-medium">
+                  <ModelModeMenu value={sageMode} onChange={setSageMode} placement="bottom" />
+                  <button
+                    onClick={handleSend}
+                    disabled={!message.trim()}
+                    aria-label="Send"
+                    className={cn(
+                      "flex items-center justify-center w-11 h-11 rounded-full shrink-0 border-none transition-colors",
+                      message.trim() ? "bg-primary-500 text-white cursor-pointer hover:bg-primary-600" : "bg-[#eef0f7] text-[#adb2ce] cursor-not-allowed",
+                    )}
+                  >
+                    <ArrowUp size={18} weight="bold" />
+                  </button>
+                </div>
               </div>
             </div>
-
-            <div className="flex flex-col px-1">
-              {rows.map((row) => (
-                <SuggestionRow key={row.text} row={row} showKind={output === "auto"} onPick={() => go(row)} />
-              ))}
+            <div className="composer-tools composer-tools--wrap px-2.5 py-1.5">
+                {output === "creative" && (
+                  <>
+                    <ComposerMenu label="Type" value={kindId} options={KIND_OPTIONS} onChange={setKindId} variant="ghost" />
+                    <ComposerMenu label="Style" value={styleId} options={STYLE_OPTIONS} onChange={setStyleId} variant="ghost" />
+                    <ComposerMenu label="Format" value={formatId} options={FORMAT_OPTIONS} onChange={setFormatId} variant="ghost" />
+                  </>
+                )}
+                {output === "landing" && <ComposerMenu label="Template" value={templateId} options={templateOptions} onChange={setTemplateId} variant="ghost" />}
+                <Button variant="ghost" size="md" onClick={() => navigate("/library", { state: { tab: "design" } })}>
+                  <Palette size={16} />
+                  <span>Design system</span>
+                  <span className="composer-menu__value">{brand || "Not set"}</span>
+                </Button>
+            </div>
             </div>
           </motion.div>
 
-          <div className="flex-1" aria-hidden="true" />
+          {/* Prompts — pills, as /new shows skills. The icon says what each makes. */}
+          <motion.div {...fadeUp(0.1)} className="flex flex-col items-center gap-4 w-full max-w-[760px] mt-7">
+            <p className="m-0 text-[12px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Start by building</p>
+            <div className="flex flex-wrap justify-center gap-2.5">
+              {PROMPTS.map((pr) => {
+                const m = MAKES[pr.kind];
+                return (
+                  <Tooltip key={pr.label} title={m.label} arrow placement="top" describeChild>
+                    <button
+                      type="button"
+                      onClick={() => go(pr)}
+                      className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full bg-white border border-solid border-[#e1e5f1] text-[12px] text-[var(--text-primary)] cursor-pointer transition-colors hover:border-primary-300 hover:bg-primary-50"
+                    >
+                      <m.icon size={14} className="text-primary-500" />
+                      {pr.label}
+                    </button>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </motion.div>
+
           </div>
 
-          <div className="flex flex-col divide-y divide-[var(--color-grey-100)]">
-
-          {/* Last 30 days — the one carded strip on the page. */}
-          <motion.div {...fadeUp(0.1)} className="flex flex-col gap-3 pb-9">
-            <SectionHeader
-              label="Last 30 days"
-              right={
-                <Button
-                  variant="blueGhost"
-                  size="md"
-                  label="All campaigns"
-                  icon={CaretRight}
-                  iconPosition="suffix"
-                  onClick={() => navigate("/campaigns")}
-                />
-              }
-            />
-            <div className="grid grid-cols-4 gap-4">
-              {kpis.map((k) => <KpiTile key={k.label} kpi={k} onOpen={() => navigate("/campaigns")} />)}
-            </div>
-          </motion.div>
-
-          {/* Findings — quiet rows, the reference's meetings list. */}
-          <motion.div {...fadeUp(0.14)} className="flex flex-col gap-1 py-9">
-            <div className="pb-2">
-              <SectionHeader label="What Petavue found" />
-            </div>
-            {opps.map((o) => (
-              <FindingRow
-                key={o.id}
-                opp={o}
-                onFix={() => openChatWith(o.prompt)}
-                onOpen={() => navigate(`/campaigns/${o.campaignId}`)}
-              />
-            ))}
-          </motion.div>
-
-          {/* Campaigns — top spenders, the reference's tasks list. */}
-          <motion.div {...fadeUp(0.18)} className="flex flex-col gap-1 pt-9">
-            <div className="pb-2">
-              <SectionHeader
-                label={`Campaigns ${campaignData?.campaigns?.length || ""}`}
-                right={
+          {/* Recommendations — the top six, as cards or as a table. The rest are a click away. */}
+          {top.length > 0 && (
+            <motion.div {...fadeUp(0.1)} className="flex flex-col gap-5 shrink-0">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[16px] leading-[24px] font-medium text-[var(--text-primary)]">Recommendations</span>
+                <div className="flex items-center gap-2">
+                  <div className="inline-flex items-center gap-0.5 p-0.5 rounded-lg bg-[var(--color-grey-100)]" role="group" aria-label="Show recommendations as">
+                    {[{ id: "grid", label: "Grid view", icon: SquaresFour }, { id: "list", label: "List view", icon: Rows }].map((v) => (
+                      <Tooltip key={v.id} title={v.label} placement="top" describeChild>
+                        <button
+                          type="button"
+                          aria-label={v.label}
+                          aria-pressed={recView === v.id}
+                          onClick={() => pickView(v.id)}
+                          className={cn(
+                            "flex items-center justify-center w-7 h-7 rounded-md border-none cursor-pointer transition-colors",
+                            recView === v.id ? "bg-white text-[var(--text-primary)] shadow-[0_1px_2px_rgba(16,24,40,0.08)]" : "bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                          )}
+                        >
+                          <v.icon size={15} />
+                        </button>
+                      </Tooltip>
+                    ))}
+                  </div>
                   <Button
-                    variant="secondaryGhost"
+                    variant="ghost"
                     size="md"
-                    label="View all"
-                    onClick={() => navigate("/campaigns")}
+                    label={`View all${open.length > top.length ? ` ${open.length}` : ""}`}
+                    icon={ArrowRight}
+                    iconPosition="suffix"
+                    onClick={() => navigate("/recommendations")}
                   />
-                }
-              />
-            </div>
-            {campaigns.map((c) => (
-              <CampaignRow key={c.id} c={c} onOpen={() => navigate(`/campaigns/${c.id}`)} />
-            ))}
-          </motion.div>
+                </div>
+              </div>
 
-          </div>
+              {recView === "grid" ? (
+                <div className="grid grid-cols-3 gap-4 items-stretch">
+                  {top.map((r) => <RecCard key={r.id} rec={r} onOpen={() => navigate(`/recommendations?rec=${r.id}`)} />)}
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-2xl border border-solid border-[var(--color-grey-100)] bg-white">
+                  <div
+                    className="grid items-center gap-4 h-9 px-4 bg-[var(--color-grey-50)] text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]"
+                    style={{ gridTemplateColumns: LIST_COLS }}
+                  >
+                    <span>Type</span><span>Recommendation</span><span>Channel</span><span>When</span><span />
+                  </div>
+                  {top.map((r) => <RecRow key={r.id} rec={r} onOpen={() => navigate(`/recommendations?rec=${r.id}`)} />)}
+                </div>
+              )}
+            </motion.div>
+          )}
 
         </div>
       </div>

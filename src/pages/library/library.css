@@ -218,11 +218,19 @@
 }
 
 .lib-card__category {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+/* Component labels carry the product's component purple, icon and text alike. */
+.lib-card__category--component {
+  color: #643bcf;
 }
 
 .lib-card__name {
@@ -692,6 +700,38 @@
 }
 
 /* ── Component editor ──────────────────────────────────────────────────── */
+/* The editor header has three parts: the page on the left, the view and the
+   address in the middle, the actions on the right. The page's name keeps its
+   room; the address gives way first when the window is narrow. */
+.lib__header--editor {
+  gap: 16px;
+}
+
+.lib__header--editor .lib-editor__heading {
+  flex: 0 1 auto;
+}
+
+.lib__header--editor .lib-editor__actions {
+  flex: 0 0 auto;
+}
+
+.lib__header--editor .lib__title {
+  min-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib__header--editor .lib-editor__heading > :not(.lib__title) {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1320px) {
+  .lib__header--editor .lib-editor__from {
+    display: none;
+  }
+}
+
 .lib-editor__heading {
   display: flex;
   align-items: center;
@@ -699,19 +739,103 @@
   min-width: 0;
 }
 
+.lib-editor__heading > .btn,
+.lib-editor__actions .btn {
+  flex-shrink: 0;
+}
+
+.lib-editor__view {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* The middle takes the spare room and centres in it. It never gets narrower
+   than the switch and a short address, so it cannot slide under the buttons. */
+.lib__header--editor .lib-editor__view {
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 300px;
+}
+
+.lib-editor__view .lib-scope {
+  flex-shrink: 0;
+}
+
+.lib-editor__view .lib-browser__address {
+  flex: 0 1 300px;
+  width: 300px;
+  min-width: 120px;
+  background: var(--color-grey-50);
+}
+
+.lib-editor__view .lib-browser__address > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .lib-editor__body {
   display: grid;
-  grid-template-columns: 440px minmax(0, 1fr);
+  /* The chat sets its own width, which can be dragged. The canvas keeps a
+     minimum (STAGE_MIN in ChatPane.jsx), so a page or its code stays readable. */
+  grid-template-columns: auto minmax(600px, 1fr);
+  overflow-x: auto;
   flex: 1;
   min-height: 0;
 }
 
 .lib-chat {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 0;
   border-right: 1px solid var(--color-grey-100);
   background: #fff;
+}
+
+/* The right edge of the chat: drag it to resize. */
+.lib-chat__resizer {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  z-index: 5;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.lib-chat__resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.lib-chat__resizer:hover::after,
+.lib-chat__resizer:focus-visible::after,
+.lib-chat--resizing .lib-chat__resizer::after {
+  background: var(--color-primary-300);
+}
+
+.lib-chat__resizer:focus {
+  outline: none;
+}
+
+/* While dragging, nothing under the pointer should select or react. */
+.lib-chat--resizing,
+.lib-chat--resizing ~ * {
+  user-select: none;
+}
+
+.lib-chat--resizing ~ * {
+  pointer-events: none;
 }
 
 .lib-chat__thread {
@@ -996,6 +1120,171 @@
   background: var(--color-grey-100);
 }
 
+/* ── The page as a project: files on the left, the open file on the right ─ */
+.lib-project {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.lib-files {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 232px;
+  min-height: 0;
+  border-right: 1px solid var(--color-grey-100);
+  background: var(--color-grey-50);
+}
+
+.lib-files__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 8px;
+}
+
+.lib-files__title {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.lib-files__count {
+  font-size: 12px;
+  color: var(--color-grey-400);
+}
+
+.lib-files__search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  margin: 0 12px 8px;
+  padding: 0 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-grey-400);
+}
+
+.lib-files__search:focus-within {
+  border-color: var(--color-primary-300);
+}
+
+.lib-files__search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.lib-files__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.lib-files__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 28px;
+  padding-right: 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.lib-files__row svg {
+  flex-shrink: 0;
+  color: var(--color-grey-400);
+}
+
+.lib-files__row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-files__row:hover {
+  background: var(--color-grey-100);
+}
+
+.lib-files__row:focus-visible {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: -2px;
+}
+
+.lib-files__row--on,
+.lib-files__row--on:hover {
+  background: var(--color-primary-100);
+  color: var(--color-primary-500);
+  font-weight: 500;
+}
+
+.lib-files__row--on svg {
+  color: var(--color-primary-500);
+}
+
+.lib-files__none {
+  margin: 8px 12px;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-project__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.lib-project__bar .btn {
+  flex-shrink: 0;
+}
+
+.lib-project__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--color-grey-100);
+}
+
+.lib-project__tab {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-project__meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-grey-400);
+  white-space: nowrap;
+}
+
+.lib-code__word {
+  color: var(--color-primary-800, #052dab);
+}
+
 /* ── The page as code ──────────────────────────────────────────────────── */
 .lib-code {
   display: flex;
@@ -1103,6 +1392,183 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+.lib-publish__grouphead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* What the page settings say, on the way to publishing. */
+.lib-publish__summary {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  list-style: none;
+  font-size: 12px;
+}
+
+.lib-publish__summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-grey-100);
+}
+
+.lib-publish__summary li:first-child {
+  border-top: none;
+}
+
+.lib-publish__summary span {
+  flex-shrink: 0;
+  color: var(--color-grey-500);
+}
+
+.lib-publish__summary b {
+  overflow: hidden;
+  font-weight: 500;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-publish__note--icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-scope--fill {
+  display: flex;
+}
+
+.lib-scope--fill .lib-scope__option {
+  flex: 1;
+  justify-content: center;
+  padding: 7px 12px;
+}
+
+/* ── Page settings: search and share previews ──────────────────────────── */
+.lib-dialog--settings .dialog__body {
+  max-height: min(70vh, 720px);
+}
+
+.lib-serp,
+.lib-og {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  background: var(--color-grey-50);
+}
+
+.lib-serp {
+  gap: 2px;
+  padding: 16px;
+}
+
+.lib-serp__title {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--color-primary-800, #052dab);
+}
+
+.lib-serp__url {
+  font-size: 12px;
+  color: #0b7a3b;
+}
+
+.lib-serp__text {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.lib-og {
+  gap: 4px;
+  padding: 12px 12px 14px;
+}
+
+.lib-og__image {
+  height: 236px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.lib-og__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lib-og__title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.lib-og__text {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.lib-og__host {
+  font-size: 12px;
+  color: var(--color-grey-400);
+}
+
+.lib-og__upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lib-og__label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.lib-og__file {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-og__file img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.lib-og__file span {
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-og__file b {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.lib-og__actions {
+  display: flex;
+  gap: 8px;
 }
 
 .lib-publish__switch {
@@ -1283,17 +1749,6 @@
   align-items: center;
   gap: 8px;
   margin-left: auto;
-}
-
-/* Filter menus sit at the right edge, so their lists open leftwards. */
-.lib-sort .composer-menu__button {
-  border-radius: 8px;
-}
-
-.lib-sort .composer-menu__list {
-  right: 0;
-  left: auto;
-  width: 200px;
 }
 
 .lib-card__filing {
@@ -1531,4 +1986,182 @@
   font-size: 11px;
   line-height: 15px;
   color: var(--color-grey-500);
+}
+
+/* ── Import a design system from a website ─────────────────────────────── */
+.lib-import .dialog__body {
+  gap: 16px;
+}
+
+.lib-import__lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--text-secondary);
+}
+
+.lib-import__site {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.lib-import__reading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 250px;
+  padding: 8px 0;
+}
+
+.lib-import__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-import__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-grey-300);
+  transition: color 0.2s ease;
+}
+
+.lib-import__step--now {
+  color: var(--text-primary);
+}
+
+.lib-import__step--now svg {
+  color: var(--color-primary-500);
+}
+
+.lib-import__step--done {
+  color: var(--text-secondary);
+}
+
+.lib-import__step--done svg {
+  color: var(--color-green);
+}
+
+.lib-import__spin {
+  animation: lib-import-spin 0.8s linear infinite;
+}
+
+@keyframes lib-import-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-import__spin { animation: none; }
+}
+
+.lib-import__review {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.lib-import__found,
+.lib-import__sample,
+.lib-import__block {
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-import__found {
+  gap: 18px;
+}
+
+.lib-import__sample {
+  gap: 10px;
+  min-width: 0;
+}
+
+.lib-import__block {
+  gap: 8px;
+}
+
+.lib-import__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.lib-import__colors {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-import__colors li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.lib-import__chip {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(16, 24, 40, 0.1);
+  border-radius: 6px;
+}
+
+.lib-import__role {
+  flex: 1;
+}
+
+.lib-import__hex {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--color-grey-500);
+}
+
+.lib-import__font {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.lib-import__font--body {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.lib-import__font i {
+  font-family: var(--font-family-primary, inherit);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--color-grey-500);
+}
+
+.lib-import__button {
+  align-self: flex-start;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.lib-import__frame {
+  overflow: hidden;
+  border: 1px solid var(--color-grey-100);
+  border-radius: 10px;
+  background: #fff;
 }

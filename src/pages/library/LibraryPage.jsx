@@ -9,7 +9,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Browser, ChatCircleDots, CheckCircle, Copy, FunnelSimple, ImageSquare, Layout, PencilSimple, Shapes, Plus, Trash, UploadSimple } from "@phosphor-icons/react";
+import { Browser, DiamondsFour, GlobeSimple, ChatCircleDots, CheckCircle, Copy, FunnelSimple, ImageSquare, Layout, PencilSimple, Shapes, Plus, Trash, UploadSimple } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button, Dialog, Dropdown, Tag, TextInput, Tooltip } from "@/ui";
 import { CATEGORIES, COLOR_ROLES, COMPONENTS, GOOGLE_FONTS, SIZE_LIMITS, TEMPLATES, componentById, fontStack } from "../../mocks/library";
@@ -21,6 +21,7 @@ import useCreativesStore, { flat } from "./useCreativesStore";
 import { Artboard, Fit } from "./CreativeEditorPage";
 import { formatById, kindById, styleById } from "../../mocks/creatives";
 import ComposerMenu from "../harness/ComposerMenu";
+import ImportBrandDialog from "./ImportBrandDialog";
 import "./creative.css";
 import "./library.css";
 
@@ -63,7 +64,7 @@ function WorkspaceCard({ item, activeTag, onTag, onOpen, onPublish, onUnpublish,
       </button>
       <div className="lib-card__body">
         <div className="lib-card__meta">
-          <span className="lib-card__category">{componentById(item.sourceId)?.category}</span>
+          <span className="lib-card__category lib-card__category--component"><DiamondsFour size={12} /> {componentById(item.sourceId)?.category}</span>
           <StatusTag status={item.status} />
         </div>
         <h3 className="lib-card__name">{item.name}</h3>
@@ -103,7 +104,7 @@ function LibraryCard({ item, added, onOpen, onAdd }) {
         <span className="lib-card__canvas"><ScaledPreview height={190}><Section id={item.id} /></ScaledPreview></span>
       </button>
       <div className="lib-card__body">
-        <span className="lib-card__category">{item.category}</span>
+        <span className="lib-card__category lib-card__category--component"><DiamondsFour size={12} /> {item.category}</span>
         <h3 className="lib-card__name">{item.name}</h3>
         <p className="lib-card__text">{item.description}</p>
       </div>
@@ -525,7 +526,7 @@ function Row({ title, desc, children }) {
   );
 }
 
-function DesignSystemTab() {
+function DesignSystemTab({ onImport }) {
   const { design, setDesign, setColor, reset } = useDesignStore();
   const fileRef = useRef(null);
 
@@ -543,6 +544,10 @@ function DesignSystemTab() {
   return (
     <div className="lib-design">
       <div className="lib-design__tokens">
+        <Row title="Import from your website" desc="Reads your colours, fonts, corners and logo from your homepage.">
+          <div><Button variant="secondary" size="md" icon={GlobeSimple} iconPosition="prefix" label="Import from website" onClick={onImport} /></div>
+        </Row>
+
         <Row title="Brand name" desc="Used wherever there is no logo.">
           <TextInput label="" placeholder="Your company" value={design.brand} onChange={(e) => setDesign({ brand: e.target.value })} aria-label="Brand name" />
         </Row>
@@ -751,6 +756,7 @@ export default function LibraryPage() {
   const build = () => navigate("/home");
   const [scope, setScope] = useState("workspace");
   const [preview, setPreview] = useState(null);
+  const [importing, setImporting] = useState(false);
 
   const scopes = tab === "templates"
     ? [{ id: "workspace", label: "My workspace", count: templates.length }, { id: "library", label: "Library", count: TEMPLATES.length }]
@@ -777,6 +783,7 @@ export default function LibraryPage() {
     <div className="lib">
       <header className="lib__header">
         <h1 className="lib__title">Library</h1>
+        <Button variant="secondary" size="md" icon={GlobeSimple} iconPosition="prefix" label="Import from website" onClick={() => setImporting(true)} />
       </header>
 
       {/* The same tabs bar as Data Hub. */}
@@ -802,13 +809,23 @@ export default function LibraryPage() {
           )}
           {tab === "components" && scope === "library" && <LibraryComponents lead={lead} onPreview={setPreview} />}
           {tab === "templates" && <Templates lead={lead} scope={scope} onPreview={setPreview} onBrowse={() => setScope("library")} />}
-          {tab === "design" && <DesignSystemTab />}
+          {tab === "design" && <DesignSystemTab onImport={() => setImporting(true)} />}
           {tab === "pages" && <PagesTab onBuild={build} />}
           {tab === "creatives" && <CreativesTab onMake={() => navigate("/library/creatives/new")} />}
         </div>
       </div>
 
       {preview && <PreviewDialog {...preview} onClose={() => setPreview(null)} />}
+      {importing && (
+        <ImportBrandDialog
+          onClose={() => setImporting(false)}
+          onApplied={(brand, host) => {
+            setImporting(false);
+            setTab("design");
+            toast.success(`${brand}'s design system imported from ${host}.`);
+          }}
+        />
+      )}
     </div>
   );
 }

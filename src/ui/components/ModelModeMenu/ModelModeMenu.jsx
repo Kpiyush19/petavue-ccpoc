@@ -1,5 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { Sparkles, CircleDot, Zap, ChevronDown, Check, Info } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/shadcn/dropdown-menu";
 import "./ModelModeMenu.css";
 
 /**
@@ -65,31 +71,10 @@ export function ModelModeMenu({
   placement = "bottom",
   className = "",
 }) {
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef(null);
-
   const selected = SAGE_MODES.find((m) => m.id === value) || SAGE_MODES[1];
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return undefined;
-    function onDocClick(e) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
-    }
-    function onKey(e) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDocClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
 
   const pick = useCallback(
     (id) => {
-      setOpen(false);
       if (id !== value) {
         writeSageMode(id);
         onChange && onChange(id);
@@ -99,43 +84,36 @@ export function ModelModeMenu({
   );
 
   return (
-    <div className={`mm ${className}`} ref={wrapRef}>
-      <button
-        type="button"
-        className="mm__pill"
-        onClick={() => !disabled && setOpen((p) => !p)}
-        disabled={disabled}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-label={`Model mode: ${selected.label}`}
-      >
-        <Sparkles size={14} className="mm__pill-spark" />
-        <span className="mm__pill-label">{selected.label}</span>
-        <ChevronDown size={14} className="mm__pill-caret" />
-      </button>
+    <div className={`mm ${className}`}>
+      {/* The list is the product dropdown (components/shadcn/dropdown-menu). */}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          disabled={disabled}
+          render={<button type="button" className="mm__pill" aria-label={`Model mode: ${selected.label}`} />}
+        >
+          <Sparkles size={14} className="mm__pill-spark" />
+          <span className="mm__pill-label">{selected.label}</span>
+          <ChevronDown size={14} className="mm__pill-caret" />
+        </DropdownMenuTrigger>
 
-      {open && (
-        <div className={`mm__menu mm__menu--${placement}`} role="listbox">
+        <DropdownMenuContent
+          side={placement === "top" ? "top" : "bottom"}
+          align="end"
+          sideOffset={8}
+          className="w-[328px] !overflow-visible"
+        >
           <div className="mm__menu-title">Choose your mode</div>
           {SAGE_MODES.map((mode) => {
             const Icon = mode.icon;
             const isSel = mode.id === value;
-            const accent = isSel || mode.id === "pro";
             return (
-              <button
-                key={mode.id}
-                type="button"
-                role="option"
-                aria-selected={isSel}
-                className={`mm__item ${isSel ? "mm__item--selected" : ""}`}
-                onClick={() => pick(mode.id)}
-              >
+              <DropdownMenuItem key={mode.id} className="items-start" onClick={() => pick(mode.id)}>
                 <span className="mm__item-icon">
-                  <Icon size={16} className={accent ? "mm__ic-accent" : "mm__ic-muted"} />
+                  <Icon size={16} />
                 </span>
                 <span className="mm__item-body">
                   <span className="mm__item-head">
-                    <span className="mm__item-label">{mode.label}</span>
+                    <span>{mode.label}</span>
                     {mode.beta && <span className="mm__beta">Beta</span>}
                     {mode.tooltip && (
                       <span
@@ -151,16 +129,12 @@ export function ModelModeMenu({
                   </span>
                   <span className="mm__item-desc">{mode.description}</span>
                 </span>
-                {isSel && (
-                  <span className="mm__check" aria-hidden="true">
-                    <Check size={12} strokeWidth={3} />
-                  </span>
-                )}
-              </button>
+                {isSel && <Check size={16} strokeWidth={2.5} color="var(--color-primary-500)" aria-hidden="true" />}
+              </DropdownMenuItem>
             );
           })}
-        </div>
-      )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

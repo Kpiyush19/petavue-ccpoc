@@ -18,7 +18,7 @@ const usePagesStore = create((set, get) => {
     create: (extra = {}) => {
       const page = {
         id: `page-${++seq}`, name: "New page", templateId: null, sections: [], history: [], thread: [],
-        status: "draft", unpublished: false, settings: null, ...extra,
+        status: "draft", unpublished: false, settings: null, meta: {}, ...extra,
       };
       set((s) => ({ pages: [page, ...s.pages] }));
       return page;
@@ -38,7 +38,11 @@ const usePagesStore = create((set, get) => {
         : {})),
     say: (id, message) => update(id, (p) => ({ thread: [...p.thread, message] })),
 
-    // settings: { domain, slug, pixel }
+    // The page's own settings (name, access, SEO, Open Graph, tracking,
+    // forms). On a live page they wait for the next publish, like any change.
+    setMeta: (id, name, meta) => update(id, (p) => ({ name, meta, unpublished: p.status === "published" })),
+
+    // settings: { domain, slug }: where the page is live.
     publish: (id, settings) => update(id, () => ({ status: "published", unpublished: false, settings })),
     // Offline again. The settings are kept, so publishing again starts from them.
     unpublish: (id) => update(id, () => ({ status: "draft", unpublished: false })),

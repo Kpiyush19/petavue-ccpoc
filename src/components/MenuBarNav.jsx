@@ -147,7 +147,7 @@ export default function MenuBarNav() {
         onHistoryItemClick={handleHistoryClick}
         historyGroups={historyGroups}
         user={user}
-        onNewChat={() => navigate("/new")}
+        onNewChat={() => navigate("/home")}
         onProfile={() => navigate("/profile")}
         onSettings={() => navigate("/settings")}
         defaultOpen={false}

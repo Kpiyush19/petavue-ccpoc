@@ -259,6 +259,55 @@ const ITEMS = [
     decision: null,
     comments: [],
   },
+  /* A page the site is missing, drafted without being asked: the comparison
+     page. Its draft is built from a fixed list of sections
+     (mocks/suggestedPages.js, "sg-compare"), not from a template. */
+  {
+    id: "rec-lp-02",
+    workflowId: "landing-page-conversion",
+    platform: "google-search",
+    agent: "landing",
+    type: "change",
+    urgency: "this-week",
+    lifecycle: "needs-decision",
+    scope: "1 new page, 1 ad group",
+    run: { n: "02", at: "Oct 6, 7:05 AM" },
+    shortTitle: "Comparison page",
+    title: "Your site has no Castline comparison page: a draft is ready",
+    basis:
+      "Searches for “Castline alternative” brought 214 paid clicks to your homepage in the last 30 days, and 0.6% of them reached a form. Your other paid pages reach 3.4%. People comparing you with Castline find nothing that compares the two, so Petavue drafted the page.",
+    changeTitle: "Today against the draft",
+    changeCols: ["What", "Today", "Draft"],
+    changeRows: [
+      ["Where the clicks land", "Homepage", "A comparison page"],
+      ["First screen", "General product pitch", "You or Castline, with the difference stated"],
+      ["Comparison", "None on the site", "Five rows, side by side"],
+      ["Button", "Book a demo, after 9 sections", "See the difference, then Book a demo"],
+    ],
+    timing:
+      "Publish this week. The ad group spends about $1,300 a month on these searches, and they are the visitors closest to choosing.",
+    expect:
+      "Visitors comparing the two products land on a page that answers the question they searched. Petavue cannot promise a conversion rate. It will report the new page’s rate against the 0.6% baseline.",
+    controls:
+      "Nothing goes live until you publish. The draft uses only components your workspace has published and follows your design system. Check the comparison rows against what you know about Castline before publishing: Petavue did not verify claims about a competitor.",
+    followUp:
+      "Oct 20. That run reports visits and form completions on the new page against the homepage’s last 30 days for the same searches.",
+    needsFromYou: "Review the draft, check the comparison rows, and publish it. Then point the “Castline alternative” ad group at the new address.",
+    whyNow:
+      "These searches are rising month over month, and every click currently lands on a page written for someone who has never heard of you.",
+    excluded:
+      "Brand searches and searches for Castline alone were left out. Only searches that name an alternative or a comparison were counted.",
+    confidence:
+      "Confidence is high that the page is missing: no page on the site mentions Castline. Confidence is moderate that the draft converts better, because it has no traffic yet.",
+    trace: [
+      { specialist: "Delivery Outcome Mapper", agent: "measurement", text: "joined 30 days of Google Ads search terms to web sessions and form submissions." },
+      { specialist: "Landing Page Analyst", agent: "conversion", text: "found the comparison searches landing on the homepage and converting at 0.6%." },
+      { specialist: "Landing Page Builder", agent: "landing", text: "drafted a comparison page from 6 published components, including the Comparison table." },
+    ],
+    draftPage: { name: "Meridian vs Castline", spec: "sg-compare", repoint: "Point the “Castline alternative” ad group at this address." },
+    decision: null,
+    comments: [],
+  },
   /* ── The ABM and LinkedIn cards (Camunda demo, 30 Sep).
      Source: docs/Camunda Recommendations Demo.md. These four lead the queue.
      Recommendations 1 and 2 extend the earlier handoff and cap-raise cards;

@@ -1,39 +1,29 @@
-import { useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/shadcn/dropdown-menu';
 
-const Dropdown = ({ title, options, onSelect }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 text-xs border border-[var(--color-primary-500)] text-[var(--color-primary-500)] rounded-lg hover:bg-[var(--color-primary-50)]"
-      >
-        {title}
-        <CaretDown size={12} />
-      </button>
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 w-32 bg-white border border-[var(--color-grey-200)] rounded-lg shadow-lg z-20">
-            {options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  onSelect(option);
-                  setIsOpen(false);
-                }}
-                className="w-full text-left px-4 py-2 text-sm hover:bg-[var(--color-grey-50)] first:rounded-t-lg last:rounded-b-lg"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
+const Dropdown = ({ title, options, onSelect }) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      render={
+        <button className="flex items-center gap-2 px-3 py-1.5 text-xs border border-[var(--color-primary-500)] text-[var(--color-primary-500)] rounded-lg hover:bg-[var(--color-primary-50)]" />
+      }
+    >
+      {title}
+      <CaretDown size={12} />
+    </DropdownMenuTrigger>
+    <DropdownMenuContent className="min-w-32">
+      {options.map((option, index) => (
+        <DropdownMenuItem key={index} onClick={() => onSelect(option)}>
+          {option}
+        </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
 
 export default Dropdown;

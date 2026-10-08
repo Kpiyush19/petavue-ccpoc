@@ -74,10 +74,10 @@
 }
 
 .mm__menu-title {
-  padding: 8px 10px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-neutral-600);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-grey-500);
 }
 
 /* ---- Item ---- */

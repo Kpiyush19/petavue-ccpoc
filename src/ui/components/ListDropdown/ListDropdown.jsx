@@ -1,5 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { CaretDown, Check } from '@phosphor-icons/react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/shadcn/dropdown-menu';
 import './ListDropdown.css';
 
 /**
@@ -22,20 +28,6 @@ export function ListDropdown({
   className = '',
 }) {
   const [open, setOpen] = useState(false);
-  const wrapperRef = useRef(null);
-
-  /* Close on outside click */
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
-
   const selected = options.find((o) => o.value === value);
   const label = renderLabel
     ? renderLabel(selected)
@@ -50,50 +42,31 @@ export function ListDropdown({
     .join(' ');
 
   return (
-    <div className={classes} ref={wrapperRef}>
-      <button
-        type="button"
-        className="list-dropdown__trigger"
-        onClick={() => !disabled && setOpen((v) => !v)}
-        disabled={disabled}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className="list-dropdown__trigger-text">{label}</span>
-        <CaretDown
-          size={12}
-          weight="regular"
-          color={disabled ? 'var(--color-grey-300)' : 'var(--color-text-primary)'}
-        />
-      </button>
-
-      {open && options.length > 0 && (
-        <div className="list-dropdown__menu" role="listbox">
-          {options.map((opt) => {
-            const isActive = opt.value === value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                className={`list-dropdown__item ${isActive ? 'list-dropdown__item--active' : ''}`}
-                role="option"
-                aria-selected={isActive}
-                onClick={() => {
-                  onChange?.(opt.value);
-                  setOpen(false);
-                }}
-              >
-                <span className={isActive ? 'text-body-1-medium' : 'text-body-1-regular'}>
-                  {opt.label}
-                </span>
-                {isActive && (
-                  <Check size={16} weight="regular" color="var(--color-text-primary)" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
+    <div className={classes}>
+      {/* The list is the product dropdown (components/shadcn/dropdown-menu). */}
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger
+          disabled={disabled}
+          render={<button type="button" className="list-dropdown__trigger" />}
+        >
+          <span className="list-dropdown__trigger-text">{label}</span>
+          <CaretDown
+            size={12}
+            weight="regular"
+            color={disabled ? 'var(--color-grey-300)' : 'var(--color-text-primary)'}
+          />
+        </DropdownMenuTrigger>
+        {options.length > 0 && (
+          <DropdownMenuContent className="max-h-[280px]">
+            {options.map((opt) => (
+              <DropdownMenuItem key={opt.value} onClick={() => onChange?.(opt.value)}>
+                <span className="min-w-0 flex-1">{opt.label}</span>
+                {opt.value === value && <Check size={16} weight="bold" color="var(--color-primary-500)" />}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        )}
+      </DropdownMenu>
     </div>
   );
 }

@@ -694,6 +694,61 @@
 }
 
 /* ── Questions ─────────────────────────────────────────────────────────── */
+/* ── Comparison table ──────────────────────────────────────────────────── */
+.lp-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.lp-compare__table {
+  overflow: hidden;
+  border: 1px solid #e2e7ee;
+  border-radius: calc(var(--lp-radius) + 6px);
+}
+
+.lp-compare__row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  align-items: center;
+  border-top: 1px solid #e2e7ee;
+  font-size: calc(17px * var(--lp-body-scale, 1));
+}
+
+.lp-compare__row > span {
+  padding: 20px 28px;
+}
+
+.lp-compare__row--head {
+  border-top: none;
+  background: var(--lp-surface);
+  font-family: var(--lp-font-head);
+  font-size: calc(20px * var(--lp-body-scale, 1));
+  font-weight: 600;
+}
+
+.lp-compare__row > span:not(:first-child) {
+  color: var(--lp-muted);
+}
+
+.lp-compare__row > .lp-compare__us {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--lp-primary) 7%, #fff);
+  color: var(--lp-ink);
+  font-weight: 600;
+}
+
+.lp-compare__yes {
+  color: var(--lp-primary);
+}
+
+.lp-compare__no {
+  color: var(--lp-muted);
+  font-weight: 400;
+}
+
 .lp-faq {
   display: grid;
   grid-template-columns: 360px 1fr;
